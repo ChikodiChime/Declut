@@ -11,7 +11,6 @@ export default function VerifyEmailPage() {
   const { mutate: resend, isPending: isResending, data: resendData } = useSendVerification()
   const [resendCooldown, setResendCooldown] = useState(0)
 
-  // Initialise countdown from the otp_resend_after stored on the user
   useEffect(() => {
     if (me?.otp_resend_after) {
       const diff = Math.ceil((new Date(me.otp_resend_after).getTime() - Date.now()) / 1000)
@@ -19,23 +18,30 @@ export default function VerifyEmailPage() {
     }
   }, [me])
 
-  // Update countdown when a resend returns a new retryAfter
   useEffect(() => {
-    if (resendData?.retryAfter) {
-      setResendCooldown(resendData.retryAfter)
-    }
+    if (resendData?.retryAfter) setResendCooldown(resendData.retryAfter)
   }, [resendData])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-      <VerifyEmailForm
-        onSubmit={(code) => verify(code)}
-        onResend={() => resend()}
-        isPending={isPending}
-        isResending={isResending}
-        error={error?.message ?? null}
-        resendCooldownSeconds={resendCooldown}
-      />
+    <div className="min-h-screen bg-surface flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.svg" alt="declut" className="h-10" />
+        </div>
+        {/* Card */}
+        <div className="bg-card rounded-xl shadow-card px-8 py-10">
+          <VerifyEmailForm
+            onSubmit={(code) => verify(code)}
+            onResend={() => resend()}
+            isPending={isPending}
+            isResending={isResending}
+            error={error?.message ?? null}
+            resendCooldownSeconds={resendCooldown}
+          />
+        </div>
+      </div>
     </div>
   )
 }
