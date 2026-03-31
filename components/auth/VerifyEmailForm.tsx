@@ -29,12 +29,13 @@ export default function VerifyEmailForm({
     setSecondsLeft(resendCooldownSeconds)
   }, [resendCooldownSeconds])
 
-  // Countdown tick
+  // Countdown tick — depends only on the seed, not the ticking value
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (secondsLeft <= 0) return
     const timer = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000)
     return () => clearInterval(timer)
-  }, [secondsLeft])
+  }, [resendCooldownSeconds])
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return
@@ -45,7 +46,7 @@ export default function VerifyEmailForm({
       inputs.current[index + 1]?.focus()
     }
     const code = newDigits.join('')
-    if (newDigits.every((d) => d !== '')) {
+    if (newDigits.every((d) => d !== '') && !isPending) {
       onSubmit(code)
     }
   }
@@ -64,7 +65,7 @@ export default function VerifyEmailForm({
     pasted.split('').forEach((ch, i) => { newDigits[i] = ch })
     setDigits(newDigits)
     inputs.current[Math.min(pasted.length, 5)]?.focus()
-    if (pasted.length === 6) onSubmit(pasted)
+    if (pasted.length === 6 && !isPending) onSubmit(pasted)
   }
 
   const formatCountdown = (s: number) => {
