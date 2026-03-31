@@ -4,13 +4,14 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY!)
 
 export async function sendOtpEmail(to: string, code: string): Promise<void> {
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL!,
     to,
     subject: 'Your Declutter verification code',
     html: buildOtpHtml(code),
     text: `Your Declutter verification code is: ${code}\n\nThis code expires in 30 minutes.\n\nIf you didn't create a Declutter account, you can safely ignore this email.`,
   })
+  if (error) throw new Error(`Resend error: ${error.message}`)
 }
 
 function buildOtpHtml(code: string): string {
@@ -26,7 +27,7 @@ function buildOtpHtml(code: string): string {
           <!-- Header -->
           <tr>
             <td style="background:#4F46E5;padding:32px 40px;text-align:center;">
-              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">Declutter</span>
+              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">decl<span style="color:#A5B4FC">ut</span></span>
             </td>
           </tr>
 
@@ -58,7 +59,7 @@ function buildOtpHtml(code: string): string {
           <!-- Footer -->
           <tr>
             <td style="background:#F9FAFB;padding:20px 40px;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 Declutter. All rights reserved.</p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 declut. All rights reserved.</p>
             </td>
           </tr>
 
