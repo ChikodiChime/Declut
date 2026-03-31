@@ -44,8 +44,8 @@
 }
 
 body {
-  background-color: #F8FAFF;
-  color: #0F172A;
+  background-color: var(--color-surface);
+  color: var(--color-text);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
