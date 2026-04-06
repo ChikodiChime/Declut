@@ -1,4 +1,4 @@
-import type { Listing, ListingStatus } from '@/types'
+import type { Listing, ListingStatus, Condition } from '@/types'
 import { VALID_CATEGORIES, VALID_CONDITIONS } from '../utils'
 
 const VALID_STATUSES: ListingStatus[] = ['available', 'sold', 'claimed', 'donated']
@@ -37,7 +37,7 @@ export function validateUpdateBody(body: UpdateBody):
     data.category = body.category
   }
   if (body.condition !== undefined) {
-    if (!VALID_CONDITIONS.includes(body.condition as string)) return { error: 'condition is invalid' }
+    if (!VALID_CONDITIONS.includes(body.condition as Condition)) return { error: 'condition is invalid' }
     data.condition = body.condition
   }
   if (body.price !== undefined) {
