@@ -69,6 +69,18 @@ export interface Review {
   created_at: string
 }
 
+// Form data shape for the create/edit listing form
+export interface ListingFormData {
+  listing_type: ListingType
+  title: string
+  description: string
+  category: string
+  condition: Condition
+  price: number | null   // null for free/donate listings
+  area: string
+  images: string[]       // Cloudinary public_ids
+}
+
 // What we embed in the JWT payload
 export interface JwtPayload {
   sub: string        // user UUID
