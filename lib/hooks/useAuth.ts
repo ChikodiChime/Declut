@@ -25,7 +25,7 @@ async function apiPost(path: string, body: unknown) {
     body: JSON.stringify(body),
   })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? 'Something went wrong')
+  if (!res.ok) throw new Error(data.error?.message ?? 'Something went wrong')
   return data
 }
 
@@ -51,12 +51,12 @@ export function useSignIn() {
 
   return useMutation({
     mutationFn: (input: SignInInput) => apiPost('/api/auth/signin', input),
-    onSuccess: (data) => {
+    onSuccess: (json) => {
       queryClient.invalidateQueries({ queryKey: ['me'] })
-      if (!data.emailVerified) {
+      if (!json.data.emailVerified) {
         router.push('/verify-email')
       } else {
-        router.push('/')
+        router.push('/dashboard')
       }
       router.refresh()
     },
@@ -71,7 +71,7 @@ export function useSignOut() {
     mutationFn: () => apiPost('/api/auth/signout', {}),
     onSuccess: () => {
       queryClient.clear()
-      router.push('/sign-in')
+      router.push('/auth/login')
       router.refresh()
     },
   })
@@ -85,7 +85,7 @@ export function useVerifyEmail() {
     mutationFn: (code: string) => apiPost('/api/auth/verify-email', { code }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['me'] })
-      router.push('/')
+      router.push('/dashboard')
       router.refresh()
     },
   })
@@ -99,9 +99,9 @@ export function useSendVerification() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       })
-      const data = await res.json()
-      if (res.status === 429) return { sent: false, retryAfter: data.retryAfter }
-      if (!res.ok) throw new Error(data.error ?? 'Failed to send code')
+      const json = await res.json()
+      if (res.status === 429) return { sent: false, retryAfter: json.error?.retryAfter }
+      if (!res.ok) throw new Error(json.error?.message ?? 'Failed to send code')
       return { sent: true }
     },
   })
@@ -114,7 +114,8 @@ export function useMe() {
       const res = await fetch('/api/users/me')
       if (res.status === 401) return null
       if (!res.ok) throw new Error('Failed to fetch user')
-      return res.json()
+      const json = await res.json()
+      return json.data
     },
     staleTime: 5 * 60 * 1000,
   })

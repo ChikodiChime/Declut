@@ -1,7 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import type { Listing, ListingFormData, ListingStatus } from '@/types'
+import type { Listing, ListingFormData, ListingStatus, ListingType, Condition } from '@/types'
+
+export interface BrowseParams {
+  q?: string
+  category?: string
+  listing_type?: ListingType | ''
+  condition?: Condition | ''
+  area?: string
+  sort?: 'newest' | 'price_asc' | 'price_desc'
+  limit?: number
+  offset?: number
+}
 
 async function apiRequest(method: string, path: string, body?: unknown) {
   const res = await fetch(path, {
@@ -9,22 +20,53 @@ async function apiRequest(method: string, path: string, body?: unknown) {
     headers: body ? { 'Content-Type': 'application/json' } : undefined,
     body: body ? JSON.stringify(body) : undefined,
   })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error ?? 'Something went wrong')
-  return data
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error?.message ?? 'Something went wrong')
+  return json
+}
+
+export function usePublicListings(params: BrowseParams = {}) {
+  const query = new URLSearchParams()
+  if (params.q) query.set('q', params.q)
+  if (params.category) query.set('category', params.category)
+  if (params.listing_type) query.set('listing_type', params.listing_type)
+  if (params.condition) query.set('condition', params.condition)
+  if (params.area) query.set('area', params.area)
+  if (params.sort) query.set('sort', params.sort)
+  if (params.limit) query.set('limit', String(params.limit))
+  if (params.offset) query.set('offset', String(params.offset))
+
+  return useQuery<{ listings: Listing[]; total: number; limit: number; offset: number }>({
+    queryKey: ['listings', 'browse', params],
+    queryFn: async () => {
+      const json = await apiRequest('GET', `/api/listings?${query.toString()}`)
+      return {
+        listings: json.data,
+        total: json.meta.total,
+        limit: json.meta.limit,
+        offset: json.meta.offset,
+      }
+    },
+  })
 }
 
 export function useMyListings() {
   return useQuery<{ listings: Listing[] }>({
     queryKey: ['listings', 'mine'],
-    queryFn: () => apiRequest('GET', '/api/listings/mine'),
+    queryFn: async () => {
+      const json = await apiRequest('GET', '/api/listings/mine')
+      return { listings: json.data }
+    },
   })
 }
 
 export function useListing(id: string) {
   return useQuery<{ listing: Listing }>({
     queryKey: ['listings', id],
-    queryFn: () => apiRequest('GET', `/api/listings/${id}`),
+    queryFn: async () => {
+      const json = await apiRequest('GET', `/api/listings/${id}`)
+      return { listing: json.data }
+    },
     enabled: !!id,
   })
 }
@@ -77,10 +119,11 @@ export function useUploadImage() {
     mutationFn: async (blob: Blob): Promise<{ public_id: string }> => {
       const form = new FormData()
       form.append('file', blob, 'image.jpg')
+
       const res = await fetch('/api/upload', { method: 'POST', body: form })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Upload failed')
-      return data
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error?.message ?? 'Upload failed')
+      return json.data
     },
     onError: () => toast.error('Upload failed — please try again'),
   })
