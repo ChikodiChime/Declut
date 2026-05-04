@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { validateUpdateBody } from './utils'
+import { ok, err } from '@/lib/api-response'
 
 export async function GET(
   _req: Request,
@@ -10,15 +11,15 @@ export async function GET(
 
   const { data: listing, error } = await supabaseAdmin
     .from('listings')
-    .select('*')
+    .select('*, seller:users(id, name, account_type, avatar_url)')
     .eq('id', id)
     .single()
 
   if (error || !listing) {
-    return Response.json({ error: 'Listing not found' }, { status: 404 })
+    return err('Listing not found', 'NOT_FOUND', 404)
   }
 
-  return Response.json({ listing })
+  return ok(listing)
 }
 
 export async function PATCH(
@@ -27,7 +28,7 @@ export async function PATCH(
 ) {
   const authUser = await getAuthUser()
   if (!authUser) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
   const { id } = await params
@@ -39,18 +40,23 @@ export async function PATCH(
     .single()
 
   if (fetchError || !existing) {
-    return Response.json({ error: 'Listing not found' }, { status: 404 })
+    return err('Listing not found', 'NOT_FOUND', 404)
   }
 
   if (existing.seller_id !== authUser.id) {
-    return Response.json({ error: 'Forbidden' }, { status: 403 })
+    return err('Forbidden', 'FORBIDDEN', 403)
   }
 
-  const body = await req.json()
-  const validated = validateUpdateBody(body)
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return err('Invalid request body', 'BAD_REQUEST', 400)
+  }
+  const validated = validateUpdateBody(body as Record<string, unknown>)
 
   if ('error' in validated) {
-    return Response.json({ error: validated.error }, { status: 400 })
+    return err(validated.error, 'VALIDATION_ERROR', 400)
   }
 
   const { data: listing, error } = await supabaseAdmin
@@ -62,10 +68,10 @@ export async function PATCH(
 
   if (error || !listing) {
     console.error('Update listing error:', error)
-    return Response.json({ error: 'Failed to update listing' }, { status: 500 })
+    return err('Failed to update listing', 'SERVER_ERROR', 500)
   }
 
-  return Response.json({ listing })
+  return ok(listing)
 }
 
 export async function DELETE(
@@ -74,7 +80,7 @@ export async function DELETE(
 ) {
   const authUser = await getAuthUser()
   if (!authUser) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
   const { id } = await params
@@ -86,11 +92,11 @@ export async function DELETE(
     .single()
 
   if (fetchError || !existing) {
-    return Response.json({ error: 'Listing not found' }, { status: 404 })
+    return err('Listing not found', 'NOT_FOUND', 404)
   }
 
   if (existing.seller_id !== authUser.id) {
-    return Response.json({ error: 'Forbidden' }, { status: 403 })
+    return err('Forbidden', 'FORBIDDEN', 403)
   }
 
   const { error } = await supabaseAdmin
@@ -100,8 +106,8 @@ export async function DELETE(
 
   if (error) {
     console.error('Delete listing error:', error)
-    return Response.json({ error: 'Failed to delete listing' }, { status: 500 })
+    return err('Failed to delete listing', 'SERVER_ERROR', 500)
   }
 
-  return Response.json({ success: true })
+  return ok({ ok: true })
 }

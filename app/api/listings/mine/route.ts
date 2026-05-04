@@ -1,10 +1,11 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
+import { ok, err } from '@/lib/api-response'
 
 export async function GET() {
   const authUser = await getAuthUser()
   if (!authUser) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
   const { data: listings, error } = await supabaseAdmin
@@ -15,8 +16,8 @@ export async function GET() {
 
   if (error) {
     console.error('Get my listings error:', error)
-    return Response.json({ error: 'Failed to fetch listings' }, { status: 500 })
+    return err('Failed to fetch listings', 'SERVER_ERROR', 500)
   }
 
-  return Response.json({ listings: listings ?? [] })
+  return ok(listings ?? [])
 }

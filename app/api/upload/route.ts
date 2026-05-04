@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import { getAuthUser } from '@/lib/auth'
+import { ok, err } from '@/lib/api-response'
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -10,34 +11,46 @@ cloudinary.config({
 export async function POST(req: Request) {
   const authUser = await getAuthUser()
   if (!authUser) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
-  const formData = await req.formData()
+  let formData: FormData
+  try {
+    formData = await req.formData()
+  } catch {
+    return err('Invalid form data', 'BAD_REQUEST', 400)
+  }
   const file = formData.get('file') as File | null
 
   if (!file) {
-    return Response.json({ error: 'No file provided' }, { status: 400 })
+    return err('No file provided', 'VALIDATION_ERROR', 400)
   }
 
   if (!file.type.startsWith('image/')) {
-    return Response.json({ error: 'File must be an image' }, { status: 400 })
+    return err('File must be an image', 'VALIDATION_ERROR', 400)
   }
 
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
 
-  const result = await new Promise<{ public_id: string }>((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        { folder: 'listings', resource_type: 'image' },
-        (error, result) => {
-          if (error || !result) return reject(error ?? new Error('Upload failed'))
-          resolve({ public_id: result.public_id })
-        }
-      )
-      .end(buffer)
-  })
+  let result: { public_id: string }
+  try {
+    result = await new Promise<{ public_id: string }>((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          { folder: 'declut/listings', resource_type: 'image' },
+          (uploadError, res) => {
+            if (uploadError || !res) return reject(uploadError ?? new Error('Upload failed'))
+            resolve({ public_id: res.public_id })
+          }
+        )
+        .end(buffer)
+    })
+  } catch (uploadErr) {
+    console.error('Cloudinary upload error:', uploadErr)
+    const message = uploadErr instanceof Error ? uploadErr.message : 'Upload failed'
+    return err(message, 'SERVER_ERROR', 500)
+  }
 
-  return Response.json(result, { status: 201 })
+  return ok(result, 201)
 }
