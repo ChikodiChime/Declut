@@ -1,14 +1,18 @@
 // app/api/auth/send-verification/route.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { generateOtp, hashOtp } from '@/lib/otp'
 import { sendOtpEmail } from '@/lib/email'
 import { getAuthUserFromCookie } from '@/lib/auth'
+import { ok, err } from '@/lib/api-response'
+
+const OTP_TTL_MS = 30 * 60 * 1000
+const OTP_RESEND_COOLDOWN_MS = 2 * 60 * 1000
 
 export async function POST(req: NextRequest) {
   const authUser = await getAuthUserFromCookie(req)
   if (!authUser) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
   const { data: dbUser } = await supabaseAdmin
@@ -18,12 +22,12 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!dbUser) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    return err('User not found', 'NOT_FOUND', 404)
   }
 
   // Already verified — no-op
   if (dbUser.email_verified) {
-    return NextResponse.json({ sent: true })
+    return ok({ sent: true })
   }
 
   // Enforce resend cooldown
@@ -31,16 +35,13 @@ export async function POST(req: NextRequest) {
     const retryAfter = Math.ceil(
       (new Date(dbUser.otp_resend_after).getTime() - Date.now()) / 1000
     )
-    return NextResponse.json(
-      { error: 'Please wait before requesting a new code', retryAfter },
-      { status: 429 }
-    )
+    return err('Please wait before requesting a new code', 'RATE_LIMITED', 429, { retryAfter })
   }
 
   const code = generateOtp()
   const otp_code = await hashOtp(code)
-  const otp_expires_at = new Date(Date.now() + 30 * 60 * 1000).toISOString()
-  const otp_resend_after = new Date(Date.now() + 2 * 60 * 1000).toISOString()
+  const otp_expires_at = new Date(Date.now() + OTP_TTL_MS).toISOString()
+  const otp_resend_after = new Date(Date.now() + OTP_RESEND_COOLDOWN_MS).toISOString()
 
   await supabaseAdmin
     .from('users')
@@ -49,5 +50,5 @@ export async function POST(req: NextRequest) {
 
   await sendOtpEmail(dbUser.email, code)
 
-  return NextResponse.json({ sent: true })
+  return ok({ sent: true })
 }
