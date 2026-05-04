@@ -6,34 +6,52 @@
 }
 
 @theme inline {
-  /* Existing — keep these */
+  /* Base */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Brand colors */
+  /* Brand */
   --color-primary:        #4F46E5;
   --color-primary-hover:  #4338CA;
   --color-accent:         #F59E0B;
   --color-accent-hover:   #D97706;
-  --color-surface:        #F8FAFF;
+
+  /* Surfaces */
+  --color-surface:        #F5F6FA;
   --color-card:           #FFFFFF;
+  --color-sidebar:        #FFFFFF;
+
+  /* Text */
   --color-text:           #0F172A;
   --color-text-muted:     #64748B;
+  --color-text-subtle:    #94A3B8;
+
+  /* Borders */
   --color-border:         #E2E8F0;
+  --color-border-strong:  #CBD5E1;
+
+  /* States */
   --color-error:          #EF4444;
   --color-error-bg:       #FEF2F2;
+  --color-success:        #10B981;
+  --color-success-bg:     #ECFDF5;
 
-  /* Radii — override Tailwind defaults */
-  --radius-sm:  8px;
-  --radius-md:  12px;
-  --radius-lg:  16px;
-  --radius-xl:  24px;
+  /* Radii */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
 
-  /* Shadows (indigo-tinted) */
-  --shadow-card:     0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(79,70,229,0.06);
-  --shadow-elevated: 0 4px 6px rgba(0,0,0,0.07), 0 10px 32px rgba(79,70,229,0.12);
+  /* Shadows */
+  --shadow-sm:       0 1px 2px rgba(0,0,0,0.05);
+  --shadow-card:     0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(79,70,229,0.06);
+  --shadow-elevated: 0 4px 6px rgba(0,0,0,0.05), 0 12px 32px rgba(79,70,229,0.10);
+  --shadow-dropdown: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+
+  /* Layout */
+  --sidebar-width: 280px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,3 +68,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
