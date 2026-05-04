@@ -1,37 +1,45 @@
 import Link from "next/link";
-import { Button } from "@/components/ui";
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-card/90 backdrop-blur-md border-b border-border">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 bg-[#0F0F0F]">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 h-[68px] flex items-center justify-between gap-6">
         {/* Logo */}
         <Link href="/" className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="declut" className="h-7" />
+          <img src="/logo-light.svg" alt="declut" className="h-7" />
         </Link>
 
         {/* Nav links */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/listings"
-            className="text-sm font-medium text-text-muted hover:text-text transition-colors"
+            className="text-sm font-medium text-white/50 hover:text-white transition-colors"
           >
-            Browse listings
+            Browse
           </Link>
-        </nav>
-
-        {/* Auth CTAs */}
-        <div className="flex items-center gap-3">
           <Link
             href="/auth/login"
-            className="hidden sm:block text-sm font-semibold text-text-muted hover:text-text transition-colors"
+            className="text-sm font-medium text-white/50 hover:text-white transition-colors"
           >
             Sign in
           </Link>
-          <Button href="/auth/signup" size="sm">
+        </nav>
+
+        {/* CTA */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/auth/login"
+            className="md:hidden text-sm font-medium text-white/60 hover:text-white transition-colors"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/auth/signup"
+            className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-white text-[#0F0F0F] text-sm font-semibold hover:bg-white/90 transition-colors"
+          >
             Get started
-          </Button>
+          </Link>
         </div>
       </div>
     </header>

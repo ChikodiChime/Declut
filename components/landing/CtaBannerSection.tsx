@@ -1,38 +1,38 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui";
 
 export function CtaBannerSection() {
   return (
-    <section
-      className="relative bg-primary py-28 px-4 overflow-hidden text-center"
-      style={{ clipPath: "polygon(0 6%, 100% 0, 100% 94%, 0 100%)" }}
-    >
-      {/* Decorative circles */}
-      <div
-        className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full bg-white pointer-events-none"
-        style={{ opacity: 0.04, transform: "translate(-30%, -30%)" }}
-      />
-      <div
-        className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-white pointer-events-none"
-        style={{ opacity: 0.04, transform: "translate(30%, 30%)" }}
-      />
+    <section className="bg-[#0F0F0F] py-28 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-end md:justify-between gap-10">
 
-      <div className="relative max-w-2xl mx-auto space-y-4">
-        <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-          Ready to explore?
-        </h2>
-        <p className="text-lg text-white/75">
-          Everything near you, all in one place.
-        </p>
-        <div className="pt-4">
-          <Button
-            href="/listings"
-            size="lg"
-            className="gap-2 border border-white/40 bg-white/10 text-white hover:bg-white/20 focus:ring-white"
-          >
-            Browse all listings <ArrowRight size={18} strokeWidth={2} />
-          </Button>
+        {/* Left: headline */}
+        <div className="space-y-4 max-w-xl">
+          <h2 className="font-display text-5xl md:text-6xl lg:text-7xl text-white leading-[1.0]">
+            Ready to<br />
+            <em className="not-italic text-white/30">explore?</em>
+          </h2>
+          <p className="text-white/40 text-base leading-relaxed">
+            Everything near you — Lagos, Abuja, and beyond.
+          </p>
         </div>
+
+        {/* Right: CTA */}
+        <div className="flex flex-col sm:flex-row gap-3 md:pb-2">
+          <Link
+            href="/listings"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#4F46E5] text-white text-sm font-semibold hover:bg-[#4338CA] transition-colors"
+          >
+            Browse all listings <ArrowRight size={15} strokeWidth={2.5} />
+          </Link>
+          <Link
+            href="/auth/signup"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-white/15 text-white/60 text-sm font-semibold hover:bg-white/5 hover:text-white transition-colors"
+          >
+            Start selling
+          </Link>
+        </div>
+
       </div>
     </section>
   );

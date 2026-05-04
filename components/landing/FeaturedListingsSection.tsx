@@ -15,17 +15,22 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
   const rest = listings.slice(2);
 
   return (
-    <section className="py-16 px-4 bg-surface">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <section className="bg-[#FAF9F6] py-20 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-10">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-success animate-pulse" />
-            <h2 className="text-4xl font-bold text-text">Just listed</h2>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span className="text-xs font-semibold text-[#10B981] tracking-wide uppercase">Live</span>
+            </div>
+            <h2 className="font-display text-5xl md:text-6xl text-[#0F0F0F] leading-tight">
+              Just listed
+            </h2>
           </div>
           <Link
             href="/listings"
-            className="hidden sm:flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+            className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-[#4F46E5] hover:underline shrink-0 pb-1"
           >
             See all <ArrowRight size={14} strokeWidth={2.5} />
           </Link>
@@ -40,14 +45,11 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
 
         {/* Desktop: asymmetric layout */}
         <div className="hidden md:grid md:grid-cols-[3fr_2fr] gap-5">
-          {/* Left: 2 large cards */}
           <div className="flex flex-col gap-5">
             {large.map((listing) => (
               <BrowseCard key={listing.id} listing={listing} />
             ))}
           </div>
-
-          {/* Right: remaining cards */}
           <div className="flex flex-col gap-4">
             {rest.map((listing) => (
               <BrowseCard key={listing.id} listing={listing} />
