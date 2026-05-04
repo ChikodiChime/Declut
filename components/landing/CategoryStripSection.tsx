@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Cpu, Sofa, Shirt, Plug, BookOpen, Baby, Dumbbell, Car, Package } from "lucide-react";
 
+const BG   = "#0B0A09";
+const TEXT = "#F0EEE9";
+
 const CATEGORIES = [
   { label: "Electronics",            slug: "Electronics",            icon: Cpu,      color: "#818CF8" },
   { label: "Furniture & Home",       slug: "Furniture & Home",       icon: Sofa,     color: "#FCD34D" },
@@ -15,14 +18,17 @@ const CATEGORIES = [
 
 export function CategoryStripSection() {
   return (
-    <section className="bg-[#0F0F0F] py-16">
-      <div className="max-w-6xl mx-auto px-4 md:px-8 mb-10">
-        <h2 className="font-display text-5xl md:text-6xl text-white leading-tight">
+    <section className="py-20" style={{ background: BG }}>
+      <div className="max-w-6xl mx-auto px-5 md:px-8 mb-10">
+        <h2
+          className="font-display leading-tight"
+          style={{ fontSize: "clamp(40px,5vw,60px)", color: TEXT }}
+        >
           Shop by category
         </h2>
       </div>
 
-      <div className="overflow-x-auto no-scrollbar px-4 md:px-8">
+      <div className="overflow-x-auto no-scrollbar px-5 md:px-8">
         <div className="flex gap-3 w-max pb-1">
           {CATEGORIES.map((cat) => {
             const Icon = cat.icon;
@@ -30,8 +36,11 @@ export function CategoryStripSection() {
               <Link
                 key={cat.slug}
                 href={`/listings?category=${encodeURIComponent(cat.slug)}`}
-                className="group flex flex-col items-center justify-center gap-3 w-28 h-36 rounded-2xl border border-white/10 hover:border-white/25 hover:-translate-y-1 transition-all duration-200 shrink-0 px-3 text-center"
-                style={{ background: "rgba(255,255,255,0.04)" }}
+                className="group flex flex-col items-center justify-center gap-3 w-28 h-36 rounded-2xl shrink-0 px-3 text-center transition-all duration-200 hover:-translate-y-1"
+                style={{
+                  background: "rgba(240,238,233,0.03)",
+                  border: "1px solid rgba(240,238,233,0.07)",
+                }}
               >
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center"
@@ -39,7 +48,10 @@ export function CategoryStripSection() {
                 >
                   <Icon size={22} strokeWidth={1.75} style={{ color: cat.color }} />
                 </div>
-                <span className="text-xs font-medium text-white/60 group-hover:text-white/90 leading-tight transition-colors">
+                <span
+                  className="text-xs font-medium leading-tight transition-colors group-hover:opacity-90"
+                  style={{ color: "rgba(240,238,233,0.5)" }}
+                >
                   {cat.label}
                 </span>
               </Link>
