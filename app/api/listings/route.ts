@@ -63,6 +63,20 @@ export async function POST(req: Request) {
     return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
+  const { data: seller } = await supabaseAdmin
+    .from('users')
+    .select('stripe_onboarding_complete')
+    .eq('id', authUser.id)
+    .single()
+
+  if (!seller?.stripe_onboarding_complete) {
+    return err(
+      'Connect your Stripe account before listing items',
+      'STRIPE_NOT_CONNECTED',
+      403
+    )
+  }
+
   let body: unknown
   try {
     body = await req.json()
