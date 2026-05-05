@@ -1,0 +1,3 @@
+export const LAGOS_DELIVERY_FEE = 1500
+export const OUTSIDE_LAGOS_DELIVERY_FEE = 3500
+export const PLATFORM_FEE_PERCENT = 0.10
