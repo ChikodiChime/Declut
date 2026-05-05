@@ -2,6 +2,12 @@ import { v2 as cloudinary } from 'cloudinary'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
 
+console.log('Cloudinary env check:', {
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY ? '***' : undefined,
+  api_secret: process.env.CLOUDINARY_API_SECRET ? '***' : undefined,
+})
+
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,

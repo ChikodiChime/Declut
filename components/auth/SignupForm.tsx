@@ -1,9 +1,10 @@
-// components/auth/SignupForm.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { Input, CustomDropdown, Button } from "@/components/ui";
+import { motion } from "framer-motion";
+import { Mail, Lock, User, Building2 } from "lucide-react";
+import { Input, Button } from "@/components/ui";
 
 export interface SignupFormData {
   name: string;
@@ -29,12 +30,7 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
   const [passwordError, setPasswordError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAccountTypeChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, accountType: value as "individual" | "business" }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,45 +43,58 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
     onSubmit?.(formData);
   };
 
-  const accountTypeOptions = [
-    { value: "individual", label: "Individual — Personal account" },
-    { value: "business",   label: "Business — Commercial account" },
-  ];
+  const isBusiness = formData.accountType === "business";
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight text-text">Create your account</h2>
-        <p className="mt-1.5 text-sm text-text-muted">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-text">Create your account</h1>
+        <p className="mt-1 text-sm text-text-muted">
           Already have one?{" "}
-          <Link href="/auth/login" className="font-medium text-primary hover:text-primary-hover">
+          <Link href="/auth/login" className="font-medium text-primary hover:text-primary-hover transition-colors">
             Sign in
           </Link>
         </p>
       </div>
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
-        <CustomDropdown
-          label="Account type"
-          value={formData.accountType}
-          onChange={handleAccountTypeChange}
-          options={accountTypeOptions}
-          placeholder="Select account type"
-        />
+      {/* Account type toggle */}
+      <div className="flex rounded-lg border border-border bg-surface p-1 gap-1">
+        {(["individual", "business"] as const).map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => setFormData((prev) => ({ ...prev, accountType: type }))}
+            className={[
+              "flex-1 flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium transition-all duration-200",
+              formData.accountType === type
+                ? "bg-card text-text shadow-sm"
+                : "text-text-muted hover:text-text",
+            ].join(" ")}
+          >
+            {type === "individual" ? <User size={15} strokeWidth={2} /> : <Building2 size={15} strokeWidth={2} />}
+            {type === "individual" ? "Individual" : "Business"}
+          </button>
+        ))}
+      </div>
 
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <Input
-          id="name"
           name="name"
           type="text"
-          label={formData.accountType === "business" ? "Business name" : "Full name"}
+          label={isBusiness ? "Business name" : "Full name"}
           required
           value={formData.name}
           onChange={handleChange}
-          placeholder={formData.accountType === "business" ? "Acme Ltd." : "John Doe"}
+          placeholder={isBusiness ? "Acme Ltd." : "John Doe"}
+          leadingIcon={isBusiness ? <Building2 size={16} className="text-text-muted" /> : <User size={16} className="text-text-muted" />}
         />
 
         <Input
-          id="email"
           name="email"
           type="email"
           label="Email address"
@@ -94,10 +103,10 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
           value={formData.email}
           onChange={handleChange}
           placeholder="you@example.com"
+          leadingIcon={<Mail size={16} className="text-text-muted" />}
         />
 
         <Input
-          id="password"
           name="password"
           type="password"
           label="Password"
@@ -105,11 +114,11 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
           required
           value={formData.password}
           onChange={handleChange}
-          placeholder="••••••••"
+          placeholder="Create a strong password"
+          leadingIcon={<Lock size={16} className="text-text-muted" />}
         />
 
         <Input
-          id="confirmPassword"
           name="confirmPassword"
           type="password"
           label="Confirm password"
@@ -117,12 +126,19 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
           required
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="••••••••"
+          placeholder="Repeat your password"
+          leadingIcon={<Lock size={16} className="text-text-muted" />}
           error={passwordError || undefined}
         />
 
         {error && (
-          <p className="rounded-md bg-error-bg px-4 py-3 text-sm text-error">{error}</p>
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="rounded-lg bg-error-bg px-4 py-3 text-sm text-error"
+          >
+            {error}
+          </motion.p>
         )}
 
         <Button
@@ -130,11 +146,17 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
           size="md"
           loading={isPending}
           disabled={isPending}
-          className="w-full"
+          className="w-full mt-2"
         >
-          {isPending ? "Creating account…" : "Create Account"}
+          Create Account
         </Button>
+
+        <p className="text-xs text-center text-text-muted">
+          By creating an account you agree to our{" "}
+          <a href="#" className="text-primary hover:underline">Terms</a> and{" "}
+          <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
+        </p>
       </form>
-    </div>
+    </motion.div>
   );
 }

@@ -23,7 +23,7 @@ export default async function Home() {
 
   return (
     <main>
-      <HeroSection />
+      <HeroSection listings={listings} />
       <HowItWorksSection />
       <CategoryStripSection />
       <FeaturedListingsSection listings={listings} />

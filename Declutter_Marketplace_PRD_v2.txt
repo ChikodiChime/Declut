@@ -1,0 +1,198 @@
+DECLUTTER MARKETPLACE
+Product Requirements Document (PRD) — v2
+=========================================
+
+
+1. OVERVIEW
+-----------
+A Nigeria-focused web platform where individuals and businesses can list, discover, and
+purchase second-hand items. The platform provides structured search, payments, delivery,
+and trust systems to replace the chaotic experience of social media-based selling.
+
+
+2. PROBLEM STATEMENT
+--------------------
+- No search or filtering on current platforms
+- Items get buried quickly
+- No structured inventory
+- No secure payments
+- No delivery coordination
+- No trust system (reviews/ratings)
+
+
+3. GOALS
+--------
+Primary Goal:
+  Enable users to quickly find and safely purchase second-hand items.
+
+Secondary Goals:
+  - Help sellers manage inventory
+  - Enable secure transactions
+  - Build trust via ratings and reviews
+  - Support delivery and logistics
+
+
+4. TARGET USERS
+---------------
+Buyers:
+  - Budget-conscious shoppers
+  - Users looking for specific items
+
+Sellers:
+  - Individuals selling personal items
+  - Businesses running declutter pages
+
+
+5. CORE FEATURES (MVP)
+----------------------
+
+Authentication
+  - Sign up / log in
+  - Choose account type: Individual or Business
+
+Seller Onboarding (Multi-Step)
+  - Step 1 — Create account (name, email, password, account type)
+  - Step 2 — Connect payment account via Stripe
+  - Step 3 — Start listing items
+  Note: Sellers must complete all onboarding steps before they can list items.
+        No listing is permitted without a connected payment account.
+
+Item Listings
+  - Create listings with title, description, price, category, condition, and images
+  - Listing type: For Sale / Free / Donate to Charity
+      • For Sale   — item has a price; buyer pays via Stripe
+      • Free        — item is free; no payment; local pickup only; first to claim gets it
+      • Donate      — seller donates item to a charity; no payment from buyer
+  - Add item area (e.g., Ajah, Lagos)
+  - Mark items as available or sold
+
+Image Handling
+  - All listing images uploaded and served via Cloudinary
+  - Cloudinary handles resizing, WebP conversion, and CDN delivery
+  - SDK: next-cloudinary (CldUploadWidget for uploads, CldImage for display)
+  - Store only the Cloudinary public_id in the database
+
+Cart
+  - Buyers can add items to a cart before checkout
+  - Cart supports multiple items; each item routes payment to the respective seller via Stripe Connect
+  - For MVP simplicity, each item in the cart is processed as a separate payment behind the scenes
+  - Free and Donate listings cannot be added to cart — they follow a separate claim flow
+
+Search & Discovery
+  - Browse all items
+  - Search by keyword
+  - Filter by category, price, condition, location, and listing type (For Sale / Free / Donate)
+
+Item Detail Page
+  - Display images, description, price (or "Free" / "Donate" badge)
+  - Show seller info and rating
+  - Show delivery and pickup options with fees displayed before checkout
+
+Payments
+  - Applies to For Sale listings only
+  - Users pay on platform
+  - Funds routed to sellers via Stripe Connect
+  - Platform takes a commission
+  - Flat delivery rate applied at checkout (two tiers: Lagos and outside Lagos)
+  - Buyer sees full total — item price + delivery fee — before confirming payment
+
+Delivery & Pickup
+  - Delivery option with a flat fee structure (Lagos rate vs. outside Lagos rate)
+  - Pickup option with item area shown publicly
+  - Full pickup address revealed only after payment is confirmed (or claim is accepted for Free items)
+
+Orders
+  Order statuses follow this lifecycle:
+    pending → paid → shipped → delivered → completed
+  - Cancelled status also available (buyer-initiated only — see Cancellation Policy)
+  Note: "delivered" status is set by the seller; "completed" is triggered when the buyer
+        confirms receipt — this also prompts the review flow.
+
+Cancellation Policy
+  - Only buyers can cancel an order
+  - Sellers cannot cancel orders
+  - A buyer may request a cancellation and refund if the seller does not respond
+    within 12 hours of a confirmed order
+  - The 12-hour window starts from the moment payment is confirmed
+  - After 12 hours of no seller response, the system automatically cancels the order
+    and initiates a refund via Stripe
+
+Reviews & Ratings
+  - Buyers are prompted to rate sellers after confirming receipt of their order
+    (triggers "completed" status)
+  - Ratings and reviews are displayed on seller profiles
+  - A seller cannot mark an order as "delivered" to game the review system —
+    only buyers can trigger the "completed" status
+
+
+6. USER FLOWS
+-------------
+
+Buyer Flow (For Sale):
+  1. Browse or search items
+  2. View item details (price, seller info, delivery fee shown)
+  3. Add item(s) to cart
+  4. Select delivery or pickup at checkout
+  5. Review order total (item price + delivery fee) and confirm payment
+  6. Receive order confirmation; pickup address revealed if pickup was selected
+  7. Track order status
+  8. Confirm receipt (triggers "completed" status)
+  9. Leave review for seller
+
+Buyer Flow (Free item):
+  1. Browse or search items (filter by Free)
+  2. View item details
+  3. Tap "Claim This Item"
+  4. Seller is notified and can accept or ignore
+  5. On acceptance, pickup address is revealed to buyer
+  6. Buyer collects item
+
+Seller Flow:
+  1. Sign up and complete multi-step onboarding (account → Stripe → listing)
+  2. List items with type (For Sale / Free / Donate), details, images, condition, and location
+  3. Receive order/claim notifications
+  4. Fulfil order via delivery or pickup
+  5. Order marked as "shipped" or ready for pickup
+  6. Buyer confirms receipt
+  7. Funds released to seller via Stripe Connect (For Sale only)
+
+
+7. SUCCESS METRICS
+------------------
+- Number of listings
+- Conversion rate
+- Completed orders
+- Average seller rating
+- Repeat buyers
+
+
+8. RISKS
+--------
+- Logistics complexity
+- Trust issues between buyers and sellers
+
+
+9. OUT OF SCOPE
+---------------
+- Real-time chat
+- Advanced AI recommendations
+- Multi-staff accounts
+- Bulk CSV listing
+- Barcode scan / UPC lookup
+- Estate sale mode
+- Donation tax receipt generation
+
+
+10. FUTURE ENHANCEMENTS
+-----------------------
+- Saved searches and alerts
+- In-app messaging
+- Recommendations
+- Seller dashboards
+- Dispute resolution
+- Donation tax receipt (PDF summary with FMV and charity EIN)
+
+
+11. PRODUCT PHILOSOPHY
+----------------------
+Stop scrolling. Start finding.

@@ -15,7 +15,7 @@ export async function GET() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Get my listings error:', error)
+    console.error('Fetch my listings error:', error)
     return err('Failed to fetch listings', 'SERVER_ERROR', 500)
   }
 

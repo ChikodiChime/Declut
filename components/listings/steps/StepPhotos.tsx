@@ -2,10 +2,13 @@
 
 import { useState, useRef } from 'react'
 import { CldImage } from 'next-cloudinary'
+import { ImagePlus, X } from 'lucide-react'
 import { Button } from '@/components/ui'
 import { ImageCropper } from '../ImageCropper'
 import { useUploadImage } from '@/lib/hooks/useListings'
 import { toast } from 'sonner'
+
+const MAX_PHOTOS = 5
 
 interface StepPhotosProps {
   defaultImages?: string[]
@@ -16,31 +19,41 @@ interface StepPhotosProps {
 
 export function StepPhotos({ defaultImages = [], onNext, onBack, isPending }: StepPhotosProps) {
   const [images, setImages] = useState<string[]>(defaultImages)
-  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [cropQueue, setCropQueue] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { mutateAsync: uploadImage, isPending: isUploading } = useUploadImage()
 
+  const currentCrop = cropQueue[0] ?? null
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const url = URL.createObjectURL(file)
-    setCropSrc(url)
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+
+    const remaining = MAX_PHOTOS - images.length
+    const toProcess = files.slice(0, remaining)
+
+    const urls = toProcess.map((f) => URL.createObjectURL(f))
+    setCropQueue((prev) => [...prev, ...urls])
     e.target.value = ''
   }
 
   async function handleCropDone(blob: Blob) {
-    setCropSrc(null)
+    const doneSrc = cropQueue[0]
+    setCropQueue((prev) => prev.slice(1))
+    if (doneSrc) URL.revokeObjectURL(doneSrc)
+
     try {
       const { public_id } = await uploadImage(blob)
       setImages((prev) => [...prev, public_id])
     } catch {
-      // error toast is handled inside useUploadImage onError
+      // error toast handled inside useUploadImage onError
     }
   }
 
   function handleCancelCrop() {
-    if (cropSrc) URL.revokeObjectURL(cropSrc)
-    setCropSrc(null)
+    const doneSrc = cropQueue[0]
+    if (doneSrc) URL.revokeObjectURL(doneSrc)
+    setCropQueue((prev) => prev.slice(1))
   }
 
   function handleRemove(index: number) {
@@ -55,11 +68,15 @@ export function StepPhotos({ defaultImages = [], onNext, onBack, isPending }: St
     onNext(images)
   }
 
+  const canAddMore = images.length < MAX_PHOTOS && cropQueue.length === 0
+
   return (
     <div className="space-y-5">
       <div>
         <h2 className="text-xl font-bold text-text">Photos</h2>
-        <p className="text-sm text-text-muted">Add 1–5 photos. First photo is the cover image.</p>
+        <p className="text-sm text-text-muted">
+          Add up to {MAX_PHOTOS} photos. First photo is the cover image.
+        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
@@ -75,26 +92,32 @@ export function StepPhotos({ defaultImages = [], onNext, onBack, isPending }: St
             <button
               type="button"
               onClick={() => handleRemove(i)}
-              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center hover:bg-black/80"
+              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors"
+              aria-label="Remove photo"
             >
-              ×
+              <X size={12} strokeWidth={2.5} />
             </button>
+            {i === 0 && (
+              <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-black/60 text-white">
+                Cover
+              </span>
+            )}
           </div>
         ))}
 
-        {images.length < 5 && (
+        {canAddMore && (
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="aspect-[4/3] rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-1 text-text-muted hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+            className="aspect-[4/3] rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center gap-1.5 text-text-muted hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
           >
             {isUploading ? (
               <span className="text-xs">Uploading…</span>
             ) : (
               <>
-                <span className="text-2xl leading-none">+</span>
-                <span className="text-xs">Add photo</span>
+                <ImagePlus size={22} strokeWidth={1.5} />
+                <span className="text-xs font-medium">Add photos</span>
               </>
             )}
           </button>
@@ -105,13 +128,15 @@ export function StepPhotos({ defaultImages = [], onNext, onBack, isPending }: St
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        multiple
         className="hidden"
         onChange={handleFileChange}
       />
 
-      {cropSrc && (
+      {currentCrop && (
         <ImageCropper
-          imageSrc={cropSrc}
+          imageSrc={currentCrop}
+          queueRemaining={cropQueue.length - 1}
           onCropDone={handleCropDone}
           onCancel={handleCancelCrop}
         />
@@ -131,7 +156,7 @@ export function StepPhotos({ defaultImages = [], onNext, onBack, isPending }: St
           className="flex-1"
           onClick={handleSubmit}
           loading={isPending}
-          disabled={isPending || isUploading}
+          disabled={isPending || isUploading || cropQueue.length > 0}
         >
           {isPending ? 'Publishing…' : 'Publish Listing'}
         </Button>

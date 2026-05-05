@@ -10,6 +10,25 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // UUID pattern — all listing IDs are UUIDs
+  const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+  // Public browse: GET /api/listings or GET /api/listings/<uuid>
+  if (request.method === 'GET' && pathname === '/api/listings') {
+    return NextResponse.next()
+  }
+  if (request.method === 'GET' && new RegExp(`^/api/listings/${UUID}$`).test(pathname)) {
+    return NextResponse.next()
+  }
+
+  // Public pages: /listings and /listings/<uuid> (named routes like /mine stay protected)
+  if (pathname === '/listings') {
+    return NextResponse.next()
+  }
+  if (new RegExp(`^/listings/${UUID}$`).test(pathname)) {
+    return NextResponse.next()
+  }
+
   const token = request.cookies.get('token')?.value
 
   if (!token) {

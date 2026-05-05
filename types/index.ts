@@ -81,6 +81,16 @@ export interface ListingFormData {
   images: string[]       // Cloudinary public_ids
 }
 
+// Listing detail response includes joined seller info
+export interface ListingWithSeller extends Listing {
+  seller: {
+    id: string
+    name: string | null
+    account_type: AccountType
+    avatar_url: string | null
+  } | null
+}
+
 // What we embed in the JWT payload
 export interface JwtPayload {
   sub: string        // user UUID

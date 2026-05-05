@@ -1,14 +1,14 @@
-// components/auth/LoginForm.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import { Mail, Lock } from "lucide-react";
 import { Input, Button } from "@/components/ui";
 
 export interface LoginFormData {
   email: string;
   password: string;
-  rememberMe: boolean;
 }
 
 interface LoginFormProps {
@@ -18,15 +18,10 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onSubmit, isPending, error }: LoginFormProps) {
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+  const [formData, setFormData] = useState<LoginFormData>({ email: "", password: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,20 +30,24 @@ export default function LoginForm({ onSubmit, isPending, error }: LoginFormProps
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold tracking-tight text-text">Sign in</h2>
-        <p className="mt-1.5 text-sm text-text-muted">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-text">Welcome back</h1>
+        <p className="mt-1 text-sm text-text-muted">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="font-medium text-primary hover:text-primary-hover">
+          <Link href="/auth/signup" className="font-medium text-primary hover:text-primary-hover transition-colors">
             Create one
           </Link>
         </p>
       </div>
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <Input
-          id="email"
           name="email"
           type="email"
           label="Email address"
@@ -57,10 +56,10 @@ export default function LoginForm({ onSubmit, isPending, error }: LoginFormProps
           value={formData.email}
           onChange={handleChange}
           placeholder="you@example.com"
+          leadingIcon={<Mail size={16} className="text-text-muted" />}
         />
 
         <Input
-          id="password"
           name="password"
           type="password"
           label="Password"
@@ -68,28 +67,24 @@ export default function LoginForm({ onSubmit, isPending, error }: LoginFormProps
           required
           value={formData.password}
           onChange={handleChange}
-          placeholder="••••••••"
+          placeholder="Enter your password"
+          leadingIcon={<Lock size={16} className="text-text-muted" />}
         />
 
-        <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              id="remember-me"
-              name="rememberMe"
-              type="checkbox"
-              checked={formData.rememberMe}
-              onChange={handleChange}
-              className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-            />
-            <span className="text-sm text-text-muted">Remember me</span>
-          </label>
-          <a href="#" className="text-sm font-medium text-primary hover:text-primary-hover">
+        <div className="flex items-center justify-end">
+          <button type="button" disabled className="text-sm font-medium text-text-muted cursor-not-allowed">
             Forgot password?
-          </a>
+          </button>
         </div>
 
         {error && (
-          <p className="rounded-md bg-error-bg px-4 py-3 text-sm text-error">{error}</p>
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="rounded-lg bg-error-bg px-4 py-3 text-sm text-error"
+          >
+            {error}
+          </motion.p>
         )}
 
         <Button
@@ -97,11 +92,11 @@ export default function LoginForm({ onSubmit, isPending, error }: LoginFormProps
           size="md"
           loading={isPending}
           disabled={isPending}
-          className="w-full"
+          className="w-full mt-2"
         >
-          {isPending ? "Signing in…" : "Sign In"}
+          Sign In
         </Button>
       </form>
-    </div>
+    </motion.div>
   );
 }

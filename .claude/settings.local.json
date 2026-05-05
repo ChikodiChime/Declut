@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:developer.ebay.com)",
+      "Read(//c/Users/CHIKODI/.claude/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\(''''skills'''', d.get\\(''''customSkills'''', ''''not found''''\\)\\), indent=2\\)\\)\")",
+      "Skill(update-config)",
+      "Bash(find /c/Users/CHIKODI/Desktop/declut -not -path */node_modules/* -not -path */.git/* -not -path */.next/* -type f)",
+      "Bash(python -c \"import pdfplumber; pdf = pdfplumber.open\\(''C:/Users/CHIKODI/Desktop/declut/Declutter_Marketplace_PRD_v2.pdf''\\); [print\\(p.extract_text\\(\\)\\) for p in pdf.pages]; pdf.close\\(\\)\")",
+      "Bash(python -c \"import PyPDF2; reader = PyPDF2.PdfReader\\(''C:/Users/CHIKODI/Desktop/declut/Declutter_Marketplace_PRD_v2.pdf''\\); [print\\(page.extract_text\\(\\)\\) for page in reader.pages]\")",
+      "WebFetch(domain:www.voolist.com)",
+      "Bash(node -e \":*)",
+      "Bash(mkdir -p C:/Users/CHIKODI/Desktop/declut/.claude/skills/declutter)",
+      "Bash(mv C:/Users/CHIKODI/.claude/skills/declutter/SKILL.md C:/Users/CHIKODI/Desktop/declut/.claude/skills/declutter/SKILL.md)",
+      "Bash(rmdir C:/Users/CHIKODI/.claude/skills/declutter)",
+      "Bash(JWT_SECRET=testsecretfortestingonly1234567890abcdef npx vitest run)",
+      "Bash(npm install:*)",
+      "Bash(find \"C:\\\\Users\\\\CHIKODI\\\\Desktop\\\\declut\\\\lib\"\" -type f -name \"*.ts\" -o -name \"*.tsx \")",
+      "Bash(npm run:*)",
+      "Bash(find /c/Users/CHIKODI/Desktop/declut/types -type f -name *.ts)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm list:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git:*)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
+    ],
+    "defaultMode": "bypassPermissions"
+  }
+}

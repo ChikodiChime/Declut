@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf8;
+  --foreground: #16130f;
 }
 
 @theme inline {
@@ -14,29 +14,29 @@
   --font-display: var(--font-serif-display);
 
   /* Brand */
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-accent: #f59e0b;
-  --color-accent-hover: #d97706;
+  --color-primary:        #4f46e5;
+  --color-primary-hover:  #4338ca;
+  --color-accent:         #f59e0b;
+  --color-accent-hover:   #d97706;
 
   /* Surfaces */
-  --color-surface: #faf9f6;
-  --color-card: #ffffff;
-  --color-sidebar: #ffffff;
+  --color-surface:  #fafaf8;
+  --color-card:     #ffffff;
+  --color-sidebar:  #ffffff;
 
   /* Text */
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-text-subtle: #94a3b8;
+  --color-text:         #16130f;
+  --color-text-muted:   #78726c;
+  --color-text-subtle:  #a8a09a;
 
   /* Borders */
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-border:        #e8e4dc;
+  --color-border-strong: #d4cfc6;
 
   /* States */
-  --color-error: #ef4444;
-  --color-error-bg: #fef2f2;
-  --color-success: #10b981;
+  --color-error:      #ef4444;
+  --color-error-bg:   #fef2f2;
+  --color-success:    #10b981;
   --color-success-bg: #ecfdf5;
 
   /* Radii */
@@ -46,23 +46,13 @@
   --radius-xl: 20px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-card:
-    0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(79, 70, 229, 0.06);
-  --shadow-elevated:
-    0 4px 6px rgba(0, 0, 0, 0.05), 0 12px 32px rgba(79, 70, 229, 0.1);
-  --shadow-dropdown:
-    0 2px 8px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --shadow-sm:       0 1px 2px rgba(0,0,0,0.04);
+  --shadow-card:     0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(79,70,229,0.05);
+  --shadow-elevated: 0 4px 6px rgba(0,0,0,0.04), 0 12px 32px rgba(79,70,229,0.08);
+  --shadow-dropdown: 0 2px 8px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.05);
 
   /* Layout */
   --sidebar-width: 220px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -83,20 +73,17 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 .font-display {
   font-family: var(--font-serif-display), Georgia, serif;
 }
 
+/* Nav link hover */
 .nav-link {
-  color: rgba(240, 238, 233, 0.42);
+  color: #78726c;
   transition: color 0.15s ease;
 }
-.nav-link:hover { color: #F0EEE9; }
+.nav-link:hover { color: #16130f; }
+

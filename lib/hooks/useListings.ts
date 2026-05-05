@@ -78,9 +78,9 @@ export function useCreateListing() {
   return useMutation({
     mutationFn: (data: ListingFormData) => apiRequest('POST', '/api/listings', data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['listings', 'mine'] })
+      queryClient.invalidateQueries({ queryKey: ['listings', 'dashboard'] })
       toast.success('Listing published!')
-      router.push('/listings/mine')
+      router.push('/dashboard/listings')
     },
     onError: (err: Error) => toast.error(err.message),
   })
