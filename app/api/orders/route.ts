@@ -2,6 +2,7 @@ import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ok, err } from '@/lib/api-response'
 import { stripe } from '@/lib/stripe'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 import {
   validateCartItems,
   groupBySeller,
@@ -111,6 +112,20 @@ export async function POST(req: Request) {
     .from('orders')
     .update({ stripe_payment_intent_id: paymentIntent.id })
     .in('id', orders.map((o) => o.id))
+
+  const buyerEmail = buyer_info?.email ?? authUser?.email
+  const buyerName  = buyer_info?.name  ?? 'Customer'
+
+  if (buyerEmail) {
+    sendOrderConfirmationEmail({
+      to: buyerEmail,
+      buyerName,
+      orderIds: orders.map((o) => o.id),
+      groups,
+      grandTotal,
+      deliveryType: delivery_type,
+    }).catch((e) => console.error('Order confirmation email failed:', e))
+  }
 
   return ok({
     client_secret: paymentIntent.client_secret,
