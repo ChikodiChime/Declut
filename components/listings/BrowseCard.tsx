@@ -1,22 +1,53 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CldImage } from "next-cloudinary";
-import { Package, MapPin } from "lucide-react";
+import { Package, MapPin, ShoppingCart, Gift } from "lucide-react";
+import { useCart } from "@/lib/hooks/useCart";
+import { addToSessionCart } from "@/lib/session-cart";
 import type { Listing } from "@/types";
 
-const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; borderHover: string }> = {
-  for_sale: { label: "For Sale", color: "#4f46e5", bg: "rgba(79,70,229,0.1)",  border: "#ddd8fc", borderHover: "#a5b4fc" },
-  free:     { label: "Free",     color: "#10b981", bg: "rgba(16,185,129,0.1)", border: "#c6f0e2", borderHover: "#6ee7b7" },
-  donate:   { label: "Donate",   color: "#f59e0b", bg: "rgba(245,158,11,0.1)", border: "#fde8a0", borderHover: "#fbbf24" },
+const TYPE_CONFIG: Record<
+  string,
+  {
+    label: string;
+    color: string;
+    bg: string;
+    border: string;
+    borderHover: string;
+  }
+> = {
+  for_sale: {
+    label: "For Sale",
+    color: "#4f46e5",
+    bg: "rgba(79,70,229,0.1)",
+    border: "#ddd8fc",
+    borderHover: "#a5b4fc",
+  },
+  free: {
+    label: "Free",
+    color: "#10b981",
+    bg: "rgba(16,185,129,0.1)",
+    border: "#c6f0e2",
+    borderHover: "#6ee7b7",
+  },
+  donate: {
+    label: "Donate",
+    color: "#f59e0b",
+    bg: "rgba(245,158,11,0.1)",
+    border: "#fde8a0",
+    borderHover: "#fbbf24",
+  },
 };
 
 const CONDITION_LABELS: Record<string, string> = {
-  new:      "New",
+  new: "New",
   like_new: "Like New",
-  good:     "Good",
-  fair:     "Fair",
-  poor:     "Poor",
+  good: "Good",
+  fair: "Fair",
+  poor: "Poor",
 };
 
 interface BrowseCardProps {
@@ -24,7 +55,44 @@ interface BrowseCardProps {
 }
 
 export function BrowseCard({ listing }: BrowseCardProps) {
+  const router = useRouter();
+  const { isInCart, addToCartOptimistic } = useCart();
+  const [addingToCart, setAddingToCart] = useState(false);
   const type = TYPE_CONFIG[listing.listing_type] ?? TYPE_CONFIG.for_sale;
+  const inCart = isInCart(listing.id);
+
+  async function handleAddToCart(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (inCart || addingToCart) return;
+
+    addToCartOptimistic(listing.id);
+    setAddingToCart(true);
+
+    const res = await fetch("/api/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listing_id: listing.id }),
+    });
+    setAddingToCart(false);
+
+    if (res.status === 401) {
+      addToSessionCart(listing.id);
+      window.dispatchEvent(new Event("cart-updated"));
+      return;
+    }
+
+    if (res.ok) {
+      window.dispatchEvent(new Event("cart-updated"));
+    }
+  }
+
+  async function handleClaim(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(`/listings/${listing.id}`);
+  }
 
   return (
     <Link
@@ -36,11 +104,13 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLElement).style.borderColor = type.borderHover;
-        (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 28px rgba(22,19,15,0.10), 0 0 0 1px ${type.borderHover}`;
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          `0 8px 28px rgba(22,19,15,0.10), 0 0 0 1px ${type.borderHover}`;
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLElement).style.borderColor = type.border;
-        (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(22,19,15,0.05)";
+        (e.currentTarget as HTMLElement).style.boxShadow =
+          "0 2px 8px rgba(22,19,15,0.05)";
       }}
     >
       {/* Type accent — top edge */}
@@ -53,7 +123,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       />
 
       {/* Image */}
-      <div className="relative aspect-4/3 overflow-hidden" style={{ background: type.bg }}>
+      <div
+        className="relative aspect-4/3 overflow-hidden"
+        style={{ background: type.bg }}
+      >
         {listing.images[0] ? (
           <CldImage
             src={listing.images[0]}
@@ -92,10 +165,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
               ₦{listing.price.toLocaleString()}
             </span>
           ) : (
-            <span
-              className="text-sm font-bold"
-              style={{ color: type.color }}
-            >
+            <span className="text-sm font-bold" style={{ color: type.color }}>
               {type.label}
             </span>
           )}
@@ -109,6 +179,35 @@ export function BrowseCard({ listing }: BrowseCardProps) {
           <MapPin size={11} strokeWidth={2} />
           <span className="truncate text-[11px]">{listing.area}</span>
         </div>
+
+        {listing.listing_type === "for_sale" &&
+          listing.status === "available" && (
+            <button
+              onClick={handleAddToCart}
+              disabled={inCart}
+              className="mt-1 flex items-center justify-center rounded-lg p-2 transition-all duration-200 disabled:cursor-not-allowed"
+              style={{
+                background: inCart ? "#f5f1eb" : "#4f46e5",
+                color: inCart ? "#78726c" : "white",
+              }}
+              title={inCart ? "In Cart" : "Add to Cart"}
+            >
+              <ShoppingCart size={14} strokeWidth={2} />
+            </button>
+          )}
+        {listing.listing_type === "free" && listing.status === "available" && (
+          <button
+            onClick={handleClaim}
+            className="mt-1 flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-semibold transition-all duration-200"
+            style={{
+              background: "#10b981",
+              color: "white",
+            }}
+          >
+            <Gift size={13} strokeWidth={2} />
+            Claim
+          </button>
+        )}
       </div>
     </Link>
   );

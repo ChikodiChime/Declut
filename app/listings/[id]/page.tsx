@@ -15,6 +15,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useListing } from "@/lib/hooks/useListings";
+import { useCart } from "@/lib/hooks/useCart";
+import { addToSessionCart } from "@/lib/session-cart";
 import { Button } from "@/components/ui";
 import type { ListingWithSeller } from "@/types";
 
@@ -129,6 +131,33 @@ export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { data, isLoading, error } = useListing(id);
+  const { isInCart, addToCartOptimistic } = useCart();
+  const [addingToCart, setAddingToCart] = useState(false);
+  const inCart = isInCart(id);
+
+  async function handleAddToCart() {
+    if (inCart || addingToCart) return;
+
+    addToCartOptimistic(id);
+    setAddingToCart(true);
+
+    const res = await fetch("/api/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listing_id: id }),
+    });
+    setAddingToCart(false);
+
+    if (res.status === 401) {
+      addToSessionCart(id);
+      window.dispatchEvent(new Event("cart-updated"));
+      return;
+    }
+
+    if (res.ok) {
+      window.dispatchEvent(new Event("cart-updated"));
+    }
+  }
 
   if (isLoading) {
     return (
@@ -158,7 +187,9 @@ export default function ListingDetailPage() {
             It may have been removed or is no longer available.
           </p>
           <Link href="/listings">
-            <Button variant="outline" size="sm">Browse listings</Button>
+            <Button variant="outline" size="sm">
+              Browse listings
+            </Button>
           </Link>
         </div>
       </main>
@@ -238,9 +269,17 @@ export default function ListingDetailPage() {
               <div className="bg-card rounded-xl border border-border p-4 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   {seller.account_type === "business" ? (
-                    <Building2 size={18} className="text-primary" strokeWidth={1.75} />
+                    <Building2
+                      size={18}
+                      className="text-primary"
+                      strokeWidth={1.75}
+                    />
                   ) : (
-                    <User size={18} className="text-primary" strokeWidth={1.75} />
+                    <User
+                      size={18}
+                      className="text-primary"
+                      strokeWidth={1.75}
+                    />
                   )}
                 </div>
                 <div className="min-w-0">
@@ -254,10 +293,28 @@ export default function ListingDetailPage() {
               </div>
             )}
 
-            {/* CTA placeholder */}
-            <Button className="w-full" size="lg" disabled>
-              Add to Cart — Coming Soon
-            </Button>
+            {/* CTA */}
+            {listing.listing_type === "for_sale" &&
+              listing.status === "available" && (
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={handleAddToCart}
+                  disabled={inCart}
+                >
+                  {inCart ? "In Cart" : "Add to Cart"}
+                </Button>
+              )}
+            {listing.status === "sold" && (
+              <Button className="w-full" size="lg" disabled>
+                Sold
+              </Button>
+            )}
+            {listing.listing_type !== "for_sale" && (
+              <Button className="w-full" size="lg" disabled>
+                Contact Seller — Coming Soon
+              </Button>
+            )}
           </div>
         </div>
       </div>
