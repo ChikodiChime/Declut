@@ -1,3 +1,31 @@
+# BrowseCard Restyle Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Restyle BrowseCard with rounded-2xl, no top accent line, display font price, full-width labelled CTA always pinned to the bottom.
+
+**Architecture:** Single file change — `components/listings/BrowseCard.tsx`. All cart logic, color config, and hover behaviour are preserved. Layout changes: remove accent bar, use flex-1 spacer to pin CTA, upgrade CTA to full-width with text label.
+
+**Tech Stack:** React 19, Next.js 16, Tailwind CSS 4, next-cloudinary, lucide-react
+
+---
+
+## File Map
+
+| File | Action |
+|---|---|
+| `components/listings/BrowseCard.tsx` | Restyle — no logic changes |
+
+---
+
+## Task 1: Restyle BrowseCard
+
+**Files:**
+- Modify: `components/listings/BrowseCard.tsx`
+
+- [ ] **Step 1: Replace the file**
+
+```tsx
 "use client";
 
 import { useState } from "react";
@@ -189,3 +217,31 @@ export function BrowseCard({ listing }: BrowseCardProps) {
     </Link>
   );
 }
+```
+
+- [ ] **Step 2: Verify lint passes**
+
+```bash
+npm run lint 2>&1 | grep -E "BrowseCard|listings/BrowseCard"
+```
+
+Expected: no output (no errors in this file).
+
+- [ ] **Step 3: Visual check**
+
+Run `npm run dev` and visit `/listings`. Confirm:
+- Cards are `rounded-2xl` (more rounded than before)
+- No top accent line
+- Type badge present top-left of each image
+- Location (pin icon) and condition pill on the same row
+- Price in serif display font, type-colored
+- "Add to Cart" / "Claim" button full-width with icon + label at bottom of every card
+- Cards in a row share the same button alignment regardless of title length
+- Hovering a card: border intensifies to hover color, soft shadow appears, no lift
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add components/listings/BrowseCard.tsx
+git commit -m "feat: restyle BrowseCard with display font, pinned CTA, no accent line"
+```
