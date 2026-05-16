@@ -13,25 +13,20 @@ export default function CheckoutSuccessPage() {
           <h1 className="font-display text-3xl font-bold text-text mb-2">
             Payment successful
           </h1>
-          <p className="text-text-muted text-sm max-w-sm mb-10">
-            Your order has been placed. The seller will respond within 12 hours.
-            You&apos;ll find your orders in your dashboard.
+          <p className="text-text-muted text-sm max-w-sm mb-2">
+            Your order has been placed. The seller will be in touch within 12 hours
+            to arrange delivery or pickup.
+          </p>
+          <p className="text-text-subtle text-xs mb-10">
+            A confirmation has been sent to your email.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Link
-              href="/dashboard"
-              className="rounded-xl bg-foreground text-white px-6 py-2.5 text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              View my orders
-            </Link>
-            <Link
-              href="/listings"
-              className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
-            >
-              Continue browsing
-            </Link>
-          </div>
+          <Link
+            href="/listings"
+            className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
+          >
+            Continue browsing
+          </Link>
         </div>
       </div>
     </main>
