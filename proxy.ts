@@ -22,7 +22,8 @@ export async function proxy(request: NextRequest) {
   }
 
   // Public cart API endpoints for anonymous buyers
-  if (pathname.startsWith('/api/cart') || pathname.startsWith('/api/orders')) {
+  // Only the base /api/orders POST (buyer checkout) is public — sub-routes need seller auth
+  if (pathname.startsWith('/api/cart') || pathname === '/api/orders') {
     return NextResponse.next()
   }
 
