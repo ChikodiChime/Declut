@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { CartIcon } from "./CartIcon";
 
 const HIDDEN_PREFIXES = ["/dashboard", "/auth"];
 const SCROLL_THRESHOLD = 24;
@@ -67,6 +68,7 @@ export function NavbarWrapper() {
           >
             Browse
           </Link>
+          <CartIcon transparent={transparent} />
           <Link
             href="/auth/login"
             className="text-sm font-medium transition-colors duration-300 hover:opacity-70"
@@ -80,6 +82,9 @@ export function NavbarWrapper() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
+          <div className="md:hidden">
+            <CartIcon transparent={transparent} />
+          </div>
           <Link
             href="/auth/login"
             className="md:hidden text-sm font-medium transition-colors duration-300 hover:opacity-70"
