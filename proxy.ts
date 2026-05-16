@@ -35,7 +35,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Public cart and checkout pages for anonymous buyers
-  if (pathname === '/cart' || pathname === '/checkout') {
+  if (pathname === '/cart' || pathname.startsWith('/checkout')) {
     return NextResponse.next()
   }
 
