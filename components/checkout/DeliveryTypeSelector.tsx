@@ -1,43 +1,57 @@
-import { LAGOS_DELIVERY_FEE, OUTSIDE_LAGOS_DELIVERY_FEE } from '@/lib/constants'
+import { Truck, MapPin } from "lucide-react";
+import { LAGOS_DELIVERY_FEE, OUTSIDE_LAGOS_DELIVERY_FEE } from "@/lib/constants";
 
 type Props = {
-  value: 'delivery' | 'pickup'
-  onChange: (value: 'delivery' | 'pickup') => void
-}
+  value: "delivery" | "pickup";
+  onChange: (value: "delivery" | "pickup") => void;
+};
 
 export default function DeliveryTypeSelector({ value, onChange }: Props) {
   return (
     <div>
-      <p className="text-sm font-medium mb-2">Delivery option</p>
-      <div className="flex flex-col gap-2">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="radio"
-            name="delivery_type"
-            value="delivery"
-            checked={value === 'delivery'}
-            onChange={() => onChange('delivery')}
-            className="accent-black"
+      <p className="text-sm font-medium text-text-muted mb-3">Delivery option</p>
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => onChange("delivery")}
+          className={[
+            "rounded-xl border-2 p-4 text-left transition-all duration-150",
+            value === "delivery"
+              ? "border-primary bg-primary/[0.04]"
+              : "border-border bg-card hover:border-border-strong",
+          ].join(" ")}
+        >
+          <Truck
+            size={18}
+            className={value === "delivery" ? "text-primary" : "text-text-muted"}
           />
-          <span className="text-sm">
-            Delivery{' '}
-            <span className="text-gray-500">
-              (₦{LAGOS_DELIVERY_FEE.toLocaleString()} Lagos / ₦{OUTSIDE_LAGOS_DELIVERY_FEE.toLocaleString()} outside Lagos)
-            </span>
-          </span>
-        </label>
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="radio"
-            name="delivery_type"
-            value="pickup"
-            checked={value === 'pickup'}
-            onChange={() => onChange('pickup')}
-            className="accent-black"
+          <p className="font-semibold text-sm mt-2 text-text">Delivery</p>
+          <p className="text-xs text-text-muted mt-0.5">
+            ₦{LAGOS_DELIVERY_FEE.toLocaleString()} Lagos /{" "}
+            ₦{OUTSIDE_LAGOS_DELIVERY_FEE.toLocaleString()} outside
+          </p>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onChange("pickup")}
+          className={[
+            "rounded-xl border-2 p-4 text-left transition-all duration-150",
+            value === "pickup"
+              ? "border-primary bg-primary/[0.04]"
+              : "border-border bg-card hover:border-border-strong",
+          ].join(" ")}
+        >
+          <MapPin
+            size={18}
+            className={value === "pickup" ? "text-primary" : "text-text-muted"}
           />
-          <span className="text-sm">Pickup <span className="text-gray-500">(free — coordinate with seller)</span></span>
-        </label>
+          <p className="font-semibold text-sm mt-2 text-text">Pickup</p>
+          <p className="text-xs text-text-muted mt-0.5">
+            Free — coordinate with seller
+          </p>
+        </button>
       </div>
     </div>
-  )
+  );
 }
