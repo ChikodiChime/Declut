@@ -1,7 +1,16 @@
+"use client";
+
+import { useEffect } from 'react'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
+import { clearSessionCart } from '@/lib/session-cart'
 
 export default function CheckoutSuccessPage() {
+  useEffect(() => {
+    clearSessionCart()
+    window.dispatchEvent(new Event('cart-updated'))
+  }, [])
+
   return (
     <main className="min-h-screen bg-surface">
       <div className="max-w-5xl mx-auto px-6 py-16">

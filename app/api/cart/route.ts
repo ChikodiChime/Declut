@@ -20,9 +20,9 @@ export async function GET(req: Request) {
 
   const url = new URL(req.url)
   const listingIds = url.searchParams.get('listing_ids')
-  
+
   if (!listingIds) {
-    return ok([])
+    return err('Not authenticated', 'UNAUTHORIZED', 401)
   }
 
   const ids = listingIds.split(',').filter(Boolean)
@@ -68,20 +68,20 @@ export async function POST(req: Request) {
   if (listing.status !== 'available')
     return err('Listing is not available', 'UNAVAILABLE', 409)
 
-  if (authUser) {
-    const { data: item, error } = await supabaseAdmin
-      .from('cart_items')
-      .insert({ user_id: authUser.id, listing_id })
-      .select()
-      .single()
-
-    if (error) {
-      if (error.code === '23505') return err('Item already in cart', 'DUPLICATE', 409)
-      return err('Failed to add to cart', 'DB_ERROR', 500)
-    }
-
-    return ok(item, 201)
+  if (!authUser) {
+    return err('Not authenticated', 'UNAUTHORIZED', 401)
   }
 
-  return ok({ id: listing_id, listing_id }, 201)
+  const { data: item, error } = await supabaseAdmin
+    .from('cart_items')
+    .insert({ user_id: authUser.id, listing_id })
+    .select()
+    .single()
+
+  if (error) {
+    if (error.code === '23505') return err('Item already in cart', 'DUPLICATE', 409)
+    return err('Failed to add to cart', 'DB_ERROR', 500)
+  }
+
+  return ok(item, 201)
 }

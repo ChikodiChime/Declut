@@ -5,8 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase'
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Auth endpoints are public — no token required
-  if (pathname.startsWith('/api/auth/')) {
+  // Auth endpoints and Stripe webhook are public — no token required
+  if (pathname.startsWith('/api/auth/') || pathname === '/api/stripe/webhook') {
     return NextResponse.next()
   }
 
