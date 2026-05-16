@@ -35,15 +35,25 @@ export default function CheckoutForm({ onSuccess }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <PaymentElement />
-      {error && <p className="text-sm text-red-500">{error}</p>}
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <PaymentElement
+          options={{
+            layout: 'tabs',
+          }}
+        />
+      </div>
+
+      {error && (
+        <p className="text-sm text-error text-center">{error}</p>
+      )}
+
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="rounded-lg bg-black py-3 text-white font-medium disabled:opacity-50"
+        className="w-full rounded-xl bg-foreground text-white py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
       >
-        {loading ? 'Processing...' : 'Pay now'}
+        {loading ? 'Processing…' : 'Pay now'}
       </button>
     </form>
   )
