@@ -7,16 +7,17 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const authUser = await getAuthUser()
-  if (!authUser) return err('Unauthorized', 'UNAUTHORIZED', 401)
-
   const { id } = await params
 
-  const { error } = await supabaseAdmin
-    .from('cart_items')
-    .delete()
-    .eq('id', id)
-    .eq('user_id', authUser.id)
+  if (authUser) {
+    const { error } = await supabaseAdmin
+      .from('cart_items')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', authUser.id)
 
-  if (error) return err('Failed to remove item from cart', 'DB_ERROR', 500)
+    if (error) return err('Failed to remove item from cart', 'DB_ERROR', 500)
+  }
+
   return ok({ ok: true })
 }

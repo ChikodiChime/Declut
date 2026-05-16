@@ -21,11 +21,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Public cart API endpoints for anonymous buyers
+  if (pathname.startsWith('/api/cart') || pathname.startsWith('/api/orders')) {
+    return NextResponse.next()
+  }
+
   // Public pages: /listings and /listings/<uuid> (named routes like /mine stay protected)
   if (pathname === '/listings') {
     return NextResponse.next()
   }
   if (new RegExp(`^/listings/${UUID}$`).test(pathname)) {
+    return NextResponse.next()
+  }
+
+  // Public cart and checkout pages for anonymous buyers
+  if (pathname === '/cart' || pathname === '/checkout') {
     return NextResponse.next()
   }
 

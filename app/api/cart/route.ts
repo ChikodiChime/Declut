@@ -2,25 +2,52 @@ import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ok, err } from '@/lib/api-response'
 
-export async function GET() {
+export async function GET(req: Request) {
   const authUser = await getAuthUser()
-  if (!authUser) return err('Unauthorized', 'UNAUTHORIZED', 401)
+  
+  if (authUser) {
+    const { data: items, error } = await supabaseAdmin
+      .from('cart_items')
+      .select(
+        'id, listing_id, listing:listings(id, title, price, listing_type, status, seller_id, area, images, condition, category)'
+      )
+      .eq('user_id', authUser.id)
+      .order('created_at', { ascending: false })
 
-  const { data: items, error } = await supabaseAdmin
-    .from('cart_items')
-    .select(
-      'id, listing_id, listing:listings(id, title, price, listing_type, status, seller_id, area, images, condition, category)'
-    )
-    .eq('user_id', authUser.id)
-    .order('created_at', { ascending: false })
+    if (error) return err('Failed to fetch cart', 'DB_ERROR', 500)
+    return ok(items ?? [])
+  }
 
-  if (error) return err('Failed to fetch cart', 'DB_ERROR', 500)
-  return ok(items ?? [])
+  const url = new URL(req.url)
+  const listingIds = url.searchParams.get('listing_ids')
+  
+  if (!listingIds) {
+    return ok([])
+  }
+
+  const ids = listingIds.split(',').filter(Boolean)
+  if (ids.length === 0) {
+    return ok([])
+  }
+
+  const { data: listings, error } = await supabaseAdmin
+    .from('listings')
+    .select('id, title, price, listing_type, status, seller_id, area, images, condition, category')
+    .in('id', ids)
+
+  if (error) return err('Failed to fetch listings', 'DB_ERROR', 500)
+
+  const items = (listings ?? []).map((listing) => ({
+    id: listing.id,
+    listing_id: listing.id,
+    listing,
+  }))
+
+  return ok(items)
 }
 
 export async function POST(req: Request) {
   const authUser = await getAuthUser()
-  if (!authUser) return err('Unauthorized', 'UNAUTHORIZED', 401)
 
   const body = await req.json()
   const { listing_id } = body
@@ -41,16 +68,20 @@ export async function POST(req: Request) {
   if (listing.status !== 'available')
     return err('Listing is not available', 'UNAVAILABLE', 409)
 
-  const { data: item, error } = await supabaseAdmin
-    .from('cart_items')
-    .insert({ user_id: authUser.id, listing_id })
-    .select()
-    .single()
+  if (authUser) {
+    const { data: item, error } = await supabaseAdmin
+      .from('cart_items')
+      .insert({ user_id: authUser.id, listing_id })
+      .select()
+      .single()
 
-  if (error) {
-    if (error.code === '23505') return err('Item already in cart', 'DUPLICATE', 409)
-    return err('Failed to add to cart', 'DB_ERROR', 500)
+    if (error) {
+      if (error.code === '23505') return err('Item already in cart', 'DUPLICATE', 409)
+      return err('Failed to add to cart', 'DB_ERROR', 500)
+    }
+
+    return ok(item, 201)
   }
 
-  return ok(item, 201)
+  return ok({ id: listing_id, listing_id }, 201)
 }
