@@ -4,19 +4,119 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { X, ChevronLeft, MapPin } from "lucide-react";
 import DeliveryTypeSelector from "@/components/checkout/DeliveryTypeSelector";
-import { groupBySeller, calculateGrandTotal } from "@/app/api/orders/utils";
-import type { CartItemWithListing } from "@/app/api/orders/utils";
+import {
+  groupBySeller,
+  calculateGrandTotal,
+} from "@/app/api/orders/utils";
+import type { CartItemWithListing, SellerGroup } from "@/app/api/orders/utils";
 import { getSessionCart, removeFromSessionCart } from "@/lib/session-cart";
 import { useMe } from "@/lib/hooks/useAuth";
+
+const CLOUD = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+function cloudinaryUrl(publicId: string) {
+  return `https://res.cloudinary.com/${CLOUD}/image/upload/${publicId}`;
+}
+
+function CartSkeleton() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
+      <div className="space-y-3">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="h-24 rounded-2xl border border-border bg-card animate-pulse"
+          />
+        ))}
+      </div>
+      <div className="rounded-2xl border border-border bg-card h-64 animate-pulse" />
+    </div>
+  );
+}
+
+type SummaryPanelProps = {
+  groups: SellerGroup[];
+  grandTotal: number;
+  checkingOut: boolean;
+  error: string;
+  ctaLabel: string;
+  formId?: string;
+  onCheckout?: () => void;
+};
+
+function SummaryPanel({
+  groups,
+  grandTotal,
+  checkingOut,
+  error,
+  ctaLabel,
+  formId,
+  onCheckout,
+}: SummaryPanelProps) {
+  const buttonProps = formId
+    ? { form: formId, type: "submit" as const }
+    : { type: "button" as const, onClick: onCheckout };
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start">
+      <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-5">
+        Order summary
+      </p>
+
+      <div className="space-y-4">
+        {groups.map((group) => (
+          <div key={group.seller_id} className="space-y-1.5">
+            {group.items.map((item) => (
+              <div key={item.id} className="flex items-start justify-between gap-3">
+                <span className="text-sm text-text truncate">{item.listing.title}</span>
+                <span className="text-sm text-text shrink-0">
+                  ₦{item.listing.price.toLocaleString()}
+                </span>
+              </div>
+            ))}
+            {group.delivery_fee > 0 && (
+              <div className="flex justify-between">
+                <span className="text-sm text-text-muted">Delivery</span>
+                <span className="text-sm text-text-muted">
+                  ₦{group.delivery_fee.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="border-t border-border my-5" />
+
+      <div className="flex items-baseline justify-between mb-6">
+        <span className="text-sm font-medium text-text-muted">Total</span>
+        <span className="font-display text-2xl font-bold text-text">
+          ₦{grandTotal.toLocaleString()}
+        </span>
+      </div>
+
+      <button
+        {...buttonProps}
+        disabled={checkingOut}
+        className="w-full rounded-xl bg-foreground text-white py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+      >
+        {checkingOut ? "Preparing…" : ctaLabel}
+      </button>
+
+      {error && (
+        <p className="mt-3 text-sm text-error text-center">{error}</p>
+      )}
+    </div>
+  );
+}
 
 export default function CartPage() {
   const router = useRouter();
   const { data: user, isLoading: userLoading } = useMe();
   const [items, setItems] = useState<CartItemWithListing[]>([]);
-  const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
-    "delivery",
-  );
+  const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">("delivery");
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState("");
@@ -31,7 +131,6 @@ export default function CartPage() {
   useEffect(() => {
     async function fetchCart() {
       if (userLoading) return;
-
       if (user) {
         const res = await fetch("/api/cart");
         const data = await res.json();
@@ -39,9 +138,7 @@ export default function CartPage() {
       } else {
         const sessionCart = getSessionCart();
         if (sessionCart.length > 0) {
-          const listingIds = sessionCart
-            .map((item) => item.listing_id)
-            .join(",");
+          const listingIds = sessionCart.map((i) => i.listing_id).join(",");
           const res = await fetch(`/api/cart?listing_ids=${listingIds}`);
           const data = await res.json();
           setItems(data.data ?? []);
@@ -67,233 +164,273 @@ export default function CartPage() {
       setShowBuyerForm(true);
       return;
     }
-
     setCheckingOut(true);
     setError("");
-
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ delivery_type: deliveryType }),
     });
-
     const data = await res.json();
     setCheckingOut(false);
-
     if (!res.ok) {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-
-    const { client_secret } = data.data;
-    router.push(`/checkout?client_secret=${encodeURIComponent(client_secret)}`);
+    router.push(`/checkout?client_secret=${encodeURIComponent(data.data.client_secret)}`);
   }
 
   async function handleAnonymousCheckout(e: React.FormEvent) {
     e.preventDefault();
     setCheckingOut(true);
     setError("");
-
-    const listingIds = items.map((item) => item.listing_id);
-
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         delivery_type: deliveryType,
-        listing_ids: listingIds,
+        listing_ids: items.map((i) => i.listing_id),
         buyer_info: buyerInfo,
       }),
     });
-
     const data = await res.json();
     setCheckingOut(false);
-
     if (!res.ok) {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-
-    const { client_secret } = data.data;
-    router.push(`/checkout?client_secret=${encodeURIComponent(client_secret)}`);
+    router.push(`/checkout?client_secret=${encodeURIComponent(data.data.client_secret)}`);
   }
 
   const groups = groupBySeller(items, deliveryType);
   const grandTotal = calculateGrandTotal(groups);
 
+  // ── Loading ──────────────────────────────────────────────────────────────
+
   if (loading) {
     return (
-      <div className="py-20 text-center text-gray-400">Loading cart...</div>
+      <main className="min-h-screen bg-surface">
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <div className="h-9 w-32 rounded-xl bg-border animate-pulse mb-10" />
+          <CartSkeleton />
+        </div>
+      </main>
     );
   }
+
+  // ── Empty ────────────────────────────────────────────────────────────────
 
   if (items.length === 0) {
     return (
-      <div className="py-20 text-center">
-        <p className="text-gray-500 mb-4">Your cart is empty.</p>
-        <Link href="/listings" className="text-sm underline">
-          Browse listings
-        </Link>
-      </div>
+      <main className="min-h-screen bg-surface">
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <h1 className="font-display text-3xl font-bold text-text mb-10">
+            Your cart
+          </h1>
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <h2 className="font-display text-2xl text-text mb-2">
+              Nothing here yet
+            </h2>
+            <p className="text-text-muted text-sm mb-8">
+              Browse listings and add items to your cart.
+            </p>
+            <Link
+              href="/listings"
+              className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
+            >
+              Browse listings
+            </Link>
+          </div>
+        </div>
+      </main>
     );
   }
+
+  // ── Anonymous buyer form ─────────────────────────────────────────────────
 
   if (showBuyerForm && !user) {
     return (
-      <div className="mx-auto max-w-2xl py-10 px-4">
-        <button
-          onClick={() => setShowBuyerForm(false)}
-          className="mb-6 text-sm text-gray-500 hover:text-gray-700"
-        >
-          ← Back to cart
-        </button>
-        <h1 className="text-2xl font-bold mb-6">Your information</h1>
+      <main className="min-h-screen bg-surface">
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <h1 className="font-display text-3xl font-bold text-text mb-10">
+            Your cart
+          </h1>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
+            <div>
+              <button
+                onClick={() => setShowBuyerForm(false)}
+                className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-6"
+              >
+                <ChevronLeft size={16} />
+                Back to cart
+              </button>
 
-        <form onSubmit={handleAnonymousCheckout} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Full Name</label>
-            <input
-              type="text"
-              required
-              value={buyerInfo.name}
-              onChange={(e) =>
-                setBuyerInfo({ ...buyerInfo, name: e.target.value })
-              }
-              className="w-full rounded-lg border px-4 py-2"
-              placeholder="John Doe"
-            />
-          </div>
+              <h2 className="font-display text-2xl font-bold text-text mb-6">
+                Your details
+              </h2>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              required
-              value={buyerInfo.email}
-              onChange={(e) =>
-                setBuyerInfo({ ...buyerInfo, email: e.target.value })
-              }
-              className="w-full rounded-lg border px-4 py-2"
-              placeholder="john@example.com"
-            />
-          </div>
+              <form
+                id="buyer-form"
+                onSubmit={handleAnonymousCheckout}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-text mb-1.5">
+                    Full name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={buyerInfo.name}
+                    onChange={(e) =>
+                      setBuyerInfo({ ...buyerInfo, name: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors"
+                    placeholder="John Doe"
+                  />
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              required
-              value={buyerInfo.phone}
-              onChange={(e) =>
-                setBuyerInfo({ ...buyerInfo, phone: e.target.value })
-              }
-              className="w-full rounded-lg border px-4 py-2"
-              placeholder="+234 800 000 0000"
-            />
-          </div>
+                <div>
+                  <label className="block text-sm font-medium text-text mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={buyerInfo.email}
+                    onChange={(e) =>
+                      setBuyerInfo({ ...buyerInfo, email: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors"
+                    placeholder="john@example.com"
+                  />
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              {deliveryType === "delivery"
-                ? "Delivery Address"
-                : "Contact Address"}
-            </label>
-            <textarea
-              required
-              value={buyerInfo.address}
-              onChange={(e) =>
-                setBuyerInfo({ ...buyerInfo, address: e.target.value })
-              }
-              className="w-full rounded-lg border px-4 py-2 min-h-[80px]"
-              placeholder="Enter your full address"
-            />
-          </div>
+                <div>
+                  <label className="block text-sm font-medium text-text mb-1.5">
+                    Phone number
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={buyerInfo.phone}
+                    onChange={(e) =>
+                      setBuyerInfo({ ...buyerInfo, phone: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors"
+                    placeholder="+234 800 000 0000"
+                  />
+                </div>
 
-          <div className="rounded-xl border p-4 mb-6 text-sm">
-            <div className="flex justify-between font-bold text-base">
-              <span>Total</span>
-              <span>₦{grandTotal.toLocaleString()}</span>
+                <div>
+                  <label className="block text-sm font-medium text-text mb-1.5">
+                    {deliveryType === "delivery"
+                      ? "Delivery address"
+                      : "Contact address"}
+                  </label>
+                  <textarea
+                    required
+                    value={buyerInfo.address}
+                    onChange={(e) =>
+                      setBuyerInfo({ ...buyerInfo, address: e.target.value })
+                    }
+                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors min-h-[90px] resize-none"
+                    placeholder="Enter your full address"
+                  />
+                </div>
+              </form>
             </div>
-            <p className="text-xs text-gray-400 mt-1">
-              Includes delivery fees where applicable
-            </p>
+
+            <SummaryPanel
+              groups={groups}
+              grandTotal={grandTotal}
+              checkingOut={checkingOut}
+              error={error}
+              ctaLabel="Continue to payment"
+              formId="buyer-form"
+            />
           </div>
-
-          {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={checkingOut}
-            className="w-full rounded-lg bg-black py-3 text-white font-medium disabled:opacity-50"
-          >
-            {checkingOut ? "Processing..." : "Continue to payment"}
-          </button>
-        </form>
-      </div>
+        </div>
+      </main>
     );
   }
 
+  // ── Main cart ────────────────────────────────────────────────────────────
+
   return (
-    <div className="mx-auto max-w-2xl py-10 px-4">
-      <h1 className="text-2xl font-bold mb-6">Your cart</h1>
-
-      <div className="flex flex-col gap-3 mb-6">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-4 rounded-xl border p-4"
-          >
-            {item.listing.images?.[0] && (
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg">
-                <Image
-                  src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${item.listing.images[0]}`}
-                  alt={item.listing.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{item.listing.title}</p>
-              <p className="text-sm text-gray-500">
-                ₦{item.listing.price.toLocaleString()}
-              </p>
-            </div>
-            <button
-              onClick={() => removeItem(item.id)}
-              className="text-sm text-gray-400 hover:text-red-500"
-            >
-              Remove
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-6">
-        <DeliveryTypeSelector value={deliveryType} onChange={setDeliveryType} />
-      </div>
-
-      <div className="rounded-xl border p-4 mb-6 text-sm">
-        <div className="flex justify-between font-bold text-base">
-          <span>Total</span>
-          <span>₦{grandTotal.toLocaleString()}</span>
+    <main className="min-h-screen bg-surface">
+      <div className="max-w-5xl mx-auto px-6 py-16">
+        <div className="flex items-baseline gap-3 mb-10">
+          <h1 className="font-display text-3xl font-bold text-text">
+            Your cart
+          </h1>
+          <span className="text-sm text-text-muted">
+            {items.length} {items.length === 1 ? "item" : "items"}
+          </span>
         </div>
-        <p className="text-xs text-gray-400 mt-1">
-          Includes delivery fees where applicable
-        </p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
+          {/* Left: item list + delivery selector */}
+          <div>
+            <div className="space-y-3 mb-8">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
+                >
+                  {item.listing.images?.[0] ? (
+                    <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl">
+                      <Image
+                        src={cloudinaryUrl(item.listing.images[0])}
+                        alt={item.listing.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-[72px] w-[72px] shrink-0 rounded-xl bg-border" />
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-[15px] text-text truncate">
+                      {item.listing.title}
+                    </p>
+                    {item.listing.area && (
+                      <p className="flex items-center gap-1 text-xs text-text-subtle mt-0.5">
+                        <MapPin size={11} />
+                        {item.listing.area}
+                      </p>
+                    )}
+                    <p className="font-display text-xl text-text mt-1">
+                      ₦{item.listing.price.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => removeItem(item.id)}
+                    aria-label={`Remove ${item.listing.title}`}
+                    className="shrink-0 p-1.5 rounded-lg text-text-subtle hover:text-error hover:bg-error-bg transition-all"
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <DeliveryTypeSelector value={deliveryType} onChange={setDeliveryType} />
+          </div>
+
+          {/* Right: sticky summary panel */}
+          <SummaryPanel
+            groups={groups}
+            grandTotal={grandTotal}
+            checkingOut={checkingOut}
+            error={error}
+            ctaLabel="Proceed to checkout"
+            onCheckout={handleCheckout}
+          />
+        </div>
       </div>
-
-      {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
-
-      <button
-        onClick={handleCheckout}
-        disabled={checkingOut}
-        className="w-full rounded-lg bg-black py-3 text-white font-medium disabled:opacity-50"
-      >
-        {checkingOut ? "Preparing checkout..." : "Proceed to checkout"}
-      </button>
-    </div>
+    </main>
   );
 }
