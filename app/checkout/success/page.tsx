@@ -30,12 +30,21 @@ export default function CheckoutSuccessPage() {
             A confirmation has been sent to your email.
           </p>
 
-          <Link
-            href="/listings"
-            className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
-          >
-            Continue browsing
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/login?next=/orders"
+              className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-opacity"
+              style={{ background: '#4f46e5' }}
+            >
+              Track your order
+            </Link>
+            <Link
+              href="/listings"
+              className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
+            >
+              Continue browsing
+            </Link>
+          </div>
         </div>
       </div>
     </main>
