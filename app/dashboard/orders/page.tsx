@@ -8,6 +8,7 @@ import {
   MapPin,
   Phone,
   User,
+  Mail,
   Truck,
   ShoppingBag,
   CheckCircle2,
@@ -135,6 +136,10 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
             <User size={11} strokeWidth={2} className="shrink-0" />
             <span>{order.buyer_name}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
+            <Mail size={11} strokeWidth={2} className="shrink-0" />
+            <span>{order.buyer_email}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
             <Phone size={11} strokeWidth={2} className="shrink-0" />
