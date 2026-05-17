@@ -175,6 +175,8 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
           )}
           <a
             href={`mailto:${order.buyer_email}?subject=${encodeURIComponent(`Your Declutter order — ${order.listing.title}`)}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-semibold transition-colors hover:bg-[#f5f1eb]"
             style={{ borderColor: "#e8e4dc", color: "#78726c" }}
           >
