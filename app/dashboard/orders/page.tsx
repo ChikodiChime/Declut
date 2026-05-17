@@ -42,30 +42,55 @@ function OrderSkeleton() {
   );
 }
 
+const EMPTY_STATE_CONFIG: Record<string, {
+  icon: React.ElementType;
+  emoji: string;
+  heading: string;
+  body: string;
+}> = {
+  New: {
+    icon: Clock,
+    emoji: "🛍️",
+    heading: "No new orders yet",
+    body: "When a buyer completes payment, their order will land here for you to confirm.",
+  },
+  Confirmed: {
+    icon: CheckCircle2,
+    emoji: "✅",
+    heading: "Nothing confirmed yet",
+    body: "Orders you confirm will move here while you arrange delivery or pickup.",
+  },
+  Delivered: {
+    icon: ShoppingBag,
+    emoji: "📦",
+    heading: "No deliveries yet",
+    body: "Orders you mark as delivered will be recorded here for your reference.",
+  },
+};
+
 function EmptyState({ tab }: { tab: string }) {
-  const icons: Record<string, React.ElementType> = {
-    New: Clock,
-    Confirmed: CheckCircle2,
-    Delivered: ShoppingBag,
-  };
-  const Icon = icons[tab] ?? Clock;
+  const config = EMPTY_STATE_CONFIG[tab] ?? EMPTY_STATE_CONFIG.New;
   return (
-    <div className="flex flex-col items-center py-20 text-center">
-      <div
-        className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border"
-        style={{ background: "#f5f1eb", borderColor: "#e8e4dc" }}
-      >
-        <Icon size={24} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+    <div className="flex flex-col items-center py-24 text-center">
+      {/* Layered icon treatment */}
+      <div className="relative mb-6">
+        <div
+          className="h-20 w-20 rounded-3xl"
+          style={{
+            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
+            boxShadow: "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-3xl leading-none">{config.emoji}</span>
+        </div>
       </div>
-      <p className="text-sm font-semibold" style={{ color: "#16130f" }}>
-        No {tab.toLowerCase()} orders
+
+      <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>
+        {config.heading}
       </p>
-      <p className="mt-1 text-xs" style={{ color: "#a8a09a" }}>
-        {tab === "New"
-          ? "New paid orders from buyers will appear here."
-          : tab === "Confirmed"
-          ? "Orders you have confirmed will appear here."
-          : "Orders you have marked as delivered will appear here."}
+      <p className="text-sm max-w-xs leading-relaxed" style={{ color: "#a8a09a" }}>
+        {config.body}
       </p>
     </div>
   );
