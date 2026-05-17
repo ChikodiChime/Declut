@@ -46,14 +46,16 @@ export async function POST(req: Request) {
     return err('Code is invalid or expired', 'INVALID_CODE', 401)
   }
 
-  // Mark code as used
-  await supabaseAdmin
+  // Mark code as used — must succeed or the code remains replayable
+  const { error: markUsedError } = await supabaseAdmin
     .from('otp_codes')
     .update({ used_at: new Date().toISOString() })
     .eq('id', otpRow.id)
 
-  // Placeholder hash — buyers never use password auth
-  const password_hash = await hashOtp(crypto.randomBytes(32).toString('hex'))
+  if (markUsedError) {
+    console.error('Failed to mark OTP as used:', markUsedError)
+    return err('Verification failed, please try again', 'SERVER_ERROR', 500)
+  }
 
   // Check if email belongs to an existing seller
   const { data: existingUser } = await supabaseAdmin
@@ -70,6 +72,8 @@ export async function POST(req: Request) {
   if (existingUser) {
     userId = existingUser.id
   } else {
+    // Placeholder hash — buyers never use password auth
+    const password_hash = await hashOtp(crypto.randomBytes(32).toString('hex'))
     const { data: newUser, error: insertError } = await supabaseAdmin
       .from('users')
       .insert({

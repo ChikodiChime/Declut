@@ -11,7 +11,7 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
     to,
     subject: 'Your Declutter verification code',
     html: buildOtpHtml(code),
-    text: `Your Declutter verification code is: ${code}\n\nThis code expires in 30 minutes.\n\nIf you didn't create a Declutter account, you can safely ignore this email.`,
+    text: `Your Declutter verification code is: ${code}\n\nThis code expires in 15 minutes.\n\nIf you didn't create a Declutter account, you can safely ignore this email.`,
   })
   if (error) throw new Error(`Resend error: ${error.message}`)
 }
@@ -34,7 +34,7 @@ function buildOtpHtml(code: string): string {
             <td style="padding:40px 40px 32px;">
               <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">Verify your email address</h1>
               <p style="margin:0 0 32px;font-size:15px;color:#6B7280;line-height:1.6;">
-                Enter the code below in the app to complete your registration. It expires in <strong>30 minutes</strong>.
+                Enter the code below in the app to complete your registration. It expires in <strong>15 minutes</strong>.
               </p>
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
