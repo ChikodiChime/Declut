@@ -151,27 +151,37 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
           </div>
         </div>
 
-        {/* Action */}
-        {tab.status === "paid" && (
-          <button
-            onClick={() => confirm(order.id)}
-            disabled={isPending}
-            className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-            style={{ background: "#4f46e5" }}
+        {/* Actions */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {tab.status === "paid" && (
+            <button
+              onClick={() => confirm(order.id)}
+              disabled={isPending}
+              className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
+              style={{ background: "#4f46e5" }}
+            >
+              {confirming ? "Confirming…" : "Confirm order"}
+            </button>
+          )}
+          {tab.status === "confirmed" && (
+            <button
+              onClick={() => deliver(order.id)}
+              disabled={isPending}
+              className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
+              style={{ background: "#10b981" }}
+            >
+              {delivering ? "Delivering…" : "Mark as delivered"}
+            </button>
+          )}
+          <a
+            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent(`Your Declutter order — ${order.listing.title}`)}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
+            className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-semibold transition-colors hover:bg-[#f5f1eb]"
+            style={{ borderColor: "#e8e4dc", color: "#78726c" }}
           >
-            {confirming ? "Confirming…" : "Confirm order"}
-          </button>
-        )}
-        {tab.status === "confirmed" && (
-          <button
-            onClick={() => deliver(order.id)}
-            disabled={isPending}
-            className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-            style={{ background: "#10b981" }}
-          >
-            {delivering ? "Delivering…" : "Mark as delivered"}
-          </button>
-        )}
+            <Mail size={12} strokeWidth={2} />
+            Contact buyer
+          </a>
+        </div>
       </div>
     </motion.div>
   );
