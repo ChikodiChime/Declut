@@ -17,7 +17,7 @@ npm run lint     # Run ESLint
 
 | Package | Version | Notes |
 |---|---|---|
-| Next.js | 16.2.1 | Breaking changes from prior versions — see AGENTS.md |
+| Next.js | 16.2.1 | Breaking changes from prior versions — see AGENTS.md. Middleware renamed to **Proxy** (`proxy.ts` at project root, not `middleware.ts`) |
 | React | 19.2.4 | |
 | Tailwind CSS | 4.x | CSS-first config; no `tailwind.config.js` — theme defined in `globals.css` via `@theme` |
 | ESLint | 9.x | Flat config format (`eslint.config.mjs`), not `.eslintrc` |
@@ -39,4 +39,5 @@ npm run lint     # Run ESLint
 - **ESLint flat config**: Extends `eslint-config-next/core-web-vitals` and `eslint-config-next/typescript`; add rules in `eslint.config.mjs`.
 - **Fonts**: Geist Sans and Geist Mono loaded via `next/font/google`; available as CSS vars `--font-geist-sans` / `--font-geist-mono`.
 - **Dark mode**: Via `prefers-color-scheme` media query in `globals.css` (not Tailwind's `darkMode` config).
+- **Proxy (Middleware)**: Next.js 16 renamed Middleware to Proxy. Use `proxy.ts` at the project root — not `middleware.ts`. Export a named `proxy` function and `config` with `matcher`. See `node_modules/next/dist/docs/01-app/01-getting-started/16-proxy.md`.
 - **Next.js docs**: Before writing any Next.js-specific code, consult `node_modules/next/dist/docs/` for this version's actual APIs.
