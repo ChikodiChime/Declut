@@ -23,12 +23,17 @@ export function useSendOtp() {
 
 export function useVerifyOtp(next?: string | null) {
   const router = useRouter()
+  // Validate next is a relative path to prevent open redirect
+  const safeNext = next?.startsWith('/') ? next : null
   return useMutation({
     mutationFn: ({ email, code }: { email: string; code: string }) =>
       postJson('/api/auth/buyer/verify', { email, code }),
     onSuccess: () => {
-      router.push(next ?? '/orders')
-      router.refresh()
+      // Only navigate if a safe destination was provided — callers handle navigation otherwise
+      if (safeNext) {
+        router.push(safeNext)
+        router.refresh()
+      }
     },
   })
 }

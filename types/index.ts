@@ -39,7 +39,7 @@ export interface Listing {
 export interface Order {
   id: string
   listing_id: string
-  buyer_id: string
+  buyer_id: string | null
   seller_id: string
   status: OrderStatus
   delivery_type: DeliveryType

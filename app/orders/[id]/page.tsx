@@ -15,8 +15,15 @@ const STATUS_LABEL: Record<string, string> = {
   delivered: 'Delivered',
 }
 
+// Map statuses not in STATUS_STEPS to their nearest equivalent for timeline rendering
+const STATUS_STEP_ALIAS: Record<string, typeof STATUS_STEPS[number]> = {
+  shipped: 'confirmed',
+  completed: 'delivered',
+}
+
 function StatusTimeline({ status }: { status: string }) {
-  const currentIndex = STATUS_STEPS.indexOf(status as typeof STATUS_STEPS[number])
+  const resolvedStatus = STATUS_STEP_ALIAS[status] ?? status
+  const currentIndex = STATUS_STEPS.indexOf(resolvedStatus as typeof STATUS_STEPS[number])
   return (
     <div className="flex items-start gap-0">
       {STATUS_STEPS.map((step, i) => {
