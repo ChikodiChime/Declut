@@ -1,8 +1,8 @@
-export type AccountType = 'individual' | 'business'
+export type AccountType = 'individual' | 'business' | 'buyer'
 export type ListingType = 'for_sale' | 'free' | 'donate'
 export type Condition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
 export type ListingStatus = 'available' | 'sold' | 'claimed' | 'donated'
-export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'delivered' | 'completed' | 'cancelled'
+export type OrderStatus = 'pending' | 'paid' | 'confirmed' | 'shipped' | 'delivered' | 'completed' | 'cancelled'
 export type DeliveryType = 'delivery' | 'pickup'
 
 export interface User {
