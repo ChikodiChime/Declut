@@ -89,7 +89,7 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
         className="relative w-full sm:w-20 h-40 sm:h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
         style={{ background: "#f0ece5" }}
       >
-        {order.listing.images[0] ? (
+        {order.listing.images?.[0] ? (
           <CldImage
             src={order.listing.images[0]}
             fill
@@ -164,7 +164,7 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
             className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
             style={{ background: "#10b981" }}
           >
-            {delivering ? "Updating…" : "Mark as delivered"}
+            {delivering ? "Delivering…" : "Mark as delivered"}
           </button>
         )}
       </div>
