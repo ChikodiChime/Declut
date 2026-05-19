@@ -1,4 +1,4 @@
-export type AccountType = 'individual' | 'business' | 'buyer'
+export type AccountType = 'individual' | 'business' | 'buyer' | 'dispatcher'
 export type ListingType = 'for_sale' | 'free' | 'donate'
 export type Condition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
 export type ListingStatus = 'available' | 'sold' | 'claimed' | 'donated'
@@ -41,6 +41,7 @@ export interface Order {
   listing_id: string
   buyer_id: string | null
   seller_id: string
+  dispatcher_id: string | null
   status: OrderStatus
   delivery_type: DeliveryType
   item_price: number
