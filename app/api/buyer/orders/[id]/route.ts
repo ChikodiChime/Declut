@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { ok, err } from '@/lib/api-response'
 import { headers } from 'next/headers'
+import { computeDeliveryCode } from '@/lib/delivery-code'
 
 export async function GET(
   _req: Request,
@@ -31,5 +32,10 @@ export async function GET(
     return err('Order not found', 'NOT_FOUND', 404)
   }
 
-  return ok(order)
+  const showCode = !['delivered', 'completed', 'cancelled'].includes(order.status)
+
+  return ok({
+    ...order,
+    delivery_code: showCode ? computeDeliveryCode(order.id) : null,
+  })
 }
