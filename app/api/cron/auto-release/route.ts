@@ -5,7 +5,7 @@ const STALE_DAYS = 14
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized', { status: 401 })
   }
 
@@ -35,5 +35,6 @@ export async function GET(req: Request) {
     console.error(`Auto-release: ${failed} of ${staleOrders.length} payouts failed`)
   }
 
-  return Response.json({ released: staleOrders.length - failed, failed })
+  const released = staleOrders.length - failed
+  return Response.json(failed > 0 ? { released, failed } : { released })
 }
