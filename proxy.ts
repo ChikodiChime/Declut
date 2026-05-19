@@ -45,6 +45,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Dispatcher register page is public
+  if (pathname === '/dispatch/register') {
+    return NextResponse.next()
+  }
+
   const token = request.cookies.get('token')?.value
 
   // Unauthenticated: route to correct login page based on destination
@@ -52,7 +57,9 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const loginPath = pathname.startsWith('/orders') ? '/login' : '/auth/login'
+    let loginPath = '/auth/login'
+    if (pathname.startsWith('/orders')) loginPath = '/login'
+    if (pathname.startsWith('/dispatch')) loginPath = '/auth/login'
     return NextResponse.redirect(
       new URL(`${loginPath}?next=${encodeURIComponent(pathname)}`, request.url)
     )
@@ -87,6 +94,23 @@ export async function proxy(request: NextRequest) {
 
   // Account-type route gates
   const isBuyer = payload.account_type === 'buyer'
+  const isDispatcher = payload.account_type === 'dispatcher'
+
+  // Dispatchers can only access /dispatch and /api/dispatch
+  if (isDispatcher && !pathname.startsWith('/dispatch') && !pathname.startsWith('/api/dispatch')) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    return NextResponse.redirect(new URL('/dispatch', request.url))
+  }
+
+  // Non-dispatchers cannot access dispatcher routes
+  if (!isDispatcher && (pathname.startsWith('/dispatch') || pathname.startsWith('/api/dispatch'))) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
 
   // Buyers must not access seller dashboard
   if (isBuyer && pathname.startsWith('/dashboard')) {
@@ -120,12 +144,15 @@ export const config = {
     '/api/cart/:path*',
     '/api/orders/:path*',
     '/api/buyer/:path*',
+    '/api/dispatch/:path*',
     '/api/stripe/:path*',
+    '/api/cron/:path*',
     '/listings/:path*',
     '/dashboard/:path*',
     '/cart/:path*',
     '/checkout/:path*',
     '/orders/:path*',
+    '/dispatch/:path*',
     '/login',
   ],
 }
