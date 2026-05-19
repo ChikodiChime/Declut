@@ -16,7 +16,18 @@ export async function executePayout(orderId: string): Promise<void> {
     return
   }
 
-  if (order.stripe_transfer_id) return // already paid out
+  if (order.stripe_transfer_id) return // already paid out (idempotent check)
+
+  // Atomically claim the payout slot — prevents concurrent double-payout
+  const { data: locked } = await supabaseAdmin
+    .from('orders')
+    .update({ stripe_transfer_id: 'pending' })
+    .eq('id', orderId)
+    .is('stripe_transfer_id', null)
+    .select('id')
+    .single()
+
+  if (!locked) return // another caller claimed it first
 
   // Mark delivered first — buyer UX shouldn't wait on the financial operation
   await supabaseAdmin
@@ -54,6 +65,12 @@ export async function executePayout(orderId: string): Promise<void> {
       .eq('id', orderId)
   } catch (error) {
     console.error(`executePayout: Stripe transfer failed for order ${orderId}:`, error)
+    // Clear sentinel so the next retry can attempt the transfer
+    await supabaseAdmin
+      .from('orders')
+      .update({ stripe_transfer_id: null })
+      .eq('id', orderId)
+      .eq('stripe_transfer_id', 'pending')
     // Status already set to delivered. Manual payout resolution needed.
   }
 }
