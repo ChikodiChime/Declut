@@ -20,6 +20,7 @@ export type BuyerOrderDetail = BuyerOrder & {
   delivery_fee: number
   buyer_name: string | null
   buyer_address: string | null
+  delivery_code: string | null
   seller: {
     id: string
     name: string | null
