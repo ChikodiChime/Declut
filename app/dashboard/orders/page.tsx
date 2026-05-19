@@ -1,3 +1,4 @@
+// app/dashboard/orders/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,22 +11,21 @@ import {
   User,
   Mail,
   Truck,
-  ShoppingBag,
-  CheckCircle2,
-  Clock,
+  KeyRound,
 } from "lucide-react";
 import {
   useSellerOrders,
   useConfirmOrder,
-  useDeliverOrder,
+  useVerifyPickup,
   type SellerOrder,
 } from "@/lib/hooks/useSellerOrders";
 
-type Tab = { label: string; status: "paid" | "confirmed" | "delivered" };
+type Tab = { label: string; status: "paid" | "confirmed" | "shipped" | "delivered" };
 
 const TABS: Tab[] = [
   { label: "New", status: "paid" },
   { label: "Confirmed", status: "confirmed" },
+  { label: "Shipped", status: "shipped" },
   { label: "Delivered", status: "delivered" },
 ];
 
@@ -43,28 +43,29 @@ function OrderSkeleton() {
 }
 
 const EMPTY_STATE_CONFIG: Record<string, {
-  icon: React.ElementType;
   emoji: string;
   heading: string;
   body: string;
 }> = {
   New: {
-    icon: Clock,
     emoji: "🛍️",
     heading: "No new orders yet",
     body: "When a buyer completes payment, their order will land here for you to confirm.",
   },
   Confirmed: {
-    icon: CheckCircle2,
     emoji: "✅",
     heading: "Nothing confirmed yet",
-    body: "Orders you confirm will move here while you arrange delivery or pickup.",
+    body: "Orders you confirm will move here. Delivery orders await a dispatcher; pickup orders await the buyer.",
+  },
+  Shipped: {
+    emoji: "🚚",
+    heading: "No deliveries in transit",
+    body: "Orders picked up by a dispatcher will appear here while in transit.",
   },
   Delivered: {
-    icon: ShoppingBag,
     emoji: "📦",
     heading: "No deliveries yet",
-    body: "Orders you mark as delivered will be recorded here for your reference.",
+    body: "Orders confirmed as received will be recorded here.",
   },
 };
 
@@ -72,7 +73,6 @@ function EmptyState({ tab }: { tab: string }) {
   const config = EMPTY_STATE_CONFIG[tab] ?? EMPTY_STATE_CONFIG.New;
   return (
     <div className="flex flex-col items-center py-24 text-center">
-      {/* Layered icon treatment */}
       <div className="relative mb-6">
         <div
           className="h-20 w-20 rounded-3xl"
@@ -85,22 +85,45 @@ function EmptyState({ tab }: { tab: string }) {
           <span className="text-3xl leading-none">{config.emoji}</span>
         </div>
       </div>
+      <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>{config.heading}</p>
+      <p className="text-sm max-w-xs leading-relaxed" style={{ color: "#a8a09a" }}>{config.body}</p>
+    </div>
+  );
+}
 
-      <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>
-        {config.heading}
-      </p>
-      <p className="text-sm max-w-xs leading-relaxed" style={{ color: "#a8a09a" }}>
-        {config.body}
-      </p>
+function PickupCodeEntry({ orderId }: { orderId: string }) {
+  const [code, setCode] = useState("");
+  const { mutate: verify, isPending } = useVerifyPickup();
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="relative">
+        <KeyRound size={12} strokeWidth={2} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "#a8a09a" }} />
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={4}
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          placeholder="0000"
+          className="w-24 rounded-xl border pl-7 pr-2 py-2 text-xs font-mono tracking-widest outline-none focus:ring-2"
+          style={{ borderColor: "#e8e4dc", background: "#faf9f7", color: "#16130f" }}
+        />
+      </div>
+      <button
+        onClick={() => verify({ id: orderId, code })}
+        disabled={isPending || code.length !== 4}
+        className="rounded-xl px-3 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
+        style={{ background: "#10b981" }}
+      >
+        {isPending ? "Verifying…" : "Confirm pickup"}
+      </button>
     </div>
   );
 }
 
 function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
   const { mutate: confirm, isPending: confirming } = useConfirmOrder();
-  const { mutate: deliver, isPending: delivering } = useDeliverOrder();
-
-  const isPending = confirming || delivering;
 
   return (
     <motion.div
@@ -110,34 +133,22 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
       className="rounded-2xl border bg-card p-5 flex flex-col sm:flex-row gap-4"
       style={{ borderColor: "#e8e4dc" }}
     >
-      {/* Thumbnail */}
       <div
         className="relative w-full sm:w-20 h-40 sm:h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
         style={{ background: "#f0ece5" }}
       >
         {order.listing.images?.[0] ? (
-          <CldImage
-            src={order.listing.images[0]}
-            fill
-            sizes="80px"
-            className="object-cover"
-            alt={order.listing.title}
-          />
+          <CldImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
         ) : (
           <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
         )}
       </div>
 
-      {/* Details */}
       <div className="flex-1 min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
           <div>
-            <h3 className="text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>
-              {order.listing.title}
-            </h3>
-            <p className="font-display text-base mt-0.5" style={{ color: "#4f46e5" }}>
-              ₦{order.total_price.toLocaleString()}
-            </p>
+            <h3 className="text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>{order.listing.title}</h3>
+            <p className="text-base mt-0.5" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
           </div>
           <span
             className="self-start inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium shrink-0"
@@ -147,56 +158,44 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
                 : { background: "rgba(16,185,129,0.08)", color: "#10b981" }
             }
           >
-            {order.delivery_type === "delivery" ? (
-              <Truck size={11} strokeWidth={2} />
-            ) : (
-              <MapPin size={11} strokeWidth={2} />
-            )}
+            {order.delivery_type === "delivery" ? <Truck size={11} strokeWidth={2} /> : <MapPin size={11} strokeWidth={2} />}
             {order.delivery_type === "delivery" ? "Delivery" : "Pickup"}
           </span>
         </div>
 
-        {/* Buyer info */}
         <div className="flex flex-col gap-1 mb-4">
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <User size={11} strokeWidth={2} className="shrink-0" />
-            <span>{order.buyer_name}</span>
+            <User size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_name}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <Mail size={11} strokeWidth={2} className="shrink-0" />
-            <span>{order.buyer_email}</span>
+            <Mail size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_email}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <Phone size={11} strokeWidth={2} className="shrink-0" />
-            <span>{order.buyer_phone}</span>
+            <Phone size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_phone}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <MapPin size={11} strokeWidth={2} className="shrink-0" />
-            <span className="line-clamp-1">{order.buyer_address}</span>
+            <MapPin size={11} strokeWidth={2} className="shrink-0" /><span className="line-clamp-1">{order.buyer_address}</span>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex items-center gap-2 flex-wrap">
           {tab.status === "paid" && (
             <button
               onClick={() => confirm(order.id)}
-              disabled={isPending}
+              disabled={confirming}
               className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
               style={{ background: "#4f46e5" }}
             >
               {confirming ? "Confirming…" : "Confirm order"}
             </button>
           )}
-          {tab.status === "confirmed" && (
-            <button
-              onClick={() => deliver(order.id)}
-              disabled={isPending}
-              className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-              style={{ background: "#10b981" }}
-            >
-              {delivering ? "Delivering…" : "Mark as delivered"}
-            </button>
+          {tab.status === "confirmed" && order.delivery_type === "pickup" && (
+            <PickupCodeEntry orderId={order.id} />
+          )}
+          {tab.status === "confirmed" && order.delivery_type === "delivery" && (
+            <span className="text-xs rounded-full px-3 py-1.5 font-medium" style={{ background: "rgba(79,70,229,0.08)", color: "#4f46e5" }}>
+              Awaiting dispatcher
+            </span>
           )}
           <a
             href={`mailto:${order.buyer_email}?subject=${encodeURIComponent(`Your Declutter order — ${order.listing.title}`)}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
@@ -218,11 +217,7 @@ function TabContent({ tab }: { tab: Tab }) {
   const { data: orders, isLoading } = useSellerOrders(tab.status);
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4">
-        {[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}
-      </div>
-    );
+    return <div className="flex flex-col gap-4">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
   }
 
   if (!orders || orders.length === 0) {
@@ -231,9 +226,7 @@ function TabContent({ tab }: { tab: Tab }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {orders.map((order) => (
-        <OrderCard key={order.id} order={order} tab={tab} />
-      ))}
+      {orders.map((order) => <OrderCard key={order.id} order={order} tab={tab} />)}
     </div>
   );
 }
@@ -243,25 +236,12 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>
-          Orders
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: "#78726c" }}>
-          Manage orders from buyers.
-        </p>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>Orders</h1>
+        <p className="mt-1 text-sm" style={{ color: "#78726c" }}>Manage orders from buyers.</p>
       </motion.div>
 
-      {/* Tabs */}
-      <div
-        className="inline-flex gap-0.5 rounded-full p-0.5"
-        style={{ background: "#f0ece5" }}
-      >
+      <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: "#f0ece5" }}>
         {TABS.map((tab) => {
           const isActive = activeTab.status === tab.status;
           return (
@@ -281,7 +261,6 @@ export default function OrdersPage() {
         })}
       </div>
 
-      {/* Tab content */}
       <TabContent tab={activeTab} />
     </div>
   );
