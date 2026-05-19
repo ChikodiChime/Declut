@@ -2,7 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
 
-const VALID_STATUSES = ['paid', 'confirmed', 'delivered'] as const
+const VALID_STATUSES = ['paid', 'confirmed', 'shipped', 'delivered'] as const
 type OrderStatus = (typeof VALID_STATUSES)[number]
 
 export async function GET(req: Request) {
@@ -13,7 +13,7 @@ export async function GET(req: Request) {
   const status = searchParams.get('status') as OrderStatus | null
 
   if (!status || !VALID_STATUSES.includes(status)) {
-    return err('status must be paid, confirmed, or delivered', 'VALIDATION_ERROR', 400)
+    return err('status must be paid, confirmed, shipped, or delivered', 'VALIDATION_ERROR', 400)
   }
 
   const { data: orders, error } = await supabaseAdmin
