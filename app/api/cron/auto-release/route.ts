@@ -2,14 +2,20 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { executePayout } from '@/lib/payout'
 
 const STALE_DAYS = 14
+const MS_PER_DAY = 24 * 60 * 60 * 1000
 
 export async function GET(req: Request) {
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) {
+    console.error('CRON_SECRET not configured')
+    return new Response('Unauthorized', { status: 401 })
+  }
   const authHeader = req.headers.get('authorization')
-  if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return new Response('Unauthorized', { status: 401 })
   }
 
-  const cutoff = new Date(Date.now() - STALE_DAYS * 24 * 60 * 60 * 1000).toISOString()
+  const cutoff = new Date(Date.now() - STALE_DAYS * MS_PER_DAY).toISOString()
 
   const { data: staleOrders, error } = await supabaseAdmin
     .from('orders')
@@ -30,8 +36,10 @@ export async function GET(req: Request) {
     staleOrders.map((order) => executePayout(order.id))
   )
 
-  const failed = results.filter((r) => r.status === 'rejected').length
+  const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected')
+  const failed = failures.length
   if (failed > 0) {
+    failures.forEach((r) => console.error('Auto-release payout failed:', r.reason))
     console.error(`Auto-release: ${failed} of ${staleOrders.length} payouts failed`)
   }
 
