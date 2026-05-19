@@ -1,11 +1,7 @@
+// app/api/orders/[id]/route.ts
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
-
-const VALID_TRANSITIONS: Record<string, string> = {
-  paid: 'confirmed',
-  confirmed: 'delivered',
-}
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authUser = await getAuthUser()
@@ -21,9 +17,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   if (error || !order) return err('Order not found', 'NOT_FOUND', 404)
 
-  if (order.buyer_id !== authUser.id && order.seller_id !== authUser.id) {
-    return err('Forbidden', 'FORBIDDEN', 403)
-  }
+  const canView =
+    order.buyer_id === authUser.id ||
+    order.seller_id === authUser.id ||
+    order.dispatcher_id === authUser.id
+
+  if (!canView) return err('Forbidden', 'FORBIDDEN', 403)
 
   return ok(order)
 }
@@ -37,11 +36,17 @@ export async function PATCH(
 
   const { id } = await params
 
-  const body = await req.json()
+  let body: { status?: unknown }
+  try {
+    body = await req.json()
+  } catch {
+    return err('Invalid request body', 'BAD_REQUEST', 400)
+  }
+
   const { status: nextStatus } = body
 
-  if (!nextStatus || !Object.values(VALID_TRANSITIONS).includes(nextStatus)) {
-    return err('status must be confirmed or delivered', 'VALIDATION_ERROR', 400)
+  if (nextStatus !== 'confirmed') {
+    return err('status must be confirmed', 'VALIDATION_ERROR', 400)
   }
 
   const { data: order, error: fetchError } = await supabaseAdmin
@@ -51,22 +56,14 @@ export async function PATCH(
     .single()
 
   if (fetchError || !order) return err('Order not found', 'NOT_FOUND', 404)
-
-  if (order.seller_id !== authUser.id) {
-    return err('Forbidden', 'FORBIDDEN', 403)
-  }
-
-  if (VALID_TRANSITIONS[order.status] !== nextStatus) {
-    return err(
-      `Cannot transition from ${order.status} to ${nextStatus}`,
-      'INVALID_TRANSITION',
-      409
-    )
+  if (order.seller_id !== authUser.id) return err('Forbidden', 'FORBIDDEN', 403)
+  if (order.status !== 'paid') {
+    return err(`Cannot confirm order in status: ${order.status}`, 'INVALID_TRANSITION', 409)
   }
 
   const { data: updated, error: updateError } = await supabaseAdmin
     .from('orders')
-    .update({ status: nextStatus })
+    .update({ status: 'confirmed' })
     .eq('id', id)
     .select('id, status')
     .single()
