@@ -2,10 +2,11 @@
 'use client'
 
 import Link from 'next/link'
-import { use } from 'react'
+import { use, useState } from 'react'
 import { motion } from 'framer-motion'
 import { CldImage } from 'next-cloudinary'
 import { Package, Truck, MapPin, ArrowLeft, Mail, KeyRound } from 'lucide-react'
+import { toast } from 'sonner'
 import { useBuyerOrderDetail } from '@/lib/hooks/useBuyerOrders'
 
 const DELIVERY_STEPS = ['paid', 'confirmed', 'shipped', 'delivered'] as const
@@ -58,9 +59,28 @@ function StatusTimeline({ status, deliveryType }: { status: string; deliveryType
   )
 }
 
+const CANCELLABLE_STATUSES = new Set(['paid', 'confirmed'])
+
 export default function BuyerOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const { data: order, isLoading, error } = useBuyerOrderDetail(id)
+  const { data: order, isLoading, error, refetch } = useBuyerOrderDetail(id)
+  const [cancelling, setCancelling] = useState(false)
+
+  async function handleCancel() {
+    if (!window.confirm('Cancel this order? You will receive a full refund.')) return
+    setCancelling(true)
+    try {
+      const res = await fetch(`/api/orders/${id}/cancel`, { method: 'POST' })
+      const json = await res.json()
+      if (!res.ok) {
+        toast.error(json.error?.message ?? 'Could not cancel order')
+        return
+      }
+      await refetch()
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -145,6 +165,18 @@ export default function BuyerOrderDetailPage({ params }: { params: Promise<{ id:
             <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: '#a8a09a' }}>Order status</p>
             <StatusTimeline status={order.status} deliveryType={order.delivery_type} />
           </div>
+
+          {/* Cancel order */}
+          {CANCELLABLE_STATUSES.has(order.status) && (
+            <button
+              onClick={handleCancel}
+              disabled={cancelling}
+              className="w-full rounded-2xl border py-3 text-sm font-medium transition-colors hover:bg-red-50 disabled:opacity-50"
+              style={{ borderColor: '#fca5a5', color: '#dc2626' }}
+            >
+              {cancelling ? 'Cancelling…' : 'Cancel order'}
+            </button>
+          )}
 
           {/* Price breakdown */}
           <div className="rounded-2xl border p-5 bg-card" style={{ borderColor: '#e8e4dc' }}>
