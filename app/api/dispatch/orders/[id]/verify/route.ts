@@ -29,7 +29,7 @@ export async function POST(
 
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, status, delivery_type, dispatcher_id')
+    .select('id, status, delivery_type, dispatcher_id, code_attempts')
     .eq('id', id)
     .single()
 
@@ -37,9 +37,11 @@ export async function POST(
   if (order.delivery_type !== 'delivery') return err('Not a delivery order', 'INVALID_STATE', 409)
   if (order.status !== 'shipped') return err('Order is not in transit', 'INVALID_STATE', 409)
   if (order.dispatcher_id !== authUser.id) return err('Forbidden', 'FORBIDDEN', 403)
+  if (order.code_attempts >= 5) return err('Too many incorrect attempts. Contact support.', 'TOO_MANY_ATTEMPTS', 429)
 
   const expected = computeDeliveryCode(id)
   if (code !== expected) {
+    await supabaseAdmin.from('orders').update({ code_attempts: order.code_attempts + 1 }).eq('id', id)
     return err('Incorrect code', 'INVALID_CODE', 400)
   }
 
