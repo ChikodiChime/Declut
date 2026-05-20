@@ -177,7 +177,8 @@ export default function CartPage() {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-    router.push(`/checkout?client_secret=${encodeURIComponent(data.data.client_secret)}`);
+    sessionStorage.setItem('checkout_secret', data.data.client_secret);
+    router.push('/checkout');
   }
 
   async function handleAnonymousCheckout(e: React.FormEvent) {
@@ -199,7 +200,8 @@ export default function CartPage() {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-    router.push(`/checkout?client_secret=${encodeURIComponent(data.data.client_secret)}`);
+    sessionStorage.setItem('checkout_secret', data.data.client_secret);
+    router.push('/checkout');
   }
 
   const groups = groupBySeller(items, deliveryType);
