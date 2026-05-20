@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       .eq('user_id', authUser.id)
 
     if (cartError) return err('Failed to fetch cart', 'DB_ERROR', 500)
-    items = (cartItems ?? []) as CartItemWithListing[]
+    items = (cartItems ?? []) as unknown as CartItemWithListing[]
   } else {
     if (!buyer_info || !buyer_info.name || !buyer_info.email || !buyer_info.phone || !buyer_info.address) {
       return err('Buyer contact information is required', 'VALIDATION_ERROR', 400)

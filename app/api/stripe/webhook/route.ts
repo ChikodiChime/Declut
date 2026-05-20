@@ -1,8 +1,6 @@
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 
-export const config = { api: { bodyParser: false } }
-
 export async function POST(req: Request) {
   const rawBody = await req.text()
   const sig = req.headers.get('stripe-signature')

@@ -1,7 +1,7 @@
 // app/login/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Mail, ArrowRight, KeyRound } from 'lucide-react'
@@ -9,7 +9,7 @@ import { useSendOtp, useVerifyOtp } from '@/lib/hooks/useBuyerAuth'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export default function BuyerLoginPage() {
+function BuyerLoginContent() {
   const searchParams = useSearchParams()
   const next = searchParams.get('next')
 
@@ -171,5 +171,13 @@ export default function BuyerLoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function BuyerLoginPage() {
+  return (
+    <Suspense>
+      <BuyerLoginContent />
+    </Suspense>
   )
 }

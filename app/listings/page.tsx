@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search, ChevronDown, Check, X } from "lucide-react";
@@ -26,7 +26,7 @@ const CONDITIONS: { value: Condition | ""; label: string }[] = [
   { value: "poor",     label: "Poor" },
 ];
 
-const SORT_OPTIONS: { value: BrowseParams["sort"]; label: string }[] = [
+const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "newest",     label: "Newest first" },
   { value: "price_asc",  label: "Price: Low → High" },
   { value: "price_desc", label: "Price: High → Low" },
@@ -148,7 +148,7 @@ function useFilter() {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function BrowsePage() {
+function BrowseContent() {
   const {
     q, setQ,
     listing_type, setListingType,
@@ -457,4 +457,12 @@ export default function BrowsePage() {
       </div>
     </main>
   );
+}
+
+export default function BrowsePage() {
+  return (
+    <Suspense>
+      <BrowseContent />
+    </Suspense>
+  )
 }

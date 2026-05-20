@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 type StripeStatus = 'connected' | 'pending' | 'not_connected'
 
-export default function BillingPage() {
+function BillingContent() {
   const searchParams = useSearchParams()
   const statusParam = searchParams.get('status')
 
@@ -108,5 +108,13 @@ export default function BillingPage() {
         </Link>
       </p>
     </div>
+  )
+}
+
+export default function BillingPage() {
+  return (
+    <Suspense>
+      <BillingContent />
+    </Suspense>
   )
 }

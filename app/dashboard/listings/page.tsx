@@ -152,7 +152,7 @@ export default function DashboardListingsPage() {
           <div className="relative">
             <Button
               variant="outline"
-              size="default"
+              size="sm"
               className="gap-2 h-12 px-4 rounded-2xl border-border/60 shadow-sm hover:border-primary/40 hover:bg-primary/5 transition-all"
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
             >

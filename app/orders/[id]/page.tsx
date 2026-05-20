@@ -25,7 +25,7 @@ const STATUS_ALIAS: Record<string, string> = {
 function StatusTimeline({ status, deliveryType }: { status: string; deliveryType: string }) {
   const steps = deliveryType === 'delivery' ? DELIVERY_STEPS : PICKUP_STEPS
   const resolvedStatus = STATUS_ALIAS[status] ?? status
-  const currentIndex = steps.indexOf(resolvedStatus as typeof DELIVERY_STEPS[number])
+  const currentIndex = (steps as unknown as string[]).indexOf(resolvedStatus)
 
   return (
     <div className="flex items-start gap-0">
