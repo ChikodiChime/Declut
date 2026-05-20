@@ -42,6 +42,11 @@ function BillingContent() {
 
   return (
     <div className="mx-auto max-w-2xl py-10 px-4">
+      {searchParams.get('from') === 'new-listing' && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 mb-6">
+          Connect your payout account before creating a listing.
+        </div>
+      )}
       <h1 className="text-2xl font-bold mb-2">Payments</h1>
       <p className="text-gray-500 mb-8 text-sm">
         Connect your Stripe account to list items for sale and receive payouts.

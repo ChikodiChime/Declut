@@ -1,14 +1,29 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ListingForm } from "@/components/listings";
 import { useCreateListing } from "@/lib/hooks/useListings";
+import { useMe } from "@/lib/hooks/useAuth";
 import type { ListingFormData } from "@/types";
 
 export default function NewListingPage() {
+  const router = useRouter();
+  const { data: user, isLoading } = useMe();
   const { mutateAsync: createListing, isPending } = useCreateListing();
+
+  useEffect(() => {
+    if (!isLoading && !user?.stripe_onboarding_complete) {
+      router.replace("/dashboard/billing?from=new-listing");
+    }
+  }, [isLoading, user, router]);
 
   async function handleSubmit(data: ListingFormData) {
     await createListing(data);
+  }
+
+  if (isLoading || !user?.stripe_onboarding_complete) {
+    return null;
   }
 
   return (
