@@ -11,7 +11,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, buyer_id, stripe_payment_intent_id, status')
+    .select('id, buyer_id, listing_id, stripe_payment_intent_id, status')
     .eq('id', id)
     .single()
 
@@ -19,6 +19,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (order.buyer_id !== authUser.id) return err('Only the buyer can cancel', 'FORBIDDEN', 403)
   if (order.status === 'cancelled') return err('Order already cancelled', 'INVALID_STATE', 409)
   if (order.status === 'completed') return err('Completed orders cannot be cancelled', 'INVALID_STATE', 409)
+  if (order.status === 'shipped') return err('Orders in transit cannot be cancelled', 'INVALID_STATE', 409)
+  if (order.status === 'delivered') return err('Delivered orders cannot be cancelled', 'INVALID_STATE', 409)
 
   if (order.stripe_payment_intent_id) {
     try {
@@ -33,6 +35,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     .from('orders')
     .update({ status: 'cancelled' })
     .eq('stripe_payment_intent_id', order.stripe_payment_intent_id)
+
+  await supabaseAdmin
+    .from('listings')
+    .update({ status: 'available' })
+    .eq('id', order.listing_id)
 
   return ok({ ok: true })
 }
