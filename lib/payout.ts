@@ -7,7 +7,7 @@ const PLATFORM_FEE_PERCENT = 10
 export async function executePayout(orderId: string): Promise<void> {
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, seller_id, total_price, stripe_payment_intent_id, stripe_transfer_id')
+    .select('id, seller_id, item_price, stripe_payment_intent_id, stripe_transfer_id')
     .eq('id', orderId)
     .single()
 
@@ -47,7 +47,7 @@ export async function executePayout(orderId: string): Promise<void> {
   }
 
   const sellerAmountKobo = Math.round(
-    order.total_price * (1 - PLATFORM_FEE_PERCENT / 100) * 100
+    order.item_price * (1 - PLATFORM_FEE_PERCENT / 100) * 100
   )
 
   try {
