@@ -8,6 +8,7 @@ export type DispatchOrder = {
   status: string
   delivery_type: 'delivery'
   total_price: number
+  delivery_fee: number
   buyer_address: string
   buyer_name?: string
   buyer_phone?: string
@@ -16,6 +17,7 @@ export type DispatchOrder = {
     id: string
     title: string
     images: string[]
+    area?: string
   }
 }
 

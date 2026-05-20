@@ -45,9 +45,9 @@ function AvailableOrderCard({ order }: { order: DispatchOrder }) {
         <p className="text-sm font-semibold truncate" style={{ color: '#16130f' }}>{order.listing.title}</p>
         <div className="flex items-center gap-1 mt-0.5 text-xs" style={{ color: '#78726c' }}>
           <MapPin size={10} strokeWidth={2} />
-          <span className="truncate">{order.buyer_address}</span>
+          <span className="truncate">{order.listing.area ?? 'Lagos'}</span>
         </div>
-        <p className="text-xs mt-1 font-medium" style={{ color: '#4f46e5' }}>₦{order.total_price.toLocaleString()}</p>
+        <p className="text-xs mt-1 font-medium" style={{ color: '#4f46e5' }}>Delivery fee: ₦{order.delivery_fee.toLocaleString()}</p>
       </div>
       <button
         onClick={() => claim(order.id)}
