@@ -26,7 +26,7 @@ export async function POST(
 
   const { data: updated, error } = await supabaseAdmin
     .from('orders')
-    .update({ dispatcher_id: authUser.id, status: 'shipped' })
+    .update({ dispatcher_id: authUser.id, status: 'shipped', shipped_at: new Date().toISOString() })
     .eq('id', id)
     .eq('status', 'confirmed')
     .is('dispatcher_id', null)

@@ -63,7 +63,7 @@ export async function PATCH(
 
   const { data: updated, error: updateError } = await supabaseAdmin
     .from('orders')
-    .update({ status: 'confirmed' })
+    .update({ status: 'confirmed', confirmed_at: new Date().toISOString() })
     .eq('id', id)
     .select('id, status')
     .single()

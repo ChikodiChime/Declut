@@ -17,18 +17,27 @@ export async function GET(req: Request) {
 
   const cutoff = new Date(Date.now() - STALE_DAYS * MS_PER_DAY).toISOString()
 
-  const { data: staleOrders, error } = await supabaseAdmin
-    .from('orders')
-    .select('id, status')
-    .in('status', ['confirmed', 'shipped'])
-    .lt('created_at', cutoff)
+  const [confirmedResult, shippedResult] = await Promise.all([
+    supabaseAdmin
+      .from('orders')
+      .select('id, status')
+      .eq('status', 'confirmed')
+      .lt('confirmed_at', cutoff),
+    supabaseAdmin
+      .from('orders')
+      .select('id, status')
+      .eq('status', 'shipped')
+      .lt('shipped_at', cutoff),
+  ])
 
-  if (error) {
-    console.error('Auto-release fetch error:', error)
+  if (confirmedResult.error || shippedResult.error) {
+    console.error('Auto-release fetch error:', confirmedResult.error ?? shippedResult.error)
     return new Response('Internal error', { status: 500 })
   }
 
-  if (!staleOrders || staleOrders.length === 0) {
+  const staleOrders = [...(confirmedResult.data ?? []), ...(shippedResult.data ?? [])]
+
+  if (staleOrders.length === 0) {
     return Response.json({ released: 0 })
   }
 
