@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { X, ChevronLeft, MapPin } from "lucide-react";
+import { ListingImage } from "@/components/ui";
 import DeliveryTypeSelector from "@/components/checkout/DeliveryTypeSelector";
 import {
   groupBySeller,
@@ -14,11 +14,6 @@ import type { CartItemWithListing, SellerGroup } from "@/app/api/orders/utils";
 import { getSessionCart, removeFromSessionCart } from "@/lib/session-cart";
 import { useMe } from "@/lib/hooks/useAuth";
 
-const CLOUD = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-
-function cloudinaryUrl(publicId: string) {
-  return `https://res.cloudinary.com/${CLOUD}/image/upload/${publicId}`;
-}
 
 function CartSkeleton() {
   return (
@@ -380,18 +375,17 @@ export default function CartPage() {
                   key={item.id}
                   className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
                 >
-                  {item.listing.images?.[0] ? (
-                    <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl">
-                      <Image
-                        src={cloudinaryUrl(item.listing.images[0])}
+                  <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-border">
+                    {item.listing.images?.[0] && (
+                      <ListingImage
+                        src={item.listing.images[0]}
                         alt={item.listing.title}
                         fill
+                        sizes="72px"
                         className="object-cover"
                       />
-                    </div>
-                  ) : (
-                    <div className="h-[72px] w-[72px] shrink-0 rounded-xl bg-border" />
-                  )}
+                    )}
+                  </div>
 
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-[15px] text-text truncate">
