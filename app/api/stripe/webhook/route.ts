@@ -1,5 +1,6 @@
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 
 export async function POST(req: Request) {
   const rawBody = await req.text()
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
 
   const { data: orders, error: ordersError } = await supabaseAdmin
     .from('orders')
-    .select('id, listing_id')
+    .select('id, listing_id, seller_id, delivery_type, delivery_fee, item_price, total_price, listing:listings(id, title, price, listing_type, status, seller_id, area, images, condition, category)')
     .in('id', orderIds)
 
   if (ordersError || !orders || orders.length === 0) {
@@ -68,6 +69,41 @@ export async function POST(req: Request) {
     .from('orders')
     .update({ status: 'paid' })
     .in('id', orderIds)
+
+  // Send confirmation email now that payment is verified
+  const buyerEmail = paymentIntent.metadata?.buyer_email
+  const buyerId    = paymentIntent.metadata?.buyer_id
+
+  if (buyerEmail) {
+    let buyerName = 'Customer'
+    if (buyerId && buyerId !== 'anonymous') {
+      const { data: buyer } = await supabaseAdmin
+        .from('users')
+        .select('name')
+        .eq('id', buyerId)
+        .single()
+      if (buyer?.name) buyerName = buyer.name
+    }
+
+    const deliveryType = (orders[0].delivery_type ?? 'delivery') as 'delivery' | 'pickup'
+    const grandTotal   = orders.reduce((sum, o) => sum + (o.total_price ?? 0), 0)
+    const groups = orders.map((o) => ({
+      seller_id:    o.seller_id,
+      items:        [{ id: o.listing_id, listing_id: o.listing_id, listing: o.listing as never }],
+      subtotal:     o.item_price ?? 0,
+      delivery_fee: o.delivery_fee ?? 0,
+      total:        o.total_price ?? 0,
+    }))
+
+    sendOrderConfirmationEmail({
+      to: buyerEmail,
+      buyerName,
+      orderIds,
+      groups,
+      grandTotal,
+      deliveryType,
+    }).catch((e) => console.error('Order confirmation email failed:', e))
+  }
 
   return new Response('OK', { status: 200 })
 }

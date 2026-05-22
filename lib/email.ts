@@ -157,7 +157,7 @@ function buildOrderConfirmationHtml(params: OrderEmailContent): string {
                 ${deliveryNote}
               </p>
               <p style="margin:20px 0 0;text-align:center;">
-                <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/login?next=/orders" style="display:inline-block;background:#4F46E5;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 24px;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/dashboard/orders?tab=purchases" style="display:inline-block;background:#4F46E5;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 24px;">
                   Track your order
                 </a>
               </p>
@@ -206,7 +206,7 @@ function buildOrderConfirmationText(params: OrderEmailContent): string {
       : 'The seller will be in touch within 12 hours to arrange pickup.'
   )
   lines.push('')
-  lines.push(`Track your order: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/login?next=/orders`)
+  lines.push(`Track your order: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/dashboard/orders?tab=purchases`)
   lines.push('')
   lines.push('— The declut team')
 
