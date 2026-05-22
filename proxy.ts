@@ -21,12 +21,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Public cart API endpoints for anonymous buyers
-  // Only the base /api/orders POST (buyer checkout) is public — sub-routes need seller auth
-  if (pathname.startsWith('/api/cart') || pathname === '/api/orders') {
-    return NextResponse.next()
-  }
-
   // Public pages: /listings and /listings/<uuid>
   if (pathname === '/listings') {
     return NextResponse.next()
@@ -35,33 +29,29 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Public cart and checkout pages for anonymous buyers
-  if (pathname === '/cart' || pathname.startsWith('/checkout')) {
-    return NextResponse.next()
-  }
-
-  // Buyer login page is public
-  if (pathname === '/login') {
-    return NextResponse.next()
-  }
-
   // Dispatcher register page is public
   if (pathname === '/dispatch/register') {
     return NextResponse.next()
   }
 
+  // Cart, checkout, and anonymous order creation allow access without a token.
+  // BUT we still run the token path below so authenticated users get their
+  // x-user-id header set — the API handlers need it to distinguish auth state.
+  const isCartOrCheckout =
+    pathname.startsWith('/api/cart') ||
+    pathname === '/api/orders' ||
+    pathname === '/cart' ||
+    pathname.startsWith('/checkout')
+
   const token = request.cookies.get('token')?.value
 
-  // Unauthenticated: route to correct login page based on destination
   if (!token) {
+    if (isCartOrCheckout) return NextResponse.next()
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    let loginPath = '/auth/login'
-    if (pathname.startsWith('/orders')) loginPath = '/login'
-    if (pathname.startsWith('/dispatch')) loginPath = '/auth/login'
     return NextResponse.redirect(
-      new URL(`${loginPath}?next=${encodeURIComponent(pathname)}`, request.url)
+      new URL(`/auth/login?next=${encodeURIComponent(pathname)}`, request.url)
     )
   }
 
@@ -69,31 +59,28 @@ export async function proxy(request: NextRequest) {
   try {
     payload = await verifyToken(token)
   } catch {
+    // Invalid token: treat cart/checkout as anonymous rather than blocking
+    if (isCartOrCheckout) return NextResponse.next()
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const loginPath = pathname.startsWith('/orders') ? '/login' : '/auth/login'
-    return NextResponse.redirect(new URL(loginPath, request.url))
+    return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  // Sellers must verify email; buyers skip this (OTP already proves email)
-  if (payload.account_type !== 'buyer') {
-    const { data: user } = await supabaseAdmin
-      .from('users')
-      .select('email_verified')
-      .eq('id', payload.sub)
-      .single()
+  // All users must verify email before accessing protected routes
+  const { data: user } = await supabaseAdmin
+    .from('users')
+    .select('email_verified')
+    .eq('id', payload.sub)
+    .single()
 
-    if (!user?.email_verified) {
-      if (pathname.startsWith('/api/')) {
-        return NextResponse.json({ error: 'Email not verified' }, { status: 403 })
-      }
-      return NextResponse.redirect(new URL('/verify-email', request.url))
+  if (!user?.email_verified) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Email not verified' }, { status: 403 })
     }
+    return NextResponse.redirect(new URL('/verify-email', request.url))
   }
 
-  // Account-type route gates
-  const isBuyer = payload.account_type === 'buyer'
   const isDispatcher = payload.account_type === 'dispatcher'
 
   // Dispatchers can only access /dispatch and /api/dispatch
@@ -109,19 +96,6 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
-  // Buyers must not access seller dashboard
-  if (isBuyer && pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/orders', request.url))
-  }
-  if (isBuyer && pathname.startsWith('/api/users')) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
-  // Sellers must not access buyer orders area
-  if (!isBuyer && (pathname.startsWith('/orders') || pathname.startsWith('/api/buyer'))) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
@@ -153,6 +127,5 @@ export const config = {
     '/checkout/:path*',
     '/orders/:path*',
     '/dispatch/:path*',
-    '/login',
   ],
 }
