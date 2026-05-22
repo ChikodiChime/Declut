@@ -4,12 +4,20 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
 import { clearSessionCart } from '@/lib/session-cart'
+import { useMe } from '@/lib/hooks/useAuth'
+
+const ORDERS_URL = '/dashboard/orders?tab=purchases'
+const LOGIN_THEN_ORDERS_URL = '/auth/login?next=/dashboard/orders%3Ftab%3Dpurchases'
 
 export default function CheckoutSuccessPage() {
+  const { data: me, isLoading } = useMe()
+
   useEffect(() => {
     clearSessionCart()
     window.dispatchEvent(new Event('cart-updated'))
   }, [])
+
+  const trackHref = !isLoading && me === null ? LOGIN_THEN_ORDERS_URL : ORDERS_URL
 
   return (
     <main className="min-h-screen bg-surface">
@@ -32,7 +40,7 @@ export default function CheckoutSuccessPage() {
 
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <Link
-              href="/login?next=/orders"
+              href={trackHref}
               className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-opacity"
               style={{ background: '#4f46e5' }}
             >
