@@ -10,11 +10,30 @@ import {
   ShoppingBag,
   ArrowRight,
   Tag,
+  Truck,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useMyListings } from "@/lib/hooks/useListings";
 import { useMe } from "@/lib/hooks/useAuth";
+import { useBuyerOrders } from "@/lib/hooks/useBuyerOrders";
+import { CldImage } from "next-cloudinary";
+
+const PURCHASE_STATUS_STYLE: Record<string, { background: string; color: string }> = {
+  pending:   { background: "rgba(251,191,36,0.12)",  color: "#d97706" },
+  paid:      { background: "rgba(79,70,229,0.08)",   color: "#4f46e5" },
+  confirmed: { background: "rgba(79,70,229,0.08)",   color: "#4f46e5" },
+  shipped:   { background: "rgba(16,185,129,0.08)",  color: "#10b981" },
+  delivered: { background: "rgba(16,185,129,0.08)",  color: "#10b981" },
+  completed: { background: "rgba(16,185,129,0.08)",  color: "#10b981" },
+  cancelled: { background: "rgba(239,68,68,0.08)",   color: "#ef4444" },
+};
+
+const PURCHASE_STATUS_LABEL: Record<string, string> = {
+  pending: "Pending", paid: "Confirmed", confirmed: "Confirmed",
+  shipped: "Shipped", delivered: "Delivered", completed: "Completed", cancelled: "Cancelled",
+};
 
 function fadeUp(delay: number) {
   return {
@@ -28,6 +47,8 @@ export default function DashboardPage() {
   const { data: me } = useMe();
   const { data, isLoading } = useMyListings();
   const listings = data?.listings ?? [];
+  const { data: purchases } = useBuyerOrders();
+  const recentPurchases = (purchases ?? []).slice(0, 3);
 
   const stats = {
     total: listings.length,
@@ -234,6 +255,48 @@ export default function DashboardPage() {
                 </span>
               </Link>
             ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Recent purchases */}
+      {recentPurchases.length > 0 && (
+        <motion.div {...fadeUp(0.42)} className="bg-card rounded-xl shadow-card p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-text">Recent purchases</h2>
+            <Link href="/dashboard/orders?tab=purchases" className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover transition-colors">
+              View all <ArrowRight size={13} />
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {recentPurchases.map((order) => {
+              const statusStyle = PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
+              return (
+                <Link key={order.id} href={`/dashboard/orders/${order.id}`} className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface transition-colors group">
+                  <div className="relative w-10 h-10 rounded-lg bg-border overflow-hidden shrink-0">
+                    {order.listing.images?.[0] ? (
+                      <CldImage src={order.listing.images[0]} fill sizes="40px" className="object-cover" alt={order.listing.title} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Package size={16} className="text-text-muted" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-text truncate group-hover:text-primary transition-colors">{order.listing.title}</p>
+                    <p className="text-xs text-text-muted">₦{order.total_price.toLocaleString()}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={statusStyle}>
+                      {PURCHASE_STATUS_LABEL[order.status] ?? order.status}
+                    </span>
+                    <span style={{ color: "#c8c2bb" }}>
+                      {order.delivery_type === "delivery" ? <Truck size={12} strokeWidth={1.5} /> : <MapPin size={12} strokeWidth={1.5} />}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </motion.div>
       )}
