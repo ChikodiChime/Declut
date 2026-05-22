@@ -52,30 +52,30 @@ const SALES_TABS: SalesTab[] = [
 ];
 
 const SALES_EMPTY_STATE: Record<string, { emoji: string; heading: string; body: string }> = {
-  New: {
+  paid: {
     emoji: "🛍️",
     heading: "No new orders yet",
     body: "When a buyer completes payment, their order will land here for you to confirm.",
   },
-  Confirmed: {
+  confirmed: {
     emoji: "✅",
     heading: "Nothing confirmed yet",
     body: "Orders you confirm will move here. Delivery orders await a dispatcher; pickup orders await the buyer.",
   },
-  Shipped: {
+  shipped: {
     emoji: "🚚",
     heading: "No deliveries in transit",
     body: "Orders picked up by a dispatcher will appear here while in transit.",
   },
-  Delivered: {
+  delivered: {
     emoji: "📦",
     heading: "No deliveries yet",
     body: "Orders confirmed as received will be recorded here.",
   },
 };
 
-function SalesEmptyState({ tab }: { tab: string }) {
-  const config = SALES_EMPTY_STATE[tab] ?? SALES_EMPTY_STATE.New;
+function SalesEmptyState({ status }: { status: string }) {
+  const config = SALES_EMPTY_STATE[status] ?? SALES_EMPTY_STATE.paid;
   return (
     <div className="flex flex-col items-center py-24 text-center">
       <div className="relative mb-6">
@@ -216,7 +216,7 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
 function SalesTabContent({ tab }: { tab: SalesTab }) {
   const { data: orders, isLoading } = useSellerOrders(tab.status);
   if (isLoading) return <div className="flex flex-col gap-4">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
-  if (!orders || orders.length === 0) return <SalesEmptyState tab={tab.label} />;
+  if (!orders || orders.length === 0) return <SalesEmptyState status={tab.status} />;
   return <div className="flex flex-col gap-4">{orders.map((o) => <SellerOrderCard key={o.id} order={o} tab={tab} />)}</div>;
 }
 
@@ -401,7 +401,7 @@ function OrdersPageContent() {
 
 export default function OrdersPage() {
   return (
-    <Suspense>
+    <Suspense fallback={<div className="space-y-6 max-w-3xl"><OrderSkeleton /></div>}>
       <OrdersPageContent />
     </Suspense>
   );
