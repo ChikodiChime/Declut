@@ -2,6 +2,8 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 import { CldImage } from "next-cloudinary";
 import {
@@ -12,22 +14,18 @@ import {
   Mail,
   Truck,
   KeyRound,
+  ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
 import {
   useSellerOrders,
   useConfirmOrder,
   useVerifyPickup,
   type SellerOrder,
 } from "@/lib/hooks/useSellerOrders";
+import { useBuyerOrders, type BuyerOrder } from "@/lib/hooks/useBuyerOrders";
 
-type Tab = { label: string; status: "paid" | "confirmed" | "shipped" | "delivered" };
-
-const TABS: Tab[] = [
-  { label: "New", status: "paid" },
-  { label: "Confirmed", status: "confirmed" },
-  { label: "Shipped", status: "shipped" },
-  { label: "Delivered", status: "delivered" },
-];
+// ─── Shared ───────────────────────────────────────────────────────────────────
 
 function OrderSkeleton() {
   return (
@@ -42,11 +40,18 @@ function OrderSkeleton() {
   );
 }
 
-const EMPTY_STATE_CONFIG: Record<string, {
-  emoji: string;
-  heading: string;
-  body: string;
-}> = {
+// ─── Sales tab ────────────────────────────────────────────────────────────────
+
+type SalesTab = { label: string; status: "paid" | "confirmed" | "shipped" | "delivered" };
+
+const SALES_TABS: SalesTab[] = [
+  { label: "New", status: "paid" },
+  { label: "Confirmed", status: "confirmed" },
+  { label: "Shipped", status: "shipped" },
+  { label: "Delivered", status: "delivered" },
+];
+
+const SALES_EMPTY_STATE: Record<string, { emoji: string; heading: string; body: string }> = {
   New: {
     emoji: "🛍️",
     heading: "No new orders yet",
@@ -69,8 +74,8 @@ const EMPTY_STATE_CONFIG: Record<string, {
   },
 };
 
-function EmptyState({ tab }: { tab: string }) {
-  const config = EMPTY_STATE_CONFIG[tab] ?? EMPTY_STATE_CONFIG.New;
+function SalesEmptyState({ tab }: { tab: string }) {
+  const config = SALES_EMPTY_STATE[tab] ?? SALES_EMPTY_STATE.New;
   return (
     <div className="flex flex-col items-center py-24 text-center">
       <div className="relative mb-6">
@@ -94,7 +99,6 @@ function EmptyState({ tab }: { tab: string }) {
 function PickupCodeEntry({ orderId }: { orderId: string }) {
   const [code, setCode] = useState("");
   const { mutate: verify, isPending } = useVerifyPickup();
-
   return (
     <div className="flex items-center gap-2">
       <div className="relative">
@@ -122,9 +126,8 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
   );
 }
 
-function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
+function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) {
   const { mutate: confirm, isPending: confirming } = useConfirmOrder();
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -143,7 +146,6 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
           <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
         )}
       </div>
-
       <div className="flex-1 min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
           <div>
@@ -162,7 +164,6 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
             {order.delivery_type === "delivery" ? "Delivery" : "Pickup"}
           </span>
         </div>
-
         <div className="flex flex-col gap-1 mb-4">
           <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
             <User size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_name}</span>
@@ -177,7 +178,6 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
             <MapPin size={11} strokeWidth={2} className="shrink-0" /><span className="line-clamp-1">{order.buyer_address}</span>
           </div>
         </div>
-
         <div className="flex items-center gap-2 flex-wrap">
           {tab.status === "paid" && (
             <button
@@ -213,36 +213,19 @@ function OrderCard({ order, tab }: { order: SellerOrder; tab: Tab }) {
   );
 }
 
-function TabContent({ tab }: { tab: Tab }) {
+function SalesTabContent({ tab }: { tab: SalesTab }) {
   const { data: orders, isLoading } = useSellerOrders(tab.status);
-
-  if (isLoading) {
-    return <div className="flex flex-col gap-4">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
-  }
-
-  if (!orders || orders.length === 0) {
-    return <EmptyState tab={tab.label} />;
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      {orders.map((order) => <OrderCard key={order.id} order={order} tab={tab} />)}
-    </div>
-  );
+  if (isLoading) return <div className="flex flex-col gap-4">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
+  if (!orders || orders.length === 0) return <SalesEmptyState tab={tab.label} />;
+  return <div className="flex flex-col gap-4">{orders.map((o) => <SellerOrderCard key={o.id} order={o} tab={tab} />)}</div>;
 }
 
-export default function OrdersPage() {
-  const [activeTab, setActiveTab] = useState<Tab>(TABS[0]);
-
+function SalesPanel() {
+  const [activeTab, setActiveTab] = useState<SalesTab>(SALES_TABS[0]);
   return (
-    <div className="space-y-6 max-w-3xl">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>Orders</h1>
-        <p className="mt-1 text-sm" style={{ color: "#78726c" }}>Manage orders from buyers.</p>
-      </motion.div>
-
+    <div className="space-y-6">
       <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: "#f0ece5" }}>
-        {TABS.map((tab) => {
+        {SALES_TABS.map((tab) => {
           const isActive = activeTab.status === tab.status;
           return (
             <button
@@ -260,8 +243,166 @@ export default function OrdersPage() {
           );
         })}
       </div>
-
-      <TabContent tab={activeTab} />
+      <SalesTabContent tab={activeTab} />
     </div>
+  );
+}
+
+// ─── Purchases tab ────────────────────────────────────────────────────────────
+
+const PURCHASE_STATUS_LABEL: Record<string, string> = {
+  pending: "Pending",
+  paid: "Confirmed",
+  confirmed: "Confirmed",
+  shipped: "Shipped",
+  delivered: "Delivered",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
+
+const PURCHASE_STATUS_STYLE: Record<string, { background: string; color: string }> = {
+  pending:   { background: "rgba(251,191,36,0.12)",  color: "#d97706" },
+  paid:      { background: "rgba(79,70,229,0.08)",   color: "#4f46e5" },
+  confirmed: { background: "rgba(79,70,229,0.08)",   color: "#4f46e5" },
+  shipped:   { background: "rgba(16,185,129,0.08)",  color: "#10b981" },
+  delivered: { background: "rgba(16,185,129,0.08)",  color: "#10b981" },
+  completed: { background: "rgba(16,185,129,0.08)",  color: "#10b981" },
+  cancelled: { background: "rgba(239,68,68,0.08)",   color: "#ef4444" },
+};
+
+function PurchaseRow({ order }: { order: BuyerOrder }) {
+  const statusStyle = PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
+  return (
+    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
+      <Link
+        href={`/dashboard/orders/${order.id}`}
+        className="flex items-center gap-4 rounded-2xl border p-4 transition-colors hover:bg-[#faf9f7]"
+        style={{ borderColor: "#e8e4dc" }}
+      >
+        <div
+          className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
+          style={{ background: "#f0ece5" }}
+        >
+          {order.listing.images?.[0] ? (
+            <CldImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
+          ) : (
+            <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold truncate" style={{ color: "#16130f" }}>{order.listing.title}</p>
+          <p className="text-xs mt-0.5 font-medium" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
+          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
+              style={statusStyle}
+            >
+              {PURCHASE_STATUS_LABEL[order.status] ?? order.status}
+            </span>
+            <span className="flex items-center gap-0.5 text-[10px]" style={{ color: "#a8a09a" }}>
+              {order.delivery_type === "delivery" ? <><Truck size={9} strokeWidth={2} /> Delivery</> : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
+            </span>
+          </div>
+        </div>
+        <ChevronRight size={16} strokeWidth={1.5} style={{ color: "#c8c2bb" }} />
+      </Link>
+    </motion.div>
+  );
+}
+
+function PurchasesPanel() {
+  const { data: orders, isLoading } = useBuyerOrders();
+
+  if (isLoading) {
+    return <div className="flex flex-col gap-3">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
+  }
+
+  if (!orders || orders.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-24 text-center">
+        <div
+          className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
+          style={{
+            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
+            boxShadow: "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
+        >
+          <span className="text-3xl">🛍️</span>
+        </div>
+        <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>No purchases yet</p>
+        <p className="text-sm max-w-xs leading-relaxed mb-6" style={{ color: "#a8a09a" }}>
+          When you buy something on Declutter, your orders will appear here.
+        </p>
+        <Link
+          href="/listings"
+          className="rounded-xl border px-5 py-2 text-sm font-medium transition-colors hover:bg-card"
+          style={{ borderColor: "#e8e4dc", color: "#78726c" }}
+        >
+          Browse listings
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {orders.map((order) => <PurchaseRow key={order.id} order={order} />)}
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+type TopTab = "sales" | "purchases";
+
+function OrdersPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const topTab: TopTab = searchParams.get("tab") === "purchases" ? "purchases" : "sales";
+
+  function setTopTab(tab: TopTab) {
+    router.replace(`/dashboard/orders?tab=${tab}`);
+  }
+
+  return (
+    <div className="space-y-6 max-w-3xl">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>Orders</h1>
+        <p className="mt-1 text-sm" style={{ color: "#78726c" }}>
+          {topTab === "sales" ? "Manage orders from buyers." : "Track everything you've bought on Declutter."}
+        </p>
+      </motion.div>
+
+      {/* Top toggle */}
+      <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: "#e8e4dc" }}>
+        {(["sales", "purchases"] as TopTab[]).map((tab) => {
+          const isActive = topTab === tab;
+          return (
+            <button
+              key={tab}
+              onClick={() => setTopTab(tab)}
+              className="rounded-full px-5 py-2 text-xs font-semibold capitalize transition-all duration-200"
+              style={{
+                background: isActive ? "white" : "transparent",
+                color: isActive ? "#16130f" : "#78726c",
+                boxShadow: isActive ? "0 1px 4px rgba(22,19,15,0.10)" : "none",
+              }}
+            >
+              {tab}
+            </button>
+          );
+        })}
+      </div>
+
+      {topTab === "sales" ? <SalesPanel /> : <PurchasesPanel />}
+    </div>
+  );
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense>
+      <OrdersPageContent />
+    </Suspense>
   );
 }
