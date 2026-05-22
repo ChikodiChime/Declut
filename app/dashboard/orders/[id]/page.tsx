@@ -4,7 +4,7 @@
 import Link from 'next/link'
 import { use, useState } from 'react'
 import { motion } from 'framer-motion'
-import { CldImage } from 'next-cloudinary'
+import { ListingImage } from '@/components/ui'
 import { Package, Truck, MapPin, ArrowLeft, Mail, KeyRound } from 'lucide-react'
 import { toast } from 'sonner'
 import { useBuyerOrderDetail } from '@/lib/hooks/useBuyerOrders'
@@ -121,7 +121,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
         <div className="rounded-2xl border p-5 flex gap-4 bg-card" style={{ borderColor: '#e8e4dc' }}>
           <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: '#f0ece5' }}>
             {order.listing.images?.[0] ? (
-              <CldImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
+              <ListingImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
             ) : (
               <Package size={22} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
             )}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowRight, MapPin, Package } from "lucide-react";
 import { motion } from "framer-motion";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import { BrowseCard } from "@/components/listings";
 import type { Listing } from "@/types";
 
@@ -92,7 +92,7 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
             {/* Image */}
             <div className="relative h-56 w-full shrink-0 overflow-hidden bg-[#f5f1eb] md:h-auto md:w-[52%]">
               {hero.images[0] ? (
-                <CldImage
+                <ListingImage
                   src={hero.images[0]}
                   fill
                   sizes="(max-width: 768px) 100vw, 52vw"

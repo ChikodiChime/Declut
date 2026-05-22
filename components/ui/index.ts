@@ -1,4 +1,5 @@
 export { Input } from './Input';
+export { ListingImage } from './ListingImage';
 export { CustomDropdown } from './CustomDropdown';
 export { Button } from './Button';
 export { CategoryPicker } from './CategoryPicker';

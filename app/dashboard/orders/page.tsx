@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { motion } from "framer-motion";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import {
   Package,
   MapPin,
@@ -142,7 +142,7 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
         style={{ background: "#f0ece5" }}
       >
         {order.listing.images?.[0] ? (
-          <CldImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
+          <ListingImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
         ) : (
           <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
         )}
@@ -265,7 +265,7 @@ function PurchaseRow({ order }: { order: BuyerOrder }) {
           style={{ background: "#f0ece5" }}
         >
           {order.listing.images?.[0] ? (
-            <CldImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
+            <ListingImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
           ) : (
             <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
           )}

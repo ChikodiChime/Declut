@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import { ArrowLeft, MapPin, Pencil, Package } from "lucide-react";
 import { Button } from "@/components/ui";
 import { useListing } from "@/lib/hooks/useListings";
@@ -99,7 +99,7 @@ export default function ListingDetailsPage({
       <article className="bg-card rounded-2xl shadow-card overflow-hidden">
         <div className="relative aspect-4/3 md:aspect-2/1 bg-surface">
           {listing.images[0] ? (
-            <CldImage
+            <ListingImage
               src={listing.images[0]}
               fill
               sizes="(max-width: 768px) 100vw, 896px"

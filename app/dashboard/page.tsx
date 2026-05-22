@@ -18,7 +18,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { useMyListings } from "@/lib/hooks/useListings";
 import { useMe } from "@/lib/hooks/useAuth";
 import { useBuyerOrders } from "@/lib/hooks/useBuyerOrders";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import { PURCHASE_STATUS_STYLE, PURCHASE_STATUS_LABEL } from "@/lib/constants/orderStatus";
 
 function fadeUp(delay: number) {
@@ -261,7 +261,7 @@ export default function DashboardPage() {
                 <Link key={order.id} href={`/dashboard/orders/${order.id}`} className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface transition-colors group">
                   <div className="relative w-10 h-10 rounded-lg bg-border overflow-hidden shrink-0">
                     {order.listing.images?.[0] ? (
-                      <CldImage src={order.listing.images[0]} fill sizes="40px" className="object-cover" alt={order.listing.title} />
+                      <ListingImage src={order.listing.images[0]} fill sizes="40px" className="object-cover" alt={order.listing.title} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Package size={16} className="text-text-muted" />

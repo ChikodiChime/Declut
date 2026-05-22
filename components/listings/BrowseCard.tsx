@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import { Package, MapPin, ShoppingCart, Gift } from "lucide-react";
 import { useCart } from "@/lib/hooks/useCart";
 import { addToSessionCart } from "@/lib/session-cart";
@@ -110,7 +110,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       {/* Image */}
       <div className="relative aspect-4/3 overflow-hidden" style={{ background: type.bg }}>
         {listing.images[0] ? (
-          <CldImage
+          <ListingImage
             src={listing.images[0]}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

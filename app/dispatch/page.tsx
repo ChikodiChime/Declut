@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CldImage } from 'next-cloudinary'
+import { ListingImage } from '@/components/ui'
 import { Package, MapPin, KeyRound } from 'lucide-react'
 import {
   useAvailableOrders,
@@ -36,7 +36,7 @@ function AvailableOrderCard({ order }: { order: DispatchOrder }) {
     >
       <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: '#f0ece5' }}>
         {order.listing.images?.[0] ? (
-          <CldImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
+          <ListingImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
         ) : (
           <Package size={18} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
         )}
@@ -76,7 +76,7 @@ function DeliveryCard({ order }: { order: DispatchOrder }) {
       <div className="flex gap-4 mb-4">
         <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: '#f0ece5' }}>
           {order.listing.images?.[0] ? (
-            <CldImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
+            <ListingImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
           ) : (
             <Package size={18} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
           )}

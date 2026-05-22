@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import { Pencil, Trash2, AlertTriangle, Package } from "lucide-react";
 import { Button, CustomDropdown } from "@/components/ui";
 import { useDeleteListing, useUpdateListing } from "@/lib/hooks/useListings";
@@ -66,7 +66,7 @@ export function ListingCard({
       {/* Image */}
       <div className="relative aspect-4/3 bg-surface rounded-t-xl overflow-hidden">
         {listing.images[0] ? (
-          <CldImage
+          <ListingImage
             src={listing.images[0]}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

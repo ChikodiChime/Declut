@@ -1,7 +1,7 @@
 "use client";
 
 import { MapPin, Package } from "lucide-react";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import type { Listing } from "@/types";
 
 const TYPE_LABEL: Record<string, string> = { for_sale: "For Sale", free: "Free", donate: "Donate" };
@@ -24,7 +24,7 @@ export function CarouselCard({ listing }: { listing: Listing }) {
     >
       <div className="relative w-full bg-[#f4f1ec]" style={{ aspectRatio: "4/3" }}>
         {listing.images[0] ? (
-          <CldImage
+          <ListingImage
             src={listing.images[0]}
             fill
             sizes="280px"

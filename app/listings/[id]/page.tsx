@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { CldImage } from "next-cloudinary";
+import { ListingImage } from "@/components/ui";
 import {
   ArrowLeft,
   MapPin,
@@ -65,7 +65,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     <div className="flex flex-col gap-3">
       {/* Main image */}
       <div className="relative aspect-4/3 bg-surface rounded-xl overflow-hidden">
-        <CldImage
+        <ListingImage
           src={images[active]}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
@@ -112,7 +112,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
                 i === active ? "border-primary" : "border-transparent"
               }`}
             >
-              <CldImage
+              <ListingImage
                 src={img}
                 fill
                 sizes="64px"
