@@ -17,7 +17,7 @@ export default function CheckoutSuccessPage() {
     window.dispatchEvent(new Event('cart-updated'))
   }, [])
 
-  const trackHref = !isLoading && me === null ? LOGIN_THEN_ORDERS_URL : ORDERS_URL
+  const trackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL
 
   return (
     <main className="min-h-screen bg-surface">

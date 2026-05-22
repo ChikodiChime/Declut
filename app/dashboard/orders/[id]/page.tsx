@@ -77,6 +77,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
         return
       }
       await refetch()
+      toast.success('Order cancelled. Your refund is on the way.')
     } finally {
       setCancelling(false)
     }
