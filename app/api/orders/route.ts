@@ -73,13 +73,13 @@ export async function POST(req: Request) {
     item_price: group.subtotal,
     delivery_fee: group.delivery_fee,
     total_price: group.total,
-    ...(authUser && delivery_address && { buyer_address: delivery_address.trim() }),
     ...(buyer_info && {
       buyer_name: buyer_info.name,
       buyer_email: buyer_info.email,
       buyer_phone: buyer_info.phone,
       buyer_address: buyer_info.address,
     }),
+    ...(authUser && delivery_type === 'delivery' && delivery_address && { buyer_address: delivery_address.trim() }),
   }))
 
   const { data: orders, error: ordersError } = await supabaseAdmin
