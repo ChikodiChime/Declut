@@ -29,8 +29,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Dispatcher register page is public
-  if (pathname === '/dispatch/register') {
+  // Dispatcher auth pages are public
+  if (pathname === '/dispatch/register' || pathname === '/dispatch/login') {
     return NextResponse.next()
   }
 
@@ -40,6 +40,7 @@ export async function proxy(request: NextRequest) {
   const isCartOrCheckout =
     pathname.startsWith('/api/cart') ||
     pathname === '/api/orders' ||
+    pathname === '/api/orders/settle' ||
     pathname === '/cart' ||
     pathname.startsWith('/checkout')
 
@@ -49,6 +50,9 @@ export async function proxy(request: NextRequest) {
     if (isCartOrCheckout) return NextResponse.next()
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (pathname.startsWith('/dispatch')) {
+      return NextResponse.redirect(new URL('/dispatch/login', request.url))
     }
     return NextResponse.redirect(
       new URL(`/auth/login?next=${encodeURIComponent(pathname)}`, request.url)
@@ -83,8 +87,28 @@ export async function proxy(request: NextRequest) {
 
   const isDispatcher = payload.account_type === 'dispatcher'
 
-  // Dispatchers can only access /dispatch and /api/dispatch
-  if (isDispatcher && !pathname.startsWith('/dispatch') && !pathname.startsWith('/api/dispatch')) {
+  // Dispatcher home is /dispatch, not /dashboard
+  if (isDispatcher && pathname === '/dashboard') {
+    return NextResponse.redirect(new URL('/dispatch', request.url))
+  }
+
+  // Dispatchers cannot access seller management or other user dashboards
+  // but CAN buy things and track their own purchases
+  const isDispatcherForbidden =
+    isDispatcher &&
+    !pathname.startsWith('/dispatch') &&
+    !pathname.startsWith('/api/dispatch') &&
+    !pathname.startsWith('/api/buyer') &&
+    !pathname.startsWith('/api/cart') &&
+    !pathname.startsWith('/api/orders') &&
+    !pathname.startsWith('/cart') &&
+    !pathname.startsWith('/checkout') &&
+    !pathname.startsWith('/listings') &&
+    !pathname.startsWith('/api/listings') &&
+    pathname !== '/dashboard/orders' &&
+    !pathname.startsWith('/dashboard/orders/')
+
+  if (isDispatcherForbidden) {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
@@ -118,6 +142,7 @@ export const config = {
     '/api/cart/:path*',
     '/api/orders/:path*',
     '/api/buyer/:path*',
+    '/api/seller/:path*',
     '/api/dispatch/:path*',
     '/api/stripe/:path*',
     '/api/cron/:path*',

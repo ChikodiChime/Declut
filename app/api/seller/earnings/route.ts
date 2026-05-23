@@ -37,6 +37,7 @@ function deriveTransferStatus(stripe_transfer_id: string | null): TransferStatus
 export async function GET() {
   const authUser = await getAuthUser()
   if (!authUser) return err('Unauthorized', 'UNAUTHORIZED', 401)
+  if (authUser.account_type === 'dispatcher') return err('Forbidden', 'FORBIDDEN', 403)
 
   const { data: orders, error: ordersError } = await supabaseAdmin
     .from('orders')
@@ -71,13 +72,17 @@ export async function GET() {
 
   const total_gross = earningsOrders.reduce((s, o) => s + o.item_price, 0)
   const total_fee = earningsOrders.reduce((s, o) => s + o.fee, 0)
-  const total_net = earningsOrders.reduce((s, o) => s + o.net, 0)
+  const total_net = total_gross - total_fee
 
-  const { data: user } = await supabaseAdmin
+  const { data: user, error: userError } = await supabaseAdmin
     .from('users')
     .select('stripe_account_id, stripe_onboarding_complete')
     .eq('id', authUser.id)
     .single()
+
+  if (userError) {
+    console.error('Fetch user stripe fields error:', userError)
+  }
 
   let stripe_available = 0
   let stripe_pending = 0
