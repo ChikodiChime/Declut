@@ -382,6 +382,111 @@ export default function CartPage() {
     );
   }
 
+  // ── Delivery address step (logged-in users, delivery only) ───────────────
+
+  if (showDeliveryStep && user) {
+    const hasSavedAddress = Boolean(user.address)
+    const showTextarea = !hasSavedAddress || useNewAddress
+
+    return (
+      <main className="min-h-screen bg-surface">
+        <div className="max-w-5xl mx-auto px-6 py-16">
+          <h1 className="font-display text-3xl font-bold text-text mb-10">
+            Your cart
+          </h1>
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
+            <div>
+              <button
+                onClick={() => { setShowDeliveryStep(false); setUseNewAddress(false); setError('') }}
+                className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-6"
+              >
+                <ChevronLeft size={16} />
+                Back to cart
+              </button>
+
+              <h2 className="font-display text-2xl font-bold text-text mb-6">
+                Where should we deliver?
+              </h2>
+
+              {hasSavedAddress && !useNewAddress && (
+                <div className="rounded-2xl border border-border bg-card p-5 mb-4">
+                  <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">
+                    Saved address
+                  </p>
+                  <p className="text-sm text-text whitespace-pre-line">{user.address}</p>
+                </div>
+              )}
+
+              {showTextarea && (
+                <textarea
+                  autoFocus
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors min-h-[90px] resize-none mb-4"
+                  placeholder="Enter your full delivery address"
+                />
+              )}
+
+              {hasSavedAddress && !useNewAddress && (
+                <button
+                  onClick={() => { setUseNewAddress(true); setDeliveryAddress('') }}
+                  className="text-sm text-text-muted hover:text-text underline underline-offset-2 transition-colors"
+                >
+                  Use a different address
+                </button>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start">
+              <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-5">
+                Order summary
+              </p>
+              <div className="space-y-4">
+                {groups.map((group) => (
+                  <div key={group.seller_id} className="space-y-1.5">
+                    {group.items.map((item) => (
+                      <div key={item.id} className="flex items-start justify-between gap-3">
+                        <span className="text-sm text-text truncate">{item.listing.title}</span>
+                        <span className="text-sm text-text shrink-0">
+                          ₦{item.listing.price.toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                    {group.delivery_fee > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-sm text-text-muted">Delivery</span>
+                        <span className="text-sm text-text-muted">
+                          ₦{group.delivery_fee.toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="border-t border-border my-5" />
+              <div className="flex items-baseline justify-between mb-6">
+                <span className="text-sm font-medium text-text-muted">Total</span>
+                <span className="font-display text-2xl font-bold text-text">
+                  ₦{grandTotal.toLocaleString()}
+                </span>
+              </div>
+              <button
+                onClick={handleDeliveryAddressConfirm}
+                disabled={checkingOut}
+                className="w-full rounded-xl bg-foreground text-white py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {checkingOut ? 'Preparing…' : hasSavedAddress && !useNewAddress ? 'Deliver here' : 'Continue to payment'}
+              </button>
+              {error && (
+                <p className="mt-3 text-sm text-error text-center">{error}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   // ── Main cart ────────────────────────────────────────────────────────────
 
   return (

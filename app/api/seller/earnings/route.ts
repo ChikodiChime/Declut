@@ -33,7 +33,7 @@ export async function GET() {
 
   const earningsOrders: EarningsOrder[] = (orders ?? []).map((o) => {
     type OrderItemRow = { listing: { title: string; images: string[] } | null }
-    const firstItem = (o.order_items as OrderItemRow[] | null)?.[0]
+    const firstItem = (o.order_items as unknown as OrderItemRow[] | null)?.[0]
     const fee = Math.round(o.item_price * PLATFORM_FEE_PERCENT)
     const net = o.item_price - fee
     return {
@@ -69,7 +69,7 @@ export async function GET() {
   if (user?.stripe_account_id && user.stripe_onboarding_complete) {
     try {
       const [balance, payouts] = await Promise.all([
-        stripe.balance.retrieve({ stripeAccount: user.stripe_account_id }),
+        stripe.balance.retrieve({}, { stripeAccount: user.stripe_account_id }),
         stripe.payouts.list(
           { limit: 1, status: 'pending' },
           { stripeAccount: user.stripe_account_id }
