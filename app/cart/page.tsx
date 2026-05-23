@@ -191,6 +191,7 @@ export default function CartPage() {
     if (deliveryType === 'delivery') {
       setError('')
       setUseNewAddress(false)
+      setDeliveryAddress(user?.address ?? '')
       setShowDeliveryStep(true)
       return
     }
@@ -418,13 +419,19 @@ export default function CartPage() {
               )}
 
               {showTextarea && (
-                <textarea
-                  autoFocus
-                  value={deliveryAddress}
-                  onChange={(e) => setDeliveryAddress(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors min-h-[90px] resize-none mb-4"
-                  placeholder="Enter your full delivery address"
-                />
+                <div>
+                  <label htmlFor="delivery-address" className="block text-sm font-medium text-text mb-1.5">
+                    Delivery address
+                  </label>
+                  <textarea
+                    id="delivery-address"
+                    autoFocus
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors min-h-[90px] resize-none mb-4"
+                    placeholder="Enter your full delivery address"
+                  />
+                </div>
               )}
 
               {hasSavedAddress && !useNewAddress && (
