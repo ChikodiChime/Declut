@@ -40,7 +40,7 @@ const BADGE_CONFIG = {
 } as const
 
 function TransferBadge({ status }: { status: EarningsOrder['transfer_status'] }) {
-  const { label, bg, color } = BADGE_CONFIG[status]
+  const { label, bg, color } = BADGE_CONFIG[status] ?? BADGE_CONFIG.pending
   return (
     <span
       className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium"
@@ -149,7 +149,7 @@ function RowSkeleton() {
 }
 
 function EarningsSection() {
-  const { data, isLoading } = useSellerEarnings()
+  const { data, isLoading, isError } = useSellerEarnings()
 
   const summary: EarningsSummary = data?.summary ?? {
     total_gross: 0,
@@ -171,6 +171,11 @@ function EarningsSection() {
       transition={{ duration: 0.3 }}
       className="space-y-4"
     >
+      {isError && (
+        <p className="text-sm" style={{ color: '#ef4444' }}>
+          Could not load earnings. Please refresh.
+        </p>
+      )}
       <h2 className="text-base font-semibold" style={{ color: '#16130f' }}>Earnings</h2>
 
       {/* Summary cards */}
@@ -306,7 +311,7 @@ function BillingContent() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6 py-10 px-4">
+    <div className="mx-auto max-w-2xl space-y-6 py-10 px-4">
       {searchParams.get('from') === 'new-listing' && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           Connect your payout account before creating a listing.
