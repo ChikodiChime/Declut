@@ -45,10 +45,16 @@ export async function PATCH(req: Request) {
   }
 
   if (avatar_url !== undefined) {
-    if (typeof avatar_url !== 'string' || avatar_url.trim().length === 0 || avatar_url.trim().length > 500) {
+    if (typeof avatar_url !== 'string') {
       return err('Invalid avatar_url', 'VALIDATION_ERROR', 400)
     }
-    updates.avatar_url = avatar_url.trim()
+    const trimmedUrl = avatar_url.trim()
+    const isCloudinaryId = /^[\w\-/]+$/.test(trimmedUrl)
+    const isHttpsUrl = trimmedUrl.startsWith('https://')
+    if (!trimmedUrl || trimmedUrl.length > 500 || (!isCloudinaryId && !isHttpsUrl)) {
+      return err('Invalid avatar_url', 'VALIDATION_ERROR', 400)
+    }
+    updates.avatar_url = trimmedUrl
   }
 
   const { data: user, error } = await supabaseAdmin

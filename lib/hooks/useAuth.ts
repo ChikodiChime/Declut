@@ -60,8 +60,9 @@ export function useSignIn() {
       }
       const params = new URLSearchParams(window.location.search)
       const next = params.get('next')
+      const isSafeRelative = next && next.startsWith('/') && !next.startsWith('//')
       const accountType = json.data.user?.account_type
-      if (next) {
+      if (isSafeRelative) {
         router.push(next)
       } else if (accountType === 'dispatcher') {
         router.push('/dispatch')

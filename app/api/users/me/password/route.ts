@@ -32,7 +32,12 @@ export async function POST(req: Request) {
 
   if (error || !user) return err('User not found', 'NOT_FOUND', 404)
 
-  const valid = await comparePassword(current_password, user.password_hash)
+  let valid: boolean
+  try {
+    valid = await comparePassword(current_password, user.password_hash)
+  } catch {
+    return err('Current password is incorrect', 'INVALID_PASSWORD', 400)
+  }
   if (!valid) return err('Current password is incorrect', 'INVALID_PASSWORD', 400)
 
   const hash = await hashPassword(new_password)

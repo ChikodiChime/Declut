@@ -14,7 +14,7 @@ export interface ModalProps {
 
 export function Modal({ open, onClose, title, children }: ModalProps) {
   useEffect(() => {
-    if (!open) return
+    if (!open || typeof window === 'undefined') return
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
     }
