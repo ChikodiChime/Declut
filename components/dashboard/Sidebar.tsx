@@ -25,13 +25,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/listings", label: "My Listings", icon: Package },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
-  {
-    href: "/dashboard/payouts",
-    label: "Payouts",
-    icon: CreditCard,
-    badge: "Soon",
-    disabled: true,
-  },
+  { href: "/dashboard/billing", label: "Payouts", icon: CreditCard },
 ];
 
 export function Sidebar() {
