@@ -13,6 +13,8 @@ describe('formatUserResponse', () => {
       stripe_account_id: 'acct_secret_123',
       stripe_onboarding_complete: false,
       avatar_url: null,
+      phone: null,
+      address: null,
       created_at: '2026-01-01T00:00:00Z',
       email_verified: false,
       otp_code: null,

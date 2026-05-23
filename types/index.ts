@@ -1,4 +1,4 @@
-export type AccountType = 'individual' | 'business' | 'buyer' | 'dispatcher'
+export type AccountType = 'individual' | 'business' | 'dispatcher'
 export type ListingType = 'for_sale' | 'free' | 'donate'
 export type Condition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
 export type ListingStatus = 'available' | 'sold' | 'claimed' | 'donated'
@@ -14,6 +14,8 @@ export interface User {
   stripe_account_id: string | null
   stripe_onboarding_complete: boolean
   avatar_url: string | null
+  phone: string | null
+  address: string | null
   created_at: string
   email_verified: boolean
   otp_code: string | null

@@ -17,6 +17,8 @@ import {
   Eye,
   EyeOff,
   Loader2,
+  Phone,
+  MapPin,
 } from 'lucide-react'
 import { useMe, useUpdateProfile, useChangePassword, useSendVerification } from '@/lib/hooks/useAuth'
 import { useUploadImage } from '@/lib/hooks/useListings'
@@ -237,6 +239,68 @@ function AccountSection({ me }: { me: ReturnType<typeof useMe>['data'] }) {
           {stripeConnected ? 'Manage' : 'Set up'}
           <ChevronRight size={12} strokeWidth={2.5} />
         </Link>
+      </div>
+    </motion.div>
+  )
+}
+
+// ─── Contact section ──────────────────────────────────────────────────────────
+
+function ContactSection({
+  me,
+  onEditPhone,
+  onEditAddress,
+}: {
+  me: ReturnType<typeof useMe>['data']
+  onEditPhone: () => void
+  onEditAddress: () => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay: 0.11 }}
+      className="rounded-2xl border border-border bg-card overflow-hidden divide-y divide-border"
+      style={{ boxShadow: 'var(--shadow-card)' }}
+    >
+      {/* Phone */}
+      <div className="flex items-center gap-4 px-5 py-4">
+        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
+          <Phone size={15} strokeWidth={1.75} className="text-text-muted" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Phone</p>
+          <p className="text-sm font-medium text-text mt-0.5 truncate">
+            {me?.phone ?? <span className="text-text-subtle italic">Not set</span>}
+          </p>
+        </div>
+        <button
+          onClick={onEditPhone}
+          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-text transition-colors"
+        >
+          {me?.phone ? 'Edit' : 'Add'}
+          <ChevronRight size={12} strokeWidth={2.5} />
+        </button>
+      </div>
+
+      {/* Address */}
+      <div className="flex items-center gap-4 px-5 py-4">
+        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
+          <MapPin size={15} strokeWidth={1.75} className="text-text-muted" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Delivery address</p>
+          <p className="text-sm font-medium text-text mt-0.5 truncate">
+            {me?.address ?? <span className="text-text-subtle italic">Not set</span>}
+          </p>
+        </div>
+        <button
+          onClick={onEditAddress}
+          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-text transition-colors"
+        >
+          {me?.address ? 'Edit' : 'Add'}
+          <ChevronRight size={12} strokeWidth={2.5} />
+        </button>
       </div>
     </motion.div>
   )
@@ -577,9 +641,112 @@ function PasswordForm({ onClose }: { onClose: () => void }) {
   )
 }
 
+// ─── Phone modal form ─────────────────────────────────────────────────────────
+
+function PhoneForm({ currentPhone, onClose }: { currentPhone: string; onClose: () => void }) {
+  const [phone, setPhone] = useState(currentPhone)
+  const [error, setError] = useState('')
+  const { mutate, isPending } = useUpdateProfile()
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = phone.trim()
+    if (!trimmed) { setError('Phone number cannot be empty'); return }
+    if (trimmed.length > 30) { setError('Phone must be 30 characters or less'); return }
+    setError('')
+    mutate({ phone: trimmed }, { onSuccess: onClose, onError: (e) => setError(e.message) })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-xs font-medium text-text-muted mb-1.5">Phone number</label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          maxLength={30}
+          className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+          placeholder="+234 800 000 0000"
+          autoFocus
+        />
+        {error && <p className="mt-1.5 text-xs text-error">{error}</p>}
+      </div>
+      <div className="flex gap-2.5 pt-1">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
+        >
+          {isPending ? 'Saving…' : 'Save'}
+        </button>
+      </div>
+    </form>
+  )
+}
+
+// ─── Address modal form ───────────────────────────────────────────────────────
+
+function AddressForm({ currentAddress, onClose }: { currentAddress: string; onClose: () => void }) {
+  const [address, setAddress] = useState(currentAddress)
+  const [error, setError] = useState('')
+  const { mutate, isPending } = useUpdateProfile()
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const trimmed = address.trim()
+    if (!trimmed) { setError('Address cannot be empty'); return }
+    if (trimmed.length > 300) { setError('Address must be 300 characters or less'); return }
+    setError('')
+    mutate({ address: trimmed }, { onSuccess: onClose, onError: (e) => setError(e.message) })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-xs font-medium text-text-muted mb-1.5">Delivery address</label>
+        <textarea
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          maxLength={300}
+          rows={3}
+          className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors resize-none"
+          placeholder="House number, street, area, city"
+          autoFocus
+        />
+        <p className="mt-1 text-[10px] text-text-subtle text-right">{address.length}/300</p>
+        {error && <p className="mt-1 text-xs text-error">{error}</p>}
+      </div>
+      <div className="flex gap-2.5 pt-1">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
+        >
+          {isPending ? 'Saving…' : 'Save'}
+        </button>
+      </div>
+    </form>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type ModalType = 'name' | 'avatar' | 'password' | null
+type ModalType = 'name' | 'avatar' | 'password' | 'phone' | 'address' | null
 
 export default function ProfilePage() {
   const { data: me } = useMe()
@@ -606,6 +773,12 @@ export default function ProfilePage() {
 
       <AccountSection me={me} />
 
+      <ContactSection
+        me={me}
+        onEditPhone={() => setModal('phone')}
+        onEditAddress={() => setModal('address')}
+      />
+
       <SecuritySection onChangePassword={() => setModal('password')} />
 
       {/* Name modal */}
@@ -620,6 +793,16 @@ export default function ProfilePage() {
           currentName={me?.name}
           onClose={close}
         />
+      </Modal>
+
+      {/* Phone modal */}
+      <Modal open={modal === 'phone'} onClose={close} title={me?.phone ? 'Edit phone number' : 'Add phone number'}>
+        <PhoneForm currentPhone={me?.phone ?? ''} onClose={close} />
+      </Modal>
+
+      {/* Address modal */}
+      <Modal open={modal === 'address'} onClose={close} title={me?.address ? 'Edit delivery address' : 'Add delivery address'}>
+        <AddressForm currentAddress={me?.address ?? ''} onClose={close} />
       </Modal>
 
       {/* Password modal */}
