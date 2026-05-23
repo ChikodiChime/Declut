@@ -1,34 +1,8 @@
 // lib/hooks/useSellerEarnings.ts
-'use client'
-
 import { useQuery } from '@tanstack/react-query'
+import type { EarningsData } from '@/lib/types/earnings'
 
-export type TransferStatus = 'transferred' | 'processing' | 'pending'
-
-export type EarningsOrder = {
-  id: string
-  listing_title: string
-  listing_image: string | null
-  created_at: string
-  item_price: number
-  fee: number
-  net: number
-  transfer_status: TransferStatus
-}
-
-export type EarningsSummary = {
-  total_gross: number
-  total_fee: number
-  total_net: number
-  stripe_available: number
-  stripe_pending: number
-  next_payout_date: string | null
-}
-
-export type EarningsData = {
-  summary: EarningsSummary
-  orders: EarningsOrder[]
-}
+export type { TransferStatus, EarningsOrder, EarningsSummary, EarningsData } from '@/lib/types/earnings'
 
 export function useSellerEarnings() {
   return useQuery<EarningsData>({
@@ -39,5 +13,6 @@ export function useSellerEarnings() {
       if (!res.ok) throw new Error(json.error?.message ?? 'Failed to fetch earnings')
       return json.data
     },
+    staleTime: 60 * 1000,
   })
 }

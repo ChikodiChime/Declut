@@ -3,30 +3,9 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { stripe } from '@/lib/stripe'
 import { ok, err } from '@/lib/api-response'
+import type { TransferStatus, EarningsOrder, EarningsSummary } from '@/lib/types/earnings'
 
 const PLATFORM_FEE_PERCENT = 10
-
-export type TransferStatus = 'transferred' | 'processing' | 'pending'
-
-export type EarningsOrder = {
-  id: string
-  listing_title: string
-  listing_image: string | null
-  created_at: string
-  item_price: number
-  fee: number
-  net: number
-  transfer_status: TransferStatus
-}
-
-export type EarningsSummary = {
-  total_gross: number
-  total_fee: number
-  total_net: number
-  stripe_available: number   // kobo — divide by 100 to display as ₦
-  stripe_pending: number     // kobo
-  next_payout_date: string | null  // ISO string or null
-}
 
 function deriveTransferStatus(stripe_transfer_id: string | null): TransferStatus {
   if (!stripe_transfer_id) return 'pending'
