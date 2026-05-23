@@ -55,6 +55,16 @@ export function useSignIn() {
       queryClient.invalidateQueries({ queryKey: ['me'] })
       if (!json.data.emailVerified) {
         router.push('/verify-email')
+        router.refresh()
+        return
+      }
+      const params = new URLSearchParams(window.location.search)
+      const next = params.get('next')
+      const accountType = json.data.user?.account_type
+      if (next) {
+        router.push(next)
+      } else if (accountType === 'dispatcher') {
+        router.push('/dispatch')
       } else {
         router.push('/dashboard')
       }
@@ -118,5 +128,39 @@ export function useMe() {
       return json.data
     },
     staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: { name?: string; avatar_url?: string }) => {
+      const res = await fetch('/api/users/me', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error?.message ?? 'Failed to update profile')
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['me'] })
+    },
+  })
+}
+
+export function useChangePassword() {
+  return useMutation({
+    mutationFn: async (input: { current_password: string; new_password: string }) => {
+      const res = await fetch('/api/users/me/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(input),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error?.message ?? 'Failed to change password')
+      return data
+    },
   })
 }
