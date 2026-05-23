@@ -171,14 +171,15 @@ function EarningsSection() {
       transition={{ duration: 0.3 }}
       className="space-y-4"
     >
+      <h2 className="text-base font-semibold" style={{ color: '#16130f' }}>Earnings</h2>
       {isError && (
         <p className="text-sm" style={{ color: '#ef4444' }}>
           Could not load earnings. Please refresh.
         </p>
       )}
-      <h2 className="text-base font-semibold" style={{ color: '#16130f' }}>Earnings</h2>
 
       {/* Summary cards */}
+      {!isError && (
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <SummaryCard
           icon={TrendingUp}
@@ -204,6 +205,7 @@ function EarningsSection() {
           value={isLoading ? '—' : nextPayout}
         />
       </div>
+      )}
 
       {/* Transaction list */}
       <div className="space-y-2">

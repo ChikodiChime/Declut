@@ -3,9 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { stripe } from '@/lib/stripe'
 import { ok, err } from '@/lib/api-response'
+import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 import type { TransferStatus, EarningsOrder, EarningsSummary } from '@/lib/types/earnings'
-
-const PLATFORM_FEE_PERCENT = 10
 
 function deriveTransferStatus(stripe_transfer_id: string | null): TransferStatus {
   if (!stripe_transfer_id) return 'pending'
@@ -35,7 +34,7 @@ export async function GET() {
   const earningsOrders: EarningsOrder[] = (orders ?? []).map((o) => {
     type OrderItemRow = { listing: { title: string; images: string[] } | null }
     const firstItem = (o.order_items as OrderItemRow[] | null)?.[0]
-    const fee = Math.round((o.item_price * PLATFORM_FEE_PERCENT) / 100)
+    const fee = Math.round(o.item_price * PLATFORM_FEE_PERCENT)
     const net = o.item_price - fee
     return {
       id: o.id,
@@ -51,7 +50,7 @@ export async function GET() {
 
   const total_gross = earningsOrders.reduce((s, o) => s + o.item_price, 0)
   const total_fee = earningsOrders.reduce((s, o) => s + o.fee, 0)
-  const total_net = total_gross - total_fee
+  const total_net = earningsOrders.reduce((s, o) => s + o.net, 0)
 
   const { data: user, error: userError } = await supabaseAdmin
     .from('users')
