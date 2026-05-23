@@ -22,8 +22,14 @@ export async function PATCH(req: Request) {
   const authUser = await getAuthUser()
   if (!authUser) return err('Unauthorized', 'UNAUTHORIZED', 401)
 
-  const body = await req.json()
-  const { name, avatar_url } = body as { name?: unknown; avatar_url?: unknown }
+  let body: { name?: unknown; avatar_url?: unknown }
+  try {
+    body = await req.json()
+  } catch {
+    return err('Invalid request body', 'PARSE_ERROR', 400)
+  }
+
+  const { name, avatar_url } = body
 
   if (name === undefined && avatar_url === undefined) {
     return err('At least one field required', 'VALIDATION_ERROR', 400)
@@ -39,7 +45,7 @@ export async function PATCH(req: Request) {
   }
 
   if (avatar_url !== undefined) {
-    if (typeof avatar_url !== 'string' || avatar_url.trim().length === 0) {
+    if (typeof avatar_url !== 'string' || avatar_url.trim().length === 0 || avatar_url.trim().length > 500) {
       return err('Invalid avatar_url', 'VALIDATION_ERROR', 400)
     }
     updates.avatar_url = avatar_url.trim()
