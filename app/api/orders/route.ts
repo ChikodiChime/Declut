@@ -13,10 +13,14 @@ export async function POST(req: Request) {
   const authUser = await getAuthUser()
 
   const body = await req.json()
-  const { delivery_type, listing_ids, buyer_info } = body
+  const { delivery_type, listing_ids, buyer_info, delivery_address } = body
 
   if (delivery_type !== 'delivery' && delivery_type !== 'pickup') {
     return err('delivery_type must be delivery or pickup', 'VALIDATION_ERROR', 400)
+  }
+
+  if (authUser && delivery_type === 'delivery' && (!delivery_address || typeof delivery_address !== 'string' || !delivery_address.trim())) {
+    return err('Delivery address is required', 'VALIDATION_ERROR', 400)
   }
 
   let items: CartItemWithListing[] = []
@@ -69,6 +73,7 @@ export async function POST(req: Request) {
     item_price: group.subtotal,
     delivery_fee: group.delivery_fee,
     total_price: group.total,
+    ...(authUser && delivery_address && { buyer_address: delivery_address.trim() }),
     ...(buyer_info && {
       buyer_name: buyer_info.name,
       buyer_email: buyer_info.email,
