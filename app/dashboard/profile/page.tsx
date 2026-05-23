@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { CldImage } from 'next-cloudinary'
 import Link from 'next/link'
@@ -160,7 +160,13 @@ function HeroCard({
 // ─── Account section ──────────────────────────────────────────────────────────
 
 function AccountSection({ me }: { me: ReturnType<typeof useMe>['data'] }) {
-  const { mutate: sendVerification, isPending, isSuccess, data: sendData } = useSendVerification()
+  const { mutate: sendVerification, isPending, isSuccess, data: sendData, reset } = useSendVerification()
+
+  useEffect(() => {
+    if (!isSuccess) return
+    const timer = setTimeout(reset, 30_000)
+    return () => clearTimeout(timer)
+  }, [isSuccess, reset])
 
   const stripeConnected = me?.stripe_onboarding_complete
 
@@ -339,11 +345,20 @@ function AvatarForm({
 
   const isPending = isUploading || isSaving
 
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { setError('Please select an image file'); return }
+    if (file.size > 5 * 1024 * 1024) { setError('Image must be under 5 MB'); return }
     setError('')
+    if (preview) URL.revokeObjectURL(preview)
     setPreview(URL.createObjectURL(file))
     setPendingBlob(file)
     e.target.value = ''
@@ -351,21 +366,24 @@ function AvatarForm({
 
   async function handleSave() {
     if (!pendingBlob) { onClose(); return }
+    let public_id: string
     try {
-      const { public_id } = await uploadImage(pendingBlob)
-      updateProfile(
-        { avatar_url: public_id },
-        {
-          onSuccess: () => {
-            if (preview) URL.revokeObjectURL(preview)
-            onClose()
-          },
-          onError: (err) => setError(err.message),
-        }
-      )
+      const result = await uploadImage(pendingBlob)
+      public_id = result.public_id
     } catch {
-      setError('Upload failed — please try again')
+      // useUploadImage already shows a toast on upload failure
+      return
     }
+    updateProfile(
+      { avatar_url: public_id },
+      {
+        onSuccess: () => {
+          if (preview) URL.revokeObjectURL(preview)
+          onClose()
+        },
+        onError: (err) => setError(err.message),
+      }
+    )
   }
 
   return (
@@ -470,14 +488,21 @@ function PasswordForm({ onClose }: { onClose: () => void }) {
   const [confirm, setConfirm] = useState('')
   const [errors, setErrors] = useState<{ current?: string; next?: string; confirm?: string }>({})
   const [success, setSuccess] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const { mutate, isPending } = useChangePassword()
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const errs: typeof errors = {}
     if (!current) errs.current = 'Required'
-    if (next.length < 8) errs.next = 'Must be at least 8 characters'
+    if (next.trim().length < 8) errs.next = 'Must be at least 8 characters'
     if (next !== confirm) errs.confirm = 'Passwords do not match'
     if (Object.keys(errs).length) { setErrors(errs); return }
     setErrors({})
@@ -487,7 +512,7 @@ function PasswordForm({ onClose }: { onClose: () => void }) {
       {
         onSuccess: () => {
           setSuccess(true)
-          setTimeout(onClose, 1200)
+          timerRef.current = setTimeout(onClose, 1200)
         },
         onError: (err) => {
           const msg = err.message
