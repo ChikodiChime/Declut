@@ -1,38 +1,172 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { CartIcon } from "./CartIcon";
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  LogOut,
+  ShoppingCart,
+} from "lucide-react";
+import { getSessionCart } from "@/lib/session-cart";
+import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 
-const HIDDEN_PREFIXES = ["/dashboard", "/auth"];
-const SCROLL_THRESHOLD = 24;
+const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch"];
+const SCROLL_THRESHOLD = 16;
 
-function NavLink({
-  href,
+function getInitials(name: string | null | undefined): string {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  return parts.length >= 2
+    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    : parts[0].slice(0, 2).toUpperCase();
+}
+
+function ProfileMenu({
+  name,
   transparent,
+}: {
+  name: string | null;
+  transparent: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { mutate: signOut } = useSignOut();
+
+  useEffect(() => {
+    function onOutsideClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
+    }
+    document.addEventListener("mousedown", onOutsideClick);
+    return () => document.removeEventListener("mousedown", onOutsideClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Account menu"
+        className="group focus:outline-none"
+      >
+        <span
+          className="w-9 h-9 rounded-full flex items-center justify-center text-[11.5px] font-semibold tracking-wide select-none transition-all duration-200"
+          style={
+            transparent
+              ? {
+                  background: "rgba(255,255,255,0.12)",
+                  color: "rgba(255,255,255,0.95)",
+                  boxShadow: open
+                    ? "0 0 0 2px rgba(255,255,255,0.45)"
+                    : "inset 0 0 0 1px rgba(255,255,255,0.22)",
+                  backdropFilter: "blur(10px)",
+                }
+              : {
+                  background: "#16130f",
+                  color: "white",
+                  boxShadow: open
+                    ? "0 0 0 3px rgba(22,19,15,0.12)"
+                    : "0 1px 2px rgba(22,19,15,0.12)",
+                }
+          }
+        >
+          {getInitials(name)}
+        </span>
+      </button>
+
+      {open && (
+        <div
+          className="absolute right-0 top-full mt-2.5 w-56 rounded-xl overflow-hidden z-50"
+          style={{
+            background: "#ffffff",
+            border: "1px solid #ede9e2",
+            boxShadow:
+              "0 4px 6px rgba(22,19,15,0.04), 0 16px 40px rgba(22,19,15,0.11)",
+          }}
+        >
+          {name && (
+            <div
+              className="px-4 py-3"
+              style={{ borderBottom: "1px solid #f0ece5" }}
+            >
+              <p
+                className="text-[11px] font-medium mb-0.5"
+                style={{ color: "#a8a09a" }}
+              >
+                Signed in as
+              </p>
+              <p
+                className="text-sm font-semibold truncate"
+                style={{ color: "#16130f" }}
+              >
+                {name}
+              </p>
+            </div>
+          )}
+          <div className="py-1">
+            <MenuLink
+              href="/dashboard"
+              icon={LayoutDashboard}
+              onClick={() => setOpen(false)}
+            >
+              Dashboard
+            </MenuLink>
+            <MenuLink
+              href="/dashboard/orders?tab=purchases"
+              icon={ShoppingBag}
+              onClick={() => setOpen(false)}
+            >
+              My purchases
+            </MenuLink>
+          </div>
+          <div style={{ borderTop: "1px solid #f0ece5" }} className="py-1">
+            <button
+              onClick={() => {
+                setOpen(false);
+                signOut();
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2 text-[13px] font-medium transition-colors text-left"
+              style={{ color: "#e53e3e" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#fff5f5")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
+            >
+              <LogOut size={14} strokeWidth={1.8} />
+              Sign out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MenuLink({
+  href,
+  icon: Icon,
+  onClick,
   children,
 }: {
   href: string;
-  transparent: boolean;
+  icon: React.ElementType;
+  onClick: () => void;
   children: React.ReactNode;
 }) {
   return (
     <Link
       href={href}
-      className="relative text-sm font-medium tracking-wide transition-opacity duration-200 hover:opacity-100 group"
-      style={{
-        color: transparent ? "rgba(255,255,255,0.75)" : "#78726c",
-        letterSpacing: "0.025em",
-      }}
+      onClick={onClick}
+      className="flex items-center gap-3 px-4 py-2 text-[13px] font-medium transition-colors"
+      style={{ color: "#16130f" }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "#f8f5f0")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
     >
+      <Icon size={14} strokeWidth={1.8} style={{ color: "#a8a09a" }} />
       {children}
-      <span
-        className="absolute -bottom-0.5 left-0 h-px w-full scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left"
-        style={{
-          background: transparent ? "rgba(255,255,255,0.5)" : "#78726c",
-        }}
-      />
     </Link>
   );
 }
@@ -40,6 +174,7 @@ function NavLink({
 export function NavbarWrapper() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const { data: me, isLoading } = useMe();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
@@ -50,93 +185,259 @@ export function NavbarWrapper() {
 
   if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
 
-  const transparent = pathname === "/" && !scrolled;
+  const DARK_HERO_ROUTES = ["/", "/listings"];
+  const hasDarkHero = DARK_HERO_ROUTES.includes(pathname);
+  const transparent = hasDarkHero && !scrolled;
+
+  // Colour tokens for the two visual modes
+  const linkColor = transparent ? "rgba(255,255,255,0.78)" : "#56524d";
+  const linkHover = transparent ? "#ffffff" : "#16130f";
 
   return (
     <header
-      className="sticky top-0 z-50 transition-[background,backdrop-filter] duration-300"
-      style={{
-        background: transparent ? "transparent" : "rgba(250,250,248,0.93)",
-        backdropFilter: transparent ? "none" : "blur(14px)",
-      }}
+      className="sticky top-0 z-50 pointer-events-none transition-all duration-300 ease-out"
+      style={{ paddingTop: scrolled ? 12 : 18 }}
     >
-      <div className="max-w-screen-xl mx-auto px-6 md:px-10 h-14 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="relative shrink-0 h-8 block" style={{ minWidth: 100 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo.svg"
-            alt="declut"
-            className="absolute inset-0 h-full w-auto transition-opacity duration-300"
-            style={{ opacity: transparent ? 0 : 1 }}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo-light.svg"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-auto transition-opacity duration-300"
-            style={{ opacity: transparent ? 1 : 0 }}
-          />
-        </Link>
+      <div
+        className="mx-auto transition-all duration-300 ease-out pointer-events-auto"
+        style={{
+          maxWidth: scrolled
+            ? "min(72rem, calc(100% - 24px))"
+            : "min(80rem, calc(100% - 24px))",
+          borderRadius: 9999,
+          background: transparent
+            ? "rgba(22,19,15,0.28)"
+            : "rgba(255,255,255,0.72)",
+          backdropFilter: "blur(16px) saturate(160%)",
+          WebkitBackdropFilter: "blur(16px) saturate(160%)",
+          border: transparent
+            ? "1px solid rgba(255,255,255,0.14)"
+            : "1px solid rgba(232,228,220,0.9)",
+          boxShadow: transparent
+            ? "0 1px 0 rgba(255,255,255,0.08) inset, 0 12px 32px -16px rgba(0,0,0,0.35)"
+            : "0 1px 0 rgba(255,255,255,0.7) inset, 0 1px 2px rgba(22,19,15,0.04), 0 12px 32px -18px rgba(22,19,15,0.18)",
+        }}
+      >
+        <div className="relative pl-4 pr-2.5 md:pl-5 md:pr-3 h-[60px] flex items-center justify-between">
+          {/* Logo + tagline */}
+          <div className="flex items-center gap-3.5 shrink-0">
+            <Link
+              href="/"
+              className="relative h-8 block"
+              style={{ minWidth: 104 }}
+              aria-label="declut home"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.svg"
+                alt="declut"
+                className="absolute inset-0 h-full w-auto transition-opacity duration-300"
+                style={{ opacity: transparent ? 0 : 1 }}
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo-light.svg"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-auto transition-opacity duration-300"
+                style={{ opacity: transparent ? 1 : 0 }}
+              />
+            </Link>
+            <span
+              aria-hidden="true"
+              className="hidden lg:block h-4 w-px"
+              style={{
+                background: transparent
+                  ? "rgba(255,255,255,0.18)"
+                  : "rgba(22,19,15,0.12)",
+              }}
+            />
+            <span
+              className="hidden lg:inline-block text-[11.5px] font-medium tracking-wide uppercase"
+              style={{
+                color: transparent
+                  ? "rgba(255,255,255,0.62)"
+                  : "rgba(86,82,77,0.85)",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Nigeria’s marketplace
+            </span>
+          </div>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          <NavLink href="/listings" transparent={transparent}>
-            Browse
-          </NavLink>
-        </nav>
+          {/* Nav links — centre */}
+          <nav className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
+            <NavItem href="/listings" color={linkColor} hover={linkHover}>
+              Browse
+            </NavItem>
+            <NavItem
+              href="/listings?listing_type=free"
+              color={linkColor}
+              hover={linkHover}
+            >
+              Free finds
+            </NavItem>
+          </nav>
 
-        {/* Right-side actions */}
-        <div className="flex items-center gap-5">
-          <CartIcon transparent={transparent} />
+          {/* Right actions */}
+          <div className="flex items-center gap-2">
+            <CartButton transparent={transparent} />
 
-          <NavLink href="/auth/login" transparent={transparent}>
-            <span className="hidden md:inline">Sign in</span>
-          </NavLink>
-
-          {/* Separator */}
-          <div
-            className="hidden md:block h-4 w-px shrink-0 transition-opacity duration-300"
-            style={{
-              background: transparent ? "rgba(255,255,255,0.25)" : "#d4cfc6",
-            }}
-          />
-
-          <Link
-            href="/auth/signup"
-            className="inline-flex items-center justify-center px-4 py-1.5 text-[13px] font-semibold tracking-wide transition-all duration-200"
-            style={
-              transparent
-                ? {
-                    background: "rgba(255,255,255,0.12)",
-                    color: "rgba(255,255,255,0.92)",
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    borderRadius: 6,
-                  }
-                : {
-                    background: "#16130f",
-                    color: "#fafaf8",
-                    border: "1px solid transparent",
-                    borderRadius: 6,
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.12)",
-                  }
-            }
-          >
-            Get started
-          </Link>
+            {!isLoading &&
+              (me ? (
+                <ProfileMenu name={me.name ?? null} transparent={transparent} />
+              ) : (
+                <div className="flex items-center gap-1">
+                  <Link
+                    href="/auth/login"
+                    className="hidden sm:inline-flex items-center px-3 h-9 text-[13.5px] font-medium transition-colors duration-200"
+                    style={{ color: linkColor }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = linkHover)
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = linkColor)
+                    }
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/auth/signup"
+                    className="inline-flex items-center justify-center h-9 px-4 rounded-full text-[13.5px] font-semibold transition-all duration-200"
+                    style={
+                      transparent
+                        ? {
+                            background: "#ffffff",
+                            color: "#3730a3",
+                            boxShadow:
+                              "0 1px 2px rgba(0,0,0,0.08), 0 6px 16px -6px rgba(0,0,0,0.28)",
+                          }
+                        : {
+                            background: "#4f46e5",
+                            color: "#ffffff",
+                            boxShadow:
+                              "0 1px 2px rgba(79,70,229,0.25), 0 6px 16px -6px rgba(79,70,229,0.55)",
+                          }
+                    }
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                      if (!transparent)
+                        e.currentTarget.style.background = "#4338ca";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      if (!transparent)
+                        e.currentTarget.style.background = "#4f46e5";
+                    }}
+                  >
+                    Sign up
+                  </Link>
+                </div>
+              ))}
+          </div>
         </div>
       </div>
-
-      {/* Gradient border bottom */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-px transition-opacity duration-300"
-        style={{
-          background:
-            "linear-gradient(to right, transparent, #e8e4dc 12%, #e8e4dc 88%, transparent)",
-          opacity: transparent ? 0 : 1,
-        }}
-      />
     </header>
+  );
+}
+
+function CartButton({ transparent }: { transparent: boolean }) {
+  const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  const [hover, setHover] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchCount() {
+      try {
+        const res = await fetch("/api/cart");
+        if (cancelled) return;
+        if (res.ok) {
+          const data = await res.json();
+          setCount(data.data?.length ?? 0);
+        } else if (res.status === 401) {
+          setCount(getSessionCart().length);
+        }
+      } catch {
+        /* noop */
+      } finally {
+        if (!cancelled) setMounted(true);
+      }
+    }
+    fetchCount();
+    const onUpdate = () => fetchCount();
+    window.addEventListener("cart-updated", onUpdate);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("cart-updated", onUpdate);
+    };
+  }, []);
+
+  if (!mounted) return null;
+
+  const baseBg = transparent
+    ? "rgba(255,255,255,0.10)"
+    : "rgba(22,19,15,0.045)";
+  const hoverBg = transparent
+    ? "rgba(255,255,255,0.18)"
+    : "rgba(22,19,15,0.08)";
+  const iconColor = transparent ? "rgba(255,255,255,0.92)" : "#16130f";
+
+  return (
+    <Link
+      href="/cart"
+      aria-label={`Cart (${count} items)`}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className="relative inline-flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200"
+      style={{
+        background: hover ? hoverBg : baseBg,
+        boxShadow: transparent
+          ? "inset 0 0 0 1px rgba(255,255,255,0.14)"
+          : "inset 0 0 0 1px rgba(22,19,15,0.06)",
+      }}
+    >
+      <ShoppingCart size={16} strokeWidth={2} style={{ color: iconColor }} />
+      {count > 0 && (
+        <span
+          className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white"
+          style={{
+            background: "#4f46e5",
+            boxShadow: "0 0 0 2px var(--cart-ring)",
+          }}
+        >
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function NavItem({
+  href,
+  children,
+  color,
+  hover,
+}: {
+  href: string;
+  children: React.ReactNode;
+  color: string;
+  hover: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group relative text-[14px] font-semibold tracking-tight transition-colors duration-200"
+      style={{ color }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = hover)}
+      onMouseLeave={(e) => (e.currentTarget.style.color = color)}
+    >
+      {children}
+      <span
+        aria-hidden="true"
+        className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 h-[2px] w-0 group-hover:w-4 transition-all duration-200 rounded-full"
+        style={{ background: hover }}
+      />
+    </Link>
   );
 }

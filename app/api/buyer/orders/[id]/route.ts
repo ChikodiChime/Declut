@@ -10,9 +10,9 @@ export async function GET(
   const { id } = await params
   const headersList = await headers()
   const buyerId = headersList.get('x-user-id')
-  const accountType = headersList.get('x-user-account-type')
+  const buyerEmail = headersList.get('x-user-email')
 
-  if (!buyerId || accountType !== 'buyer') {
+  if (!buyerId) {
     return err('Unauthorized', 'UNAUTHORIZED', 401)
   }
 
@@ -20,16 +20,28 @@ export async function GET(
     .from('orders')
     .select(`
       id, status, delivery_type, item_price, delivery_fee, total_price,
-      buyer_name, buyer_address, created_at,
-      listing:listings(id, title, images, price),
-      seller:users!orders_seller_id_fkey(id, name, email)
+      buyer_id, buyer_name, buyer_address, buyer_email, created_at,
+      seller:users!orders_seller_id_fkey(id, name, email),
+      order_items(id, item_price, listing:listings(id, title, images, price))
     `)
     .eq('id', id)
-    .eq('buyer_id', buyerId)
+    .or(
+      buyerEmail
+        ? `buyer_id.eq.${buyerId},and(buyer_email.eq.${buyerEmail},buyer_id.is.null)`
+        : `buyer_id.eq.${buyerId}`
+    )
     .single()
 
   if (error || !order) {
     return err('Order not found', 'NOT_FOUND', 404)
+  }
+
+  // Backfill buyer_id if this was an anonymous order now being claimed
+  if (order.buyer_id === null) {
+    await supabaseAdmin
+      .from('orders')
+      .update({ buyer_id: buyerId })
+      .eq('id', id)
   }
 
   const showCode = !['delivered', 'completed', 'cancelled'].includes(order.status)

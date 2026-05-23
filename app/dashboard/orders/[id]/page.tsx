@@ -117,25 +117,35 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
       </Link>
 
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="space-y-4">
-        {/* Item card */}
-        <div className="rounded-2xl border p-5 flex gap-4 bg-card" style={{ borderColor: '#e8e4dc' }}>
-          <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: '#f0ece5' }}>
-            {order.listing.images?.[0] ? (
-              <ListingImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
-            ) : (
-              <Package size={22} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-semibold" style={{ color: '#16130f' }}>{order.listing.title}</h1>
-            <p className="text-base font-medium mt-0.5" style={{ color: '#4f46e5' }}>₦{order.total_price.toLocaleString()}</p>
-            <span
-              className="inline-flex items-center gap-1 mt-2 text-[10px] rounded-full px-2 py-0.5"
-              style={order.delivery_type === 'delivery' ? { background: 'rgba(79,70,229,0.08)', color: '#4f46e5' } : { background: 'rgba(16,185,129,0.08)', color: '#10b981' }}
+        {/* Item(s) card */}
+        <div className="rounded-2xl border bg-card" style={{ borderColor: '#e8e4dc' }}>
+          {(order.order_items ?? []).map((item, i) => (
+            <div
+              key={item.id}
+              className="flex gap-4 p-5"
+              style={i > 0 ? { borderTop: '1px solid #f0ece5' } : undefined}
             >
-              {order.delivery_type === 'delivery' ? <><Truck size={9} strokeWidth={2} /> Delivery</> : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
-            </span>
-          </div>
+              <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center" style={{ background: '#f0ece5' }}>
+                {item.listing.images?.[0] ? (
+                  <ListingImage src={item.listing.images[0]} fill sizes="80px" className="object-cover" alt={item.listing.title} />
+                ) : (
+                  <Package size={22} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-sm font-semibold" style={{ color: '#16130f' }}>{item.listing.title}</h1>
+                <p className="text-sm font-medium mt-0.5" style={{ color: '#78726c' }}>₦{item.item_price.toLocaleString()}</p>
+                {i === 0 && (
+                  <span
+                    className="inline-flex items-center gap-1 mt-2 text-[10px] rounded-full px-2 py-0.5"
+                    style={order.delivery_type === 'delivery' ? { background: 'rgba(79,70,229,0.08)', color: '#4f46e5' } : { background: 'rgba(16,185,129,0.08)', color: '#10b981' }}
+                  >
+                    {order.delivery_type === 'delivery' ? <><Truck size={9} strokeWidth={2} /> Delivery</> : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Delivery code */}
@@ -182,9 +192,12 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
         <div className="rounded-2xl border p-5 bg-card" style={{ borderColor: '#e8e4dc' }}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#a8a09a' }}>Payment</p>
           <div className="space-y-2">
-            <div className="flex justify-between text-sm" style={{ color: '#78726c' }}>
-              <span>Item</span><span>₦{order.item_price.toLocaleString()}</span>
-            </div>
+            {(order.order_items ?? []).map((item) => (
+              <div key={item.id} className="flex justify-between text-sm" style={{ color: '#78726c' }}>
+                <span className="truncate pr-4">{item.listing.title}</span>
+                <span className="shrink-0">₦{item.item_price.toLocaleString()}</span>
+              </div>
+            ))}
             {order.delivery_fee > 0 && (
               <div className="flex justify-between text-sm" style={{ color: '#78726c' }}>
                 <span>Delivery</span><span>₦{order.delivery_fee.toLocaleString()}</span>
@@ -202,7 +215,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#a8a09a' }}>Seller</p>
             <p className="text-sm font-medium mb-2" style={{ color: '#16130f' }}>{order.seller.name ?? 'Declutter seller'}</p>
             <a
-              href={`mailto:${order.seller.email}?subject=${encodeURIComponent(`My order — ${order.listing.title}`)}`}
+              href={`mailto:${order.seller.email}?subject=${encodeURIComponent(`My order — ${order.id.slice(0, 8)}`)}`}
               className="inline-flex items-center gap-1.5 text-xs rounded-xl border px-3 py-2 transition-colors hover:bg-[#f5f1eb]"
               style={{ borderColor: '#e8e4dc', color: '#78726c' }}
             >

@@ -14,7 +14,23 @@ export default function CheckoutSuccessPage() {
 
   useEffect(() => {
     clearSessionCart()
-    window.dispatchEvent(new Event('cart-updated'))
+
+    const piId = sessionStorage.getItem('checkout_pi_id')
+    if (piId) sessionStorage.removeItem('checkout_pi_id')
+
+    // Belt-and-suspenders: settle order + clear DB cart client-side.
+    // The webhook does the same work in production; this ensures local dev
+    // (no Stripe CLI) and race-condition windows are covered.
+    Promise.allSettled([
+      piId ? fetch('/api/orders/settle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_intent_id: piId }),
+      }) : Promise.resolve(),
+      fetch('/api/cart', { method: 'DELETE' }),
+    ]).finally(() => {
+      window.dispatchEvent(new Event('cart-updated'))
+    })
   }, [])
 
   const trackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL

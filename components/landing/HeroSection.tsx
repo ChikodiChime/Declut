@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+
 import { ArcCarousel } from "./ArcCarousel";
 import type { Listing } from "@/types";
 
@@ -8,9 +7,11 @@ export function HeroSection({ listings }: { listings: Listing[] }) {
     <section
       className="relative flex flex-col"
       style={{
-        marginTop: "-4rem",           /* pull up behind sticky navbar */
+        marginTop:
+          "-80px" /* pull up behind floating pill navbar (18px top gap + 60px pill) */,
         minHeight: "100svh",
-        background: "linear-gradient(155deg, #1e1b4b 0%, #3730a3 55%, #4338ca 100%)",
+        background:
+          "linear-gradient(155deg, #1e1b4b 0%, #3730a3 55%, #4338ca 100%)",
       }}
     >
       {/* ── Decorative layer — same language as the auth panel left side ── */}
@@ -25,14 +26,19 @@ export function HeroSection({ listings }: { listings: Listing[] }) {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
             backgroundSize: "36px 36px",
           }}
         />
         {/* Bottom fade */}
         <div
           className="absolute bottom-0 left-0 right-0"
-          style={{ height: 120, background: "linear-gradient(to top, rgba(30,27,75,0.55) 0%, transparent 100%)" }}
+          style={{
+            height: 120,
+            background:
+              "linear-gradient(to top, rgba(30,27,75,0.55) 0%, transparent 100%)",
+          }}
         />
       </div>
 
@@ -55,16 +61,15 @@ export function HeroSection({ listings }: { listings: Listing[] }) {
           className="font-display text-white leading-none tracking-tight mb-5 lg:whitespace-nowrap"
           style={{ fontSize: "clamp(42px, 9.5vw, 120px)" }}
         >
-          Declutter{" "}
-          <span style={{ color: "#a5b4fc" }}>&</span>{" "}
-          Discover
+          Declutter <span style={{ color: "#a5b4fc" }}>&</span> Discover
         </h1>
 
         <p
           className="text-base md:text-lg leading-relaxed mb-10 max-w-lg mx-auto"
           style={{ color: "rgba(255,255,255,0.58)" }}
         >
-          Sell or give away what you no longer need — and find great deals on everything near you.
+          Sell or give away what you no longer need — and find great deals on
+          everything near you.
         </p>
 
         {/* <div className="flex items-center justify-center flex-wrap gap-3">

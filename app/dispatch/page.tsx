@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ListingImage } from '@/components/ui'
-import { Package, MapPin, KeyRound } from 'lucide-react'
+import { Package, MapPin, KeyRound, ShoppingBag, LogOut } from 'lucide-react'
 import {
   useAvailableOrders,
   useMyDeliveries,
@@ -11,6 +12,7 @@ import {
   useVerifyDelivery,
   type DispatchOrder,
 } from '@/lib/hooks/useDispatch'
+import { useSignOut } from '@/lib/hooks/useAuth'
 
 function OrderSkeleton() {
   return (
@@ -122,6 +124,39 @@ function DeliveryCard({ order }: { order: DispatchOrder }) {
   )
 }
 
+function DispatchHeader() {
+  const { mutate: signOut } = useSignOut()
+  return (
+    <header
+      className="sticky top-0 z-50 border-b"
+      style={{ background: 'rgba(250,250,248,0.93)', backdropFilter: 'blur(14px)', borderColor: '#e8e4dc' }}
+    >
+      <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.svg" alt="declut" className="h-7" />
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard/orders?tab=purchases"
+            className="inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-card"
+            style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+          >
+            <ShoppingBag size={13} strokeWidth={2} />
+            My purchases
+          </Link>
+          <button
+            onClick={() => signOut()}
+            className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors hover:bg-card"
+            style={{ color: '#a8a09a' }}
+          >
+            <LogOut size={13} strokeWidth={2} />
+            Sign out
+          </button>
+        </div>
+      </div>
+    </header>
+  )
+}
+
 export default function DispatchPortalPage() {
   const [tab, setTab] = useState<'available' | 'mine'>('available')
   const { data: available, isLoading: loadingAvailable } = useAvailableOrders()
@@ -129,6 +164,7 @@ export default function DispatchPortalPage() {
 
   return (
     <main className="min-h-screen bg-surface">
+      <DispatchHeader />
       <div className="max-w-xl mx-auto px-4 py-10">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-6">
           <h1 className="text-2xl font-bold" style={{ color: '#16130f' }}>Dispatch portal</h1>

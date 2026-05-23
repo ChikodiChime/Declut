@@ -46,6 +46,19 @@ export async function GET(req: Request) {
   return ok(items)
 }
 
+export async function DELETE() {
+  const authUser = await getAuthUser()
+  if (!authUser) return err('Not authenticated', 'UNAUTHORIZED', 401)
+
+  const { error } = await supabaseAdmin
+    .from('cart_items')
+    .delete()
+    .eq('user_id', authUser.id)
+
+  if (error) return err('Failed to clear cart', 'DB_ERROR', 500)
+  return ok(null)
+}
+
 export async function POST(req: Request) {
   const authUser = await getAuthUser()
 

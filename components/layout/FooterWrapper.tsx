@@ -5,6 +5,7 @@ import { Footer } from "./Footer";
 
 export function FooterWrapper() {
   const pathname = usePathname();
-  if (pathname.startsWith("/dashboard")) return null;
+  const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch"]
+  if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
   return <Footer />;
 }

@@ -129,6 +129,9 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
 
 function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) {
   const { mutate: confirm, isPending: confirming } = useConfirmOrder();
+  const firstItem = order.order_items?.[0];
+  const extraItems = (order.order_items ?? []).slice(1);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -137,20 +140,35 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
       className="rounded-2xl border bg-card p-5 flex flex-col sm:flex-row gap-4"
       style={{ borderColor: "#e8e4dc" }}
     >
-      <div
-        className="relative w-full sm:w-20 h-40 sm:h-20 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-        style={{ background: "#f0ece5" }}
-      >
-        {order.listing.images?.[0] ? (
-          <ListingImage src={order.listing.images[0]} fill sizes="80px" className="object-cover" alt={order.listing.title} />
-        ) : (
-          <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
-        )}
+      <div className="flex sm:flex-col gap-2 shrink-0">
+        <div
+          className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center"
+          style={{ background: "#f0ece5" }}
+        >
+          {firstItem?.listing.images?.[0] ? (
+            <ListingImage src={firstItem.listing.images[0]} fill sizes="80px" className="object-cover" alt={firstItem.listing.title} />
+          ) : (
+            <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+          )}
+        </div>
+        {extraItems.map((item) => (
+          <div key={item.id} className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center" style={{ background: "#f0ece5" }}>
+            {item.listing.images?.[0] ? (
+              <ListingImage src={item.listing.images[0]} fill sizes="80px" className="object-cover" alt={item.listing.title} />
+            ) : (
+              <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+            )}
+          </div>
+        ))}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
           <div>
-            <h3 className="text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>{order.listing.title}</h3>
+            <div className="space-y-0.5 mb-1">
+              {(order.order_items ?? []).map((item) => (
+                <h3 key={item.id} className="text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>{item.listing.title}</h3>
+              ))}
+            </div>
             <p className="text-base mt-0.5" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
           </div>
           <span
@@ -199,7 +217,7 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
             </span>
           )}
           <a
-            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent(`Your Declutter order — ${order.listing.title}`)}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
+            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent(`Your Declutter order`)}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-semibold transition-colors hover:bg-[#f5f1eb]"
@@ -251,42 +269,96 @@ function SalesPanel() {
 
 // ─── Purchases tab ────────────────────────────────────────────────────────────
 
-function PurchaseRow({ order }: { order: BuyerOrder }) {
+function SellerOrderRow({ order }: { order: BuyerOrder }) {
   const statusStyle = PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
+  const firstItem = order.order_items?.[0];
+  const extraCount = (order.order_items?.length ?? 1) - 1;
+
   return (
-    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
-      <Link
-        href={`/dashboard/orders/${order.id}`}
-        className="flex items-center gap-4 rounded-2xl border p-4 transition-colors hover:bg-[#faf9f7]"
-        style={{ borderColor: "#e8e4dc" }}
+    <Link
+      href={`/dashboard/orders/${order.id}`}
+      className="flex items-center gap-3 p-3 rounded-xl transition-colors hover:bg-[#f5f1eb]"
+    >
+      <div
+        className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
+        style={{ background: "#f0ece5" }}
       >
-        <div
-          className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-          style={{ background: "#f0ece5" }}
+        {firstItem?.listing.images?.[0] ? (
+          <ListingImage src={firstItem.listing.images[0]} fill sizes="48px" className="object-cover" alt={firstItem.listing.title} />
+        ) : (
+          <Package size={16} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate" style={{ color: "#16130f" }}>
+          {firstItem?.listing.title ?? "Order"}
+          {extraCount > 0 && <span style={{ color: "#a8a09a" }}> +{extraCount} more</span>}
+        </p>
+        <p className="text-xs mt-0.5" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
+        {order.seller?.name && (
+          <p className="text-[10px] mt-0.5" style={{ color: "#a8a09a" }}>from {order.seller.name}</p>
+        )}
+      </div>
+      <div className="flex flex-col items-end gap-1 shrink-0">
+        <span
+          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
+          style={statusStyle}
         >
-          {order.listing.images?.[0] ? (
-            <ListingImage src={order.listing.images[0]} fill sizes="64px" className="object-cover" alt={order.listing.title} />
-          ) : (
-            <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
-          )}
+          {PURCHASE_STATUS_LABEL[order.status] ?? order.status}
+        </span>
+        <span className="flex items-center gap-0.5 text-[10px]" style={{ color: "#a8a09a" }}>
+          {order.delivery_type === "delivery" ? <><Truck size={9} strokeWidth={2} /> Delivery</> : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
+        </span>
+      </div>
+      <ChevronRight size={14} strokeWidth={1.5} style={{ color: "#c8c2bb" }} />
+    </Link>
+  );
+}
+
+type CheckoutGroup = { paymentIntentId: string | null; orders: BuyerOrder[]; createdAt: string };
+
+function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
+  const map = new Map<string, BuyerOrder[]>();
+  for (const order of orders) {
+    const key = order.stripe_payment_intent_id ?? order.id;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(order);
+  }
+  return Array.from(map.entries()).map(([key, group]) => ({
+    paymentIntentId: group[0].stripe_payment_intent_id,
+    orders: group,
+    createdAt: group[0].created_at,
+  }));
+}
+
+function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
+  const grandTotal = group.orders.reduce((s, o) => s + o.total_price, 0);
+  const date = new Date(group.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" });
+  const multiVendor = group.orders.length > 1;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="rounded-2xl border bg-card overflow-hidden"
+      style={{ borderColor: "#e8e4dc" }}
+    >
+      {multiVendor && (
+        <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "#f0ece5", background: "#faf9f7" }}>
+          <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#a8a09a" }}>
+            {group.orders.length} vendors · {date}
+          </span>
+          <span className="text-xs font-semibold" style={{ color: "#16130f" }}>
+            ₦{grandTotal.toLocaleString()}
+          </span>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: "#16130f" }}>{order.listing.title}</p>
-          <p className="text-xs mt-0.5 font-medium" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <span
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-              style={statusStyle}
-            >
-              {PURCHASE_STATUS_LABEL[order.status] ?? order.status}
-            </span>
-            <span className="flex items-center gap-0.5 text-[10px]" style={{ color: "#a8a09a" }}>
-              {order.delivery_type === "delivery" ? <><Truck size={9} strokeWidth={2} /> Delivery</> : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
-            </span>
-          </div>
-        </div>
-        <ChevronRight size={16} strokeWidth={1.5} style={{ color: "#c8c2bb" }} />
-      </Link>
+      )}
+      <div className={multiVendor ? "divide-y" : ""} style={{ borderColor: "#f0ece5" }}>
+        {group.orders.map((order) => (
+          <SellerOrderRow key={order.id} order={order} />
+        ))}
+      </div>
     </motion.div>
   );
 }
@@ -325,9 +397,13 @@ function PurchasesPanel() {
     );
   }
 
+  const groups = groupByCheckout(orders);
+
   return (
     <div className="flex flex-col gap-3">
-      {orders.map((order) => <PurchaseRow key={order.id} order={order} />)}
+      {groups.map((group) => (
+        <CheckoutGroupCard key={group.paymentIntentId ?? group.orders[0].id} group={group} />
+      ))}
     </div>
   );
 }

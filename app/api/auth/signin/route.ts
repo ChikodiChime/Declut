@@ -29,7 +29,16 @@ export async function POST(req: Request) {
     return err('Invalid credentials', 'INVALID_CREDENTIALS', 401)
   }
 
-  const passwordMatch = await comparePassword(password as string, user.password_hash)
+  if (!user.password_hash) {
+    return err('Invalid credentials', 'INVALID_CREDENTIALS', 401)
+  }
+
+  let passwordMatch = false
+  try {
+    passwordMatch = await comparePassword(password as string, user.password_hash)
+  } catch {
+    return err('Invalid credentials', 'INVALID_CREDENTIALS', 401)
+  }
   if (!passwordMatch) {
     return err('Invalid credentials', 'INVALID_CREDENTIALS', 401)
   }

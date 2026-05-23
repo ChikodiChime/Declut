@@ -2,9 +2,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+export type OrderItem = {
+  id: string
+  item_price: number
+  listing: {
+    id: string
+    title: string
+    images: string[]
+  }
+}
+
 export type SellerOrder = {
   id: string
-  listing_id: string
   status: 'paid' | 'confirmed' | 'shipped' | 'delivered'
   delivery_type: 'delivery' | 'pickup'
   item_price: number
@@ -15,11 +24,7 @@ export type SellerOrder = {
   buyer_phone: string
   buyer_address: string
   created_at: string
-  listing: {
-    id: string
-    title: string
-    images: string[]
-  }
+  order_items: OrderItem[]
 }
 
 async function apiRequest(method: string, path: string, body?: unknown) {

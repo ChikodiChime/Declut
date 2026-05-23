@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { User, Mail, Lock, ArrowRight } from 'lucide-react'
+import { Mail, Lock, ArrowRight } from 'lucide-react'
 
-export default function DispatcherRegisterPage() {
+export default function DispatcherLoginPage() {
   const router = useRouter()
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -16,14 +16,18 @@ export default function DispatcherRegisterPage() {
     setError(null)
     setLoading(true)
     try {
-      const res = await fetch('/api/auth/dispatcher/register', {
+      const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error?.message ?? 'Registration failed')
+      if (!res.ok) throw new Error(json.error?.message ?? 'Login failed')
+      if (json.data?.user?.account_type !== 'dispatcher') {
+        throw new Error('This login is for dispatchers only. Use the main login page instead.')
+      }
       router.push('/dispatch')
+      router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -40,14 +44,13 @@ export default function DispatcherRegisterPage() {
         </div>
 
         <div className="bg-card rounded-2xl shadow-card px-8 py-10">
-          <h1 className="text-xl font-bold mb-1" style={{ color: '#16130f' }}>Join as a dispatcher</h1>
-          <p className="text-sm mb-6" style={{ color: '#78726c' }}>Create your account to start delivering.</p>
+          <h1 className="text-xl font-bold mb-1" style={{ color: '#16130f' }}>Dispatcher login</h1>
+          <p className="text-sm mb-6" style={{ color: '#78726c' }}>Sign in to your dispatch account.</p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {[
-              { key: 'name', label: 'Full name', icon: User, type: 'text', placeholder: 'Your name' },
               { key: 'email', label: 'Email address', icon: Mail, type: 'email', placeholder: 'you@example.com' },
-              { key: 'password', label: 'Password', icon: Lock, type: 'password', placeholder: '8+ characters' },
+              { key: 'password', label: 'Password', icon: Lock, type: 'password', placeholder: '••••••••' },
             ].map(({ key, label, icon: Icon, type, placeholder }) => (
               <div key={key}>
                 <label className="block text-xs font-medium mb-1.5" style={{ color: '#78726c' }}>{label}</label>
@@ -74,14 +77,14 @@ export default function DispatcherRegisterPage() {
               className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
               style={{ background: '#4f46e5' }}
             >
-              {loading ? 'Creating account…' : 'Create account'}
+              {loading ? 'Signing in…' : 'Sign in'}
               {!loading && <ArrowRight size={14} strokeWidth={2} />}
             </button>
           </form>
 
           <p className="mt-6 text-center text-xs" style={{ color: '#a8a09a' }}>
-            Already have an account?{' '}
-            <Link href="/dispatch/login" className="underline" style={{ color: '#4f46e5' }}>Log in</Link>
+            New dispatcher?{' '}
+            <Link href="/dispatch/register" className="underline" style={{ color: '#4f46e5' }}>Create account</Link>
           </p>
         </div>
       </div>

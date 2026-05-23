@@ -8,7 +8,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/dashboard/listings/new": "New Listing",
   "/dashboard/profile": "Profile",
   "/dashboard/orders": "Orders",
-  "/dashboard/payouts": "Payouts",
+  "/dashboard/billing": "Payouts",
 };
 
 function getTitle(pathname: string) {

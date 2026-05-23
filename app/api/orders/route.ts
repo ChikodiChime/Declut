@@ -63,7 +63,7 @@ export async function POST(req: Request) {
   const orderInserts = groups.map((group) => ({
     buyer_id: authUser?.id ?? null,
     seller_id: group.seller_id,
-    listing_id: group.items[0].listing_id,
+    listing_id: null,
     status: 'pending' as const,
     delivery_type,
     item_price: group.subtotal,
@@ -85,6 +85,18 @@ export async function POST(req: Request) {
   if (ordersError || !orders) {
     return err('Failed to create orders', 'DB_ERROR', 500)
   }
+
+  // Insert one order_item per listing, matched by seller_id (each seller appears once)
+  const orderItemInserts = groups.flatMap((group) => {
+    const order = orders.find((o) => o.seller_id === group.seller_id)!
+    return group.items.map((item) => ({
+      order_id: order.id,
+      listing_id: item.listing_id,
+      item_price: item.listing.price,
+    }))
+  })
+
+  await supabaseAdmin.from('order_items').insert(orderItemInserts)
 
   let paymentIntent
   try {

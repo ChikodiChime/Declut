@@ -19,7 +19,7 @@ export async function GET(req: Request) {
   const { data: orders, error } = await supabaseAdmin
     .from('orders')
     .select(
-      'id, listing_id, status, delivery_type, item_price, delivery_fee, total_price, buyer_name, buyer_email, buyer_phone, buyer_address, created_at, listing:listings(id, title, images)'
+      'id, status, delivery_type, item_price, delivery_fee, total_price, buyer_name, buyer_email, buyer_phone, buyer_address, created_at, order_items(id, item_price, listing:listings(id, title, images))'
     )
     .eq('seller_id', authUser.id)
     .eq('status', status)

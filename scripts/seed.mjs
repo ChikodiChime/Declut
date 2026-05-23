@@ -138,14 +138,16 @@ async function main() {
   if (listErr) throw new Error(`Listings insert failed: ${listErr.message}`)
   console.log(`✓ Inserted ${listings.length} listings`)
 
-  // 7. Insert orders for first 8 listings
-  const orderRows = listings.slice(0, 8).map((l, i) => {
+  // 7. Insert orders — first 6 are single-item, last group is 2-item (same seller)
+  //    listing indices 0-5: one listing each
+  //    listing indices 6-7: grouped into one order (two items, same seller)
+  const singleOrderRows = listings.slice(0, 6).map((l, i) => {
     const isPickup = i % 3 === 0
     const isLagos = listingRows[i].area.includes('Lagos')
     const deliveryFee = isPickup ? 0 : (isLagos ? 3000 : 6000)
     const itemPrice = listingRows[i].price
     return {
-      listing_id: l.id,
+      listing_id: null,
       buyer_id: buyer.id,
       seller_id: seller.id,
       status: ORDER_STATUSES[i],
@@ -157,13 +159,43 @@ async function main() {
     }
   })
 
+  const groupedItemPrice = listingRows[6].price + listingRows[7].price
+  const groupedDeliveryFee = listingRows[6].area.includes('Lagos') ? 3000 : 6000
+  const groupedOrderRow = {
+    listing_id: null,
+    buyer_id: buyer.id,
+    seller_id: seller.id,
+    status: ORDER_STATUSES[6],
+    delivery_type: 'delivery',
+    item_price: groupedItemPrice,
+    delivery_fee: groupedDeliveryFee,
+    total_price: groupedItemPrice + groupedDeliveryFee,
+    pickup_address: null,
+  }
+
   const { data: orders, error: ordErr } = await db
     .from('orders')
-    .insert(orderRows)
+    .insert([...singleOrderRows, groupedOrderRow])
     .select('id')
 
   if (ordErr) throw new Error(`Orders insert failed: ${ordErr.message}`)
   console.log(`✓ Inserted ${orders.length} orders`)
+
+  // 8. Insert order_items for each order
+  const orderItemRows = [
+    ...orders.slice(0, 6).map((o, i) => ({
+      order_id: o.id,
+      listing_id: listings[i].id,
+      item_price: listingRows[i].price,
+    })),
+    // Grouped order: two items
+    { order_id: orders[6].id, listing_id: listings[6].id, item_price: listingRows[6].price },
+    { order_id: orders[6].id, listing_id: listings[7].id, item_price: listingRows[7].price },
+  ]
+
+  const { error: itemErr } = await db.from('order_items').insert(orderItemRows)
+  if (itemErr) throw new Error(`Order items insert failed: ${itemErr.message}`)
+  console.log(`✓ Inserted ${orderItemRows.length} order items`)
 
   console.log(`
 ✅ Seed complete!

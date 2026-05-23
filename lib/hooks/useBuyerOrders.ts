@@ -2,36 +2,47 @@
 
 import { useQuery } from '@tanstack/react-query'
 
-export type BuyerOrder = {
+export type OrderItem = {
   id: string
-  status: string
-  delivery_type: 'delivery' | 'pickup'
-  total_price: number
-  created_at: string
+  item_price: number
   listing: {
     id: string
     title: string
     images: string[]
+    price?: number | null
   }
 }
 
-export type BuyerOrderDetail = BuyerOrder & {
+export type BuyerOrder = {
+  id: string
+  status: string
+  delivery_type: 'delivery' | 'pickup'
   item_price: number
   delivery_fee: number
+  total_price: number
+  created_at: string
+  stripe_payment_intent_id: string | null
+  seller: { id: string; name: string | null } | null
+  order_items: OrderItem[]
+}
+
+export type BuyerOrderDetail = {
+  id: string
+  status: string
+  delivery_type: 'delivery' | 'pickup'
+  item_price: number
+  delivery_fee: number
+  total_price: number
   buyer_name: string | null
   buyer_address: string | null
+  created_at: string
   delivery_code: string | null
   seller: {
     id: string
     name: string | null
     email: string
   } | null
-  listing: {
-    id: string
-    title: string
-    images: string[]
-    price: number | null
-  }
+  order_items: OrderItem[]
 }
 
 async function fetchJson(url: string) {

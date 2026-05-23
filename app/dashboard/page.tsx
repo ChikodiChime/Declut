@@ -257,11 +257,18 @@ export default function DashboardPage() {
           <div className="space-y-2">
             {recentPurchases.map((order) => {
               const statusStyle = PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
+              const firstItem = order.order_items?.[0];
+              const extraCount = (order.order_items?.length ?? 1) - 1;
+              const label = firstItem
+                ? extraCount > 0
+                  ? `${firstItem.listing.title} +${extraCount} more`
+                  : firstItem.listing.title
+                : 'Order';
               return (
                 <Link key={order.id} href={`/dashboard/orders/${order.id}`} className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface transition-colors group">
                   <div className="relative w-10 h-10 rounded-lg bg-border overflow-hidden shrink-0">
-                    {order.listing.images?.[0] ? (
-                      <ListingImage src={order.listing.images[0]} fill sizes="40px" className="object-cover" alt={order.listing.title} />
+                    {firstItem?.listing.images?.[0] ? (
+                      <ListingImage src={firstItem.listing.images[0]} fill sizes="40px" className="object-cover" alt={firstItem.listing.title} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Package size={16} className="text-text-muted" />
@@ -269,7 +276,7 @@ export default function DashboardPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-text truncate group-hover:text-primary transition-colors">{order.listing.title}</p>
+                    <p className="text-sm font-medium text-text truncate group-hover:text-primary transition-colors">{label}</p>
                     <p className="text-xs text-text-muted">₦{order.total_price.toLocaleString()}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">

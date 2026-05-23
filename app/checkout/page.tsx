@@ -46,6 +46,7 @@ function CheckoutContent() {
   useEffect(() => {
     const secret = sessionStorage.getItem('checkout_secret')
     if (secret) {
+      sessionStorage.setItem('checkout_pi_id', secret.split('_secret_')[0])
       sessionStorage.removeItem('checkout_secret')
       setClientSecret(secret)
     }

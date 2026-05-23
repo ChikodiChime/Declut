@@ -11,24 +11,24 @@ import { VALID_CATEGORIES } from "@/app/api/listings/utils";
 import type { ListingType, Condition } from "@/types";
 
 const TYPE_TABS: { value: ListingType | ""; label: string; color: string }[] = [
-  { value: "",         label: "All",      color: "#16130f" },
+  { value: "", label: "All", color: "#16130f" },
   { value: "for_sale", label: "For Sale", color: "#4f46e5" },
-  { value: "free",     label: "Free",     color: "#10b981" },
-  { value: "donate",   label: "Donate",   color: "#f59e0b" },
+  { value: "free", label: "Free", color: "#10b981" },
+  { value: "donate", label: "Donate", color: "#f59e0b" },
 ];
 
 const CONDITIONS: { value: Condition | ""; label: string }[] = [
-  { value: "",         label: "Any condition" },
-  { value: "new",      label: "New" },
+  { value: "", label: "Any condition" },
+  { value: "new", label: "New" },
   { value: "like_new", label: "Like New" },
-  { value: "good",     label: "Good" },
-  { value: "fair",     label: "Fair" },
-  { value: "poor",     label: "Poor" },
+  { value: "good", label: "Good" },
+  { value: "fair", label: "Fair" },
+  { value: "poor", label: "Poor" },
 ];
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
-  { value: "newest",     label: "Newest first" },
-  { value: "price_asc",  label: "Price: Low → High" },
+  { value: "newest", label: "Newest first" },
+  { value: "price_asc", label: "Price: Low → High" },
   { value: "price_desc", label: "Price: High → Low" },
 ];
 
@@ -43,14 +43,22 @@ interface PillDropdownProps {
   isActive?: boolean;
 }
 
-function PillDropdown({ value, options, onChange, placeholder, isActive }: PillDropdownProps) {
+function PillDropdown({
+  value,
+  options,
+  onChange,
+  placeholder,
+  isActive,
+}: PillDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const currentLabel = options.find((o) => o.value === value)?.label ?? placeholder;
+  const currentLabel =
+    options.find((o) => o.value === value)?.label ?? placeholder;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -61,15 +69,28 @@ function PillDropdown({ value, options, onChange, placeholder, isActive }: PillD
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium transition-all duration-150"
+        className="inline-flex items-center gap-1.5 rounded-full border px-3.5 h-8 text-xs font-medium transition-all duration-150"
         style={{
-          borderColor: isActive ? "#4f46e5" : "#e8e4dc",
-          background:  isActive ? "rgba(79,70,229,0.06)" : "white",
-          color:       isActive ? "#4f46e5" : "#78726c",
+          borderColor: isActive
+            ? "rgba(79,70,229,0.45)"
+            : "rgba(232,228,220,0.9)",
+          background: isActive ? "rgba(79,70,229,0.04)" : "white",
+          color: isActive ? "#16130f" : "#56524d",
         }}
       >
+        {isActive && (
+          <span
+            aria-hidden="true"
+            className="w-1.5 h-1.5 rounded-full shrink-0"
+            style={{ background: "#4f46e5" }}
+          />
+        )}
         {currentLabel}
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.16 }}>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.16 }}
+          style={{ color: "#a8a09a" }}
+        >
           <ChevronDown size={12} strokeWidth={2.2} />
         </motion.span>
       </button>
@@ -78,8 +99,8 @@ function PillDropdown({ value, options, onChange, placeholder, isActive }: PillD
         {open && (
           <motion.div
             initial={{ opacity: 0, y: -6, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0,  scale: 1 }}
-            exit={{    opacity: 0, y: -6, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.96 }}
             transition={{ duration: 0.13, ease: "easeOut" }}
             style={{ transformOrigin: "top left" }}
             className="absolute left-0 top-full z-30 mt-2 min-w-[168px] rounded-2xl border border-[#e8e4dc] bg-white py-1.5 shadow-[0_8px_32px_rgba(22,19,15,0.10),0_2px_8px_rgba(22,19,15,0.06)]"
@@ -90,12 +111,25 @@ function PillDropdown({ value, options, onChange, placeholder, isActive }: PillD
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => { onChange(option.value); setOpen(false); }}
+                  onClick={() => {
+                    onChange(option.value);
+                    setOpen(false);
+                  }}
                   className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-xs transition-colors hover:bg-[#faf8f4]"
-                  style={{ color: selected ? "#4f46e5" : "#16130f", fontWeight: selected ? 600 : 400 }}
+                  style={{
+                    color: selected ? "#4f46e5" : "#16130f",
+                    fontWeight: selected ? 600 : 400,
+                  }}
                 >
                   <span className="flex-1">{option.label}</span>
-                  {selected && <Check size={12} strokeWidth={2.5} className="shrink-0" style={{ color: "#4f46e5" }} />}
+                  {selected && (
+                    <Check
+                      size={12}
+                      strokeWidth={2.5}
+                      className="shrink-0"
+                      style={{ color: "#4f46e5" }}
+                    />
+                  )}
                 </button>
               );
             })}
@@ -111,17 +145,25 @@ function useFilter() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [q,            _setQ]           = useState(searchParams.get("q") ?? "");
-  const [listing_type, _setListingType] = useState<ListingType | "">((searchParams.get("listing_type") as ListingType) ?? "");
-  const [category,     _setCategory]    = useState(searchParams.get("category") ?? "");
-  const [condition,    _setCondition]   = useState<Condition | "">((searchParams.get("condition") as Condition) ?? "");
-  const [sort,         _setSort]        = useState<BrowseParams["sort"]>((searchParams.get("sort") as BrowseParams["sort"]) ?? "newest");
-  const [limit, setLimit]               = useState(PAGE_SIZE);
+  const [q, _setQ] = useState(searchParams.get("q") ?? "");
+  const [listing_type, _setListingType] = useState<ListingType | "">(
+    (searchParams.get("listing_type") as ListingType) ?? "",
+  );
+  const [category, _setCategory] = useState(searchParams.get("category") ?? "");
+  const [condition, _setCondition] = useState<Condition | "">(
+    (searchParams.get("condition") as Condition) ?? "",
+  );
+  const [sort, _setSort] = useState<BrowseParams["sort"]>(
+    (searchParams.get("sort") as BrowseParams["sort"]) ?? "newest",
+  );
+  const [limit, setLimit] = useState(PAGE_SIZE);
 
   const updateUrl = useCallback(
     (params: Record<string, string>) => {
       const sp = new URLSearchParams();
-      Object.entries(params).forEach(([k, v]) => { if (v) sp.set(k, v); });
+      Object.entries(params).forEach(([k, v]) => {
+        if (v) sp.set(k, v);
+      });
       router.replace(`/listings?${sp.toString()}`, { scroll: false });
     },
     [router],
@@ -131,41 +173,91 @@ function useFilter() {
     updateUrl({ q, listing_type, category, condition, sort: sort ?? "newest" });
   }, [q, listing_type, category, condition, sort, updateUrl]);
 
-  function setQ(v: string)                    { _setQ(v);            setLimit(PAGE_SIZE); }
-  function setListingType(v: ListingType | "") { _setListingType(v); setLimit(PAGE_SIZE); }
-  function setCategory(v: string)              { _setCategory(v);    setLimit(PAGE_SIZE); }
-  function setCondition(v: Condition | "")     { _setCondition(v);   setLimit(PAGE_SIZE); }
-  function setSort(v: BrowseParams["sort"])    { _setSort(v);        setLimit(PAGE_SIZE); }
+  function setQ(v: string) {
+    _setQ(v);
+    setLimit(PAGE_SIZE);
+  }
+  function setListingType(v: ListingType | "") {
+    _setListingType(v);
+    setLimit(PAGE_SIZE);
+  }
+  function setCategory(v: string) {
+    _setCategory(v);
+    setLimit(PAGE_SIZE);
+  }
+  function setCondition(v: Condition | "") {
+    _setCondition(v);
+    setLimit(PAGE_SIZE);
+  }
+  function setSort(v: BrowseParams["sort"]) {
+    _setSort(v);
+    setLimit(PAGE_SIZE);
+  }
 
   const hasFilters = !!(q || listing_type || category || condition);
 
   function clearFilters() {
-    _setQ(""); _setListingType(""); _setCategory(""); _setCondition(""); _setSort("newest");
+    _setQ("");
+    _setListingType("");
+    _setCategory("");
+    _setCondition("");
+    _setSort("newest");
     setLimit(PAGE_SIZE);
   }
 
-  return { q, setQ, listing_type, setListingType, category, setCategory, condition, setCondition, sort, setSort, limit, setLimit, hasFilters, clearFilters };
+  return {
+    q,
+    setQ,
+    listing_type,
+    setListingType,
+    category,
+    setCategory,
+    condition,
+    setCondition,
+    sort,
+    setSort,
+    limit,
+    setLimit,
+    hasFilters,
+    clearFilters,
+  };
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 function BrowseContent() {
   const {
-    q, setQ,
-    listing_type, setListingType,
-    category, setCategory,
-    condition, setCondition,
-    sort, setSort,
-    limit, setLimit,
-    hasFilters, clearFilters,
+    q,
+    setQ,
+    listing_type,
+    setListingType,
+    category,
+    setCategory,
+    condition,
+    setCondition,
+    sort,
+    setSort,
+    limit,
+    setLimit,
+    hasFilters,
+    clearFilters,
   } = useFilter();
 
   const [inputValue, setInputValue] = useState(q);
 
+  // Debounced search — update results as the user types
+  useEffect(() => {
+    const trimmed = inputValue.trim();
+    if (trimmed === q) return;
+    const timer = setTimeout(() => setQ(trimmed), 280);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputValue]);
+
   const browseParams: BrowseParams = {
-    q:            q || undefined,
+    q: q || undefined,
     listing_type: listing_type || undefined,
-    category:     category || undefined,
-    condition:    condition || undefined,
+    category: category || undefined,
+    condition: condition || undefined,
     sort,
     limit,
     offset: 0,
@@ -173,8 +265,8 @@ function BrowseContent() {
 
   const { data, isLoading, isFetching } = usePublicListings(browseParams);
   const listings = data?.listings ?? [];
-  const total    = data?.total    ?? 0;
-  const hasMore  = listings.length < total;
+  const total = data?.total ?? 0;
+  const hasMore = listings.length < total;
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -186,21 +278,27 @@ function BrowseContent() {
     ...VALID_CATEGORIES.map((c) => ({ value: c, label: c })),
   ];
 
-  const activeTab = TYPE_TABS.find((t) => t.value === listing_type) ?? TYPE_TABS[0];
+  const activeTab =
+    TYPE_TABS.find((t) => t.value === listing_type) ?? TYPE_TABS[0];
 
   return (
     <main className="min-h-screen" style={{ background: "#fafaf8" }}>
       {/* ── Page header ── */}
       <div
-        className="relative overflow-hidden px-4 sm:px-6 py-10 md:py-14"
-        style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #3730a3 55%, #4338ca 100%)" }}
+        className="relative overflow-hidden px-4 sm:px-6 pt-[110px] md:pt-[130px] pb-10 md:pb-14"
+        style={{
+          marginTop: "-80px",
+          background:
+            "linear-gradient(135deg, #1e1b4b 0%, #3730a3 55%, #4338ca 100%)",
+        }}
       >
         {/* Dot grid */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.13]"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)",
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -220,8 +318,14 @@ function BrowseContent() {
           <div>
             {/* Eyebrow */}
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#a5b4fc" }} />
-              <span className="text-[11px] font-medium tracking-wide" style={{ color: "rgba(255,255,255,0.65)" }}>
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ background: "#a5b4fc" }}
+              />
+              <span
+                className="text-[11px] font-medium tracking-wide"
+                style={{ color: "rgba(255,255,255,0.65)" }}
+              >
                 Nigeria&apos;s marketplace
               </span>
             </div>
@@ -231,7 +335,10 @@ function BrowseContent() {
             >
               Browse listings
             </h1>
-            <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <p
+              className="mt-1 text-sm"
+              style={{ color: "rgba(255,255,255,0.45)" }}
+            >
               Buy, sell, give, and donate across Nigeria
             </p>
           </div>
@@ -240,14 +347,17 @@ function BrowseContent() {
           <div className="flex gap-2 flex-wrap">
             {[
               { label: "For Sale", color: "#a5b4fc" },
-              { label: "Free",     color: "#6ee7b7" },
-              { label: "Donate",   color: "#fcd34d" },
+              { label: "Free", color: "#6ee7b7" },
+              { label: "Donate", color: "#fcd34d" },
             ].map((t) => (
               <span
                 key={t.label}
                 className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/70"
               >
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: t.color }} />
+                <span
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: t.color }}
+                />
                 {t.label}
               </span>
             ))}
@@ -255,62 +365,71 @@ function BrowseContent() {
         </div>
       </div>
 
-      {/* ── Sticky toolbar ── */}
+      {/* ── Floating toolbar (mirrors navbar pill language) ── */}
       <div
-        className="sticky top-0 z-20 border-b"
-        style={{ borderColor: "#e8e4dc", background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)" }}
+        className="sticky z-20 pointer-events-none"
+        style={{ top: 72 /* clears the floating navbar */ }}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-col gap-3">
-
-          {/* Search bar */}
-          <form onSubmit={handleSearch} className="relative flex items-center">
-            <Search
-              size={15}
-              strokeWidth={2}
-              className="absolute left-4 pointer-events-none"
-              style={{ color: "#c4bdb5" }}
-            />
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Search listings…"
-              className="w-full rounded-full border py-2.5 pl-10 pr-24 text-sm transition-all duration-200 focus:outline-none"
-              style={{
-                borderColor: "#e8e4dc",
-                background: "#fafaf8",
-                color: "#16130f",
-              }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#4f46e5"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(79,70,229,0.12)"; }}
-              onBlur={(e)  => { e.currentTarget.style.borderColor = "#e8e4dc"; e.currentTarget.style.boxShadow = "none"; }}
-            />
-            <div className="absolute right-1.5 flex items-center gap-0.5">
+        <div
+          className="mx-auto pointer-events-auto"
+          style={{
+            maxWidth: "min(72rem, calc(100% - 24px))",
+            marginTop: 12,
+            borderRadius: 9999,
+            background: "rgba(255,255,255,0.78)",
+            backdropFilter: "blur(16px) saturate(160%)",
+            WebkitBackdropFilter: "blur(16px) saturate(160%)",
+            border: "1px solid rgba(232,228,220,0.9)",
+            boxShadow:
+              "0 1px 0 rgba(255,255,255,0.7) inset, 0 1px 2px rgba(22,19,15,0.04), 0 12px 32px -18px rgba(22,19,15,0.18)",
+          }}
+        >
+          <div className="flex flex-wrap items-center gap-2 px-2 py-1.5 sm:px-2.5 sm:py-2">
+            {/* Search input — debounced, no submit button */}
+            <form
+              onSubmit={handleSearch}
+              className="relative flex items-center min-w-[220px] flex-1"
+            >
+              <Search
+                size={14}
+                strokeWidth={2}
+                className="absolute left-3.5 pointer-events-none"
+                style={{ color: "#a8a09a" }}
+              />
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Search listings…"
+                className="w-full rounded-full bg-transparent h-9 pl-9 pr-9 text-sm focus:outline-none placeholder:text-[#a8a09a]"
+                style={{ color: "#16130f" }}
+              />
               {inputValue && (
                 <button
                   type="button"
-                  onClick={() => { setInputValue(""); setQ(""); }}
-                  className="rounded-full p-1.5 transition-colors hover:bg-[#f5f1eb]"
+                  onClick={() => {
+                    setInputValue("");
+                    setQ("");
+                  }}
+                  aria-label="Clear search"
+                  className="absolute right-2 rounded-full p-1 transition-colors hover:bg-[#f5f1eb]"
                   style={{ color: "#a8a09a" }}
                 >
-                  <X size={13} strokeWidth={2.5} />
+                  <X size={12} strokeWidth={2.5} />
                 </button>
               )}
-              <button
-                type="submit"
-                className="rounded-full px-4 py-1.5 text-xs font-semibold text-white transition-colors hover:opacity-90"
-                style={{ background: "#4f46e5" }}
-              >
-                Search
-              </button>
-            </div>
-          </form>
+            </form>
 
-          {/* Filter row */}
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Type tabs — pill group */}
+            {/* Vertical divider */}
+            <div
+              className="hidden md:block h-6 w-px shrink-0"
+              style={{ background: "rgba(22,19,15,0.08)" }}
+            />
+
+            {/* Type segment — slimmer */}
             <div
               className="flex gap-0.5 rounded-full p-0.5"
-              style={{ background: "#f0ece5" }}
+              style={{ background: "rgba(22,19,15,0.04)" }}
             >
               {TYPE_TABS.map((tab) => {
                 const isSelected = listing_type === tab.value;
@@ -318,11 +437,13 @@ function BrowseContent() {
                   <button
                     key={tab.value}
                     onClick={() => setListingType(tab.value)}
-                    className="rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200"
+                    className="rounded-full px-3 h-7 text-[11.5px] font-semibold transition-all duration-200"
                     style={{
                       background: isSelected ? tab.color : "transparent",
-                      color:      isSelected ? "white"   : "#78726c",
-                      boxShadow:  isSelected ? `0 1px 4px ${tab.color}55` : "none",
+                      color: isSelected ? "white" : "#56524d",
+                      boxShadow: isSelected
+                        ? `0 1px 3px ${tab.color}55`
+                        : "none",
                     }}
                   >
                     {tab.label}
@@ -330,8 +451,6 @@ function BrowseContent() {
                 );
               })}
             </div>
-
-            <div className="hidden h-4 w-px sm:block" style={{ background: "#e8e4dc" }} />
 
             {/* Filter pills */}
             <PillDropdown
@@ -349,15 +468,19 @@ function BrowseContent() {
               isActive={!!condition}
             />
 
-            {/* Sort — pushed right */}
+            {/* Sort + clear — pushed right */}
             <div className="ml-auto flex items-center gap-2">
               {hasFilters && (
                 <button
                   onClick={clearFilters}
-                  className="flex items-center gap-1 text-xs transition-colors"
-                  style={{ color: "#c4bdb5" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.color = "#ef4444"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.color = "#c4bdb5"; }}
+                  className="inline-flex items-center gap-1 text-[11.5px] font-medium transition-colors px-2"
+                  style={{ color: "#a8a09a" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#ef4444";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#a8a09a";
+                  }}
                 >
                   <X size={11} strokeWidth={2.5} />
                   Clear
@@ -383,7 +506,9 @@ function BrowseContent() {
             {total === 0
               ? "No listings found"
               : `${total.toLocaleString()} listing${total === 1 ? "" : "s"}`}
-            {isFetching && !isLoading && <span style={{ color: "#c4bdb5" }}> · Updating…</span>}
+            {isFetching && !isLoading && (
+              <span style={{ color: "#c4bdb5" }}> · Updating…</span>
+            )}
           </p>
         )}
 
@@ -396,10 +521,19 @@ function BrowseContent() {
                 className="animate-pulse overflow-hidden rounded-xl border"
                 style={{ background: "white", borderColor: "#ebe5dc" }}
               >
-                <div className="aspect-4/3 rounded-t-xl" style={{ background: "#f0ece5" }} />
+                <div
+                  className="aspect-4/3 rounded-t-xl"
+                  style={{ background: "#f0ece5" }}
+                />
                 <div className="flex flex-col gap-2 p-3.5">
-                  <div className="h-4 w-3/4 rounded" style={{ background: "#f0ece5" }} />
-                  <div className="h-3 w-1/2 rounded" style={{ background: "#f0ece5" }} />
+                  <div
+                    className="h-4 w-3/4 rounded"
+                    style={{ background: "#f0ece5" }}
+                  />
+                  <div
+                    className="h-3 w-1/2 rounded"
+                    style={{ background: "#f0ece5" }}
+                  />
                 </div>
               </div>
             ))}
@@ -424,7 +558,10 @@ function BrowseContent() {
             >
               🔍
             </div>
-            <p className="mb-1 text-sm font-semibold" style={{ color: "#16130f" }}>
+            <p
+              className="mb-1 text-sm font-semibold"
+              style={{ color: "#16130f" }}
+            >
               No listings found
             </p>
             <p className="mb-6 text-xs" style={{ color: "#a8a09a" }}>
@@ -464,5 +601,5 @@ export default function BrowsePage() {
     <Suspense>
       <BrowseContent />
     </Suspense>
-  )
+  );
 }

@@ -1,5 +1,6 @@
 import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 import type Stripe from 'stripe'
 
@@ -27,7 +28,6 @@ export async function POST(req: Request) {
 
 async function handleAccountUpdated(account: Stripe.Account) {
   if (!account.charges_enabled) return
-
   await supabaseAdmin
     .from('users')
     .update({ stripe_onboarding_complete: true })
@@ -40,23 +40,37 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
   const { data: orders } = await supabaseAdmin
     .from('orders')
-    .select('id, seller_id, item_price, delivery_fee, total_price')
+    .select('id, seller_id, item_price, delivery_fee, total_price, delivery_type')
     .in('id', orderIds)
 
-  if (!orders) return
+  if (!orders || orders.length === 0) return
+
+  // Listing IDs come from order_items (one order may have multiple listings)
+  const { data: orderItems } = await supabaseAdmin
+    .from('order_items')
+    .select('order_id, listing_id, item_price, listing:listings(id, title, price, listing_type, status, seller_id, area, images, condition, category)')
+    .in('order_id', orderIds)
+
+  const listingIds = (orderItems ?? []).map((i) => i.listing_id)
 
   const autoCancelAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
 
-  for (const order of orders) {
-    await supabaseAdmin
+  // Mark orders paid and listings sold, clear cart items
+  await Promise.all([
+    supabaseAdmin
       .from('orders')
-      .update({
-        status: 'paid',
-        stripe_payment_intent_id: paymentIntent.id,
-        auto_cancel_at: autoCancelAt,
-      })
-      .eq('id', order.id)
+      .update({ status: 'paid', stripe_payment_intent_id: paymentIntent.id, auto_cancel_at: autoCancelAt })
+      .in('id', orderIds),
+    listingIds.length > 0
+      ? supabaseAdmin.from('listings').update({ status: 'sold' }).in('id', listingIds)
+      : Promise.resolve(),
+    listingIds.length > 0
+      ? supabaseAdmin.from('cart_items').delete().in('listing_id', listingIds)
+      : Promise.resolve(),
+  ])
 
+  // Stripe Connect transfer: one per seller order
+  for (const order of orders) {
     const { data: seller } = await supabaseAdmin
       .from('users')
       .select('stripe_account_id')
@@ -64,13 +78,12 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       .single()
 
     if (!seller?.stripe_account_id) {
-      // NOTE: seller has no Stripe account — transfer skipped, requires manual resolution
+      // NOTE: no Stripe account — transfer skipped, requires manual resolution
       console.error(`No stripe_account_id for seller ${order.seller_id} on order ${order.id}`)
       continue
     }
 
-    const sellerTotal = order.total_price
-    const transferAmount = Math.round(sellerTotal * (1 - PLATFORM_FEE_PERCENT) * 100)
+    const transferAmount = Math.round(order.total_price * (1 - PLATFORM_FEE_PERCENT) * 100)
 
     try {
       const transfer = await stripe.transfers.create({
@@ -79,7 +92,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         destination: seller.stripe_account_id,
         transfer_group: paymentIntent.id,
       })
-
       await supabaseAdmin
         .from('orders')
         .update({ stripe_transfer_id: transfer.id })
@@ -90,8 +102,43 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     }
   }
 
-  const buyerId = paymentIntent.metadata.buyer_id
-  if (buyerId) {
-    await supabaseAdmin.from('cart_items').delete().eq('user_id', buyerId)
+  // Send buyer confirmation email
+  const buyerEmail = paymentIntent.metadata?.buyer_email
+  const buyerId = paymentIntent.metadata?.buyer_id
+
+  if (buyerEmail) {
+    let buyerName = 'Customer'
+    if (buyerId && buyerId !== 'anonymous') {
+      const { data: buyer } = await supabaseAdmin
+        .from('users')
+        .select('name')
+        .eq('id', buyerId)
+        .single()
+      if (buyer?.name) buyerName = buyer.name
+    }
+
+    const deliveryType = (orders[0].delivery_type ?? 'delivery') as 'delivery' | 'pickup'
+    const grandTotal = orders.reduce((sum, o) => sum + (o.total_price ?? 0), 0)
+    const groups = orders.map((o) => {
+      const items = (orderItems ?? [])
+        .filter((i) => i.order_id === o.id)
+        .map((i) => ({ id: i.listing_id, listing_id: i.listing_id, listing: i.listing as never }))
+      return {
+        seller_id: o.seller_id,
+        items,
+        subtotal: o.item_price ?? 0,
+        delivery_fee: o.delivery_fee ?? 0,
+        total: o.total_price ?? 0,
+      }
+    })
+
+    sendOrderConfirmationEmail({ to: buyerEmail, buyerName, orderIds, groups, grandTotal, deliveryType })
+      .catch((e) => console.error('Confirmation email failed:', e))
+  }
+
+  // Also clear DB cart by buyer_id as a fallback for any items not covered by listing_ids
+  const buyerIdMeta = paymentIntent.metadata?.buyer_id
+  if (buyerIdMeta && buyerIdMeta !== 'anonymous') {
+    await supabaseAdmin.from('cart_items').delete().eq('user_id', buyerIdMeta)
   }
 }

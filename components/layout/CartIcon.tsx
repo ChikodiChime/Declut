@@ -50,9 +50,7 @@ export function CartIcon({ transparent = false }: { transparent?: boolean }) {
       <ShoppingCart
         size={20}
         strokeWidth={1.75}
-        style={{
-          color: transparent ? "rgba(255,255,255,0.82)" : "#78726c",
-        }}
+        style={{ color: transparent ? "rgba(255,255,255,0.82)" : "#78726c" }}
         className="transition-colors duration-300"
       />
       {count > 0 && (
