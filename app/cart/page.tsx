@@ -133,7 +133,6 @@ export default function CartPage() {
         const res = await fetch("/api/cart");
         const data = await res.json();
         setItems(data.data ?? []);
-        if (user.address) setDeliveryAddress(user.address);
       } else {
         const sessionCart = getSessionCart();
         if (sessionCart.length > 0) {
@@ -147,6 +146,12 @@ export default function CartPage() {
     }
     fetchCart();
   }, [user, userLoading]);
+
+  useEffect(() => {
+    if (user?.address) {
+      setDeliveryAddress(user.address)
+    }
+  }, [user?.address])
 
   async function removeItem(cartItemId: string) {
     if (user) {
@@ -162,7 +167,7 @@ export default function CartPage() {
     setCheckingOut(true)
     setError('')
     const body: Record<string, unknown> = { delivery_type: deliveryType }
-    if (address) body.delivery_address = address
+    if (address) body.delivery_address = address.trim()
     const res = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -184,6 +189,8 @@ export default function CartPage() {
       return
     }
     if (deliveryType === 'delivery') {
+      setError('')
+      setUseNewAddress(false)
       setShowDeliveryStep(true)
       return
     }
