@@ -100,5 +100,14 @@ export async function POST(req: Request) {
     return err('Failed to create listing', 'SERVER_ERROR', 500)
   }
 
+  if (validated.data.listing_type === 'donate') {
+    const charityId = (body as Record<string, unknown>).charity_id
+    await supabaseAdmin.from('donations').insert({
+      listing_id: listing.id,
+      seller_id: authUser.id,
+      charity_id: typeof charityId === 'string' && charityId ? charityId : null,
+    })
+  }
+
   return ok(listing, 201)
 }
