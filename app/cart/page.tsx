@@ -122,6 +122,9 @@ export default function CartPage() {
     phone: "",
     address: "",
   });
+  const [showDeliveryStep, setShowDeliveryStep] = useState(false)
+  const [deliveryAddress, setDeliveryAddress] = useState('')
+  const [useNewAddress, setUseNewAddress] = useState(false)
 
   useEffect(() => {
     async function fetchCart() {
@@ -144,6 +147,12 @@ export default function CartPage() {
     fetchCart();
   }, [user, userLoading]);
 
+  useEffect(() => {
+    if (user?.address) {
+      setDeliveryAddress(user.address)
+    }
+  }, [user?.address])
+
   async function removeItem(cartItemId: string) {
     if (user) {
       await fetch(`/api/cart/${cartItemId}`, { method: "DELETE" });
@@ -154,26 +163,36 @@ export default function CartPage() {
     window.dispatchEvent(new Event("cart-updated"));
   }
 
+  async function submitOrder(address: string | null) {
+    setCheckingOut(true)
+    setError('')
+    const body: Record<string, unknown> = { delivery_type: deliveryType }
+    if (address) body.delivery_address = address
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const data = await res.json()
+    setCheckingOut(false)
+    if (!res.ok) {
+      setError(data.error?.message ?? 'Checkout failed, please try again')
+      return
+    }
+    sessionStorage.setItem('checkout_secret', data.data.client_secret)
+    router.push('/checkout')
+  }
+
   async function handleCheckout() {
     if (!user) {
-      setShowBuyerForm(true);
-      return;
+      setShowBuyerForm(true)
+      return
     }
-    setCheckingOut(true);
-    setError("");
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ delivery_type: deliveryType }),
-    });
-    const data = await res.json();
-    setCheckingOut(false);
-    if (!res.ok) {
-      setError(data.error?.message ?? "Checkout failed, please try again");
-      return;
+    if (deliveryType === 'delivery') {
+      setShowDeliveryStep(true)
+      return
     }
-    sessionStorage.setItem('checkout_secret', data.data.client_secret);
-    router.push('/checkout');
+    await submitOrder(null)
   }
 
   async function handleAnonymousCheckout(e: React.FormEvent) {
@@ -197,6 +216,15 @@ export default function CartPage() {
     }
     sessionStorage.setItem('checkout_secret', data.data.client_secret);
     router.push('/checkout');
+  }
+
+  async function handleDeliveryAddressConfirm() {
+    const addr = deliveryAddress.trim()
+    if (!addr) {
+      setError('Please enter a delivery address')
+      return
+    }
+    await submitOrder(addr)
   }
 
   const groups = groupBySeller(items, deliveryType);
