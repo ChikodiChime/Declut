@@ -8,3 +8,4 @@ export { Modal } from './Modal';
 export type { InputProps } from './Input';
 export type { CustomDropdownProps, DropdownOption } from './CustomDropdown';
 export type { ButtonProps } from './Button';
+export type { ModalProps } from './Modal';

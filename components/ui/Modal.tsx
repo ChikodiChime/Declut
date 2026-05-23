@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
 
-interface ModalProps {
+export interface ModalProps {
   open: boolean
   onClose: () => void
   title: string
@@ -32,8 +32,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
         >
           <motion.div
@@ -54,7 +53,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
                 <X size={16} strokeWidth={2} />
               </button>
             </div>
-            <div className="px-6 py-5">{children}</div>
+            <div className="px-6 py-5 max-h-[calc(100vh-180px)] overflow-y-auto">{children}</div>
           </motion.div>
         </motion.div>
       )}
