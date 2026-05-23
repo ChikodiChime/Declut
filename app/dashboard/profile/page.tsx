@@ -392,6 +392,7 @@ function AvatarForm({
       <div className="flex flex-col items-center gap-4">
         <div className="relative">
           {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element -- blob URL from FileReader, cannot use next/image
             <img
               src={preview}
               alt="Preview"
