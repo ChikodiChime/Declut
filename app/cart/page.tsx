@@ -133,6 +133,7 @@ export default function CartPage() {
         const res = await fetch("/api/cart");
         const data = await res.json();
         setItems(data.data ?? []);
+        if (user.address) setDeliveryAddress(user.address);
       } else {
         const sessionCart = getSessionCart();
         if (sessionCart.length > 0) {
@@ -146,12 +147,6 @@ export default function CartPage() {
     }
     fetchCart();
   }, [user, userLoading]);
-
-  useEffect(() => {
-    if (user?.address) {
-      setDeliveryAddress(user.address)
-    }
-  }, [user?.address])
 
   async function removeItem(cartItemId: string) {
     if (user) {
