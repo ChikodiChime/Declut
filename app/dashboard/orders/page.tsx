@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { motion } from "framer-motion";
-import { ListingImage } from "@/components/ui";
+import { ListingImage, Modal } from "@/components/ui";
 import {
   Package,
   MapPin,
@@ -25,6 +25,13 @@ import {
 } from "@/lib/hooks/useSellerOrders";
 import { useBuyerOrders, type BuyerOrder } from "@/lib/hooks/useBuyerOrders";
 import { PURCHASE_STATUS_STYLE, PURCHASE_STATUS_LABEL } from "@/lib/constants/orderStatus";
+import {
+  useMyClaims,
+  useSellerClaims,
+  useUpdateClaim,
+  type MyClaim,
+  type SellerClaim,
+} from "@/lib/hooks/useClaims";
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -74,6 +81,20 @@ const SALES_EMPTY_STATE: Record<string, { emoji: string; heading: string; body: 
     body: "Orders confirmed as received will be recorded here.",
   },
 };
+
+const CLAIM_STATUS_STYLE: Record<string, React.CSSProperties> = {
+  pending:   { background: 'rgba(245,158,11,0.10)', color: '#d97706' },
+  accepted:  { background: 'rgba(16,185,129,0.10)', color: '#10b981' },
+  completed: { background: 'rgba(168,160,154,0.10)', color: '#78726c' },
+  cancelled: { background: 'rgba(168,160,154,0.10)', color: '#a8a09a' },
+}
+
+const CLAIM_STATUS_LABEL: Record<string, string> = {
+  pending:   'Pending',
+  accepted:  'Accepted',
+  completed: 'Collected',
+  cancelled: 'Cancelled',
+}
 
 function SalesEmptyState({ status }: { status: string }) {
   const config = SALES_EMPTY_STATE[status] ?? SALES_EMPTY_STATE.paid;
@@ -408,14 +429,291 @@ function PurchasesPanel() {
   );
 }
 
+// ─── Claims tab ───────────────────────────────────────────────────────────────
+
+function MyClaimCard({ claim }: { claim: MyClaim }) {
+  const { mutate: updateClaim, isPending } = useUpdateClaim()
+  const img = claim.listing.images?.[0]
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="rounded-2xl border bg-card p-4 flex gap-4"
+      style={{ borderColor: '#e8e4dc' }}
+    >
+      <div
+        className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
+        style={{ background: '#f0ece5' }}
+      >
+        {img ? (
+          <ListingImage src={img} fill sizes="64px" className="object-cover" alt={claim.listing.title} />
+        ) : (
+          <Package size={18} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <p className="text-sm font-semibold truncate" style={{ color: '#16130f' }}>
+            {claim.listing.title}
+          </p>
+          <span
+            className="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+            style={CLAIM_STATUS_STYLE[claim.status]}
+          >
+            {CLAIM_STATUS_LABEL[claim.status]}
+          </span>
+        </div>
+        <p className="text-xs mb-1" style={{ color: '#a8a09a' }}>
+          from {claim.listing.seller?.name ?? 'Seller'} · {claim.listing.area}
+        </p>
+        {claim.status === 'accepted' && claim.pickup_address && (
+          <p className="text-xs rounded-lg px-2 py-1.5 mb-2" style={{ background: 'rgba(16,185,129,0.08)', color: '#10b981' }}>
+            Pickup: {claim.pickup_address}
+          </p>
+        )}
+        <div className="flex items-center gap-2 mt-2">
+          {claim.status === 'pending' && (
+            <button
+              onClick={() => updateClaim({ id: claim.id, status: 'cancelled' })}
+              disabled={isPending}
+              className="rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[#f5f1eb] disabled:opacity-50"
+              style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+            >
+              Cancel
+            </button>
+          )}
+          {claim.status === 'accepted' && (
+            <button
+              onClick={() => updateClaim({ id: claim.id, status: 'completed' })}
+              disabled={isPending}
+              className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
+              style={{ background: '#10b981' }}
+            >
+              {isPending ? 'Updating…' : 'Mark as Collected'}
+            </button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function MyClaimsPanel() {
+  const { data: claims, isLoading } = useMyClaims()
+  const active = (claims ?? []).filter((c) => c.status !== 'cancelled')
+
+  if (isLoading) return <div className="flex flex-col gap-3">{[1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+
+  if (active.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-24 text-center">
+        <div
+          className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
+          style={{ background: 'linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)', boxShadow: '0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)' }}
+        >
+          <span className="text-3xl">🎁</span>
+        </div>
+        <p className="text-base font-semibold mb-2" style={{ color: '#16130f' }}>No active claims</p>
+        <p className="text-sm max-w-xs leading-relaxed" style={{ color: '#a8a09a' }}>
+          When you claim a free item, it will appear here while you wait for the seller to accept.
+        </p>
+      </div>
+    )
+  }
+
+  return <div className="flex flex-col gap-3">{active.map((c) => <MyClaimCard key={c.id} claim={c} />)}</div>
+}
+
+function AcceptClaimModal({ claim, onClose }: { claim: SellerClaim; onClose: () => void }) {
+  const [address, setAddress] = useState('')
+  const { mutate: updateClaim, isPending } = useUpdateClaim()
+
+  function handleAccept() {
+    if (!address.trim()) return
+    updateClaim({ id: claim.id, status: 'accepted', pickup_address: address.trim() }, { onSuccess: onClose })
+  }
+
+  return (
+    <Modal open onClose={onClose} title="Accept claim">
+      <div className="flex flex-col gap-4">
+        <p className="text-sm" style={{ color: '#78726c' }}>
+          Enter the pickup address you want to share with <strong style={{ color: '#16130f' }}>{claim.buyer.name ?? 'the buyer'}</strong>.
+        </p>
+        <textarea
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="e.g. 12 Bode Thomas St, Surulere, Lagos"
+          rows={3}
+          className="w-full rounded-xl border px-3 py-2.5 text-sm resize-none outline-none focus:ring-2 focus:ring-[#4f46e5]/30"
+          style={{ borderColor: '#e8e4dc', background: '#faf9f7', color: '#16130f' }}
+        />
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onClose}
+            className="rounded-xl border px-4 py-2 text-sm font-medium transition-colors hover:bg-[#f5f1eb]"
+            style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleAccept}
+            disabled={!address.trim() || isPending}
+            className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
+            style={{ background: '#10b981' }}
+          >
+            {isPending ? 'Accepting…' : 'Accept & share address'}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+function SellerClaimCard({ claim }: { claim: SellerClaim }) {
+  const [accepting, setAccepting] = useState(false)
+  const { mutate: updateClaim, isPending } = useUpdateClaim()
+  const img = claim.listing.images?.[0]
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="rounded-2xl border bg-card p-4 flex gap-4"
+        style={{ borderColor: '#e8e4dc' }}
+      >
+        <div
+          className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
+          style={{ background: '#f0ece5' }}
+        >
+          {img ? (
+            <ListingImage src={img} fill sizes="64px" className="object-cover" alt={claim.listing.title} />
+          ) : (
+            <Package size={18} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <p className="text-sm font-semibold truncate" style={{ color: '#16130f' }}>
+              {claim.listing.title}
+            </p>
+            <span
+              className="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+              style={CLAIM_STATUS_STYLE[claim.status]}
+            >
+              {CLAIM_STATUS_LABEL[claim.status]}
+            </span>
+          </div>
+          <p className="text-xs mb-2" style={{ color: '#a8a09a' }}>
+            claimed by {claim.buyer.name ?? 'Buyer'} · {new Date(claim.claimed_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}
+          </p>
+          <div className="flex items-center gap-2">
+            {claim.status === 'pending' && (
+              <>
+                <button
+                  onClick={() => setAccepting(true)}
+                  className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white"
+                  style={{ background: '#10b981' }}
+                >
+                  Accept
+                </button>
+                <button
+                  onClick={() => updateClaim({ id: claim.id, status: 'cancelled' })}
+                  disabled={isPending}
+                  className="rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[#f5f1eb] disabled:opacity-50"
+                  style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+                >
+                  Decline
+                </button>
+              </>
+            )}
+            {claim.status === 'accepted' && (
+              <button
+                onClick={() => updateClaim({ id: claim.id, status: 'completed' })}
+                disabled={isPending}
+                className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
+                style={{ background: '#4f46e5' }}
+              >
+                {isPending ? 'Updating…' : 'Mark as Collected'}
+              </button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+      {accepting && <AcceptClaimModal claim={claim} onClose={() => setAccepting(false)} />}
+    </>
+  )
+}
+
+function IncomingClaimsPanel() {
+  const { data: claims, isLoading } = useSellerClaims()
+  const active = (claims ?? []).filter((c) => c.status !== 'cancelled' && c.status !== 'completed')
+
+  if (isLoading) return <div className="flex flex-col gap-3">{[1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+
+  if (active.length === 0) {
+    return (
+      <div className="flex flex-col items-center py-24 text-center">
+        <div
+          className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
+          style={{ background: 'linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)', boxShadow: '0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)' }}
+        >
+          <span className="text-3xl">📬</span>
+        </div>
+        <p className="text-base font-semibold mb-2" style={{ color: '#16130f' }}>No incoming claims</p>
+        <p className="text-sm max-w-xs leading-relaxed" style={{ color: '#a8a09a' }}>
+          When someone claims one of your free listings, it will appear here.
+        </p>
+      </div>
+    )
+  }
+
+  return <div className="flex flex-col gap-3">{active.map((c) => <SellerClaimCard key={c.id} claim={c} />)}</div>
+}
+
+type ClaimsSubTab = 'mine' | 'incoming'
+
+function ClaimsPanel() {
+  const [subTab, setSubTab] = useState<ClaimsSubTab>('mine')
+
+  return (
+    <div className="space-y-6">
+      <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: '#f0ece5' }}>
+        {(['mine', 'incoming'] as ClaimsSubTab[]).map((tab) => {
+          const isActive = subTab === tab
+          return (
+            <button
+              key={tab}
+              onClick={() => setSubTab(tab)}
+              className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200"
+              style={{
+                background: isActive ? '#10b981' : 'transparent',
+                color: isActive ? 'white' : '#78726c',
+                boxShadow: isActive ? '0 1px 4px rgba(16,185,129,0.35)' : 'none',
+              }}
+            >
+              {tab === 'mine' ? 'My Claims' : 'Incoming'}
+            </button>
+          )
+        })}
+      </div>
+      {subTab === 'mine' ? <MyClaimsPanel /> : <IncomingClaimsPanel />}
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type TopTab = "sales" | "purchases";
+type TopTab = "sales" | "purchases" | "claims";
 
 function OrdersPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const topTab: TopTab = searchParams.get("tab") === "purchases" ? "purchases" : "sales";
+  const rawTab = searchParams.get("tab");
+  const topTab: TopTab = rawTab === "purchases" ? "purchases" : rawTab === "claims" ? "claims" : "sales";
 
   function setTopTab(tab: TopTab) {
     router.replace(`/dashboard/orders?tab=${tab}`);
@@ -426,13 +724,17 @@ function OrdersPageContent() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
         <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>Orders</h1>
         <p className="mt-1 text-sm" style={{ color: "#78726c" }}>
-          {topTab === "sales" ? "Manage orders from buyers." : "Track everything you've bought on Declutter."}
+          {topTab === "sales"
+            ? "Manage orders from buyers."
+            : topTab === "purchases"
+            ? "Track everything you've bought on Declutter."
+            : "Manage free item claims — yours and incoming."}
         </p>
       </motion.div>
 
       {/* Top toggle */}
       <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: "#e8e4dc" }}>
-        {(["sales", "purchases"] as TopTab[]).map((tab) => {
+        {(["sales", "purchases", "claims"] as TopTab[]).map((tab) => {
           const isActive = topTab === tab;
           return (
             <button
@@ -451,7 +753,7 @@ function OrdersPageContent() {
         })}
       </div>
 
-      {topTab === "sales" ? <SalesPanel /> : <PurchasesPanel />}
+      {topTab === "sales" ? <SalesPanel /> : topTab === "purchases" ? <PurchasesPanel /> : <ClaimsPanel />}
     </div>
   );
 }
