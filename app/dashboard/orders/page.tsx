@@ -82,20 +82,6 @@ const SALES_EMPTY_STATE: Record<string, { emoji: string; heading: string; body: 
   },
 };
 
-const CLAIM_STATUS_STYLE: Record<string, React.CSSProperties> = {
-  pending:   { background: 'rgba(245,158,11,0.10)', color: '#d97706' },
-  accepted:  { background: 'rgba(16,185,129,0.10)', color: '#10b981' },
-  completed: { background: 'rgba(168,160,154,0.10)', color: '#78726c' },
-  cancelled: { background: 'rgba(168,160,154,0.10)', color: '#a8a09a' },
-}
-
-const CLAIM_STATUS_LABEL: Record<string, string> = {
-  pending:   'Pending',
-  accepted:  'Accepted',
-  completed: 'Collected',
-  cancelled: 'Cancelled',
-}
-
 function SalesEmptyState({ status }: { status: string }) {
   const config = SALES_EMPTY_STATE[status] ?? SALES_EMPTY_STATE.paid;
   return (
@@ -431,6 +417,20 @@ function PurchasesPanel() {
 
 // ─── Claims tab ───────────────────────────────────────────────────────────────
 
+const CLAIM_STATUS_STYLE: Record<string, React.CSSProperties> = {
+  pending:   { background: 'rgba(245,158,11,0.10)', color: '#d97706' },
+  accepted:  { background: 'rgba(16,185,129,0.10)', color: '#10b981' },
+  completed: { background: 'rgba(168,160,154,0.10)', color: '#78726c' },
+  cancelled: { background: 'rgba(168,160,154,0.10)', color: '#a8a09a' },
+}
+
+const CLAIM_STATUS_LABEL: Record<string, string> = {
+  pending:   'Pending',
+  accepted:  'Accepted',
+  completed: 'Collected',
+  cancelled: 'Cancelled',
+}
+
 function MyClaimCard({ claim }: { claim: MyClaim }) {
   const { mutate: updateClaim, isPending } = useUpdateClaim()
   const img = claim.listing.images?.[0]
@@ -502,9 +502,10 @@ function MyClaimCard({ claim }: { claim: MyClaim }) {
 
 function MyClaimsPanel() {
   const { data: claims, isLoading } = useMyClaims()
-  const active = (claims ?? []).filter((c) => c.status !== 'cancelled')
 
   if (isLoading) return <div className="flex flex-col gap-3">{[1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+
+  const active = (claims ?? []).filter((c) => c.status !== 'cancelled')
 
   if (active.length === 0) {
     return (
@@ -526,9 +527,18 @@ function MyClaimsPanel() {
   return <div className="flex flex-col gap-3">{active.map((c) => <MyClaimCard key={c.id} claim={c} />)}</div>
 }
 
-function AcceptClaimModal({ claim, onClose }: { claim: SellerClaim; onClose: () => void }) {
+function AcceptClaimModal({
+  claim,
+  updateClaim,
+  isPending,
+  onClose,
+}: {
+  claim: SellerClaim
+  updateClaim: ReturnType<typeof useUpdateClaim>['mutate']
+  isPending: boolean
+  onClose: () => void
+}) {
   const [address, setAddress] = useState('')
-  const { mutate: updateClaim, isPending } = useUpdateClaim()
 
   function handleAccept() {
     if (!address.trim()) return
@@ -572,7 +582,7 @@ function AcceptClaimModal({ claim, onClose }: { claim: SellerClaim; onClose: () 
 }
 
 function SellerClaimCard({ claim }: { claim: SellerClaim }) {
-  const [accepting, setAccepting] = useState(false)
+  const [isAccepting, setIsAccepting] = useState(false)
   const { mutate: updateClaim, isPending } = useUpdateClaim()
   const img = claim.listing.images?.[0]
 
@@ -614,7 +624,7 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
             {claim.status === 'pending' && (
               <>
                 <button
-                  onClick={() => setAccepting(true)}
+                  onClick={() => setIsAccepting(true)}
                   className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white"
                   style={{ background: '#10b981' }}
                 >
@@ -643,16 +653,17 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
           </div>
         </div>
       </motion.div>
-      {accepting && <AcceptClaimModal claim={claim} onClose={() => setAccepting(false)} />}
+      {isAccepting && <AcceptClaimModal claim={claim} updateClaim={updateClaim} isPending={isPending} onClose={() => setIsAccepting(false)} />}
     </>
   )
 }
 
 function IncomingClaimsPanel() {
   const { data: claims, isLoading } = useSellerClaims()
-  const active = (claims ?? []).filter((c) => c.status !== 'cancelled' && c.status !== 'completed')
 
   if (isLoading) return <div className="flex flex-col gap-3">{[1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+
+  const active = (claims ?? []).filter((c) => c.status !== 'cancelled' && c.status !== 'completed')
 
   if (active.length === 0) {
     return (
