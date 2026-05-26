@@ -4,11 +4,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+export type ClaimStatus = 'pending' | 'accepted' | 'completed' | 'cancelled'
+
 export type MyClaim = {
   id: string
   listing_id: string
   buyer_id: string
-  status: 'pending' | 'accepted' | 'completed' | 'cancelled'
+  status: ClaimStatus
   pickup_address: string | null
   claimed_at: string
   accepted_at: string | null
@@ -26,10 +28,11 @@ export type SellerClaim = {
   id: string
   listing_id: string
   buyer_id: string
-  status: 'pending' | 'accepted' | 'completed' | 'cancelled'
+  status: ClaimStatus
   pickup_address: string | null
   claimed_at: string
   accepted_at: string | null
+  completed_at: string | null
   listing: { id: string; title: string; images: string[]; area: string }
   buyer: { id: string; name: string | null; avatar_url: string | null }
 }
@@ -50,6 +53,8 @@ export function useMyClaims() {
     queryKey: ['claims', 'mine'],
     queryFn: async () => {
       const res = await fetch('/api/claims/mine')
+      // NOTE: return empty array for unauthenticated users — listing pages call this hook
+      // without requiring login, so 401 is expected and should not put the query in error state
       if (res.status === 401) return []
       const json = await res.json()
       if (!res.ok) throw new Error(json.error?.message ?? 'Something went wrong')
@@ -84,7 +89,7 @@ export function useClaimListing() {
 export function useUpdateClaim() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, ...body }: { id: string; status: string; pickup_address?: string }) =>
+    mutationFn: ({ id, ...body }: { id: string; status: ClaimStatus; pickup_address?: string }) =>
       apiRequest('PATCH', `/api/claims/${id}`, body),
     onSuccess: (_data, vars) => {
       queryClient.invalidateQueries({ queryKey: ['claims', 'mine'] })
