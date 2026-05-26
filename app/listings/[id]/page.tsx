@@ -19,6 +19,12 @@ import { useCart } from "@/lib/hooks/useCart";
 import { addToSessionCart } from "@/lib/session-cart";
 import { Button } from "@/components/ui";
 import type { ListingWithSeller } from "@/types";
+import { useMe } from "@/lib/hooks/useAuth";
+import {
+  useMyClaims,
+  useClaimListing,
+  useUpdateClaim,
+} from "@/lib/hooks/useClaims";
 
 const TYPE_LABELS: Record<string, string> = {
   for_sale: "For Sale",
@@ -125,6 +131,106 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
       )}
     </div>
   );
+}
+
+function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
+  const { data: me } = useMe()
+  const { data: myClaims } = useMyClaims()
+  const { mutate: claim, isPending: claiming } = useClaimListing()
+  const { mutate: updateClaim, isPending: updating } = useUpdateClaim()
+
+  if (listing.listing_type === 'donate') {
+    return (
+      <div className="w-full rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-sm text-accent font-medium text-center">
+        Donated to a charity
+      </div>
+    )
+  }
+
+  if (listing.listing_type !== 'free') return null
+
+  const existingClaim = myClaims?.find((c) => c.listing_id === listing.id && c.status !== 'cancelled')
+
+  if (existingClaim?.status === 'pending') {
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="w-full rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 font-medium text-center">
+          Claim pending — waiting for seller
+        </div>
+        <button
+          onClick={() => updateClaim({ id: existingClaim.id, status: 'cancelled' })}
+          disabled={updating}
+          className="text-xs text-text-muted hover:text-text underline underline-offset-2 text-center transition-colors disabled:opacity-50"
+        >
+          Cancel claim
+        </button>
+      </div>
+    )
+  }
+
+  if (existingClaim?.status === 'accepted') {
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="w-full rounded-xl border border-success/20 bg-success/5 px-4 py-3 text-sm text-success font-semibold text-center">
+          Claim accepted!
+        </div>
+        {existingClaim.pickup_address && (
+          <div className="rounded-xl border border-success/20 bg-success/5 px-4 py-3 flex items-start gap-2">
+            <MapPin size={14} className="text-success mt-0.5 shrink-0" strokeWidth={2} />
+            <div>
+              <p className="text-xs font-semibold text-success mb-0.5">Pickup address</p>
+              <p className="text-sm text-text">{existingClaim.pickup_address}</p>
+            </div>
+          </div>
+        )}
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={() => updateClaim({ id: existingClaim.id, status: 'completed' })}
+          disabled={updating}
+          loading={updating}
+        >
+          Mark as Collected
+        </Button>
+      </div>
+    )
+  }
+
+  if (existingClaim?.status === 'completed') {
+    return (
+      <div className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-text-muted font-medium text-center">
+        You collected this item
+      </div>
+    )
+  }
+
+  if (listing.status !== 'available') {
+    return (
+      <Button className="w-full" size="lg" disabled>
+        Already Claimed
+      </Button>
+    )
+  }
+
+  if (!me) {
+    return (
+      <Button className="w-full" size="lg" href={`/auth/login?next=/listings/${listing.id}`}>
+        Claim for Free
+      </Button>
+    )
+  }
+
+  return (
+    <Button
+      className="w-full"
+      size="lg"
+      onClick={() => claim(listing.id)}
+      loading={claiming}
+      disabled={claiming}
+    >
+      Claim for Free
+    </Button>
+  )
 }
 
 export default function ListingDetailPage() {
@@ -311,9 +417,7 @@ export default function ListingDetailPage() {
               </Button>
             )}
             {listing.listing_type !== "for_sale" && (
-              <Button className="w-full" size="lg" disabled>
-                Contact Seller — Coming Soon
-              </Button>
+              <ClaimCTA listing={listing} />
             )}
           </div>
         </div>
