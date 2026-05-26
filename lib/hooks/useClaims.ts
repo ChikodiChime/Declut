@@ -48,9 +48,10 @@ async function apiRequest(method: string, path: string, body?: unknown) {
   return json
 }
 
-export function useMyClaims() {
+export function useMyClaims({ enabled = true }: { enabled?: boolean } = {}) {
   return useQuery<MyClaim[]>({
     queryKey: ['claims', 'mine'],
+    enabled,
     queryFn: async () => {
       const res = await fetch('/api/claims/mine')
       // NOTE: return empty array for unauthenticated users — listing pages call this hook

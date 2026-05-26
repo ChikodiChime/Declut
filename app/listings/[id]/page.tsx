@@ -135,7 +135,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
 function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   const { data: me, isLoading: meLoading } = useMe()
-  const { data: myClaims, isLoading: claimsLoading } = useMyClaims()
+  const { data: myClaims, isLoading: claimsLoading } = useMyClaims({ enabled: listing.listing_type === 'free' })
   const { mutate: claim, isPending: claiming } = useClaimListing()
   const { mutate: updateClaim, isPending: updating } = useUpdateClaim()
 
@@ -162,7 +162,7 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   if (existingClaim?.status === 'pending') {
     return (
       <div className="flex flex-col gap-3">
-        <div className="w-full rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 font-medium text-center">
+        <div className="w-full rounded-xl border border-warning/30 bg-warning/5 px-4 py-3 text-sm text-warning font-medium text-center">
           Claim pending — waiting for seller
         </div>
         <button
@@ -211,6 +211,8 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
       </div>
     )
   }
+
+  if (existingClaim) return null
 
   if (listing.status !== 'available') {
     return (
