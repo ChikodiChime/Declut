@@ -421,7 +421,7 @@ export default function ListingDetailPage() {
                   {inCart ? "In Cart" : "Add to Cart"}
                 </Button>
               )}
-            {listing.status === "sold" && (
+            {listing.listing_type === "for_sale" && listing.status === "sold" && (
               <Button className="w-full" size="lg" disabled>
                 Sold
               </Button>

@@ -625,7 +625,8 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
               <>
                 <button
                   onClick={() => setIsAccepting(true)}
-                  className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white"
+                  disabled={isAccepting}
+                  className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
                   style={{ background: '#10b981' }}
                 >
                   Accept
