@@ -2,6 +2,12 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
 
+function deriveBuyerArea(address: string | null): string {
+  if (!address) return 'Lagos'
+  const parts = address.split(',')
+  return parts.length > 1 ? parts[1].trim() : parts[0].trim()
+}
+
 export async function GET() {
   const authUser = await getAuthUser()
   if (!authUser || authUser.account_type !== 'dispatcher') {
@@ -11,7 +17,7 @@ export async function GET() {
   const { data: orders, error } = await supabaseAdmin
     .from('orders')
     .select(`
-      id, status, delivery_type, total_price, delivery_fee, created_at,
+      id, status, delivery_type, total_price, delivery_fee, buyer_address, created_at,
       listing:listings(id, title, images, area)
     `)
     .eq('status', 'confirmed')
@@ -24,5 +30,10 @@ export async function GET() {
     return err('Failed to fetch orders', 'SERVER_ERROR', 500)
   }
 
-  return ok(orders ?? [])
+  const mapped = (orders ?? []).map(({ buyer_address, ...order }) => ({
+    ...order,
+    buyer_area: deriveBuyerArea(buyer_address),
+  }))
+
+  return ok(mapped)
 }
