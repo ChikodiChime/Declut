@@ -134,8 +134,8 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 }
 
 function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
-  const { data: me } = useMe()
-  const { data: myClaims } = useMyClaims()
+  const { data: me, isLoading: meLoading } = useMe()
+  const { data: myClaims, isLoading: claimsLoading } = useMyClaims()
   const { mutate: claim, isPending: claiming } = useClaimListing()
   const { mutate: updateClaim, isPending: updating } = useUpdateClaim()
 
@@ -148,6 +148,14 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   }
 
   if (listing.listing_type !== 'free') return null
+
+  if (meLoading || (me && claimsLoading)) {
+    return (
+      <Button className="w-full" size="lg" disabled>
+        Loading…
+      </Button>
+    )
+  }
 
   const existingClaim = myClaims?.find((c) => c.listing_id === listing.id && c.status !== 'cancelled')
 
