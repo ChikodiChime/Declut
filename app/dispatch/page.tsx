@@ -20,7 +20,7 @@ import { useSignOut, useMe } from '@/lib/hooks/useAuth'
 function DispatchHeader() {
   const { mutate: signOut } = useSignOut()
   const { data: user } = useMe()
-  const firstName = user?.name?.split(' ')[0] ?? 'Hi'
+  const firstName = user?.name?.split(' ')[0] || 'Hi'
 
   return (
     <header
@@ -125,9 +125,9 @@ function AvailableOrderCard({ order }: { order: DispatchOrder }) {
             {order.listing.title}
           </p>
           <div className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#78726c' }}>
-            <span className="truncate max-w-[80px]">{order.listing.area ?? 'Lagos'}</span>
+            <span className="truncate max-w-[80px]">{order.listing.area ?? 'Unknown area'}</span>
             <ArrowRight size={10} strokeWidth={2} className="shrink-0" />
-            <span className="truncate max-w-[80px]">{order.buyer_area ?? 'Lagos'}</span>
+            <span className="truncate max-w-[80px]">{order.buyer_area ?? 'Unknown area'}</span>
           </div>
         </div>
 
@@ -205,7 +205,7 @@ function DeliveryCard({ order }: { order: DispatchOrder }) {
           <MapPin size={12} strokeWidth={2} className="shrink-0 mt-0.5" style={{ color: '#a8a09a' }} />
           <div>
             <p className="font-semibold mb-0.5" style={{ color: '#16130f' }}>Deliver to</p>
-            <p style={{ color: '#78726c' }}>{order.buyer_address}</p>
+            <p style={{ color: '#78726c' }}>{order.buyer_address ?? 'Address unavailable'}</p>
           </div>
         </div>
       </div>
@@ -279,7 +279,7 @@ function CompletedCard({ order }: { order: CompletedDelivery }) {
           {order.listing.title}
         </p>
         <div className="flex items-center gap-1 mt-0.5 text-xs" style={{ color: '#78726c' }}>
-          <span className="truncate max-w-[70px]">{order.listing.area ?? 'Lagos'}</span>
+          <span className="truncate max-w-[70px]">{order.listing.area ?? 'Unknown area'}</span>
           <ArrowRight size={10} strokeWidth={2} className="shrink-0" />
           <span className="truncate max-w-[70px]">{order.buyer_area}</span>
         </div>
