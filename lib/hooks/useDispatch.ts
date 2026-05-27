@@ -10,11 +10,24 @@ export type DispatchOrder = {
   total_price: number
   delivery_fee: number
   buyer_address: string
+  buyer_area?: string
   buyer_name?: string
   buyer_phone?: string
   created_at: string
   listing: {
     id: string
+    title: string
+    images: string[]
+    area?: string
+  }
+}
+
+export type CompletedDelivery = {
+  id: string
+  delivery_fee: number
+  buyer_area: string
+  created_at: string
+  listing: {
     title: string
     images: string[]
     area?: string
@@ -39,7 +52,7 @@ export function useAvailableOrders() {
       const json = await apiRequest('GET', '/api/dispatch/orders')
       return json.data
     },
-    refetchInterval: 30_000, // poll every 30s for new available orders
+    refetchInterval: 30_000,
   })
 }
 
@@ -48,6 +61,16 @@ export function useMyDeliveries() {
     queryKey: ['dispatch', 'mine'],
     queryFn: async () => {
       const json = await apiRequest('GET', '/api/dispatch/orders/mine')
+      return json.data
+    },
+  })
+}
+
+export function useCompletedDeliveries() {
+  return useQuery<CompletedDelivery[]>({
+    queryKey: ['dispatch', 'completed'],
+    queryFn: async () => {
+      const json = await apiRequest('GET', '/api/dispatch/orders/completed')
       return json.data
     },
   })
@@ -73,6 +96,7 @@ export function useVerifyDelivery() {
       apiRequest('POST', `/api/dispatch/orders/${id}/verify`, { code }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dispatch', 'mine'] })
+      queryClient.invalidateQueries({ queryKey: ['dispatch', 'completed'] })
       toast.success('Delivery confirmed!')
     },
     onError: (err: Error) => toast.error(err.message),
