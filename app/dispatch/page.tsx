@@ -48,15 +48,7 @@ function DispatchHeader() {
 
 // ─── Earnings hero ────────────────────────────────────────────────────────────
 
-function EarningsHero() {
-  const { data: completed } = useCompletedDeliveries()
-
-  const now = new Date()
-  const thisMonth = (completed ?? []).filter((d) => {
-    const date = new Date(d.created_at)
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
-  })
-
+function EarningsHero({ thisMonth }: { thisMonth: CompletedDelivery[] }) {
   const earnings = thisMonth.reduce((sum, d) => sum + d.delivery_fee, 0)
 
   return (
@@ -312,17 +304,11 @@ function CompletedCard({ order }: { order: CompletedDelivery }) {
 
 // ─── Monthly summary row ──────────────────────────────────────────────────────
 
-function MonthSummaryRow({ orders }: { orders: CompletedDelivery[] }) {
-  const now = new Date()
-  const thisMonth = orders.filter((d) => {
-    const date = new Date(d.created_at)
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
-  })
-
+function MonthSummaryRow({ thisMonth }: { thisMonth: CompletedDelivery[] }) {
   if (thisMonth.length === 0) return null
 
   const earnings = thisMonth.reduce((sum, d) => sum + d.delivery_fee, 0)
-  const monthName = now.toLocaleDateString('en-NG', { month: 'long', year: 'numeric' })
+  const monthName = new Date().toLocaleDateString('en-NG', { month: 'long', year: 'numeric' })
 
   return (
     <div
@@ -353,12 +339,18 @@ export default function DispatchPortalPage() {
   const { data: mine, isLoading: loadingMine } = useMyDeliveries()
   const { data: completed, isLoading: loadingCompleted } = useCompletedDeliveries()
 
+  const now = new Date()
+  const thisMonthCompleted = (completed ?? []).filter((d) => {
+    const date = new Date(d.created_at)
+    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear()
+  })
+
   return (
     <main className="min-h-screen bg-surface">
       <DispatchHeader />
 
       <div className="max-w-xl mx-auto px-4 py-6">
-        <EarningsHero />
+        <EarningsHero thisMonth={thisMonthCompleted} />
 
         <div className="inline-flex gap-0.5 rounded-full p-0.5 mb-6" style={{ background: '#f0ece5' }}>
           {TABS.map((t) => (
@@ -418,7 +410,7 @@ export default function DispatchPortalPage() {
             )}
             {completed && completed.length > 0 && (
               <>
-                <MonthSummaryRow orders={completed} />
+                <MonthSummaryRow thisMonth={thisMonthCompleted} />
                 {completed.map((order) => <CompletedCard key={order.id} order={order} />)}
               </>
             )}

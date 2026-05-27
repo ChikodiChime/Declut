@@ -9,7 +9,7 @@ export type DispatchOrder = {
   delivery_type: 'delivery'
   total_price: number
   delivery_fee: number
-  buyer_address: string
+  buyer_address?: string
   buyer_area?: string
   buyer_name?: string
   buyer_phone?: string
