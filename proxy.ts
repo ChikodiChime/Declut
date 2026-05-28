@@ -124,6 +124,7 @@ export async function proxy(request: NextRequest) {
     isDispatcher &&
     !pathname.startsWith('/dispatch') &&
     !pathname.startsWith('/api/dispatch') &&
+    !pathname.startsWith('/api/users/me') &&
     !pathname.startsWith('/api/buyer') &&
     !pathname.startsWith('/api/cart') &&
     !pathname.startsWith('/api/orders') &&
