@@ -1,7 +1,6 @@
 // app/dispatch/(portal)/profile/page.tsx
 'use client'
 
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Truck, CheckCircle2, TrendingUp, Mail, User, Calendar } from 'lucide-react'
@@ -76,13 +75,6 @@ export default function DispatchProfilePage() {
   const { data: user, isLoading: loadingUser } = useMe()
   const { data: completed, isLoading: loadingCompleted } = useCompletedDeliveries()
   const { mutate: signOut } = useSignOut()
-
-  // Redirect to login if session is gone
-  useEffect(() => {
-    if (!loadingUser && user === null) {
-      router.replace('/dispatch/login')
-    }
-  }, [loadingUser, user, router])
 
   const isLoading = loadingUser || loadingCompleted
 
