@@ -119,7 +119,7 @@ export function CategoryStripSection() {
         </div>
 
         {/* Bento grid */}
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {CATEGORIES.map((cat, index) => {
             const Icon = cat.icon;
             const isWide = cat.colSpan >= 2;

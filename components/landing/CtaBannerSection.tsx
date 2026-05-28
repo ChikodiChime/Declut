@@ -51,7 +51,7 @@ export function CtaBannerSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 lg:px-12 py-24 md:py-32 lg:py-40">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 lg:px-12 py-16 md:py-24 lg:py-32">
         <div className="grid lg:grid-cols-[1fr_320px] gap-16 xl:gap-32 items-end">
 
           {/* ── Left: headline + CTAs ── */}
@@ -144,7 +144,7 @@ export function CtaBannerSection() {
           </div>
 
           {/* ── Right: stats column ── */}
-          <div className="flex flex-row lg:flex-col gap-8 lg:gap-12 lg:pb-2">
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-6 sm:gap-8 lg:gap-12 lg:pb-2">
             {STATS.map((stat, i) => (
               <motion.div
                 key={stat.label}

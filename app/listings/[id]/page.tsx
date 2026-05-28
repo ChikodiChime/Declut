@@ -435,20 +435,20 @@ export default function ListingDetailPage() {
             </div>
 
             {/* Title */}
-            <h1 className="font-display text-[2.1rem] lg:text-[2.4rem] leading-[1.15] text-[#16130f] tracking-[-0.01em]">
+            <h1 className="font-display leading-[1.15] text-[#16130f] tracking-[-0.01em]" style={{ fontSize: "clamp(1.5rem, 5vw, 2.4rem)" }}>
               {listing.title}
             </h1>
 
             {/* Price */}
             {listing.listing_type === "for_sale" && listing.price != null ? (
               <div className="flex items-baseline gap-1.5">
-                <span className="font-display text-[1.4rem] text-[#4f46e5] leading-none">₦</span>
-                <span className="font-display text-[3rem] text-[#4f46e5] leading-none tracking-tight">
+                <span className="font-display text-[#4f46e5] leading-none" style={{ fontSize: "clamp(1rem, 3.5vw, 1.4rem)" }}>₦</span>
+                <span className="font-display text-[#4f46e5] leading-none tracking-tight" style={{ fontSize: "clamp(1.75rem, 7vw, 3rem)" }}>
                   {listing.price.toLocaleString()}
                 </span>
               </div>
             ) : listing.listing_type === "free" ? (
-              <span className="font-display text-[2.8rem] text-[#10b981] leading-none">Free</span>
+              <span className="font-display text-[#10b981] leading-none" style={{ fontSize: "clamp(1.75rem, 7vw, 2.8rem)" }}>Free</span>
             ) : null}
 
             {/* Description */}

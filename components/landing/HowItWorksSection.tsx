@@ -46,7 +46,7 @@ const DOT_GRID = "radial-gradient(circle, #cdc4b6 1px, transparent 1px)";
 
 export function HowItWorksSection() {
   return (
-    <section className="relative overflow-hidden bg-white px-4 pb-24 pt-56 sm:px-6 sm:pt-64 lg:px-8">
+    <section className="relative overflow-hidden bg-white px-4 pb-24 pt-48 sm:px-6 sm:pt-56 md:pt-64 lg:px-8">
       {/* Section-level background orbs */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div

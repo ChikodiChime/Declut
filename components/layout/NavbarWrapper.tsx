@@ -10,8 +10,8 @@ import {
   LogOut,
   ShoppingCart,
 } from "lucide-react";
-import { getSessionCart } from "@/lib/session-cart";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
+import { useCart } from "@/lib/hooks/useCart";
 
 const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch", "/verify-email", "/admin"];
 const SCROLL_THRESHOLD = 16;
@@ -360,38 +360,10 @@ export function NavbarWrapper() {
 }
 
 function CartButton({ transparent }: { transparent: boolean }) {
-  const [count, setCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
+  const { count, loading } = useCart();
   const [hover, setHover] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchCount() {
-      try {
-        const res = await fetch("/api/cart");
-        if (cancelled) return;
-        if (res.ok) {
-          const data = await res.json();
-          setCount(data.data?.length ?? 0);
-        } else if (res.status === 401) {
-          setCount(getSessionCart().length);
-        }
-      } catch {
-        /* noop */
-      } finally {
-        if (!cancelled) setMounted(true);
-      }
-    }
-    fetchCount();
-    const onUpdate = () => fetchCount();
-    window.addEventListener("cart-updated", onUpdate);
-    return () => {
-      cancelled = true;
-      window.removeEventListener("cart-updated", onUpdate);
-    };
-  }, []);
-
-  if (!mounted) return null;
+  if (loading) return null;
 
   const baseBg = transparent
     ? "rgba(255,255,255,0.10)"

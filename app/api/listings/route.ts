@@ -12,6 +12,7 @@ export async function GET(req: Request) {
   const listing_type = searchParams.get('listing_type')
   const condition = searchParams.get('condition')
   const area = searchParams.get('area')?.trim()
+  const seller_id = searchParams.get('seller_id')
   const sort = searchParams.get('sort') ?? 'newest'
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '24', 10), 48)
   const offset = Math.max(parseInt(searchParams.get('offset') ?? '0', 10), 0)
@@ -35,6 +36,9 @@ export async function GET(req: Request) {
   }
   if (area) {
     query = query.ilike('area', `%${area}%`)
+  }
+  if (seller_id) {
+    query = query.eq('seller_id', seller_id)
   }
 
   if (sort === 'price_asc') {

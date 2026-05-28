@@ -9,6 +9,7 @@ export interface BrowseParams {
   listing_type?: ListingType | ''
   condition?: Condition | ''
   area?: string
+  seller_id?: string
   sort?: 'newest' | 'price_asc' | 'price_desc'
   limit?: number
   offset?: number
@@ -32,6 +33,7 @@ export function usePublicListings(params: BrowseParams = {}) {
   if (params.listing_type) query.set('listing_type', params.listing_type)
   if (params.condition) query.set('condition', params.condition)
   if (params.area) query.set('area', params.area)
+  if (params.seller_id) query.set('seller_id', params.seller_id)
   if (params.sort) query.set('sort', params.sort)
   if (params.limit) query.set('limit', String(params.limit))
   if (params.offset) query.set('offset', String(params.offset))
@@ -111,6 +113,22 @@ export function useDeleteListing() {
       toast.success('Listing deleted')
     },
     onError: (err: Error) => toast.error(err.message),
+  })
+}
+
+export interface BusinessSeller {
+  id: string
+  name: string | null
+}
+
+export function useBusinessSellers() {
+  return useQuery<BusinessSeller[]>({
+    queryKey: ['sellers', 'business'],
+    queryFn: async () => {
+      const json = await apiRequest('GET', '/api/sellers')
+      return json.data ?? []
+    },
+    staleTime: 5 * 60_000,
   })
 }
 

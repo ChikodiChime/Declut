@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { MapPin, Package } from "lucide-react";
 import { ListingImage } from "@/components/ui";
 import type { Listing } from "@/types";
@@ -14,8 +15,9 @@ const TYPE_COLOR: Record<string, string> = {
 export function CarouselCard({ listing }: { listing: Listing }) {
   const color = TYPE_COLOR[listing.listing_type] ?? "#4f46e5";
   return (
-    <div
-      className="shrink-0 rounded-2xl overflow-hidden bg-white"
+    <Link
+      href={`/listings/${listing.id}`}
+      className="block shrink-0 rounded-2xl overflow-hidden bg-white"
       style={{
         width: "280px",
         border: "1px solid #e8e4dc",
@@ -65,6 +67,6 @@ export function CarouselCard({ listing }: { listing: Listing }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
