@@ -7,7 +7,7 @@ import { ListingImage } from '@/components/ui'
 import {
   Package, MapPin, KeyRound, ArrowRight,
   Truck, CheckCircle2, Clock, TrendingUp,
-  Phone, Copy,
+  Phone, Copy, LogOut,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
@@ -19,7 +19,8 @@ import {
   type DispatchOrder,
   type CompletedDelivery,
 } from '@/lib/hooks/useDispatch'
-import { useMe } from '@/lib/hooks/useAuth'
+import { useMe, useSignOut } from '@/lib/hooks/useAuth'
+import { useRouter } from 'next/navigation'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { Button } from '@/components/ui'
 
@@ -35,6 +36,8 @@ function fadeUp(delay: number) {
 
 function DispatchHeader() {
   const { data: user } = useMe()
+  const { mutate: signOut } = useSignOut()
+  const router = useRouter()
   const firstName = user?.name?.split(' ')[0] || 'Hi'
 
   const hour = new Date().getHours()
@@ -46,11 +49,18 @@ function DispatchHeader() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="declut" className="h-7" />
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-text">{greeting}, {firstName}</span>
+          <span className="text-sm font-medium text-text hidden sm:inline">{greeting}, {firstName}</span>
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
             <Truck size={10} strokeWidth={2.5} />
             Dispatcher
           </span>
+          <button
+            onClick={() => signOut(undefined, { onSuccess: () => router.push('/dispatch/login') })}
+            className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-subtle hover:text-text hover:bg-card transition-colors"
+          >
+            <LogOut size={13} strokeWidth={2} />
+            <span className="hidden sm:inline">Sign out</span>
+          </button>
         </div>
       </div>
     </header>
