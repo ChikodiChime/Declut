@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, Truck, MapPin, AlertTriangle } from 'lucide-react'
+import { toast } from 'sonner'
+import { Pagination } from '@/components/admin/Pagination'
+import { Modal } from '@/components/ui'
 
 interface AdminOrder {
   id: string
@@ -15,11 +18,18 @@ interface AdminOrder {
   dispatcher: { name: string | null; email: string } | null
 }
 
-async function fetchOrders(): Promise<AdminOrder[]> {
-  const res = await fetch('/api/admin/orders')
+interface OrdersResponse {
+  orders: AdminOrder[]
+  total: number
+}
+
+const PAGE_SIZE = 25
+
+async function fetchOrders(page: number): Promise<OrdersResponse> {
+  const res = await fetch(`/api/admin/orders?page=${page}`)
   if (!res.ok) throw new Error('Failed to load orders')
   const json = await res.json()
-  return json.data.orders
+  return json.data
 }
 
 async function cancelOrder(id: string) {
@@ -29,94 +39,211 @@ async function cancelOrder(id: string) {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  pending:   'bg-amber-100 text-amber-700',
-  paid:      'bg-blue-100 text-blue-700',
-  confirmed: 'bg-blue-100 text-blue-700',
-  shipped:   'bg-violet-100 text-violet-700',
-  delivered: 'bg-teal-100 text-teal-700',
-  completed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
+  pending:   'bg-amber-50 text-amber-700',
+  paid:      'bg-blue-50 text-blue-700',
+  confirmed: 'bg-blue-50 text-blue-700',
+  shipped:   'bg-violet-50 text-violet-700',
+  delivered: 'bg-teal-50 text-teal-700',
+  completed: 'bg-green-50 text-green-700',
+  cancelled: 'bg-red-50 text-red-600',
+}
+
+const STATUS_DOT: Record<string, string> = {
+  pending:   'bg-amber-400',
+  paid:      'bg-blue-500',
+  confirmed: 'bg-blue-500',
+  shipped:   'bg-violet-500',
+  delivered: 'bg-teal-500',
+  completed: 'bg-green-500',
+  cancelled: 'bg-red-500',
+}
+
+function getInitials(name: string | null, email: string) {
+  if (name) {
+    const parts = name.trim().split(/\s+/)
+    return parts.length >= 2
+      ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+      : parts[0].slice(0, 2).toUpperCase()
+  }
+  return email.slice(0, 2).toUpperCase()
+}
+
+function TableSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <tr key={i} className="border-b border-border animate-pulse">
+          <td className="px-6 py-4"><div className="h-4 rounded-md bg-border w-20" /><div className="h-3 rounded-md bg-border mt-1.5 w-14" /></td>
+          <td className="px-6 py-4"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-border shrink-0" /><div className="h-4 rounded-md bg-border w-28" /></div></td>
+          <td className="px-6 py-4"><div className="h-4 rounded-md bg-border w-24" /></td>
+          <td className="px-6 py-4"><div className="h-5 rounded-full bg-border w-20" /></td>
+          <td className="px-6 py-4"><div className="h-5 rounded-full bg-border w-14" /></td>
+          <td className="px-6 py-4"><div className="h-7 rounded-lg bg-border w-24 ml-auto" /></td>
+        </tr>
+      ))}
+    </>
+  )
 }
 
 export default function AdminOrdersPage() {
   const queryClient = useQueryClient()
-  const { data: orders = [], isLoading } = useQuery({ queryKey: ['admin', 'orders'], queryFn: fetchOrders })
-  const [actionError, setActionError] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const [cancelTarget, setCancelTarget] = useState<AdminOrder | null>(null)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'orders', page],
+    queryFn: () => fetchOrders(page),
+  })
+
+  const orders = data?.orders ?? []
+  const total = data?.total ?? 0
 
   const mutation = useMutation({
     mutationFn: cancelOrder,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] }),
-    onError: (e: Error) => setActionError(e.message),
+    onSuccess: () => {
+      const wasPaid = cancelTarget?.status === 'paid'
+      setCancelTarget(null)
+      toast.success(wasPaid ? 'Order cancelled and refund issued' : 'Order cancelled')
+      queryClient.invalidateQueries({ queryKey: ['admin', 'orders', page] })
+    },
+    onError: (e: Error) => {
+      setCancelTarget(null)
+      toast.error(e.message)
+    },
   })
-
-  function handleCancel(id: string) {
-    if (!confirm('Force-cancel this order? A refund will be issued if the order is paid.')) return
-    setActionError(null)
-    mutation.mutate(id)
-  }
 
   return (
     <div className="max-w-5xl">
       <div className="flex items-center gap-3 mb-8">
-        <ShoppingBag size={22} className="text-primary" />
-        <h1 className="text-xl font-bold text-text">Orders</h1>
-        <span className="text-sm text-text-muted">({orders.length})</span>
+        <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+          <ShoppingBag size={18} strokeWidth={1.75} className="text-amber-600" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-text leading-tight">Orders</h1>
+          {total > 0 && <p className="text-xs text-text-muted">{total.toLocaleString('en-NG')} total orders</p>}
+        </div>
       </div>
 
-      {actionError && <p className="text-sm text-red-600 mb-4">{actionError}</p>}
-
-      <div className="bg-card rounded-2xl shadow-card overflow-x-auto">
-        {isLoading ? (
-          <p className="px-8 py-10 text-sm text-center text-text-muted">Loading…</p>
-        ) : orders.length === 0 ? (
-          <p className="px-8 py-10 text-sm text-center text-text-muted">No orders.</p>
-        ) : (
+      <div className="bg-card rounded-2xl shadow-card border border-border overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left px-6 py-3 text-xs font-semibold text-text-muted">Order</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-text-muted">Buyer</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-text-muted">Total</th>
-                <th className="text-left px-6 py-3 text-xs font-semibold text-text-muted">Status</th>
+              <tr className="bg-surface border-b border-border">
+                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Order</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Buyer</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Amount</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Status</th>
+                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Via</th>
                 <th className="px-6 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {orders.map((o) => (
-                <tr key={o.id} className="hover:bg-surface transition-colors">
-                  <td className="px-6 py-3">
-                    <p className="font-mono text-xs text-text">{o.id.slice(0, 8)}…</p>
-                    <p className="text-xs text-text-muted">
-                      {new Date(o.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}
-                    </p>
-                  </td>
-                  <td className="px-6 py-3">
-                    <p className="text-text">{o.buyer?.name ?? '—'}</p>
-                    <p className="text-xs text-text-muted">{o.buyer?.email ?? ''}</p>
-                  </td>
-                  <td className="px-6 py-3 text-text">₦{o.total_price.toLocaleString('en-NG')}</td>
-                  <td className="px-6 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_STYLE[o.status] ?? 'bg-border text-text-muted'}`}>
-                      {o.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-3 text-right">
-                    {['pending', 'paid'].includes(o.status) && (
-                      <button
-                        onClick={() => handleCancel(o.id)}
-                        disabled={mutation.isPending}
-                        className="text-xs font-medium text-red-600 hover:underline disabled:opacity-50"
-                      >
-                        Force cancel
-                      </button>
-                    )}
+              {isLoading ? (
+                <TableSkeleton />
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-16 text-center">
+                    <ShoppingBag size={32} strokeWidth={1.25} className="mx-auto mb-3 text-border" />
+                    <p className="text-sm text-text-muted">No orders yet.</p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                orders.map((o) => (
+                  <tr key={o.id} className="hover:bg-surface/60 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-mono text-xs font-medium text-text bg-surface inline-block px-1.5 py-0.5 rounded">
+                        {o.id.slice(0, 8)}
+                      </p>
+                      <p className="text-xs text-text-muted mt-1">
+                        {new Date(o.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-[11px] font-semibold text-slate-600">
+                          {o.buyer ? getInitials(o.buyer.name, o.buyer.email) : '?'}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-text truncate">{o.buyer?.name ?? '—'}</p>
+                          <p className="text-xs text-text-muted truncate">{o.buyer?.email ?? ''}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-text whitespace-nowrap">
+                      ₦{o.total_price.toLocaleString('en-NG')}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[o.status] ?? 'bg-border text-text-muted'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[o.status] ?? 'bg-text-subtle'}`} />
+                        {o.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={[
+                        'inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full',
+                        o.delivery_type === 'delivery'
+                          ? 'bg-primary/8 text-primary'
+                          : 'bg-green-50 text-green-700',
+                      ].join(' ')}>
+                        {o.delivery_type === 'delivery'
+                          ? <><Truck size={10} strokeWidth={2} /> Delivery</>
+                          : <><MapPin size={10} strokeWidth={2} /> Pickup</>
+                        }
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {['pending', 'paid'].includes(o.status) && (
+                        <button
+                          onClick={() => setCancelTarget(o)}
+                          className="text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          Force cancel
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
-        )}
+        </div>
+        <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPage={setPage} />
       </div>
+
+      <Modal open={!!cancelTarget} onClose={() => setCancelTarget(null)} title="Force cancel order">
+        <div className="flex flex-col gap-5">
+          <div className="flex gap-3">
+            <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center shrink-0 mt-0.5">
+              <AlertTriangle size={17} strokeWidth={2} className="text-red-500" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-text mb-1">
+                Cancel order <span className="font-mono">{cancelTarget?.id.slice(0, 8)}</span>?
+              </p>
+              <p className="text-sm text-text-muted">
+                {cancelTarget?.status === 'paid'
+                  ? 'This order has been paid. A full refund will be issued to the buyer via Stripe.'
+                  : 'This order will be cancelled and the listing will become available again.'}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={() => setCancelTarget(null)}
+              className="px-4 py-2 rounded-xl border border-border text-sm font-medium text-text-muted hover:bg-surface transition-colors"
+            >
+              Keep order
+            </button>
+            <button
+              onClick={() => cancelTarget && mutation.mutate(cancelTarget.id)}
+              disabled={mutation.isPending}
+              className="px-4 py-2 rounded-xl bg-red-600 text-sm font-semibold text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+            >
+              {mutation.isPending ? 'Cancelling…' : cancelTarget?.status === 'paid' ? 'Cancel & refund' : 'Cancel order'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -10,13 +10,19 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   const { id } = await params
 
-  const { data, error } = await supabaseAdmin
+  const { data: existing } = await supabaseAdmin
+    .from('listings')
+    .select('id')
+    .eq('id', id)
+    .single()
+
+  if (!existing) return err('Listing not found', 'NOT_FOUND', 404)
+
+  const { error } = await supabaseAdmin
     .from('listings')
     .update({ status: 'removed' })
     .eq('id', id)
-    .select('id')
-    .single()
 
-  if (error || !data) return err('Listing not found', 'NOT_FOUND', 404)
+  if (error) return err('Failed to remove listing', 'SERVER_ERROR', 500)
   return ok({ ok: true })
 }
