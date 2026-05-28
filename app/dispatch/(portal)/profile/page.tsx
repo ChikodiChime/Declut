@@ -1,6 +1,7 @@
 // app/dispatch/(portal)/profile/page.tsx
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Truck, CheckCircle2, TrendingUp, Mail, User, Calendar } from 'lucide-react'
 import { useMe, useSignOut } from '@/lib/hooks/useAuth'
@@ -28,6 +29,7 @@ function fmtEarnings(n: number): string {
 }
 
 export default function DispatchProfilePage() {
+  const router = useRouter()
   const { data: user } = useMe()
   const { data: completed } = useCompletedDeliveries()
   const { mutate: signOut } = useSignOut()
@@ -147,7 +149,7 @@ export default function DispatchProfilePage() {
 
         {/* Sign out */}
         <motion.div {...fadeUp(0.38)}>
-          <Button variant="outline" size="md" onClick={() => signOut()} className="w-full">
+          <Button variant="outline" size="md" onClick={() => signOut(undefined, { onSuccess: () => router.push('/dispatch/login') })} className="w-full">
             Sign out
           </Button>
         </motion.div>
