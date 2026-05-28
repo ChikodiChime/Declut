@@ -79,7 +79,7 @@ export async function proxy(request: NextRequest) {
   // All users must verify email before accessing protected routes
   const { data: user } = await supabaseAdmin
     .from('users')
-    .select('email_verified')
+    .select('email_verified, suspended')
     .eq('id', payload.sub)
     .single()
 
@@ -88,6 +88,13 @@ export async function proxy(request: NextRequest) {
       return NextResponse.json({ error: 'Email not verified' }, { status: 403 })
     }
     return NextResponse.redirect(new URL('/verify-email', request.url))
+  }
+
+  if (user?.suspended) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Account suspended' }, { status: 403 })
+    }
+    return NextResponse.redirect(new URL('/auth/login?error=suspended', request.url))
   }
 
   const isAdmin = payload.account_type === 'admin'
