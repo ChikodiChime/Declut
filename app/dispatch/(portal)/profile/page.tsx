@@ -18,7 +18,7 @@ function fadeUp(delay: number) {
 
 function initials(name?: string | null): string {
   if (!name) return '?'
-  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()
+  return name.split(' ').filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
 }
 
 function fmtEarnings(n: number): string {
@@ -72,7 +72,7 @@ export default function DispatchProfilePage() {
             </div>
             <div>
               <p className="text-lg font-bold text-white">{user?.name ?? '—'}</p>
-              <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>{user?.email}</p>
+              <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.5)' }}>{user?.email ?? '—'}</p>
               <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Member since {memberSince}</p>
             </div>
           </div>
