@@ -25,7 +25,7 @@ export async function GET() {
     supabaseAdmin.from('orders').select('*', { count: 'exact', head: true })
       .in('status', ['pending', 'paid', 'confirmed', 'shipped', 'delivered']),
     supabaseAdmin.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
-    supabaseAdmin.from('orders').select('total_price').eq('status', 'completed'),
+    supabaseAdmin.from('orders').select('total_price.sum()').eq('status', 'completed').single(),
     supabaseAdmin.from('users').select('*', { count: 'exact', head: true }).gte('created_at', weekAgo),
     supabaseAdmin.from('listings').select('*', { count: 'exact', head: true })
       .gte('created_at', weekAgo).neq('status', 'removed'),
@@ -33,7 +33,7 @@ export async function GET() {
       .eq('status', 'completed').gte('created_at', weekAgo),
   ])
 
-  const gmv = (completedOrderData ?? []).reduce((sum, o) => sum + (o.total_price ?? 0), 0)
+  const gmv = (completedOrderData as { total_price: number | null } | null)?.total_price ?? 0
 
   return ok({
     totalUsers: totalUsers ?? 0,

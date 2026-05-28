@@ -33,6 +33,13 @@ const LISTING_TYPE_LABEL: Record<string, string> = {
   donate: 'Donate',
 }
 
+const LISTING_STATUS_STYLE: Record<string, string> = {
+  available: 'bg-green-100 text-green-700',
+  sold:      'bg-blue-100 text-blue-700',
+  claimed:   'bg-violet-100 text-violet-700',
+  donated:   'bg-purple-100 text-purple-700',
+}
+
 export default function AdminListingsPage() {
   const queryClient = useQueryClient()
   const { data: listings = [], isLoading } = useQuery({ queryKey: ['admin', 'listings'], queryFn: fetchListings })
@@ -86,7 +93,7 @@ export default function AdminListingsPage() {
                   <td className="px-6 py-3 text-text-muted">{LISTING_TYPE_LABEL[l.listing_type] ?? l.listing_type}</td>
                   <td className="px-6 py-3 text-text-muted">{l.area}</td>
                   <td className="px-6 py-3">
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${LISTING_STATUS_STYLE[l.status] ?? 'bg-border text-text-muted'}`}>
                       {l.status}
                     </span>
                   </td>

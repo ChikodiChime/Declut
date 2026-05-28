@@ -31,8 +31,13 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     }
   }
 
-  await supabaseAdmin.from('orders').update({ status: 'cancelled' }).eq('id', id)
-  await supabaseAdmin.from('listings').update({ status: 'available' }).eq('id', order.listing_id)
+  const { error: orderErr } = await supabaseAdmin.from('orders').update({ status: 'cancelled' }).eq('id', id)
+  const { error: listingErr } = await supabaseAdmin.from('listings').update({ status: 'available' }).eq('id', order.listing_id)
+
+  if (orderErr || listingErr) {
+    console.error('Force-cancel state update error:', orderErr ?? listingErr)
+    return err('State update failed after refund — please check order manually', 'SERVER_ERROR', 500)
+  }
 
   return ok({ ok: true })
 }

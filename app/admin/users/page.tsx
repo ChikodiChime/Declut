@@ -45,7 +45,10 @@ export default function AdminUsersPage() {
 
   const mutation = useMutation({
     mutationFn: ({ id, suspended }: { id: string; suspended: boolean }) => patchUser(id, suspended),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'users'] }),
+    onSuccess: () => {
+      setActionError(null)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
     onError: (e: Error) => setActionError(e.message),
   })
 
