@@ -65,7 +65,10 @@ export function AdminSidebar() {
                     transition={{ type: 'spring', stiffness: 400, damping: 35 }}
                   />
                 )}
-                <motion.div className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={false}
+                />
                 <Icon
                   size={18}
                   strokeWidth={isActive ? 2.5 : 1.75}
