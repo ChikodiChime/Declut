@@ -301,8 +301,10 @@ function DeliveryCard({ order }: { order: DispatchOrder }) {
           <button
             type="button"
             onClick={() => {
-              navigator.clipboard.writeText(order.buyer_phone!)
-              toast.success('Phone number copied')
+              navigator.clipboard.writeText(order.buyer_phone!).then(
+                () => toast.success('Phone number copied'),
+                () => toast.error('Could not copy — tap the number to copy manually'),
+              )
             }}
             className="w-10 h-10 rounded-xl border border-border bg-card flex items-center justify-center shrink-0 hover:bg-surface transition-colors"
           >
