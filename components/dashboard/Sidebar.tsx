@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { CldImage } from "next-cloudinary";
 import {
   LayoutDashboard,
   Package,
@@ -10,6 +11,7 @@ import {
   ShoppingCart,
   CreditCard,
   ChevronRight,
+  Store,
 } from "lucide-react";
 import { useSignOut, useMe } from "@/lib/hooks/useAuth";
 
@@ -26,13 +28,13 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard/listings", label: "My Listings", icon: Package },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
   { href: "/dashboard/billing", label: "Payouts", icon: CreditCard },
+  { href: "/listings", label: "Browse Listings", icon: Store },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const { mutate: signOut } = useSignOut();
   const { data: me } = useMe();
-  const initial = me?.name?.[0]?.toUpperCase() ?? "U";
 
   return (
     <aside className="hidden lg:flex flex-col w-(--sidebar-width) h-screen  top-0 bg-primary shrink-0 rounded-r-4xl relative overflow-hidden">
@@ -155,8 +157,22 @@ export function Sidebar() {
             transition={{ duration: 0.2 }}
             className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/10 hover:bg-white/15 transition-colors duration-150 cursor-pointer group border border-white/5"
           >
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-white/25 to-white/10 flex items-center justify-center shrink-0 group-hover:from-white/30 group-hover:to-white/15 transition-colors duration-150 ring-2 ring-white/10">
-              <span className="text-base font-bold text-white">{initial}</span>
+            <div className="w-11 h-11 rounded-full shrink-0 ring-2 ring-white/10 overflow-hidden">
+              {me?.avatar_url ? (
+                <CldImage
+                  src={me.avatar_url}
+                  width={44}
+                  height={44}
+                  alt={me.name ?? "Avatar"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-white/25 to-white/10 group-hover:from-white/30 group-hover:to-white/15 transition-colors duration-150 flex items-center justify-center">
+                  <span className="text-base font-bold text-white">
+                    {me?.name?.[0]?.toUpperCase() ?? "U"}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-white truncate">

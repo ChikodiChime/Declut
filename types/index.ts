@@ -1,4 +1,4 @@
-export type AccountType = 'individual' | 'business' | 'dispatcher'
+export type AccountType = 'individual' | 'business' | 'dispatcher' | 'admin'
 export type ListingType = 'for_sale' | 'free' | 'donate'
 export type Condition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
 export type ListingStatus = 'available' | 'sold' | 'claimed' | 'donated'

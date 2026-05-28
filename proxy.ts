@@ -6,7 +6,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Auth endpoints and Stripe webhook are public — no token required
-  if (pathname.startsWith('/api/auth/') || pathname === '/api/stripe/webhook') {
+  if (pathname.startsWith('/api/auth/') || pathname === '/api/webhooks/stripe') {
     return NextResponse.next()
   }
 
@@ -21,6 +21,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Public: GET /api/charities (no auth needed to list charities)
+  if (request.method === 'GET' && pathname === '/api/charities') {
+    return NextResponse.next()
+  }
+
   // Public pages: /listings and /listings/<uuid>
   if (pathname === '/listings') {
     return NextResponse.next()
@@ -29,8 +34,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Dispatcher auth pages are public
-  if (pathname === '/dispatch/register' || pathname === '/dispatch/login') {
+  // Dispatcher login is public; register is no longer a self-serve page
+  if (pathname === '/dispatch/login') {
     return NextResponse.next()
   }
 
@@ -85,7 +90,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/verify-email', request.url))
   }
 
+  const isAdmin = payload.account_type === 'admin'
   const isDispatcher = payload.account_type === 'dispatcher'
+
+  // Admin routes: only admins may access /admin and /api/admin
+  if ((pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) && !isAdmin) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // Admins go to /admin, not /dashboard
+  if (isAdmin && (pathname === '/dashboard' || pathname === '/dispatch')) {
+    return NextResponse.redirect(new URL('/admin', request.url))
+  }
 
   // Dispatcher home is /dispatch, not /dashboard
   if (isDispatcher && pathname === '/dashboard') {
@@ -136,21 +155,28 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/api/auth/:path*',
     '/api/listings/:path*',
     '/api/users/:path*',
     '/api/upload',
     '/api/cart/:path*',
     '/api/orders/:path*',
+    '/api/claims/:path*',
+    '/api/charities/:path*',
+    '/api/donations/:path*',
     '/api/buyer/:path*',
     '/api/seller/:path*',
     '/api/dispatch/:path*',
     '/api/stripe/:path*',
+    '/api/admin/:path*',
     '/api/cron/:path*',
+    '/api/webhooks/:path*',
     '/listings/:path*',
     '/dashboard/:path*',
     '/cart/:path*',
     '/checkout/:path*',
     '/orders/:path*',
     '/dispatch/:path*',
+    '/admin/:path*',
   ],
 }

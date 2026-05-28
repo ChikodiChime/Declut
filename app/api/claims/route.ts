@@ -29,18 +29,43 @@ export async function POST(req: Request) {
   if (listing.status !== 'available') return err('Listing is no longer available', 'CONFLICT', 409)
   if (listing.seller_id === authUser.id) return err('Cannot claim your own listing', 'VALIDATION_ERROR', 400)
 
-  const { data: claim, error: claimError } = await supabaseAdmin
+  const { data: existingClaim } = await supabaseAdmin
     .from('claims')
-    .insert({ listing_id, buyer_id: authUser.id })
-    .select('*')
+    .select('id, status')
+    .eq('listing_id', listing_id)
+    .eq('buyer_id', authUser.id)
     .single()
 
-  if (claimError) {
-    if (claimError.code === '23505') {
-      return err('This item has already been claimed', 'CONFLICT', 409)
+  if (existingClaim && existingClaim.status !== 'cancelled') {
+    return err('This item has already been claimed', 'CONFLICT', 409)
+  }
+
+  let claim
+  if (existingClaim) {
+    const { data: reactivated, error: reactivateError } = await supabaseAdmin
+      .from('claims')
+      .update({ status: 'pending', claimed_at: new Date().toISOString(), accepted_at: null, completed_at: null, pickup_address: null })
+      .eq('id', existingClaim.id)
+      .select('*')
+      .single()
+
+    if (reactivateError || !reactivated) {
+      console.error('Reactivate claim error:', reactivateError)
+      return err('Failed to create claim', 'SERVER_ERROR', 500)
     }
-    console.error('Create claim error:', claimError)
-    return err('Failed to create claim', 'SERVER_ERROR', 500)
+    claim = reactivated
+  } else {
+    const { data: inserted, error: claimError } = await supabaseAdmin
+      .from('claims')
+      .insert({ listing_id, buyer_id: authUser.id })
+      .select('*')
+      .single()
+
+    if (claimError) {
+      console.error('Create claim error:', claimError)
+      return err('Failed to create claim', 'SERVER_ERROR', 500)
+    }
+    claim = inserted
   }
 
   await supabaseAdmin

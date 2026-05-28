@@ -64,6 +64,8 @@ export function useSignIn() {
       const accountType = json.data.user?.account_type
       if (isSafeRelative) {
         router.push(next)
+      } else if (accountType === 'admin') {
+        router.push('/admin')
       } else if (accountType === 'dispatcher') {
         router.push('/dispatch')
       } else {

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -12,7 +13,7 @@ import {
 import { getSessionCart } from "@/lib/session-cart";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 
-const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch"];
+const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch", "/verify-email"];
 const SCROLL_THRESHOLD = 16;
 
 function getInitials(name: string | null | undefined): string {
@@ -25,9 +26,11 @@ function getInitials(name: string | null | undefined): string {
 
 function ProfileMenu({
   name,
+  avatarUrl,
   transparent,
 }: {
   name: string | null;
+  avatarUrl?: string | null;
   transparent: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -43,6 +46,10 @@ function ProfileMenu({
     return () => document.removeEventListener("mousedown", onOutsideClick);
   }, []);
 
+  const ringStyle = transparent
+    ? { boxShadow: open ? "0 0 0 2px rgba(255,255,255,0.45)" : "inset 0 0 0 1px rgba(255,255,255,0.22)" }
+    : { boxShadow: open ? "0 0 0 3px rgba(22,19,15,0.12)" : "0 1px 2px rgba(22,19,15,0.12)" };
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -50,29 +57,40 @@ function ProfileMenu({
         aria-label="Account menu"
         className="group focus:outline-none"
       >
-        <span
-          className="w-9 h-9 rounded-full flex items-center justify-center text-[11.5px] font-semibold tracking-wide select-none transition-all duration-200"
-          style={
-            transparent
-              ? {
-                  background: "rgba(255,255,255,0.12)",
-                  color: "rgba(255,255,255,0.95)",
-                  boxShadow: open
-                    ? "0 0 0 2px rgba(255,255,255,0.45)"
-                    : "inset 0 0 0 1px rgba(255,255,255,0.22)",
-                  backdropFilter: "blur(10px)",
-                }
-              : {
-                  background: "#16130f",
-                  color: "white",
-                  boxShadow: open
-                    ? "0 0 0 3px rgba(22,19,15,0.12)"
-                    : "0 1px 2px rgba(22,19,15,0.12)",
-                }
-          }
-        >
-          {getInitials(name)}
-        </span>
+        {avatarUrl ? (
+          <span
+            className="w-9 h-9 rounded-full overflow-hidden block select-none transition-all duration-200"
+            style={ringStyle}
+          >
+            <CldImage
+              src={avatarUrl}
+              width={36}
+              height={36}
+              alt={name ?? "Avatar"}
+              className="w-full h-full object-cover"
+            />
+          </span>
+        ) : (
+          <span
+            className="w-9 h-9 rounded-full flex items-center justify-center text-[11.5px] font-semibold tracking-wide select-none transition-all duration-200"
+            style={
+              transparent
+                ? {
+                    background: "rgba(255,255,255,0.12)",
+                    color: "rgba(255,255,255,0.95)",
+                    backdropFilter: "blur(10px)",
+                    ...ringStyle,
+                  }
+                : {
+                    background: "#16130f",
+                    color: "white",
+                    ...ringStyle,
+                  }
+            }
+          >
+            {getInitials(name)}
+          </span>
+        )}
       </button>
 
       {open && (
@@ -285,7 +303,7 @@ export function NavbarWrapper() {
 
             {!isLoading &&
               (me ? (
-                <ProfileMenu name={me.name ?? null} transparent={transparent} />
+                <ProfileMenu name={me.name ?? null} avatarUrl={me.avatar_url ?? null} transparent={transparent} />
               ) : (
                 <div className="flex items-center gap-1">
                   <Link
