@@ -2,6 +2,7 @@ import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ok, err } from '@/lib/api-response'
 import { stripe } from '@/lib/stripe'
+import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 import {
   validateCartItems,
   groupBySeller,
@@ -73,6 +74,7 @@ export async function POST(req: Request) {
     item_price: group.subtotal,
     delivery_fee: group.delivery_fee,
     total_price: group.total,
+    platform_fee: Math.round(group.subtotal * PLATFORM_FEE_PERCENT),
     ...(buyer_info && {
       buyer_name: buyer_info.name,
       buyer_email: buyer_info.email,

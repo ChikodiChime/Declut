@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { Users, Package, ShoppingBag, CheckCircle, TrendingUp, UserPlus, PackagePlus } from 'lucide-react'
+import { Users, Package, ShoppingBag, CheckCircle, TrendingUp, DollarSign, UserPlus, PackagePlus } from 'lucide-react'
 
 interface Stats {
   totalUsers: number
@@ -9,6 +9,7 @@ interface Stats {
   activeOrders: number
   completedOrders: number
   gmv: number
+  platformRevenue: number
   newUsersThisWeek: number
   listingsThisWeek: number
   ordersThisWeek: number
@@ -74,7 +75,8 @@ export default function AdminDashboardPage() {
       <section>
         <h2 className="text-xs font-semibold uppercase tracking-widest text-text-muted mb-4">Money</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl">
-          <StatCard label="Total GMV" value={fmtMoney(s.gmv)} icon={TrendingUp} accent="bg-blue-500" />
+          <StatCard label="Total GMV"          value={fmtMoney(s.gmv)}             icon={TrendingUp}  accent="bg-blue-500" />
+          <StatCard label="Platform revenue"   value={fmtMoney(s.platformRevenue)} icon={DollarSign}  accent="bg-emerald-600" />
         </div>
       </section>
 

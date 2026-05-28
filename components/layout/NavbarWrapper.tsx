@@ -13,7 +13,7 @@ import {
 import { getSessionCart } from "@/lib/session-cart";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 
-const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch", "/verify-email"];
+const HIDDEN_PREFIXES = ["/dashboard", "/auth", "/login", "/dispatch", "/verify-email", "/admin"];
 const SCROLL_THRESHOLD = 16;
 
 function getInitials(name: string | null | undefined): string {

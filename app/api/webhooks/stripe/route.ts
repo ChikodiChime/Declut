@@ -40,7 +40,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
   const { data: orders } = await supabaseAdmin
     .from('orders')
-    .select('id, seller_id, item_price, delivery_fee, total_price, delivery_type')
+    .select('id, seller_id, item_price, delivery_fee, total_price, platform_fee, delivery_type')
     .in('id', orderIds)
 
   if (!orders || orders.length === 0) return
@@ -83,7 +83,9 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       continue
     }
 
-    const transferAmount = Math.round(order.total_price * (1 - PLATFORM_FEE_PERCENT) * 100)
+    // seller receives item_price minus platform fee; delivery fee stays in platform account
+    const sellerAmount = order.item_price - (order.platform_fee ?? Math.round(order.item_price * PLATFORM_FEE_PERCENT))
+    const transferAmount = Math.round(sellerAmount * 100)
 
     try {
       const transfer = await stripe.transfers.create({

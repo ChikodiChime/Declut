@@ -49,6 +49,7 @@ export interface Order {
   item_price: number
   delivery_fee: number
   total_price: number
+  platform_fee: number
   stripe_payment_intent_id: string | null
   pickup_address: string | null
   auto_cancel_at: string | null
