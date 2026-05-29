@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ListingImage } from "@/components/ui";
-import { Package, MapPin, ShoppingCart, Gift } from "lucide-react";
+import {
+  Package,
+  MapPin,
+  ShoppingCart,
+  Gift,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useCart } from "@/lib/hooks/useCart";
 import { addToSessionCart } from "@/lib/session-cart";
 import type { Listing } from "@/types";
@@ -52,45 +59,59 @@ export function BrowseCard({ listing }: BrowseCardProps) {
   const router = useRouter();
   const { isInCart, addToCartOptimistic } = useCart();
   const [addingToCart, setAddingToCart] = useState(false);
+  const [imgIdx, setImgIdx] = useState(0);
   const type = TYPE_CONFIG[listing.listing_type] ?? TYPE_CONFIG.for_sale;
   const inCart = isInCart(listing.id);
+  const images = listing.images;
+  const hasMultiple = images.length > 1;
+
+  function prevImg(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setImgIdx((i) => (i - 1 + images.length) % images.length);
+  }
+
+  function nextImg(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setImgIdx((i) => (i + 1) % images.length);
+  }
+
+  function goToImg(e: React.MouseEvent, idx: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    setImgIdx(idx);
+  }
 
   async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-
     if (inCart || addingToCart) return;
-
     addToCartOptimistic(listing.id);
     setAddingToCart(true);
-
     const res = await fetch("/api/cart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ listing_id: listing.id }),
     });
     setAddingToCart(false);
-
     if (res.status === 401) {
       addToSessionCart(listing.id);
       window.dispatchEvent(new Event("cart-updated"));
       return;
     }
-
-    if (res.ok) {
-      window.dispatchEvent(new Event("cart-updated"));
-    }
+    if (res.ok) window.dispatchEvent(new Event("cart-updated"));
   }
 
   async function handleClaim(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/listings/${listing.id}`);
+    router.push(`/${listing.id}`);
   }
 
   return (
     <Link
-      href={`/listings/${listing.id}`}
+      href={`/${listing.id}`}
       className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300"
       style={{
         borderColor: type.border,
@@ -107,11 +128,12 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         el.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)";
       }}
     >
-      {/* Image */}
+      {/* ── Image + carousel ── */}
       <div className="relative aspect-4/3 overflow-hidden" style={{ background: type.bg }}>
-        {listing.images[0] ? (
+        {images[imgIdx] ? (
           <ListingImage
-            src={listing.images[0]}
+            key={imgIdx}
+            src={images[imgIdx]}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -133,9 +155,53 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             {type.label}
           </span>
         </div>
+
+        {/* Prev arrow */}
+        {hasMultiple && imgIdx > 0 && (
+          <button
+            onClick={prevImg}
+            aria-label="Previous image"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+          >
+            <ChevronLeft size={14} strokeWidth={2.5} />
+          </button>
+        )}
+
+        {/* Next arrow */}
+        {hasMultiple && imgIdx < images.length - 1 && (
+          <button
+            onClick={nextImg}
+            aria-label="Next image"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+          >
+            <ChevronRight size={14} strokeWidth={2.5} />
+          </button>
+        )}
+
+        {/* Dot indicators */}
+        {hasMultiple && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => goToImg(e, i)}
+                aria-label={`Image ${i + 1}`}
+                className="transition-all duration-200 rounded-full"
+                style={{
+                  width: i === imgIdx ? 14 : 5,
+                  height: 5,
+                  background: i === imgIdx ? "white" : "rgba(255,255,255,0.55)",
+                  flexShrink: 0,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Content */}
+      {/* ── Card content ── */}
       <div className="flex flex-col flex-1 p-4">
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-text mb-3">
           {listing.title}
@@ -151,7 +217,6 @@ export function BrowseCard({ listing }: BrowseCardProps) {
           </span>
         </div>
 
-        {/* Pushes price + CTA to bottom */}
         <div className="flex-1" />
 
         <p className="font-display text-lg mb-3" style={{ color: type.color }}>
