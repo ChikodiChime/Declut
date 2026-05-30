@@ -6,17 +6,17 @@ import { Search, X, ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 import { BrowseCard } from "@/components/listings";
 import { ListingImage } from "@/components/ui";
-import { usePublicListings, BrowseParams } from "@/lib/hooks/useListings";
-import { VALID_CATEGORIES } from "@/app/api/listings/utils";
-import type { Listing, ListingType } from "@/types";
+import { usePublicListings } from "@/lib/hooks/useListings";
+import type { Listing } from "@/types";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const TYPE_TABS: { value: ListingType | ""; label: string; color: string }[] = [
-  { value: "", label: "All", color: "#16130f" },
-  { value: "for_sale", label: "For Sale", color: "#4f46e5" },
-  { value: "free", label: "Free", color: "#10b981" },
-  { value: "donate", label: "Donate", color: "#f59e0b" },
+const FEATURED_CATEGORIES = [
+  "Electronics",
+  "Clothing & Accessories",
+  "Furniture & Home",
+  "Appliances",
+  "Sports & Outdoors",
 ];
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -210,31 +210,186 @@ function FreeItemsSection() {
   );
 }
 
-// ─── Category section ─────────────────────────────────────────────────────────
+// ─── Donation item card ───────────────────────────────────────────────────────
 
-interface CategorySectionProps {
-  category: string;
-  listingType: ListingType | "";
+function DonationItemCard({ listing }: { listing: Listing }) {
+  return (
+    <Link
+      href={`/${listing.id}`}
+      className="group flex h-full items-center gap-4 rounded-2xl bg-white px-5 py-4 transition-all duration-200"
+      style={{
+        border: "1px solid #fde8a0",
+        boxShadow: "0 1px 3px rgba(245,158,11,0.04)",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.borderColor = "#fbbf24";
+        el.style.boxShadow = "0 4px 16px rgba(245,158,11,0.12)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.borderColor = "#fde8a0";
+        el.style.boxShadow = "0 1px 3px rgba(245,158,11,0.04)";
+      }}
+    >
+      {/* Thumbnail */}
+      <div
+        className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl"
+        style={{ background: "rgba(245,158,11,0.08)" }}
+      >
+        {listing.images[0] ? (
+          <ListingImage
+            src={listing.images[0]}
+            fill
+            sizes="80px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            alt={listing.title}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xl">📦</div>
+        )}
+      </div>
+
+      {/* Details */}
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <p className="line-clamp-2 text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>
+          {listing.title}
+        </p>
+
+        <div className="flex items-center gap-1.5">
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+            style={{ background: "rgba(245,158,11,0.12)", color: "#b45309" }}
+          >
+            {CONDITION_LABELS[listing.condition]}
+          </span>
+          <span style={{ color: "#d1d5db" }}>·</span>
+          <div className="flex min-w-0 items-center gap-1">
+            <MapPin size={9} strokeWidth={2} style={{ color: "#b8b0a8", flexShrink: 0 }} />
+            <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
+              {listing.area}
+            </span>
+          </div>
+        </div>
+
+        <span
+          className="mt-1 self-start rounded-full px-3 py-1 text-[10px] font-bold"
+          style={{ background: "rgba(245,158,11,0.1)", color: "#b45309" }}
+        >
+          ♥ Going to charity
+        </span>
+      </div>
+    </Link>
+  );
 }
 
-function CategorySection({ category, listingType }: CategorySectionProps) {
-  const params: BrowseParams = {
-    category,
-    listing_type: listingType || undefined,
+// ─── Donation pile section ────────────────────────────────────────────────────
+
+function DonationPileSection() {
+  const { data, isLoading } = usePublicListings({
+    listing_type: "donate",
     limit: 8,
     sort: "newest",
-  };
-
-  const { data, isLoading } = usePublicListings(params);
+  });
   const listings = data?.listings ?? [];
   const total = data?.total ?? 0;
 
-  // Hide empty sections (after load)
   if (!isLoading && listings.length === 0) return null;
 
-  const searchHref = listingType
-    ? `/search?category=${encodeURIComponent(category)}&listing_type=${listingType}`
-    : `/search?category=${encodeURIComponent(category)}`;
+  return (
+    <section
+      className="relative py-12 my-6"
+      style={{
+        background: "linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%)",
+        borderTop: "1px solid #fde68a",
+        borderBottom: "1px solid #fde68a",
+      }}
+    >
+      {/* Subtle dot texture */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage: "radial-gradient(circle, #fcd34d 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-7 gap-4">
+          <div>
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <span className="text-2xl leading-none">🤝</span>
+              <h2 className="text-xl font-semibold" style={{ color: "#78350f" }}>
+                Donation Pile
+              </h2>
+              {!isLoading && total > 0 && (
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                  style={{ background: "rgba(245,158,11,0.18)", color: "#b45309" }}
+                >
+                  {total}
+                </span>
+              )}
+            </div>
+            <p className="text-sm" style={{ color: "#92400e" }}>
+              Items going to charities — give them a good send-off
+            </p>
+          </div>
+
+          <Link
+            href="/search?listing_type=donate"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition-all duration-150 hover:gap-2.5"
+            style={{ borderColor: "#fbbf24", color: "#b45309", background: "white" }}
+          >
+            See all <ArrowRight size={12} strokeWidth={2.2} />
+          </Link>
+        </div>
+
+        {/* Horizontal scroll row */}
+        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-[300px] lg:w-[356px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
+                  style={{ border: "1px solid #fde8a0" }}
+                >
+                  <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#fde68a" }} />
+                  <div className="flex flex-1 flex-col gap-2">
+                    <div className="h-3.5 w-3/4 rounded" style={{ background: "#fde68a" }} />
+                    <div className="h-3 w-1/2 rounded" style={{ background: "#fde68a" }} />
+                    <div className="h-5 w-1/3 rounded-full mt-1" style={{ background: "#fde68a" }} />
+                  </div>
+                </div>
+              ))
+            : listings.map((listing) => (
+                <div key={listing.id} className="w-[300px] lg:w-[356px] shrink-0">
+                  <DonationItemCard listing={listing} />
+                </div>
+              ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Category section ─────────────────────────────────────────────────────────
+
+function CategorySection({ category }: { category: string }) {
+  const { data, isLoading } = usePublicListings({
+    category,
+    listing_type: "for_sale",
+    limit: 8,
+    sort: "newest",
+  });
+  const listings = data?.listings ?? [];
+  const total = data?.total ?? 0;
+
+  if (!isLoading && listings.length === 0) return null;
+
+  const searchHref = `/search?category=${encodeURIComponent(category)}&listing_type=for_sale`;
 
   return (
     <section className="mb-10">
@@ -302,7 +457,6 @@ function CategorySection({ category, listingType }: CategorySectionProps) {
 function HomeContent() {
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");
-  const [activeType, setActiveType] = useState<ListingType | "">("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleSearch(e: React.FormEvent) {
@@ -412,59 +566,18 @@ function HomeContent() {
         </div>
       </div>
 
-      {/* ── Type filter tabs ── */}
-      <div className="sticky z-20 pointer-events-none" style={{ top: 72 }}>
-        <div
-          className="mx-auto pointer-events-auto"
-          style={{
-            maxWidth: "min(72rem, calc(100% - 24px))",
-            marginTop: 10,
-          }}
-        >
-          <div
-            className="inline-flex rounded-full p-0.5"
-            style={{
-              background: "rgba(255,255,255,0.90)",
-              backdropFilter: "blur(16px) saturate(160%)",
-              WebkitBackdropFilter: "blur(16px) saturate(160%)",
-              border: "1px solid rgba(232,228,220,0.9)",
-              boxShadow: "0 1px 0 rgba(255,255,255,0.7) inset, 0 4px 16px rgba(22,19,15,0.10)",
-            }}
-          >
-            {TYPE_TABS.map((tab) => {
-              const isSelected = activeType === tab.value;
-              return (
-                <button
-                  key={tab.value}
-                  onClick={() => setActiveType(tab.value)}
-                  className="rounded-full px-4 h-8 text-[12px] font-semibold transition-all duration-200"
-                  style={{
-                    background: isSelected ? tab.color : "transparent",
-                    color: isSelected ? "white" : "#56524d",
-                    boxShadow: isSelected ? `0 1px 3px ${tab.color}55` : "none",
-                  }}
-                >
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
       {/* ── Category sections ── */}
       <div className="max-w-6xl mx-auto pt-8 pb-6">
-        {VALID_CATEGORIES.map((category) => (
-          <CategorySection
-            key={`${category}-${activeType}`}
-            category={category}
-            listingType={activeType}
-          />
+        {FEATURED_CATEGORIES.map((category) => (
+          <CategorySection key={category} category={category} />
         ))}
       </div>
 
       {/* ── Free items section ── */}
       <FreeItemsSection />
+
+      {/* ── Donation pile ── */}
+      <DonationPileSection />
 
       {/* ── Browse all CTA ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
