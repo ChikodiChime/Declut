@@ -47,7 +47,7 @@ function FreeItemCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/${listing.id}`}
-      className="group flex items-center gap-4 rounded-2xl bg-white px-4 py-3.5 transition-all duration-200"
+      className="group flex h-full items-center gap-4 rounded-2xl bg-white px-5 py-4 transition-all duration-200"
       style={{
         border: "1px solid #e8f5ee",
         boxShadow: "0 1px 3px rgba(16,185,129,0.04)",
@@ -65,40 +65,36 @@ function FreeItemCard({ listing }: { listing: Listing }) {
     >
       {/* Square thumbnail */}
       <div
-        className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl"
+        className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl"
         style={{ background: "rgba(16,185,129,0.08)" }}
       >
         {listing.images[0] ? (
           <ListingImage
             src={listing.images[0]}
             fill
-            sizes="72px"
+            sizes="80px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             alt={listing.title}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-lg">📦</div>
+          <div className="flex h-full w-full items-center justify-center text-xl">📦</div>
         )}
       </div>
 
-      {/* Details */}
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p
-          className="line-clamp-1 text-sm font-semibold transition-colors duration-150"
-          style={{ color: "#16130f" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#059669"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#16130f"; }}
-        >
+      {/* Details — flex column, fills remaining width */}
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <p className="line-clamp-2 text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>
           {listing.title}
         </p>
+
         <div className="flex items-center gap-1.5">
           <span
-            className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
             style={{ background: "rgba(16,185,129,0.1)", color: "#059669" }}
           >
             {CONDITION_LABELS[listing.condition]}
           </span>
-          <span style={{ color: "#c4bdb5" }}>·</span>
+          <span style={{ color: "#d1d5db" }}>·</span>
           <div className="flex min-w-0 items-center gap-1">
             <MapPin size={9} strokeWidth={2} style={{ color: "#b8b0a8", flexShrink: 0 }} />
             <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
@@ -106,18 +102,18 @@ function FreeItemCard({ listing }: { listing: Listing }) {
             </span>
           </div>
         </div>
-      </div>
 
-      {/* Claim CTA */}
-      <button
-        onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/${listing.id}`); }}
-        className="shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-150"
-        style={{ background: "#10b981", color: "white" }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#059669"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#10b981"; }}
-      >
-        Claim
-      </button>
+        {/* Claim sits at the bottom of the text column */}
+        <button
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/${listing.id}`); }}
+          className="mt-1 self-start rounded-full px-4 py-1.5 text-[11px] font-bold transition-all duration-150"
+          style={{ background: "#10b981", color: "white" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#059669"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#10b981"; }}
+        >
+          Claim for free →
+        </button>
+      </div>
     </Link>
   );
 }
@@ -192,7 +188,7 @@ function FreeItemsSection() {
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-[280px] lg:w-[262px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
+                  className="w-[300px] lg:w-[356px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
                   style={{ border: "1px solid #e8f5ee" }}
                 >
                   <div className="h-[72px] w-[72px] shrink-0 rounded-xl" style={{ background: "#d1fae5" }} />
@@ -204,7 +200,7 @@ function FreeItemsSection() {
                 </div>
               ))
             : listings.map((listing) => (
-                <div key={listing.id} className="w-[280px] lg:w-[262px] shrink-0">
+                <div key={listing.id} className="w-[300px] lg:w-[356px] shrink-0">
                   <FreeItemCard listing={listing} />
                 </div>
               ))}
