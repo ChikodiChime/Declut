@@ -210,30 +210,37 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         )}
       </div>
 
-      {/* ── Card content ── */}
-      <div className="flex flex-col flex-1 p-4">
-        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-text mb-3">
+      {/* ── Card body ── */}
+      <div className="flex flex-col p-3.5 gap-2.5">
+        {/* Title */}
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-text">
           {listing.title}
         </h3>
 
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-1 min-w-0">
-            <MapPin size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
-            <span className="truncate text-[11px] text-text-subtle">{listing.area}</span>
-          </div>
-          <span className="shrink-0 rounded-full bg-border px-2 py-0.5 text-[11px] font-medium text-text-muted">
+        {/* Price + condition — same row, clear hierarchy */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-display text-[15px] font-bold leading-none" style={{ color: type.color }}>
+            {listing.listing_type === "for_sale" && listing.price != null
+              ? `₦${listing.price.toLocaleString()}`
+              : type.label}
+          </p>
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+            style={{ background: "#f0ece6", color: "#78726c" }}
+          >
             {CONDITION_LABELS[listing.condition]}
           </span>
         </div>
 
-        <div className="flex-1" />
+        {/* Location */}
+        <div className="flex items-center gap-1.5">
+          <MapPin size={10} strokeWidth={2} className="shrink-0" style={{ color: "#b8b0a8" }} />
+          <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
+            {listing.area}
+          </span>
+        </div>
 
-        <p className="font-display text-lg mb-3" style={{ color: type.color }}>
-          {listing.listing_type === "for_sale" && listing.price != null
-            ? `₦${listing.price.toLocaleString()}`
-            : type.label}
-        </p>
-
+        {/* CTA */}
         {listing.listing_type === "for_sale" && listing.status === "available" && (
           <button
             onClick={handleAddToCart}
@@ -244,7 +251,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
               color: inCart ? "#78726c" : "white",
             }}
           >
-            <ShoppingCart size={13} strokeWidth={2} />
+            <ShoppingCart size={12} strokeWidth={2} />
             {inCart ? "In Cart" : "Add to Cart"}
           </button>
         )}
@@ -255,7 +262,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             className="flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200"
             style={{ background: type.color, color: "white" }}
           >
-            <Gift size={13} strokeWidth={2} />
+            <Gift size={12} strokeWidth={2} />
             Claim
           </button>
         )}
