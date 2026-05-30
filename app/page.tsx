@@ -2,12 +2,13 @@
 
 import { Suspense, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, ArrowRight } from "lucide-react";
+import { Search, X, ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 import { BrowseCard } from "@/components/listings";
+import { ListingImage } from "@/components/ui";
 import { usePublicListings, BrowseParams } from "@/lib/hooks/useListings";
 import { VALID_CATEGORIES } from "@/app/api/listings/utils";
-import type { ListingType } from "@/types";
+import type { Listing, ListingType } from "@/types";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,189 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Vehicles & Parts":       "🚗",
   "Other":                  "📦",
 };
+
+const CONDITION_LABELS: Record<string, string> = {
+  new: "New",
+  like_new: "Like New",
+  good: "Good",
+  fair: "Fair",
+  poor: "Poor",
+};
+
+// ─── Free item horizontal card ────────────────────────────────────────────────
+
+function FreeItemCard({ listing }: { listing: Listing }) {
+  const router = useRouter();
+
+  return (
+    <Link
+      href={`/${listing.id}`}
+      className="group flex items-center gap-4 rounded-2xl bg-white px-4 py-3.5 transition-all duration-200"
+      style={{
+        border: "1px solid #e8f5ee",
+        boxShadow: "0 1px 3px rgba(16,185,129,0.04)",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.borderColor = "#a7f3d0";
+        el.style.boxShadow = "0 4px 16px rgba(16,185,129,0.10)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.borderColor = "#e8f5ee";
+        el.style.boxShadow = "0 1px 3px rgba(16,185,129,0.04)";
+      }}
+    >
+      {/* Square thumbnail */}
+      <div
+        className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl"
+        style={{ background: "rgba(16,185,129,0.08)" }}
+      >
+        {listing.images[0] ? (
+          <ListingImage
+            src={listing.images[0]}
+            fill
+            sizes="72px"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            alt={listing.title}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-lg">📦</div>
+        )}
+      </div>
+
+      {/* Details */}
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <p
+          className="line-clamp-1 text-sm font-semibold transition-colors duration-150"
+          style={{ color: "#16130f" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#059669"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#16130f"; }}
+        >
+          {listing.title}
+        </p>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+            style={{ background: "rgba(16,185,129,0.1)", color: "#059669" }}
+          >
+            {CONDITION_LABELS[listing.condition]}
+          </span>
+          <span style={{ color: "#c4bdb5" }}>·</span>
+          <div className="flex min-w-0 items-center gap-1">
+            <MapPin size={9} strokeWidth={2} style={{ color: "#b8b0a8", flexShrink: 0 }} />
+            <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
+              {listing.area}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Claim CTA */}
+      <button
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/${listing.id}`); }}
+        className="shrink-0 rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-150"
+        style={{ background: "#10b981", color: "white" }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#059669"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#10b981"; }}
+      >
+        Claim
+      </button>
+    </Link>
+  );
+}
+
+// ─── Free items section ───────────────────────────────────────────────────────
+
+function FreeItemsSection() {
+  const { data, isLoading } = usePublicListings({
+    listing_type: "free",
+    limit: 8,
+    sort: "newest",
+  });
+  const listings = data?.listings ?? [];
+  const total = data?.total ?? 0;
+
+  if (!isLoading && listings.length === 0) return null;
+
+  return (
+    <section
+      className="relative py-12 my-6"
+      style={{
+        background: "linear-gradient(180deg, #f0fdf8 0%, #ecfdf5 100%)",
+        borderTop: "1px solid #c6f0e2",
+        borderBottom: "1px solid #c6f0e2",
+      }}
+    >
+      {/* Subtle dot texture */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.4]"
+        style={{
+          backgroundImage: "radial-gradient(circle, #a7f3d0 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-7 gap-4">
+          <div>
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <span className="text-2xl leading-none">🎁</span>
+              <h2 className="text-xl font-semibold" style={{ color: "#064e3b" }}>
+                Free Items
+              </h2>
+              {!isLoading && total > 0 && (
+                <span
+                  className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+                  style={{ background: "rgba(16,185,129,0.15)", color: "#059669" }}
+                >
+                  {total}
+                </span>
+              )}
+            </div>
+            <p className="text-sm" style={{ color: "#6b7280" }}>
+              Claim something for nothing — no strings attached
+            </p>
+          </div>
+
+          <Link
+            href="/search?listing_type=free"
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition-all duration-150 hover:gap-2.5"
+            style={{ borderColor: "#a7f3d0", color: "#059669", background: "white" }}
+          >
+            See all <ArrowRight size={12} strokeWidth={2.2} />
+          </Link>
+        </div>
+
+        {/* Horizontal scroll row — 4 cards visible on desktop */}
+        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+          {isLoading
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-[280px] lg:w-[262px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
+                  style={{ border: "1px solid #e8f5ee" }}
+                >
+                  <div className="h-[72px] w-[72px] shrink-0 rounded-xl" style={{ background: "#d1fae5" }} />
+                  <div className="flex flex-1 flex-col gap-2">
+                    <div className="h-3.5 w-3/4 rounded" style={{ background: "#d1fae5" }} />
+                    <div className="h-3 w-1/2 rounded" style={{ background: "#d1fae5" }} />
+                  </div>
+                  <div className="h-7 w-14 shrink-0 rounded-full" style={{ background: "#d1fae5" }} />
+                </div>
+              ))
+            : listings.map((listing) => (
+                <div key={listing.id} className="w-[280px] lg:w-[262px] shrink-0">
+                  <FreeItemCard listing={listing} />
+                </div>
+              ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 // ─── Category section ─────────────────────────────────────────────────────────
 
@@ -282,6 +466,9 @@ function HomeContent() {
           />
         ))}
       </div>
+
+      {/* ── Free items section ── */}
+      <FreeItemsSection />
 
       {/* ── Browse all CTA ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
