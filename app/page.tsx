@@ -91,30 +91,25 @@ function CategorySection({ category, listingType }: CategorySectionProps) {
       </div>
 
       {/* Horizontal scroll row */}
-      <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 px-4 sm:px-6">
+      <div className="no-scrollbar flex gap-3.5 overflow-x-auto pb-1 px-4 sm:px-6">
         {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => (
+          ? Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="w-[290px] shrink-0 animate-pulse overflow-hidden rounded-2xl border flex"
-                style={{ background: "white", borderColor: "#ebe5dc", height: 110 }}
+                className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 animate-pulse overflow-hidden rounded-2xl border"
+                style={{ background: "white", borderColor: "#ebe5dc" }}
               >
-                <div className="w-[148px] shrink-0" style={{ background: "#f0ece5" }} />
-                <div className="flex flex-col gap-2 p-3 flex-1 justify-between">
-                  <div>
-                    <div className="h-3 w-full rounded mb-1.5" style={{ background: "#f0ece5" }} />
-                    <div className="h-3 w-3/4 rounded" style={{ background: "#f0ece5" }} />
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="h-4 w-16 rounded" style={{ background: "#f0ece5" }} />
-                    <div className="h-7 w-7 rounded-full" style={{ background: "#f0ece5" }} />
-                  </div>
+                <div className="aspect-4/3 rounded-t-2xl" style={{ background: "#f0ece5" }} />
+                <div className="flex flex-col gap-2 p-3.5">
+                  <div className="h-3.5 w-3/4 rounded" style={{ background: "#f0ece5" }} />
+                  <div className="h-3 w-1/2 rounded" style={{ background: "#f0ece5" }} />
+                  <div className="h-7 w-full rounded-xl mt-1" style={{ background: "#f0ece5" }} />
                 </div>
               </div>
             ))
           : listings.map((listing) => (
-              <div key={listing.id} className="w-[290px] shrink-0">
-                <BrowseCard listing={listing} horizontal />
+              <div key={listing.id} className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0">
+                <BrowseCard listing={listing} />
               </div>
             ))}
       </div>
