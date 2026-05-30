@@ -108,7 +108,7 @@ function CategorySection({ category, listingType }: CategorySectionProps) {
               </div>
             ))
           : listings.map((listing) => (
-              <div key={listing.id} className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0">
+              <div key={listing.id} className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 flex flex-col">
                 <BrowseCard listing={listing} />
               </div>
             ))}

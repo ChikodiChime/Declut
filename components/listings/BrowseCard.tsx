@@ -112,7 +112,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
   return (
     <Link
       href={`/${listing.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300"
       style={{
         borderColor: type.border,
         boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)",
@@ -211,7 +211,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       </div>
 
       {/* ── Card body ── */}
-      <div className="flex flex-col p-3.5 gap-2.5">
+      <div className="flex flex-col flex-1 p-3.5 gap-2.5">
         {/* Title */}
         <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-text">
           {listing.title}
@@ -245,7 +245,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
           <button
             onClick={handleAddToCart}
             disabled={inCart}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200 disabled:cursor-not-allowed"
+            className="mt-auto flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200 disabled:cursor-not-allowed"
             style={{
               background: inCart ? "#f5f1eb" : type.color,
               color: inCart ? "#78726c" : "white",
@@ -259,7 +259,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         {listing.listing_type === "free" && listing.status === "available" && (
           <button
             onClick={handleClaim}
-            className="flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200"
+            className="mt-auto flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200"
             style={{ background: type.color, color: "white" }}
           >
             <Gift size={12} strokeWidth={2} />
