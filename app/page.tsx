@@ -2,7 +2,12 @@
 
 import { Suspense, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, ArrowRight, MapPin } from "lucide-react";
+import {
+  Search, X, ArrowRight, MapPin,
+  Smartphone, Shirt, Armchair, Plug, Dumbbell,
+  Gift, Heart,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { BrowseCard } from "@/components/listings";
 import { ListingImage } from "@/components/ui";
@@ -19,16 +24,12 @@ const FEATURED_CATEGORIES = [
   "Sports & Outdoors",
 ];
 
-const CATEGORY_ICONS: Record<string, string> = {
-  "Electronics":            "📱",
-  "Clothing & Accessories": "👗",
-  "Furniture & Home":       "🛋️",
-  "Appliances":             "🔌",
-  "Books & Stationery":     "📚",
-  "Kids & Baby":            "🧸",
-  "Sports & Outdoors":      "⚽",
-  "Vehicles & Parts":       "🚗",
-  "Other":                  "📦",
+const CATEGORY_CONFIG: Record<string, { Icon: LucideIcon; bg: string; color: string }> = {
+  "Electronics":            { Icon: Smartphone, bg: "#eef2ff", color: "#4f46e5" },
+  "Clothing & Accessories": { Icon: Shirt,      bg: "#fdf2f8", color: "#c026d3" },
+  "Furniture & Home":       { Icon: Armchair,   bg: "#fff7ed", color: "#ea580c" },
+  "Appliances":             { Icon: Plug,       bg: "#eff6ff", color: "#2563eb" },
+  "Sports & Outdoors":      { Icon: Dumbbell,   bg: "#f0fdf4", color: "#16a34a" },
 };
 
 const CONDITION_LABELS: Record<string, string> = {
@@ -154,8 +155,10 @@ function FreeItemsSection() {
         {/* Header */}
         <div className="flex items-start justify-between mb-7 gap-4">
           <div>
-            <div className="flex items-center gap-2.5 mb-1.5">
-              <span className="text-2xl leading-none">🎁</span>
+            <div className="flex items-center gap-3 mb-1.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ background: "rgba(16,185,129,0.12)" }}>
+                <Gift size={17} strokeWidth={2} style={{ color: "#059669" }} />
+              </div>
               <h2 className="text-xl font-semibold" style={{ color: "#064e3b" }}>
                 Free Items
               </h2>
@@ -319,8 +322,10 @@ function DonationPileSection() {
         {/* Header */}
         <div className="flex items-start justify-between mb-7 gap-4">
           <div>
-            <div className="flex items-center gap-2.5 mb-1.5">
-              <span className="text-2xl leading-none">🤝</span>
+            <div className="flex items-center gap-3 mb-1.5">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ background: "rgba(245,158,11,0.12)" }}>
+                <Heart size={17} strokeWidth={2} style={{ color: "#b45309" }} />
+              </div>
               <h2 className="text-xl font-semibold" style={{ color: "#78350f" }}>
                 Donation Pile
               </h2>
@@ -402,10 +407,20 @@ function CategorySection({ category }: { category: string }) {
     <section className="mb-10">
       {/* Section header */}
       <div className="flex items-center justify-between mb-4 px-4 sm:px-6">
-        <div className="flex items-center gap-2.5">
-          <span className="text-xl leading-none" aria-hidden>
-            {CATEGORY_ICONS[category] ?? "📦"}
-          </span>
+        <div className="flex items-center gap-3">
+          {(() => {
+            const cfg = CATEGORY_CONFIG[category];
+            if (!cfg) return null;
+            const { Icon, bg, color } = cfg;
+            return (
+              <div
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                style={{ background: bg }}
+              >
+                <Icon size={15} strokeWidth={2} style={{ color }} />
+              </div>
+            );
+          })()}
           <h2 className="text-base font-semibold" style={{ color: "#16130f" }}>
             {category}
           </h2>
