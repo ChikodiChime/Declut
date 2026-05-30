@@ -111,7 +111,7 @@ function FreeItemCard({ listing }: { listing: Listing }) {
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#059669"; }}
           onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#10b981"; }}
         >
-          Claim for free →
+          Claim for free
         </button>
       </div>
     </Link>
