@@ -188,7 +188,7 @@ function FreeItemsSection() {
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-[300px] lg:w-[356px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
+                  className="w-[280px] lg:w-[320px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
                   style={{ border: "1px solid #e8f5ee" }}
                 >
                   <div className="h-[72px] w-[72px] shrink-0 rounded-xl" style={{ background: "#d1fae5" }} />
@@ -200,7 +200,7 @@ function FreeItemsSection() {
                 </div>
               ))
             : listings.map((listing) => (
-                <div key={listing.id} className="w-[300px] lg:w-[356px] shrink-0">
+                <div key={listing.id} className="w-[280px] lg:w-[320px] shrink-0">
                   <FreeItemCard listing={listing} />
                 </div>
               ))}
@@ -336,6 +336,13 @@ function DonationPileSection() {
             <p className="text-sm" style={{ color: "#92400e" }}>
               Items going to charities — give them a good send-off
             </p>
+            <p className="mt-3 text-sm max-w-md" style={{ color: "#78350f" }}>
+              Got something gathering dust?{" "}
+              <Link href="/listings/new" className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: "#b45309" }}>
+                List it as a donation
+              </Link>{" "}
+              and let it go to a charity that actually needs it. Takes 2 minutes.
+            </p>
           </div>
 
           <Link
@@ -353,7 +360,7 @@ function DonationPileSection() {
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-[300px] lg:w-[356px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
+                  className="w-[280px] lg:w-[320px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
                   style={{ border: "1px solid #fde8a0" }}
                 >
                   <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#fde68a" }} />
@@ -365,7 +372,7 @@ function DonationPileSection() {
                 </div>
               ))
             : listings.map((listing) => (
-                <div key={listing.id} className="w-[300px] lg:w-[356px] shrink-0">
+                <div key={listing.id} className="w-[280px] lg:w-[320px] shrink-0">
                   <DonationItemCard listing={listing} />
                 </div>
               ))}
