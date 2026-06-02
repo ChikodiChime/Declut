@@ -111,7 +111,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
 
   return (
     <Link
-      href={`/${listing.id}`}
+      href={`/listings/${listing.id}`}
       className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300"
       style={{
         borderColor: type.border,

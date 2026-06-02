@@ -24,7 +24,10 @@ import {
   type SellerOrder,
 } from "@/lib/hooks/useSellerOrders";
 import { useBuyerOrders, type BuyerOrder } from "@/lib/hooks/useBuyerOrders";
-import { PURCHASE_STATUS_STYLE, PURCHASE_STATUS_LABEL } from "@/lib/constants/orderStatus";
+import {
+  PURCHASE_STATUS_STYLE,
+  PURCHASE_STATUS_LABEL,
+} from "@/lib/constants/orderStatus";
 import {
   useMyClaims,
   useSellerClaims,
@@ -38,7 +41,10 @@ import {
 function OrderSkeleton() {
   return (
     <div className="animate-pulse rounded-2xl border border-border bg-card p-5 flex gap-4">
-      <div className="w-20 h-20 rounded-xl shrink-0" style={{ background: "#f0ece5" }} />
+      <div
+        className="w-20 h-20 rounded-xl shrink-0"
+        style={{ background: "#f0ece5" }}
+      />
       <div className="flex-1 flex flex-col gap-2">
         <div className="h-4 w-2/3 rounded" style={{ background: "#f0ece5" }} />
         <div className="h-3 w-1/3 rounded" style={{ background: "#f0ece5" }} />
@@ -50,7 +56,10 @@ function OrderSkeleton() {
 
 // ─── Sales tab ────────────────────────────────────────────────────────────────
 
-type SalesTab = { label: string; status: "paid" | "confirmed" | "shipped" | "delivered" };
+type SalesTab = {
+  label: string;
+  status: "paid" | "confirmed" | "shipped" | "delivered";
+};
 
 const SALES_TABS: SalesTab[] = [
   { label: "New", status: "paid" },
@@ -59,7 +68,10 @@ const SALES_TABS: SalesTab[] = [
   { label: "Delivered", status: "delivered" },
 ];
 
-const SALES_EMPTY_STATE: Record<string, { emoji: string; heading: string; body: string }> = {
+const SALES_EMPTY_STATE: Record<
+  string,
+  { emoji: string; heading: string; body: string }
+> = {
   paid: {
     emoji: "🛍️",
     heading: "No new orders yet",
@@ -91,15 +103,23 @@ function SalesEmptyState({ status }: { status: string }) {
           className="h-20 w-20 rounded-3xl"
           style={{
             background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
-            boxShadow: "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+            boxShadow:
+              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
           }}
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="text-3xl leading-none">{config.emoji}</span>
         </div>
       </div>
-      <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>{config.heading}</p>
-      <p className="text-sm max-w-xs leading-relaxed" style={{ color: "#a8a09a" }}>{config.body}</p>
+      <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>
+        {config.heading}
+      </p>
+      <p
+        className="text-sm max-w-xs leading-relaxed"
+        style={{ color: "#a8a09a" }}
+      >
+        {config.body}
+      </p>
     </div>
   );
 }
@@ -110,7 +130,12 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
   return (
     <div className="flex items-center gap-2">
       <div className="relative">
-        <KeyRound size={12} strokeWidth={2} className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: "#a8a09a" }} />
+        <KeyRound
+          size={12}
+          strokeWidth={2}
+          className="absolute left-2.5 top-1/2 -translate-y-1/2"
+          style={{ color: "#a8a09a" }}
+        />
         <input
           type="text"
           inputMode="numeric"
@@ -119,7 +144,11 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
           onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
           placeholder="0000"
           className="w-24 rounded-xl border pl-7 pr-2 py-2 text-xs font-mono tracking-widest outline-none focus:ring-2"
-          style={{ borderColor: "#e8e4dc", background: "#faf9f7", color: "#16130f" }}
+          style={{
+            borderColor: "#e8e4dc",
+            background: "#faf9f7",
+            color: "#16130f",
+          }}
         />
       </div>
       <button
@@ -134,7 +163,13 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
   );
 }
 
-function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) {
+function SellerOrderCard({
+  order,
+  tab,
+}: {
+  order: SellerOrder;
+  tab: SalesTab;
+}) {
   const { mutate: confirm, isPending: confirming } = useConfirmOrder();
   const firstItem = order.order_items?.[0];
   const extraItems = (order.order_items ?? []).slice(1);
@@ -153,17 +188,37 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
           style={{ background: "#f0ece5" }}
         >
           {firstItem?.listing.images?.[0] ? (
-            <ListingImage src={firstItem.listing.images[0]} fill sizes="80px" className="object-cover" alt={firstItem.listing.title} />
+            <ListingImage
+              src={firstItem.listing.images[0]}
+              fill
+              sizes="80px"
+              className="object-cover"
+              alt={firstItem.listing.title}
+            />
           ) : (
             <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
           )}
         </div>
         {extraItems.map((item) => (
-          <div key={item.id} className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center" style={{ background: "#f0ece5" }}>
+          <div
+            key={item.id}
+            className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center"
+            style={{ background: "#f0ece5" }}
+          >
             {item.listing.images?.[0] ? (
-              <ListingImage src={item.listing.images[0]} fill sizes="80px" className="object-cover" alt={item.listing.title} />
+              <ListingImage
+                src={item.listing.images[0]}
+                fill
+                sizes="80px"
+                className="object-cover"
+                alt={item.listing.title}
+              />
             ) : (
-              <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+              <Package
+                size={18}
+                strokeWidth={1.5}
+                style={{ color: "#a8a09a" }}
+              />
             )}
           </div>
         ))}
@@ -173,10 +228,18 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
           <div>
             <div className="space-y-0.5 mb-1">
               {(order.order_items ?? []).map((item) => (
-                <h3 key={item.id} className="text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>{item.listing.title}</h3>
+                <h3
+                  key={item.id}
+                  className="text-sm font-semibold leading-snug"
+                  style={{ color: "#16130f" }}
+                >
+                  {item.listing.title}
+                </h3>
               ))}
             </div>
-            <p className="text-base mt-0.5" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
+            <p className="text-base mt-0.5" style={{ color: "#4f46e5" }}>
+              ₦{order.total_price.toLocaleString()}
+            </p>
           </div>
           <span
             className="self-start inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium shrink-0"
@@ -186,22 +249,42 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
                 : { background: "rgba(16,185,129,0.08)", color: "#10b981" }
             }
           >
-            {order.delivery_type === "delivery" ? <Truck size={11} strokeWidth={2} /> : <MapPin size={11} strokeWidth={2} />}
+            {order.delivery_type === "delivery" ? (
+              <Truck size={11} strokeWidth={2} />
+            ) : (
+              <MapPin size={11} strokeWidth={2} />
+            )}
             {order.delivery_type === "delivery" ? "Delivery" : "Pickup"}
           </span>
         </div>
         <div className="flex flex-col gap-1 mb-4">
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <User size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_name}</span>
+          <div
+            className="flex items-center gap-1.5 text-xs"
+            style={{ color: "#78726c" }}
+          >
+            <User size={11} strokeWidth={2} className="shrink-0" />
+            <span>{order.buyer_name}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <Mail size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_email}</span>
+          <div
+            className="flex items-center gap-1.5 text-xs"
+            style={{ color: "#78726c" }}
+          >
+            <Mail size={11} strokeWidth={2} className="shrink-0" />
+            <span>{order.buyer_email}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <Phone size={11} strokeWidth={2} className="shrink-0" /><span>{order.buyer_phone}</span>
+          <div
+            className="flex items-center gap-1.5 text-xs"
+            style={{ color: "#78726c" }}
+          >
+            <Phone size={11} strokeWidth={2} className="shrink-0" />
+            <span>{order.buyer_phone}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs" style={{ color: "#78726c" }}>
-            <MapPin size={11} strokeWidth={2} className="shrink-0" /><span className="line-clamp-1">{order.buyer_address}</span>
+          <div
+            className="flex items-center gap-1.5 text-xs"
+            style={{ color: "#78726c" }}
+          >
+            <MapPin size={11} strokeWidth={2} className="shrink-0" />
+            <span className="line-clamp-1">{order.buyer_address}</span>
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -219,7 +302,10 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
             <PickupCodeEntry orderId={order.id} />
           )}
           {tab.status === "confirmed" && order.delivery_type === "delivery" && (
-            <span className="text-xs rounded-full px-3 py-1.5 font-medium" style={{ background: "rgba(79,70,229,0.08)", color: "#4f46e5" }}>
+            <span
+              className="text-xs rounded-full px-3 py-1.5 font-medium"
+              style={{ background: "rgba(79,70,229,0.08)", color: "#4f46e5" }}
+            >
               Awaiting dispatcher
             </span>
           )}
@@ -241,16 +327,33 @@ function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) 
 
 function SalesTabContent({ tab }: { tab: SalesTab }) {
   const { data: orders, isLoading } = useSellerOrders(tab.status);
-  if (isLoading) return <div className="flex flex-col gap-4">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
-  if (!orders || orders.length === 0) return <SalesEmptyState status={tab.status} />;
-  return <div className="flex flex-col gap-4">{orders.map((o) => <SellerOrderCard key={o.id} order={o} tab={tab} />)}</div>;
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-4">
+        {[1, 2, 3].map((i) => (
+          <OrderSkeleton key={i} />
+        ))}
+      </div>
+    );
+  if (!orders || orders.length === 0)
+    return <SalesEmptyState status={tab.status} />;
+  return (
+    <div className="flex flex-col gap-4">
+      {orders.map((o) => (
+        <SellerOrderCard key={o.id} order={o} tab={tab} />
+      ))}
+    </div>
+  );
 }
 
 function SalesPanel() {
   const [activeTab, setActiveTab] = useState<SalesTab>(SALES_TABS[0]);
   return (
     <div className="space-y-6">
-      <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: "#f0ece5" }}>
+      <div
+        className="inline-flex gap-0.5 rounded-full p-0.5"
+        style={{ background: "#f0ece5" }}
+      >
         {SALES_TABS.map((tab) => {
           const isActive = activeTab.status === tab.status;
           return (
@@ -277,7 +380,8 @@ function SalesPanel() {
 // ─── Purchases tab ────────────────────────────────────────────────────────────
 
 function SellerOrderRow({ order }: { order: BuyerOrder }) {
-  const statusStyle = PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
+  const statusStyle =
+    PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
   const firstItem = order.order_items?.[0];
   const extraCount = (order.order_items?.length ?? 1) - 1;
 
@@ -291,19 +395,34 @@ function SellerOrderRow({ order }: { order: BuyerOrder }) {
         style={{ background: "#f0ece5" }}
       >
         {firstItem?.listing.images?.[0] ? (
-          <ListingImage src={firstItem.listing.images[0]} fill sizes="48px" className="object-cover" alt={firstItem.listing.title} />
+          <ListingImage
+            src={firstItem.listing.images[0]}
+            fill
+            sizes="48px"
+            className="object-cover"
+            alt={firstItem.listing.title}
+          />
         ) : (
           <Package size={16} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate" style={{ color: "#16130f" }}>
+        <p
+          className="text-sm font-medium truncate"
+          style={{ color: "#16130f" }}
+        >
           {firstItem?.listing.title ?? "Order"}
-          {extraCount > 0 && <span style={{ color: "#a8a09a" }}> +{extraCount} more</span>}
+          {extraCount > 0 && (
+            <span style={{ color: "#a8a09a" }}> +{extraCount} more</span>
+          )}
         </p>
-        <p className="text-xs mt-0.5" style={{ color: "#4f46e5" }}>₦{order.total_price.toLocaleString()}</p>
+        <p className="text-xs mt-0.5" style={{ color: "#4f46e5" }}>
+          ₦{order.total_price.toLocaleString()}
+        </p>
         {order.seller?.name && (
-          <p className="text-[10px] mt-0.5" style={{ color: "#a8a09a" }}>from {order.seller.name}</p>
+          <p className="text-[10px] mt-0.5" style={{ color: "#a8a09a" }}>
+            from {order.seller.name}
+          </p>
         )}
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
@@ -313,8 +432,19 @@ function SellerOrderRow({ order }: { order: BuyerOrder }) {
         >
           {PURCHASE_STATUS_LABEL[order.status] ?? order.status}
         </span>
-        <span className="flex items-center gap-0.5 text-[10px]" style={{ color: "#a8a09a" }}>
-          {order.delivery_type === "delivery" ? <><Truck size={9} strokeWidth={2} /> Delivery</> : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
+        <span
+          className="flex items-center gap-0.5 text-[10px]"
+          style={{ color: "#a8a09a" }}
+        >
+          {order.delivery_type === "delivery" ? (
+            <>
+              <Truck size={9} strokeWidth={2} /> Delivery
+            </>
+          ) : (
+            <>
+              <MapPin size={9} strokeWidth={2} /> Pickup
+            </>
+          )}
         </span>
       </div>
       <ChevronRight size={14} strokeWidth={1.5} style={{ color: "#c8c2bb" }} />
@@ -322,7 +452,11 @@ function SellerOrderRow({ order }: { order: BuyerOrder }) {
   );
 }
 
-type CheckoutGroup = { paymentIntentId: string | null; orders: BuyerOrder[]; createdAt: string };
+type CheckoutGroup = {
+  paymentIntentId: string | null;
+  orders: BuyerOrder[];
+  createdAt: string;
+};
 
 function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
   const map = new Map<string, BuyerOrder[]>();
@@ -340,7 +474,11 @@ function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
 
 function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
   const grandTotal = group.orders.reduce((s, o) => s + o.total_price, 0);
-  const date = new Date(group.createdAt).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" });
+  const date = new Date(group.createdAt).toLocaleDateString("en-NG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
   const multiVendor = group.orders.length > 1;
 
   return (
@@ -352,8 +490,14 @@ function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
       style={{ borderColor: "#e8e4dc" }}
     >
       {multiVendor && (
-        <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{ borderColor: "#f0ece5", background: "#faf9f7" }}>
-          <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "#a8a09a" }}>
+        <div
+          className="flex items-center justify-between px-4 py-2.5 border-b"
+          style={{ borderColor: "#f0ece5", background: "#faf9f7" }}
+        >
+          <span
+            className="text-[11px] font-semibold uppercase tracking-widest"
+            style={{ color: "#a8a09a" }}
+          >
             {group.orders.length} vendors · {date}
           </span>
           <span className="text-xs font-semibold" style={{ color: "#16130f" }}>
@@ -361,7 +505,10 @@ function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
           </span>
         </div>
       )}
-      <div className={multiVendor ? "divide-y" : ""} style={{ borderColor: "#f0ece5" }}>
+      <div
+        className={multiVendor ? "divide-y" : ""}
+        style={{ borderColor: "#f0ece5" }}
+      >
         {group.orders.map((order) => (
           <SellerOrderRow key={order.id} order={order} />
         ))}
@@ -374,7 +521,13 @@ function PurchasesPanel() {
   const { data: orders, isLoading } = useBuyerOrders();
 
   if (isLoading) {
-    return <div className="flex flex-col gap-3">{[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}</div>;
+    return (
+      <div className="flex flex-col gap-3">
+        {[1, 2, 3].map((i) => (
+          <OrderSkeleton key={i} />
+        ))}
+      </div>
+    );
   }
 
   if (!orders || orders.length === 0) {
@@ -384,17 +537,26 @@ function PurchasesPanel() {
           className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
           style={{
             background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
-            boxShadow: "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+            boxShadow:
+              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
           }}
         >
           <span className="text-3xl">🛍️</span>
         </div>
-        <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>No purchases yet</p>
-        <p className="text-sm max-w-xs leading-relaxed mb-6" style={{ color: "#a8a09a" }}>
+        <p
+          className="text-base font-semibold mb-2"
+          style={{ color: "#16130f" }}
+        >
+          No purchases yet
+        </p>
+        <p
+          className="text-sm max-w-xs leading-relaxed mb-6"
+          style={{ color: "#a8a09a" }}
+        >
           When you buy something on Declutter, your orders will appear here.
         </p>
         <Link
-          href="/listings"
+          href="/"
           className="rounded-xl border px-5 py-2 text-sm font-medium transition-colors hover:bg-card"
           style={{ borderColor: "#e8e4dc", color: "#78726c" }}
         >
@@ -409,7 +571,10 @@ function PurchasesPanel() {
   return (
     <div className="flex flex-col gap-3">
       {groups.map((group) => (
-        <CheckoutGroupCard key={group.paymentIntentId ?? group.orders[0].id} group={group} />
+        <CheckoutGroupCard
+          key={group.paymentIntentId ?? group.orders[0].id}
+          group={group}
+        />
       ))}
     </div>
   );
@@ -418,22 +583,22 @@ function PurchasesPanel() {
 // ─── Claims tab ───────────────────────────────────────────────────────────────
 
 const CLAIM_STATUS_STYLE: Record<string, React.CSSProperties> = {
-  pending:   { background: 'rgba(245,158,11,0.10)', color: '#d97706' },
-  accepted:  { background: 'rgba(16,185,129,0.10)', color: '#10b981' },
-  completed: { background: 'rgba(168,160,154,0.10)', color: '#78726c' },
-  cancelled: { background: 'rgba(168,160,154,0.10)', color: '#a8a09a' },
-}
+  pending: { background: "rgba(245,158,11,0.10)", color: "#d97706" },
+  accepted: { background: "rgba(16,185,129,0.10)", color: "#10b981" },
+  completed: { background: "rgba(168,160,154,0.10)", color: "#78726c" },
+  cancelled: { background: "rgba(168,160,154,0.10)", color: "#a8a09a" },
+};
 
 const CLAIM_STATUS_LABEL: Record<string, string> = {
-  pending:   'Pending',
-  accepted:  'Accepted',
-  completed: 'Collected',
-  cancelled: 'Cancelled',
-}
+  pending: "Pending",
+  accepted: "Accepted",
+  completed: "Collected",
+  cancelled: "Cancelled",
+};
 
 function MyClaimCard({ claim }: { claim: MyClaim }) {
-  const { mutate: updateClaim, isPending } = useUpdateClaim()
-  const img = claim.listing.images?.[0]
+  const { mutate: updateClaim, isPending } = useUpdateClaim();
+  const img = claim.listing.images?.[0];
 
   return (
     <motion.div
@@ -441,21 +606,30 @@ function MyClaimCard({ claim }: { claim: MyClaim }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
       className="rounded-2xl border bg-card p-4 flex gap-4"
-      style={{ borderColor: '#e8e4dc' }}
+      style={{ borderColor: "#e8e4dc" }}
     >
       <div
         className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-        style={{ background: '#f0ece5' }}
+        style={{ background: "#f0ece5" }}
       >
         {img ? (
-          <ListingImage src={img} fill sizes="64px" className="object-cover" alt={claim.listing.title} />
+          <ListingImage
+            src={img}
+            fill
+            sizes="64px"
+            className="object-cover"
+            alt={claim.listing.title}
+          />
         ) : (
-          <Package size={18} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
+          <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
         )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <p className="text-sm font-semibold truncate" style={{ color: '#16130f' }}>
+          <p
+            className="text-sm font-semibold truncate"
+            style={{ color: "#16130f" }}
+          >
             {claim.listing.title}
           </p>
           <span
@@ -465,66 +639,95 @@ function MyClaimCard({ claim }: { claim: MyClaim }) {
             {CLAIM_STATUS_LABEL[claim.status]}
           </span>
         </div>
-        <p className="text-xs mb-1" style={{ color: '#a8a09a' }}>
-          from {claim.listing.seller?.name ?? 'Seller'} · {claim.listing.area}
+        <p className="text-xs mb-1" style={{ color: "#a8a09a" }}>
+          from {claim.listing.seller?.name ?? "Seller"} · {claim.listing.area}
         </p>
-        {claim.status === 'accepted' && claim.pickup_address && (
-          <p className="text-xs rounded-lg px-2 py-1.5 mb-2" style={{ background: 'rgba(16,185,129,0.08)', color: '#10b981' }}>
+        {claim.status === "accepted" && claim.pickup_address && (
+          <p
+            className="text-xs rounded-lg px-2 py-1.5 mb-2"
+            style={{ background: "rgba(16,185,129,0.08)", color: "#10b981" }}
+          >
             Pickup: {claim.pickup_address}
           </p>
         )}
         <div className="flex items-center gap-2 mt-2">
-          {claim.status === 'pending' && (
+          {claim.status === "pending" && (
             <button
-              onClick={() => updateClaim({ id: claim.id, status: 'cancelled' })}
+              onClick={() => updateClaim({ id: claim.id, status: "cancelled" })}
               disabled={isPending}
               className="rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[#f5f1eb] disabled:opacity-50"
-              style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+              style={{ borderColor: "#e8e4dc", color: "#78726c" }}
             >
               Cancel
             </button>
           )}
-          {claim.status === 'accepted' && (
+          {claim.status === "accepted" && (
             <button
-              onClick={() => updateClaim({ id: claim.id, status: 'completed' })}
+              onClick={() => updateClaim({ id: claim.id, status: "completed" })}
               disabled={isPending}
               className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-              style={{ background: '#10b981' }}
+              style={{ background: "#10b981" }}
             >
-              {isPending ? 'Updating…' : 'Mark as Collected'}
+              {isPending ? "Updating…" : "Mark as Collected"}
             </button>
           )}
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
 function MyClaimsPanel() {
-  const { data: claims, isLoading } = useMyClaims()
+  const { data: claims, isLoading } = useMyClaims();
 
-  if (isLoading) return <div className="flex flex-col gap-3">{[1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-3">
+        {[1, 2].map((i) => (
+          <OrderSkeleton key={i} />
+        ))}
+      </div>
+    );
 
-  const active = (claims ?? []).filter((c) => c.status !== 'cancelled')
+  const active = (claims ?? []).filter((c) => c.status !== "cancelled");
 
   if (active.length === 0) {
     return (
       <div className="flex flex-col items-center py-24 text-center">
         <div
           className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
-          style={{ background: 'linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)', boxShadow: '0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)' }}
+          style={{
+            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
+            boxShadow:
+              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
         >
           <span className="text-3xl">🎁</span>
         </div>
-        <p className="text-base font-semibold mb-2" style={{ color: '#16130f' }}>No active claims</p>
-        <p className="text-sm max-w-xs leading-relaxed" style={{ color: '#a8a09a' }}>
-          When you claim a free item, it will appear here while you wait for the seller to accept.
+        <p
+          className="text-base font-semibold mb-2"
+          style={{ color: "#16130f" }}
+        >
+          No active claims
+        </p>
+        <p
+          className="text-sm max-w-xs leading-relaxed"
+          style={{ color: "#a8a09a" }}
+        >
+          When you claim a free item, it will appear here while you wait for the
+          seller to accept.
         </p>
       </div>
-    )
+    );
   }
 
-  return <div className="flex flex-col gap-3">{active.map((c) => <MyClaimCard key={c.id} claim={c} />)}</div>
+  return (
+    <div className="flex flex-col gap-3">
+      {active.map((c) => (
+        <MyClaimCard key={c.id} claim={c} />
+      ))}
+    </div>
+  );
 }
 
 function AcceptClaimModal({
@@ -533,23 +736,30 @@ function AcceptClaimModal({
   isPending,
   onClose,
 }: {
-  claim: SellerClaim
-  updateClaim: ReturnType<typeof useUpdateClaim>['mutate']
-  isPending: boolean
-  onClose: () => void
+  claim: SellerClaim;
+  updateClaim: ReturnType<typeof useUpdateClaim>["mutate"];
+  isPending: boolean;
+  onClose: () => void;
 }) {
-  const [address, setAddress] = useState('')
+  const [address, setAddress] = useState("");
 
   function handleAccept() {
-    if (!address.trim()) return
-    updateClaim({ id: claim.id, status: 'accepted', pickup_address: address.trim() }, { onSuccess: onClose })
+    if (!address.trim()) return;
+    updateClaim(
+      { id: claim.id, status: "accepted", pickup_address: address.trim() },
+      { onSuccess: onClose },
+    );
   }
 
   return (
     <Modal open onClose={onClose} title="Accept claim">
       <div className="flex flex-col gap-4">
-        <p className="text-sm" style={{ color: '#78726c' }}>
-          Enter the pickup address you want to share with <strong style={{ color: '#16130f' }}>{claim.buyer.name ?? 'the buyer'}</strong>.
+        <p className="text-sm" style={{ color: "#78726c" }}>
+          Enter the pickup address you want to share with{" "}
+          <strong style={{ color: "#16130f" }}>
+            {claim.buyer.name ?? "the buyer"}
+          </strong>
+          .
         </p>
         <textarea
           value={address}
@@ -557,13 +767,17 @@ function AcceptClaimModal({
           placeholder="e.g. 12 Bode Thomas St, Surulere, Lagos"
           rows={3}
           className="w-full rounded-xl border px-3 py-2.5 text-sm resize-none outline-none focus:ring-2 focus:ring-[#4f46e5]/30"
-          style={{ borderColor: '#e8e4dc', background: '#faf9f7', color: '#16130f' }}
+          style={{
+            borderColor: "#e8e4dc",
+            background: "#faf9f7",
+            color: "#16130f",
+          }}
         />
         <div className="flex gap-2 justify-end">
           <button
             onClick={onClose}
             className="rounded-xl border px-4 py-2 text-sm font-medium transition-colors hover:bg-[#f5f1eb]"
-            style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+            style={{ borderColor: "#e8e4dc", color: "#78726c" }}
           >
             Cancel
           </button>
@@ -571,20 +785,20 @@ function AcceptClaimModal({
             onClick={handleAccept}
             disabled={!address.trim() || isPending}
             className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
-            style={{ background: '#10b981' }}
+            style={{ background: "#10b981" }}
           >
-            {isPending ? 'Accepting…' : 'Accept & share address'}
+            {isPending ? "Accepting…" : "Accept & share address"}
           </button>
         </div>
       </div>
     </Modal>
-  )
+  );
 }
 
 function SellerClaimCard({ claim }: { claim: SellerClaim }) {
-  const [isAccepting, setIsAccepting] = useState(false)
-  const { mutate: updateClaim, isPending } = useUpdateClaim()
-  const img = claim.listing.images?.[0]
+  const [isAccepting, setIsAccepting] = useState(false);
+  const { mutate: updateClaim, isPending } = useUpdateClaim();
+  const img = claim.listing.images?.[0];
 
   return (
     <>
@@ -593,21 +807,30 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
         className="rounded-2xl border bg-card p-4 flex gap-4"
-        style={{ borderColor: '#e8e4dc' }}
+        style={{ borderColor: "#e8e4dc" }}
       >
         <div
           className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-          style={{ background: '#f0ece5' }}
+          style={{ background: "#f0ece5" }}
         >
           {img ? (
-            <ListingImage src={img} fill sizes="64px" className="object-cover" alt={claim.listing.title} />
+            <ListingImage
+              src={img}
+              fill
+              sizes="64px"
+              className="object-cover"
+              alt={claim.listing.title}
+            />
           ) : (
-            <Package size={18} strokeWidth={1.5} style={{ color: '#a8a09a' }} />
+            <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <p className="text-sm font-semibold truncate" style={{ color: '#16130f' }}>
+            <p
+              className="text-sm font-semibold truncate"
+              style={{ color: "#16130f" }}
+            >
               {claim.listing.title}
             </p>
             <span
@@ -617,104 +840,151 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
               {CLAIM_STATUS_LABEL[claim.status]}
             </span>
           </div>
-          <p className="text-xs mb-2" style={{ color: '#a8a09a' }}>
-            claimed by {claim.buyer.name ?? 'Buyer'} · {new Date(claim.claimed_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })}
+          <p className="text-xs mb-2" style={{ color: "#a8a09a" }}>
+            claimed by {claim.buyer.name ?? "Buyer"} ·{" "}
+            {new Date(claim.claimed_at).toLocaleDateString("en-NG", {
+              day: "numeric",
+              month: "short",
+            })}
           </p>
           <div className="flex items-center gap-2">
-            {claim.status === 'pending' && (
+            {claim.status === "pending" && (
               <>
                 <button
                   onClick={() => setIsAccepting(true)}
                   disabled={isAccepting}
                   className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-                  style={{ background: '#10b981' }}
+                  style={{ background: "#10b981" }}
                 >
                   Accept
                 </button>
                 <button
-                  onClick={() => updateClaim({ id: claim.id, status: 'cancelled' })}
+                  onClick={() =>
+                    updateClaim({ id: claim.id, status: "cancelled" })
+                  }
                   disabled={isPending}
                   className="rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[#f5f1eb] disabled:opacity-50"
-                  style={{ borderColor: '#e8e4dc', color: '#78726c' }}
+                  style={{ borderColor: "#e8e4dc", color: "#78726c" }}
                 >
                   Decline
                 </button>
               </>
             )}
-            {claim.status === 'accepted' && (
+            {claim.status === "accepted" && (
               <button
-                onClick={() => updateClaim({ id: claim.id, status: 'completed' })}
+                onClick={() =>
+                  updateClaim({ id: claim.id, status: "completed" })
+                }
                 disabled={isPending}
                 className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-                style={{ background: '#4f46e5' }}
+                style={{ background: "#4f46e5" }}
               >
-                {isPending ? 'Updating…' : 'Mark as Collected'}
+                {isPending ? "Updating…" : "Mark as Collected"}
               </button>
             )}
           </div>
         </div>
       </motion.div>
-      {isAccepting && <AcceptClaimModal claim={claim} updateClaim={updateClaim} isPending={isPending} onClose={() => setIsAccepting(false)} />}
+      {isAccepting && (
+        <AcceptClaimModal
+          claim={claim}
+          updateClaim={updateClaim}
+          isPending={isPending}
+          onClose={() => setIsAccepting(false)}
+        />
+      )}
     </>
-  )
+  );
 }
 
 function IncomingClaimsPanel() {
-  const { data: claims, isLoading } = useSellerClaims()
+  const { data: claims, isLoading } = useSellerClaims();
 
-  if (isLoading) return <div className="flex flex-col gap-3">{[1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-3">
+        {[1, 2].map((i) => (
+          <OrderSkeleton key={i} />
+        ))}
+      </div>
+    );
 
-  const active = (claims ?? []).filter((c) => c.status !== 'cancelled' && c.status !== 'completed')
+  const active = (claims ?? []).filter(
+    (c) => c.status !== "cancelled" && c.status !== "completed",
+  );
 
   if (active.length === 0) {
     return (
       <div className="flex flex-col items-center py-24 text-center">
         <div
           className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
-          style={{ background: 'linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)', boxShadow: '0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)' }}
+          style={{
+            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
+            boxShadow:
+              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
+          }}
         >
           <span className="text-3xl">📬</span>
         </div>
-        <p className="text-base font-semibold mb-2" style={{ color: '#16130f' }}>No incoming claims</p>
-        <p className="text-sm max-w-xs leading-relaxed" style={{ color: '#a8a09a' }}>
+        <p
+          className="text-base font-semibold mb-2"
+          style={{ color: "#16130f" }}
+        >
+          No incoming claims
+        </p>
+        <p
+          className="text-sm max-w-xs leading-relaxed"
+          style={{ color: "#a8a09a" }}
+        >
           When someone claims one of your free listings, it will appear here.
         </p>
       </div>
-    )
+    );
   }
 
-  return <div className="flex flex-col gap-3">{active.map((c) => <SellerClaimCard key={c.id} claim={c} />)}</div>
+  return (
+    <div className="flex flex-col gap-3">
+      {active.map((c) => (
+        <SellerClaimCard key={c.id} claim={c} />
+      ))}
+    </div>
+  );
 }
 
-type ClaimsSubTab = 'mine' | 'incoming'
+type ClaimsSubTab = "mine" | "incoming";
 
 function ClaimsPanel() {
-  const [subTab, setSubTab] = useState<ClaimsSubTab>('mine')
+  const [subTab, setSubTab] = useState<ClaimsSubTab>("mine");
 
   return (
     <div className="space-y-6">
-      <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: '#f0ece5' }}>
-        {(['mine', 'incoming'] as ClaimsSubTab[]).map((tab) => {
-          const isActive = subTab === tab
+      <div
+        className="inline-flex gap-0.5 rounded-full p-0.5"
+        style={{ background: "#f0ece5" }}
+      >
+        {(["mine", "incoming"] as ClaimsSubTab[]).map((tab) => {
+          const isActive = subTab === tab;
           return (
             <button
               key={tab}
               onClick={() => setSubTab(tab)}
               className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200"
               style={{
-                background: isActive ? '#10b981' : 'transparent',
-                color: isActive ? 'white' : '#78726c',
-                boxShadow: isActive ? '0 1px 4px rgba(16,185,129,0.35)' : 'none',
+                background: isActive ? "#10b981" : "transparent",
+                color: isActive ? "white" : "#78726c",
+                boxShadow: isActive
+                  ? "0 1px 4px rgba(16,185,129,0.35)"
+                  : "none",
               }}
             >
-              {tab === 'mine' ? 'My Claims' : 'Incoming'}
+              {tab === "mine" ? "My Claims" : "Incoming"}
             </button>
-          )
+          );
         })}
       </div>
-      {subTab === 'mine' ? <MyClaimsPanel /> : <IncomingClaimsPanel />}
+      {subTab === "mine" ? <MyClaimsPanel /> : <IncomingClaimsPanel />}
     </div>
-  )
+  );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -725,7 +995,12 @@ function OrdersPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const rawTab = searchParams.get("tab");
-  const topTab: TopTab = rawTab === "purchases" ? "purchases" : rawTab === "claims" ? "claims" : "sales";
+  const topTab: TopTab =
+    rawTab === "purchases"
+      ? "purchases"
+      : rawTab === "claims"
+        ? "claims"
+        : "sales";
 
   function setTopTab(tab: TopTab) {
     router.replace(`/dashboard/orders?tab=${tab}`);
@@ -733,19 +1008,28 @@ function OrdersPageContent() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
-        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>Orders</h1>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>
+          Orders
+        </h1>
         <p className="mt-1 text-sm" style={{ color: "#78726c" }}>
           {topTab === "sales"
             ? "Manage orders from buyers."
             : topTab === "purchases"
-            ? "Track everything you've bought on Declutter."
-            : "Manage free item claims — yours and incoming."}
+              ? "Track everything you've bought on Declutter."
+              : "Manage free item claims — yours and incoming."}
         </p>
       </motion.div>
 
       {/* Top toggle */}
-      <div className="inline-flex gap-0.5 rounded-full p-0.5" style={{ background: "#e8e4dc" }}>
+      <div
+        className="inline-flex gap-0.5 rounded-full p-0.5"
+        style={{ background: "#e8e4dc" }}
+      >
         {(["sales", "purchases", "claims"] as TopTab[]).map((tab) => {
           const isActive = topTab === tab;
           return (
@@ -765,14 +1049,26 @@ function OrdersPageContent() {
         })}
       </div>
 
-      {topTab === "sales" ? <SalesPanel /> : topTab === "purchases" ? <PurchasesPanel /> : <ClaimsPanel />}
+      {topTab === "sales" ? (
+        <SalesPanel />
+      ) : topTab === "purchases" ? (
+        <PurchasesPanel />
+      ) : (
+        <ClaimsPanel />
+      )}
     </div>
   );
 }
 
 export default function OrdersPage() {
   return (
-    <Suspense fallback={<div className="space-y-6 max-w-3xl"><OrderSkeleton /></div>}>
+    <Suspense
+      fallback={
+        <div className="space-y-6 max-w-3xl">
+          <OrderSkeleton />
+        </div>
+      }
+    >
       <OrdersPageContent />
     </Suspense>
   );

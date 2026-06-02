@@ -13,6 +13,8 @@ export async function GET(req: Request) {
   const condition = searchParams.get('condition')
   const area = searchParams.get('area')?.trim()
   const seller_id = searchParams.get('seller_id')
+  const price_min = searchParams.get('price_min') ? Number(searchParams.get('price_min')) : null
+  const price_max = searchParams.get('price_max') ? Number(searchParams.get('price_max')) : null
   const sort = searchParams.get('sort') ?? 'newest'
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '24', 10), 48)
   const offset = Math.max(parseInt(searchParams.get('offset') ?? '0', 10), 0)
@@ -39,6 +41,12 @@ export async function GET(req: Request) {
   }
   if (seller_id) {
     query = query.eq('seller_id', seller_id)
+  }
+  if (price_min != null && !isNaN(price_min)) {
+    query = query.gte('price', price_min)
+  }
+  if (price_max != null && !isNaN(price_max)) {
+    query = query.lte('price', price_max)
   }
 
   if (sort === 'price_asc') {

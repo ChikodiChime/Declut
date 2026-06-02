@@ -23,7 +23,12 @@ export function CtaBannerSection() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <filter id="cta-noise">
-          <feTurbulence type="fractalNoise" baseFrequency="0.68" numOctaves="3" stitchTiles="stitch" />
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.68"
+            numOctaves="3"
+            stitchTiles="stitch"
+          />
           <feColorMatrix type="saturate" values="0" />
         </filter>
         <rect width="100%" height="100%" filter="url(#cta-noise)" />
@@ -47,13 +52,13 @@ export function CtaBannerSection() {
         aria-hidden
         className="absolute top-0 left-0 right-0 h-px"
         style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.5) 30%, rgba(245,158,11,0.8) 50%, rgba(245,158,11,0.5) 70%, transparent 100%)",
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.5) 30%, rgba(245,158,11,0.8) 50%, rgba(245,158,11,0.5) 70%, transparent 100%)",
         }}
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-8 lg:px-12 py-16 md:py-24 lg:py-32">
         <div className="grid lg:grid-cols-[1fr_320px] gap-16 xl:gap-32 items-end">
-
           {/* ── Left: headline + CTAs ── */}
           <div>
             {/* Eyebrow */}
@@ -88,7 +93,8 @@ export function CtaBannerSection() {
               <br />
               <span
                 style={{
-                  background: "linear-gradient(96deg, #f59e0b 0%, #fbbf24 45%, #fde68a 100%)",
+                  background:
+                    "linear-gradient(96deg, #f59e0b 0%, #fbbf24 45%, #fde68a 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -119,7 +125,7 @@ export function CtaBannerSection() {
               className="flex flex-wrap gap-3"
             >
               <Link
-                href="/listings"
+                href="/"
                 className="group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold transition-all duration-200 hover:brightness-110 hover:gap-3"
                 style={{ background: "#f59e0b", color: "#100c04" }}
               >
@@ -186,7 +192,8 @@ export function CtaBannerSection() {
         aria-hidden
         className="absolute bottom-0 left-0 right-0 h-px"
         style={{
-          background: "linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.35) 25%, rgba(245,158,11,0.6) 50%, rgba(245,158,11,0.35) 75%, transparent 100%)",
+          background:
+            "linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.35) 25%, rgba(245,158,11,0.6) 50%, rgba(245,158,11,0.35) 75%, transparent 100%)",
         }}
       />
     </section>

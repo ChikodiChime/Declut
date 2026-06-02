@@ -28,7 +28,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard/listings", label: "My Listings", icon: Package },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
   { href: "/dashboard/billing", label: "Payouts", icon: CreditCard },
-  { href: "/listings", label: "Browse Listings", icon: Store },
+  { href: "/", label: "Browse Listings", icon: Store },
 ];
 
 export function Sidebar() {

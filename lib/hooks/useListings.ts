@@ -10,6 +10,8 @@ export interface BrowseParams {
   condition?: Condition | ''
   area?: string
   seller_id?: string
+  price_min?: number
+  price_max?: number
   sort?: 'newest' | 'price_asc' | 'price_desc'
   limit?: number
   offset?: number
@@ -34,6 +36,8 @@ export function usePublicListings(params: BrowseParams = {}) {
   if (params.condition) query.set('condition', params.condition)
   if (params.area) query.set('area', params.area)
   if (params.seller_id) query.set('seller_id', params.seller_id)
+  if (params.price_min != null) query.set('price_min', String(params.price_min))
+  if (params.price_max != null) query.set('price_max', String(params.price_max))
   if (params.sort) query.set('sort', params.sort)
   if (params.limit) query.set('limit', String(params.limit))
   if (params.offset) query.set('offset', String(params.offset))
@@ -119,6 +123,18 @@ export function useDeleteListing() {
 export interface BusinessSeller {
   id: string
   name: string | null
+}
+
+export function useMaxListingPrice() {
+  return useQuery<number>({
+    queryKey: ['listings', 'max_price'],
+    queryFn: async () => {
+      const json = await apiRequest('GET', '/api/listings?listing_type=for_sale&sort=price_desc&limit=1')
+      const price: number = json.data?.[0]?.price ?? 5_000_000
+      return Math.ceil(price / 10_000) * 10_000
+    },
+    staleTime: 5 * 60_000,
+  })
 }
 
 export function useBusinessSellers() {

@@ -78,6 +78,16 @@ input[type="number"] {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 2px; height: 2px; }
+::-webkit-scrollbar-track { background: #4f46e5 !important; }
+::-webkit-scrollbar-thumb {
+  background: #4f46e5 !important;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: #a8a09a !important; }
+* { scrollbar-width: thin; scrollbar-color: #d4cfc6 transparent; }
+
 .font-display {
   font-family: var(--font-serif-display), Georgia, serif;
 }

@@ -10,7 +10,7 @@ function LenisProvider({ children }: { children: React.ReactNode }) {
   // Dashboard uses h-screen overflow-hidden with an inner scrollable container.
   // Lenis attaches to window and intercepts touchpad events, making them no-ops
   // since the document body is not scrollable in that layout.
-  if (pathname.startsWith("/dashboard") || pathname.startsWith("/dispatch") || pathname.startsWith("/admin")) return <>{children}</>;
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/dispatch") || pathname.startsWith("/admin") || pathname.startsWith("/search")) return <>{children}</>;
   return (
     <ReactLenis root options={{ lerp: 0.1, duration: 1.2 }}>
       {children}

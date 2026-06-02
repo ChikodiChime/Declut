@@ -1,7 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { Cpu, Sofa, Shirt, Plug, BookOpen, Baby, Dumbbell, Car, Package } from "lucide-react";
+import {
+  Cpu,
+  Sofa,
+  Shirt,
+  Plug,
+  BookOpen,
+  Baby,
+  Dumbbell,
+  Car,
+  Package,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 const CATEGORIES = [
@@ -81,7 +91,8 @@ const CATEGORIES = [
 
 const PATTERN_STYLE: Record<string, React.CSSProperties> = {
   dots: {
-    backgroundImage: "radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)",
+    backgroundImage:
+      "radial-gradient(rgba(255,255,255,0.18) 1px, transparent 1px)",
     backgroundSize: "20px 20px",
   },
   lines: {
@@ -138,12 +149,15 @@ export function CategoryStripSection() {
                 }}
               >
                 <Link
-                  href={`/listings?category=${encodeURIComponent(cat.slug)}`}
+                  href={`/?category=${encodeURIComponent(cat.slug)}`}
                   className="group relative flex h-40 flex-col justify-between overflow-hidden rounded-2xl p-4 transition-all duration-300 hover:scale-[1.025] hover:shadow-[0_20px_48px_rgba(0,0,0,0.22)]"
                   style={{ background: cat.gradient }}
                 >
                   {/* Texture overlay */}
-                  <div className="absolute inset-0" style={PATTERN_STYLE[cat.pattern]} />
+                  <div
+                    className="absolute inset-0"
+                    style={PATTERN_STYLE[cat.pattern]}
+                  />
 
                   {/* Watermark icon on wide tiles */}
                   {isWide && (
@@ -151,7 +165,11 @@ export function CategoryStripSection() {
                       aria-hidden
                       className="pointer-events-none absolute -bottom-3 -right-3"
                     >
-                      <Icon size={84} strokeWidth={0.8} className="text-white opacity-[0.09]" />
+                      <Icon
+                        size={84}
+                        strokeWidth={0.8}
+                        className="text-white opacity-[0.09]"
+                      />
                     </div>
                   )}
 
@@ -161,7 +179,11 @@ export function CategoryStripSection() {
                   {/* Icon */}
                   <div className="relative">
                     <div className="inline-flex h-10 w-10 items-center justify-center rounded-[12px] bg-white/15 ring-1 ring-white/20">
-                      <Icon size={19} strokeWidth={1.8} className="text-white" />
+                      <Icon
+                        size={19}
+                        strokeWidth={1.8}
+                        className="text-white"
+                      />
                     </div>
                   </div>
 
@@ -172,8 +194,20 @@ export function CategoryStripSection() {
                     </span>
                     <span className="mt-1 flex items-center gap-0.5 text-[11px] font-medium text-white/50 transition-all duration-200 group-hover:text-white/80 group-hover:gap-1.5">
                       Browse
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                        <path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        fill="none"
+                        aria-hidden
+                      >
+                        <path
+                          d="M2 5h6M5.5 2.5L8 5l-2.5 2.5"
+                          stroke="currentColor"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </span>
                   </div>

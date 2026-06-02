@@ -5,11 +5,15 @@ import { MapPin, Package } from "lucide-react";
 import { ListingImage } from "@/components/ui";
 import type { Listing } from "@/types";
 
-const TYPE_LABEL: Record<string, string> = { for_sale: "For Sale", free: "Free", donate: "Donate" };
+const TYPE_LABEL: Record<string, string> = {
+  for_sale: "For Sale",
+  free: "Free",
+  donate: "Donate",
+};
 const TYPE_COLOR: Record<string, string> = {
   for_sale: "#4f46e5",
-  free:     "#10b981",
-  donate:   "#f59e0b",
+  free: "#10b981",
+  donate: "#f59e0b",
 };
 
 export function CarouselCard({ listing }: { listing: Listing }) {
@@ -21,10 +25,14 @@ export function CarouselCard({ listing }: { listing: Listing }) {
       style={{
         width: "280px",
         border: "1px solid #e8e4dc",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(79,70,229,0.07)",
+        boxShadow:
+          "0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(79,70,229,0.07)",
       }}
     >
-      <div className="relative w-full bg-[#f4f1ec]" style={{ aspectRatio: "4/3" }}>
+      <div
+        className="relative w-full bg-[#f4f1ec]"
+        style={{ aspectRatio: "4/3" }}
+      >
         {listing.images[0] ? (
           <ListingImage
             src={listing.images[0]}
@@ -54,7 +62,9 @@ export function CarouselCard({ listing }: { listing: Listing }) {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1 min-w-0">
             <MapPin size={11} className="shrink-0 text-[#a8a09a]" />
-            <span className="text-xs text-[#a8a09a] truncate">{listing.area}</span>
+            <span className="text-xs text-[#a8a09a] truncate">
+              {listing.area}
+            </span>
           </div>
           {listing.listing_type === "for_sale" && listing.price != null ? (
             <span className="text-sm font-bold shrink-0" style={{ color }}>

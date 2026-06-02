@@ -47,7 +47,7 @@ function FreeItemCard({ listing }: { listing: Listing }) {
 
   return (
     <Link
-      href={`/${listing.id}`}
+      href={`/listings/${listing.id}`}
       className="group flex h-full items-center gap-4 rounded-2xl bg-white px-5 py-4 transition-all duration-200"
       style={{
         border: "1px solid #e8f5ee",
@@ -106,7 +106,7 @@ function FreeItemCard({ listing }: { listing: Listing }) {
 
         {/* Claim sits at the bottom of the text column */}
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/${listing.id}`); }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/listings/${listing.id}`); }}
           className="mt-1 self-start rounded-full px-4 py-1.5 text-[11px] font-bold transition-all duration-150"
           style={{ background: "#10b981", color: "white" }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#059669"; }}
@@ -218,7 +218,7 @@ function FreeItemsSection() {
 function DonationItemCard({ listing }: { listing: Listing }) {
   return (
     <Link
-      href={`/${listing.id}`}
+      href={`/listings/${listing.id}`}
       className="group flex h-full items-center gap-4 rounded-2xl bg-white px-5 py-4 transition-all duration-200"
       style={{
         border: "1px solid #fde8a0",
@@ -343,7 +343,7 @@ function DonationPileSection() {
             </p>
             <p className="mt-3 text-sm max-w-md" style={{ color: "#78350f" }}>
               Got something gathering dust?{" "}
-              <Link href="/listings/new" className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: "#b45309" }}>
+              <Link href="/dashboard/listings/new" className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: "#b45309" }}>
                 List it as a donation
               </Link>{" "}
               and let it go to a charity that actually needs it. Takes 2 minutes.
@@ -493,99 +493,134 @@ function HomeContent() {
     <main className="min-h-screen" style={{ background: "#fafaf8" }}>
       {/* ── Hero ── */}
       <div
-        className="relative overflow-hidden px-4 sm:px-6 pt-[110px] md:pt-[130px] pb-10 md:pb-14"
-        style={{
-          marginTop: "-80px",
-          background: "linear-gradient(135deg, #1e1b4b 0%, #3730a3 55%, #4338ca 100%)",
-        }}
+        className="relative overflow-hidden flex flex-col"
+        style={{ marginTop: "-68px", minHeight: "100vh" }}
       >
-        {/* Dot grid */}
+        {/* Background photo */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.13]"
+          className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.9) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
+            backgroundImage: "url('/hero-bg.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center 35%",
           }}
         />
-        {/* Glow orbs */}
-        <div aria-hidden className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full blur-[80px]" style={{ background: "rgba(165,180,252,0.25)" }} />
-        <div aria-hidden className="pointer-events-none absolute -bottom-16 left-1/3 h-48 w-48 rounded-full blur-[70px]" style={{ background: "rgba(245,158,11,0.15)" }} />
+        {/* Left-heavy gradient — dark on left for legibility, photo visible on right */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: "linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.80) 35%, rgba(0,0,0,0.40) 65%, rgba(0,0,0,0.05) 100%)",
+          }}
+        />
 
-        <div className="relative max-w-6xl mx-auto">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1">
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#a5b4fc" }} />
-                <span className="text-[11px] font-medium tracking-wide" style={{ color: "rgba(255,255,255,0.65)" }}>
-                  Nigeria&apos;s marketplace
-                </span>
-              </div>
-              <h1 className="font-display text-white leading-tight" style={{ fontSize: "clamp(28px, 5vw, 44px)" }}>
-                Browse listings
-              </h1>
-              <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
-                Buy, sell, give, and donate across Nigeria
-              </p>
-            </div>
+        {/* Left-aligned content — mirrors Fiverr's layout */}
+        <div
+          className="relative flex-1 flex flex-col justify-center px-8 sm:px-12 lg:px-20 pt-32 pb-16"
+          style={{ maxWidth: "1160px" }}
+        >
+          {/* Headline */}
+          <h1
+            className="text-white leading-[1.04] tracking-[-0.02em] font-bold"
+            style={{ fontSize: "clamp(38px, 5.5vw, 72px)" }}
+          >
+            Sell what you{" "}
+            <span className="relative inline-block whitespace-nowrap">
+              don&apos;t need.
+              <svg
+                aria-hidden
+                viewBox="0 0 200 10"
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute -bottom-2 left-0 w-full"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M2 7 C30 2, 65 9, 100 5 S148 1, 172 6 S190 9, 198 5"
+                  stroke="#a5b4fc"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+            <br />
+            Find what you do.
+          </h1>
 
-            {/* Type legend pills */}
-            <div className="flex gap-2 flex-wrap">
-              {[
-                { label: "For Sale", color: "#a5b4fc" },
-                { label: "Free", color: "#6ee7b7" },
-                { label: "Donate", color: "#fcd34d" },
-              ].map((t) => (
-                <span key={t.label} className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-white/70">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: t.color }} />
-                  {t.label}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Search bar */}
+          {/* Search bar — rectangular with icon-only dark button, Fiverr-style */}
           <form
             onSubmit={handleSearch}
-            className="relative mt-8 flex items-center max-w-xl"
+            className="mt-9 flex items-stretch w-full overflow-hidden"
+            style={{
+              maxWidth: "780px",
+              borderRadius: "8px",
+              boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
+            }}
           >
-            <Search size={16} strokeWidth={2} className="absolute left-4 pointer-events-none" style={{ color: "rgba(255,255,255,0.45)" }} />
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Search for anything…"
-              className="w-full rounded-2xl h-12 pl-11 pr-[120px] text-sm focus:outline-none placeholder:text-white/35"
-              style={{
-                background: "rgba(255,255,255,0.12)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                border: "1px solid rgba(255,255,255,0.18)",
-                color: "white",
-              }}
-              onFocus={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.16)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.32)"; }}
-              onBlur={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.18)"; }}
-            />
-            {inputValue && (
-              <button
-                type="button"
-                onClick={() => { setInputValue(""); inputRef.current?.focus(); }}
-                className="absolute right-24 flex h-6 w-6 items-center justify-center rounded-full"
-                style={{ color: "rgba(255,255,255,0.5)" }}
-              >
-                <X size={12} strokeWidth={2.5} />
-              </button>
-            )}
+            <div className="relative flex-1 flex items-center" style={{ minWidth: 0 }}>
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Search for phones, furniture, clothes…"
+                className="w-full h-[60px] px-5 text-[15px] focus:outline-none"
+                style={{ background: "#ffffff", color: "#16130f" }}
+              />
+              {inputValue && (
+                <button
+                  type="button"
+                  onClick={() => { setInputValue(""); inputRef.current?.focus(); }}
+                  className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-full"
+                  style={{ color: "#9ca3af" }}
+                >
+                  <X size={12} strokeWidth={2.5} />
+                </button>
+              )}
+            </div>
             <button
               type="submit"
-              className="absolute right-2 h-8 rounded-xl px-4 text-xs font-semibold transition-all duration-150"
-              style={{ background: "rgba(255,255,255,0.95)", color: "#1e1b4b" }}
+              className="h-[60px] w-[60px] flex shrink-0 items-center justify-center transition-colors duration-150"
+              style={{ background: "#16130f", color: "white" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#4f46e5"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#16130f"; }}
             >
-              Search
+              <Search size={20} strokeWidth={2} />
             </button>
           </form>
+
+          {/* Category chips — outlined pills with arrow, Fiverr-style */}
+          <div className="mt-6 flex flex-wrap gap-2.5">
+            {FEATURED_CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => router.push(`/search?category=${encodeURIComponent(cat)}&listing_type=for_sale`)}
+                className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-medium transition-all duration-150"
+                style={{
+                  borderRadius: "99px",
+                  border: "1px solid rgba(255,255,255,0.50)",
+                  color: "rgba(255,255,255,0.90)",
+                  background: "transparent",
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = "rgba(255,255,255,0.14)";
+                  el.style.borderColor = "rgba(255,255,255,0.90)";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.background = "transparent";
+                  el.style.borderColor = "rgba(255,255,255,0.50)";
+                }}
+              >
+                {cat}
+                <ArrowRight size={12} strokeWidth={2.2} />
+              </button>
+            ))}
+          </div>
         </div>
+
       </div>
 
       {/* ── Category sections ── */}

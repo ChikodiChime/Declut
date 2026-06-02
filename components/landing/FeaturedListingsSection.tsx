@@ -7,21 +7,30 @@ import { ListingImage } from "@/components/ui";
 import { BrowseCard } from "@/components/listings";
 import type { Listing } from "@/types";
 
-const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+const TYPE_CONFIG: Record<
+  string,
+  { label: string; color: string; bg: string }
+> = {
   for_sale: { label: "For Sale", color: "#4f46e5", bg: "rgba(79,70,229,0.1)" },
-  free:     { label: "Free",     color: "#10b981", bg: "rgba(16,185,129,0.1)" },
-  donate:   { label: "Donate",   color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
+  free: { label: "Free", color: "#10b981", bg: "rgba(16,185,129,0.1)" },
+  donate: { label: "Donate", color: "#f59e0b", bg: "rgba(245,158,11,0.1)" },
 };
 
 const CONDITION_LABELS: Record<string, string> = {
-  new: "New", like_new: "Like New", good: "Good", fair: "Fair", poor: "Poor",
+  new: "New",
+  like_new: "Like New",
+  good: "Good",
+  fair: "Fair",
+  poor: "Poor",
 };
 
 interface FeaturedListingsSectionProps {
   listings: Listing[];
 }
 
-export function FeaturedListingsSection({ listings }: FeaturedListingsSectionProps) {
+export function FeaturedListingsSection({
+  listings,
+}: FeaturedListingsSectionProps) {
   if (listings.length === 0) return null;
 
   const [hero, ...rest] = listings;
@@ -37,7 +46,8 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
         aria-hidden
         className="pointer-events-none absolute inset-0 opacity-[0.3]"
         style={{
-          backgroundImage: "radial-gradient(circle, #cdc4b6 1px, transparent 1px)",
+          backgroundImage:
+            "radial-gradient(circle, #cdc4b6 1px, transparent 1px)",
           backgroundSize: "30px 30px",
         }}
       />
@@ -69,7 +79,7 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
             </h2>
           </div>
           <Link
-            href="/listings"
+            href="/"
             className="hidden sm:inline-flex items-center gap-2 rounded-full border border-[#e8e4dc] bg-white px-4 py-2 text-sm font-semibold text-[#16130f] shadow-sm transition-all duration-200 hover:border-[#4f46e5] hover:text-[#4f46e5]"
           >
             See all <ArrowRight size={14} strokeWidth={2.5} />
@@ -85,7 +95,7 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
           className="mb-5"
         >
           <Link
-            href={`/listings/${hero.id}`}
+            href={`/${hero.id}`}
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#ebe5dc] bg-white transition-all duration-300 hover:border-[#d4c9b8] hover:shadow-[0_16px_48px_rgba(22,19,15,0.13)] md:flex-row"
             style={{ boxShadow: "0 4px 16px rgba(22,19,15,0.07)" }}
           >
@@ -148,7 +158,10 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
                       ₦{hero.price.toLocaleString()}
                     </span>
                   ) : (
-                    <span className="text-lg font-bold" style={{ color: heroType.color }}>
+                    <span
+                      className="text-lg font-bold"
+                      style={{ color: heroType.color }}
+                    >
                       {heroType.label}
                     </span>
                   )}
@@ -179,7 +192,11 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.45, delay: i * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: 0.45,
+                  delay: i * 0.07,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
                 <BrowseCard listing={l} />
               </motion.div>
@@ -190,7 +207,7 @@ export function FeaturedListingsSection({ listings }: FeaturedListingsSectionPro
         {/* Mobile CTA */}
         <div className="mt-8 sm:hidden text-center">
           <Link
-            href="/listings"
+            href="/"
             className="inline-flex items-center gap-2 rounded-full border border-[#e8e4dc] px-6 py-3 text-sm font-semibold text-[#78726c] transition-all duration-200 hover:border-[#4f46e5] hover:text-[#4f46e5]"
           >
             See all listings <ArrowRight size={15} strokeWidth={2.5} />

@@ -6,14 +6,10 @@ import Link from "next/link";
 import { X, ChevronLeft, MapPin } from "lucide-react";
 import { ListingImage } from "@/components/ui";
 import DeliveryTypeSelector from "@/components/checkout/DeliveryTypeSelector";
-import {
-  groupBySeller,
-  calculateGrandTotal,
-} from "@/app/api/orders/utils";
+import { groupBySeller, calculateGrandTotal } from "@/app/api/orders/utils";
 import type { CartItemWithListing, SellerGroup } from "@/app/api/orders/utils";
 import { getSessionCart, removeFromSessionCart } from "@/lib/session-cart";
 import { useMe } from "@/lib/hooks/useAuth";
-
 
 function CartSkeleton() {
   return (
@@ -64,8 +60,13 @@ function SummaryPanel({
         {groups.map((group) => (
           <div key={group.seller_id} className="space-y-1.5">
             {group.items.map((item) => (
-              <div key={item.id} className="flex items-start justify-between gap-3">
-                <span className="text-sm text-text truncate">{item.listing.title}</span>
+              <div
+                key={item.id}
+                className="flex items-start justify-between gap-3"
+              >
+                <span className="text-sm text-text truncate">
+                  {item.listing.title}
+                </span>
                 <span className="text-sm text-text shrink-0">
                   ₦{item.listing.price.toLocaleString()}
                 </span>
@@ -100,9 +101,7 @@ function SummaryPanel({
         {checkingOut ? "Preparing…" : ctaLabel}
       </button>
 
-      {error && (
-        <p className="mt-3 text-sm text-error text-center">{error}</p>
-      )}
+      {error && <p className="mt-3 text-sm text-error text-center">{error}</p>}
     </div>
   );
 }
@@ -111,7 +110,9 @@ export default function CartPage() {
   const router = useRouter();
   const { data: user, isLoading: userLoading } = useMe();
   const [items, setItems] = useState<CartItemWithListing[]>([]);
-  const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">("delivery");
+  const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
+    "delivery",
+  );
   const [loading, setLoading] = useState(true);
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState("");
@@ -122,9 +123,9 @@ export default function CartPage() {
     phone: "",
     address: "",
   });
-  const [showDeliveryStep, setShowDeliveryStep] = useState(false)
-  const [deliveryAddress, setDeliveryAddress] = useState('')
-  const [useNewAddress, setUseNewAddress] = useState(false)
+  const [showDeliveryStep, setShowDeliveryStep] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [useNewAddress, setUseNewAddress] = useState(false);
 
   useEffect(() => {
     async function fetchCart() {
@@ -147,12 +148,6 @@ export default function CartPage() {
     fetchCart();
   }, [user, userLoading]);
 
-  useEffect(() => {
-    if (user?.address) {
-      setDeliveryAddress(user.address)
-    }
-  }, [user?.address])
-
   async function removeItem(cartItemId: string) {
     if (user) {
       await fetch(`/api/cart/${cartItemId}`, { method: "DELETE" });
@@ -164,38 +159,38 @@ export default function CartPage() {
   }
 
   async function submitOrder(address: string | null) {
-    setCheckingOut(true)
-    setError('')
-    const body: Record<string, unknown> = { delivery_type: deliveryType }
-    if (address) body.delivery_address = address.trim()
-    const res = await fetch('/api/orders', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    setCheckingOut(true);
+    setError("");
+    const body: Record<string, unknown> = { delivery_type: deliveryType };
+    if (address) body.delivery_address = address.trim();
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-    })
-    const data = await res.json()
-    setCheckingOut(false)
+    });
+    const data = await res.json();
+    setCheckingOut(false);
     if (!res.ok) {
-      setError(data.error?.message ?? 'Checkout failed, please try again')
-      return
+      setError(data.error?.message ?? "Checkout failed, please try again");
+      return;
     }
-    sessionStorage.setItem('checkout_secret', data.data.client_secret)
-    router.push('/checkout')
+    sessionStorage.setItem("checkout_secret", data.data.client_secret);
+    router.push("/checkout");
   }
 
   async function handleCheckout() {
     if (!user) {
-      setShowBuyerForm(true)
-      return
+      setShowBuyerForm(true);
+      return;
     }
-    if (deliveryType === 'delivery') {
-      setError('')
-      setUseNewAddress(false)
-      setDeliveryAddress(user?.address ?? '')
-      setShowDeliveryStep(true)
-      return
+    if (deliveryType === "delivery") {
+      setError("");
+      setUseNewAddress(false);
+      setDeliveryAddress(user?.address ?? "");
+      setShowDeliveryStep(true);
+      return;
     }
-    await submitOrder(null)
+    await submitOrder(null);
   }
 
   async function handleAnonymousCheckout(e: React.FormEvent) {
@@ -217,17 +212,17 @@ export default function CartPage() {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-    sessionStorage.setItem('checkout_secret', data.data.client_secret);
-    router.push('/checkout');
+    sessionStorage.setItem("checkout_secret", data.data.client_secret);
+    router.push("/checkout");
   }
 
   async function handleDeliveryAddressConfirm() {
-    const addr = deliveryAddress.trim()
+    const addr = deliveryAddress.trim();
     if (!addr) {
-      setError('Please enter a delivery address')
-      return
+      setError("Please enter a delivery address");
+      return;
     }
-    await submitOrder(addr)
+    await submitOrder(addr);
   }
 
   const groups = groupBySeller(items, deliveryType);
@@ -263,7 +258,7 @@ export default function CartPage() {
               Browse listings and add items to your cart.
             </p>
             <Link
-              href="/listings"
+              href="/"
               className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
             >
               Browse listings
@@ -386,8 +381,8 @@ export default function CartPage() {
   // ── Delivery address step (logged-in users, delivery only) ───────────────
 
   if (showDeliveryStep && user) {
-    const hasSavedAddress = Boolean(user.address)
-    const showTextarea = !hasSavedAddress || useNewAddress
+    const hasSavedAddress = Boolean(user.address);
+    const showTextarea = !hasSavedAddress || useNewAddress;
 
     return (
       <main className="min-h-screen bg-surface">
@@ -398,7 +393,11 @@ export default function CartPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
             <div>
               <button
-                onClick={() => { setShowDeliveryStep(false); setUseNewAddress(false); setError('') }}
+                onClick={() => {
+                  setShowDeliveryStep(false);
+                  setUseNewAddress(false);
+                  setError("");
+                }}
                 className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-6"
               >
                 <ChevronLeft size={16} />
@@ -414,13 +413,18 @@ export default function CartPage() {
                   <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">
                     Saved address
                   </p>
-                  <p className="text-sm text-text whitespace-pre-line">{user.address}</p>
+                  <p className="text-sm text-text whitespace-pre-line">
+                    {user.address}
+                  </p>
                 </div>
               )}
 
               {showTextarea && (
                 <div>
-                  <label htmlFor="delivery-address" className="block text-sm font-medium text-text mb-1.5">
+                  <label
+                    htmlFor="delivery-address"
+                    className="block text-sm font-medium text-text mb-1.5"
+                  >
                     Delivery address
                   </label>
                   <textarea
@@ -436,7 +440,10 @@ export default function CartPage() {
 
               {hasSavedAddress && !useNewAddress && (
                 <button
-                  onClick={() => { setUseNewAddress(true); setDeliveryAddress('') }}
+                  onClick={() => {
+                    setUseNewAddress(true);
+                    setDeliveryAddress("");
+                  }}
                   className="text-sm text-text-muted hover:text-text underline underline-offset-2 transition-colors"
                 >
                   Use a different address
@@ -452,8 +459,13 @@ export default function CartPage() {
                 {groups.map((group) => (
                   <div key={group.seller_id} className="space-y-1.5">
                     {group.items.map((item) => (
-                      <div key={item.id} className="flex items-start justify-between gap-3">
-                        <span className="text-sm text-text truncate">{item.listing.title}</span>
+                      <div
+                        key={item.id}
+                        className="flex items-start justify-between gap-3"
+                      >
+                        <span className="text-sm text-text truncate">
+                          {item.listing.title}
+                        </span>
                         <span className="text-sm text-text shrink-0">
                           ₦{item.listing.price.toLocaleString()}
                         </span>
@@ -461,7 +473,9 @@ export default function CartPage() {
                     ))}
                     {group.delivery_fee > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-sm text-text-muted">Delivery</span>
+                        <span className="text-sm text-text-muted">
+                          Delivery
+                        </span>
                         <span className="text-sm text-text-muted">
                           ₦{group.delivery_fee.toLocaleString()}
                         </span>
@@ -472,7 +486,9 @@ export default function CartPage() {
               </div>
               <div className="border-t border-border my-5" />
               <div className="flex items-baseline justify-between mb-6">
-                <span className="text-sm font-medium text-text-muted">Total</span>
+                <span className="text-sm font-medium text-text-muted">
+                  Total
+                </span>
                 <span className="font-display text-2xl font-bold text-text">
                   ₦{grandTotal.toLocaleString()}
                 </span>
@@ -482,7 +498,11 @@ export default function CartPage() {
                 disabled={checkingOut}
                 className="w-full rounded-xl bg-foreground text-white py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {checkingOut ? 'Preparing…' : hasSavedAddress && !useNewAddress ? 'Deliver here' : 'Continue to payment'}
+                {checkingOut
+                  ? "Preparing…"
+                  : hasSavedAddress && !useNewAddress
+                    ? "Deliver here"
+                    : "Continue to payment"}
               </button>
               {error && (
                 <p className="mt-3 text-sm text-error text-center">{error}</p>
@@ -491,7 +511,7 @@ export default function CartPage() {
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   // ── Main cart ────────────────────────────────────────────────────────────
@@ -555,7 +575,10 @@ export default function CartPage() {
               ))}
             </div>
 
-            <DeliveryTypeSelector value={deliveryType} onChange={setDeliveryType} />
+            <DeliveryTypeSelector
+              value={deliveryType}
+              onChange={setDeliveryType}
+            />
           </div>
 
           {/* Right: sticky summary panel */}

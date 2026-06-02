@@ -1,19 +1,24 @@
 /**
- * Seed script — populates the DB with real product data from DummyJSON.
- * Run: node scripts/seed.mjs
+ * Seed script — 100 intentional declutter listings across 4 Nigerian sellers.
+ * No food. No filler. Just things real people actually sell secondhand.
  *
- * Creates:
- *   seed-seller@declut.dev  / password123  (individual, Stripe onboarding complete)
- *   seed-buyer@declut.dev   / password123  (individual)
- *   20 listings from dummyjson.com/products (images stored as external URLs)
- *   8 orders in varied statuses
+ * Images: DummyJSON CDN (real product photos, no API key needed)
+ * Run:    node scripts/seed.mjs
+ *
+ * Accounts created:
+ *   seed-seller1@declut.dev  / password123  — Amara Okafor (Individual, Lagos)
+ *   seed-seller2@declut.dev  / password123  — Emeka Nwosu  (Business, Abuja)
+ *   seed-seller3@declut.dev  / password123  — Zainab Ibrahim (Individual, Kano)
+ *   seed-seller4@declut.dev  / password123  — Temi Adeyemi (Individual, Lagos)
+ *   seed-buyer1@declut.dev   / password123  — Chidi Eze
+ *   seed-buyer2@declut.dev   / password123  — Fatima Bello
  */
 
 import { createClient } from '@supabase/supabase-js'
 import bcrypt from 'bcryptjs'
 import { readFileSync } from 'fs'
 
-// ── Env loading ──────────────────────────────────────────────────────────────
+// ── Env ──────────────────────────────────────────────────────────────────────
 
 function loadEnvFile(path) {
   try {
@@ -23,18 +28,13 @@ function loadEnvFile(path) {
         .filter(line => line && !line.startsWith('#') && line.includes('='))
         .map(line => {
           const idx = line.indexOf('=')
-          const key = line.slice(0, idx).trim()
-          const val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '')
-          return [key, val]
+          return [line.slice(0, idx).trim(), line.slice(idx + 1).trim().replace(/^["']|["']$/g, '')]
         })
     )
-  } catch {
-    return {}
-  }
+  } catch { return {} }
 }
 
 const env = { ...loadEnvFile('.env.local'), ...process.env }
-
 const SUPABASE_URL = env.NEXT_PUBLIC_SUPABASE_URL
 const SERVICE_KEY = env.SUPABASE_SERVICE_ROLE_KEY
 
@@ -47,164 +47,419 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 })
 
-// ── Seed constants ───────────────────────────────────────────────────────────
-
-const AREAS = [
-  'Lekki, Lagos', 'Ajah, Lagos', 'Victoria Island, Lagos',
-  'Ikeja, Lagos', 'Yaba, Lagos', 'Surulere, Lagos',
-  'Garki, Abuja', 'Wuse, Abuja', 'Gwarinpa, Abuja',
-  'Bodija, Ibadan',
-]
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const CONDITIONS = ['new', 'like_new', 'good', 'fair', 'poor']
+const AREAS = [
+  'Lekki Phase 1, Lagos', 'Victoria Island, Lagos', 'Ajah, Lagos',
+  'Ikeja GRA, Lagos', 'Yaba, Lagos', 'Surulere, Lagos', 'Gbagada, Lagos',
+  'Garki 2, Abuja', 'Wuse 2, Abuja', 'Maitama, Abuja', 'Gwarinpa, Abuja',
+  'Nasarawa GRA, Kano', 'Sabon Gari, Kano',
+  'Bodija, Ibadan', 'Ring Road, Ibadan',
+  'GRA, Port Harcourt', 'Trans-Amadi, Port Harcourt',
+]
 
-const ORDER_STATUSES = ['paid', 'confirmed', 'shipped', 'delivered', 'completed', 'cancelled', 'paid', 'confirmed']
+const SEED_EMAILS = [
+  'seed-seller1@declut.dev',
+  'seed-seller2@declut.dev',
+  'seed-seller3@declut.dev',
+  'seed-seller4@declut.dev',
+  'seed-buyer1@declut.dev',
+  'seed-buyer2@declut.dev',
+]
 
 function pick(arr, i) { return arr[i % arr.length] }
+
+// listing_type cycle: 6× for_sale → 3× free → 1× donate
+function listingType(i) {
+  const slot = i % 10
+  if (slot < 6) return 'for_sale'
+  if (slot < 9) return 'free'
+  return 'donate'
+}
+
+// NGN price — secondhand discount already baked in per category
+function ngnPrice(usdPrice, multiplier) {
+  return Math.round(usdPrice * multiplier / 500) * 500  // round to nearest ₦500
+}
+
+// ── DummyJSON fetch plan ─────────────────────────────────────────────────────
+// 100 products, zero food, categories that real Nigerians sell secondhand
+
+const FETCH_PLAN = [
+  // Electronics — ~23 items
+  { path: '/category/smartphones?limit=10&skip=0',       category: 'Electronics',            mult: 900 },
+  { path: '/category/laptops?limit=10&skip=0',           category: 'Electronics',            mult: 700 },
+  { path: '/category/tablets?limit=5&skip=0',            category: 'Electronics',            mult: 750 },
+  { path: '/category/mobile-accessories?limit=5&skip=0', category: 'Electronics',            mult: 400 },
+
+  // Clothing & Accessories — ~35 items
+  { path: '/category/womens-dresses?limit=7&skip=0',     category: 'Clothing & Accessories', mult: 350 },
+  { path: '/category/mens-shirts?limit=6&skip=0',        category: 'Clothing & Accessories', mult: 280 },
+  { path: '/category/womens-bags?limit=5&skip=0',        category: 'Clothing & Accessories', mult: 450 },
+  { path: '/category/mens-shoes?limit=4&skip=0',         category: 'Clothing & Accessories', mult: 360 },
+  { path: '/category/womens-shoes?limit=4&skip=0',       category: 'Clothing & Accessories', mult: 360 },
+  { path: '/category/sunglasses?limit=4&skip=0',         category: 'Clothing & Accessories', mult: 280 },
+  { path: '/category/tops?limit=4&skip=0',               category: 'Clothing & Accessories', mult: 260 },
+  { path: '/category/mens-watches?limit=3&skip=0',       category: 'Clothing & Accessories', mult: 380 },
+  { path: '/category/womens-watches?limit=3&skip=0',     category: 'Clothing & Accessories', mult: 380 },
+  { path: '/category/womens-jewellery?limit=3&skip=0',   category: 'Clothing & Accessories', mult: 320 },
+
+  // Furniture & Home — ~15 items
+  { path: '/category/furniture?limit=8&skip=0',          category: 'Furniture & Home',       mult: 600 },
+  { path: '/category/home-decoration?limit=8&skip=0',    category: 'Furniture & Home',       mult: 480 },
+
+  // Appliances — ~5 items (kitchen-accessories = cookware, not food)
+  { path: '/category/kitchen-accessories?limit=5&skip=0',category: 'Appliances',             mult: 350 },
+
+  // Sports & Outdoors — 8 items
+  { path: '/category/sports-accessories?limit=8&skip=0', category: 'Sports & Outdoors',      mult: 380 },
+
+  // Vehicles & Parts — ~4 items
+  { path: '/category/motorcycle?limit=4&skip=0',         category: 'Vehicles & Parts',       mult: 1800 },
+]
+
+// ── Hardcoded products for categories DummyJSON doesn't cover ─────────────────
+// Books & Stationery (4) + Kids & Baby (4) = 8 extra → total 108, trim to ~100
+
+const HARDCODED = [
+  // Books & Stationery
+  {
+    title: 'Think and Grow Rich – Napoleon Hill',
+    description: 'Classic personal finance and mindset book. Read twice, spine still good. Hardcover edition.',
+    category: 'Books & Stationery',
+    images: ['https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=600&q=80'],
+  },
+  {
+    title: 'The Alchemist – Paulo Coelho',
+    description: 'Lightly used paperback. A timeless read — great condition.',
+    category: 'Books & Stationery',
+    images: ['https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&q=80'],
+  },
+  {
+    title: 'WAEC & JAMB Past Questions Bundle (2018–2023)',
+    description: 'Complete set of past questions for Sciences and Commercials. Some pages annotated in pencil.',
+    category: 'Books & Stationery',
+    images: ['https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&q=80'],
+  },
+  {
+    title: 'Office Stationery Set',
+    description: 'Assorted pens, notebooks, staplers and binders. Barely used. Great for a home office.',
+    category: 'Books & Stationery',
+    images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'],
+  },
+  // Kids & Baby
+  {
+    title: 'Wooden Toy Building Blocks (50 pcs)',
+    description: 'Colourful hardwood blocks for toddlers 2–5. All pieces present, no splinters.',
+    category: 'Kids & Baby',
+    images: ['https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&q=80'],
+  },
+  {
+    title: 'Baby Stroller – Portable Foldable',
+    description: 'Lightweight umbrella stroller, used for about 8 months. Washed and clean.',
+    category: 'Kids & Baby',
+    images: ['https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80'],
+  },
+  {
+    title: 'Children\'s Story Books Bundle (10 books)',
+    description: 'Mix of picture books and early-reader chapter books. Ages 3–8.',
+    category: 'Kids & Baby',
+    images: ['https://images.unsplash.com/photo-1599751453628-a3c2b63b0b5b?w=600&q=80'],
+  },
+  {
+    title: 'Baby High Chair – Foldable',
+    description: 'Good condition high chair with removable tray. Wipe-clean material. Suitable from 6 months.',
+    category: 'Kids & Baby',
+    images: ['https://images.unsplash.com/photo-1563453392212-326f5e854473?w=600&q=80'],
+  },
+  // Appliances
+  {
+    title: 'Binatone Standing Fan – 18 inch',
+    description: 'Three-speed standing fan. Works perfectly. Selling because we got AC installed.',
+    category: 'Appliances',
+    images: ['https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80'],
+  },
+  {
+    title: 'Scanfrost Microwave Oven 25L',
+    description: 'Fully functional, clean inside. Relocating and can\'t take it. Comes with manual.',
+    category: 'Appliances',
+    images: ['https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80'],
+  },
+  {
+    title: 'Blender – National 3-in-1',
+    description: 'Used for smoothies only, blades sharp. All 3 jugs included.',
+    category: 'Appliances',
+    images: ['https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&q=80'],
+  },
+  {
+    title: 'LG 2-Door Refrigerator 200L',
+    description: 'Fully functional fridge. 4 years old but runs cold. Reason for sale: upgrading.',
+    category: 'Appliances',
+    images: ['https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=80'],
+  },
+]
+
+const HARDCODED_PRICES = {
+  'Books & Stationery': [2500, 1800, 5000, 3000],
+  'Kids & Baby': [8500, 22000, 6000, 18000],
+  'Appliances': [15000, 45000, 12000, 95000],
+}
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('🌱 Seeding Declutter database...\n')
+  console.log('🌱 Seeding Declutter — 100 intentional listings...\n')
 
-  // 1. Hash shared password
   const passwordHash = await bcrypt.hash('password123', 10)
 
-  // 2. Upsert seed seller
-  const { data: seller, error: sellerErr } = await db
+  // ── 1. Wipe existing seed data ─────────────────────────────────────────────
+  console.log('🧹 Cleaning up previous seed data...')
+
+  const { data: existingUsers } = await db
     .from('users')
-    .upsert({
-      email: 'seed-seller@declut.dev',
-      name: 'Amara Okafor',
-      password_hash: passwordHash,
-      account_type: 'individual',
-      stripe_account_id: 'acct_seed_seller',
-      stripe_onboarding_complete: true,
-      email_verified: true,
-    }, { onConflict: 'email' })
     .select('id')
-    .single()
+    .in('email', SEED_EMAILS)
 
-  if (sellerErr) throw new Error(`Seller upsert failed: ${sellerErr.message}`)
-  console.log(`✓ Seller: ${seller.id}  (seed-seller@declut.dev)`)
+  if (existingUsers?.length) {
+    const ids = existingUsers.map(u => u.id)
+    await db.from('order_items').delete().in(
+      'order_id',
+      (await db.from('orders').select('id').or(
+        `buyer_id.in.(${ids.join(',')}),seller_id.in.(${ids.join(',')})`
+      ).then(r => (r.data ?? []).map(o => o.id)))
+    )
+    await db.from('orders').delete().or(
+      `buyer_id.in.(${ids.join(',')}),seller_id.in.(${ids.join(',')})`
+    )
+    await db.from('listings').delete().in('seller_id', ids)
+    await db.from('users').delete().in('id', ids)
+    console.log(`  ✓ Removed ${ids.length} seed users and their data`)
+  } else {
+    console.log('  ✓ No previous seed data found')
+  }
 
-  // 3. Upsert seed buyer
-  const { data: buyer, error: buyerErr } = await db
-    .from('users')
-    .upsert({
-      email: 'seed-buyer@declut.dev',
-      name: 'Chidi Eze',
-      password_hash: passwordHash,
-      account_type: 'individual',
-      email_verified: true,
-    }, { onConflict: 'email' })
-    .select('id')
-    .single()
+  // ── 2. Create sellers ──────────────────────────────────────────────────────
+  console.log('\n👤 Creating sellers & buyers...')
 
-  if (buyerErr) throw new Error(`Buyer upsert failed: ${buyerErr.message}`)
-  console.log(`✓ Buyer:  ${buyer.id}  (seed-buyer@declut.dev)`)
+  const sellerProfiles = [
+    { email: 'seed-seller1@declut.dev', name: 'Amara Okafor',   account_type: 'individual', area: 'Lekki Phase 1, Lagos' },
+    { email: 'seed-seller2@declut.dev', name: 'Emeka Nwosu',    account_type: 'business',   area: 'Wuse 2, Abuja' },
+    { email: 'seed-seller3@declut.dev', name: 'Zainab Ibrahim', account_type: 'individual', area: 'Sabon Gari, Kano' },
+    { email: 'seed-seller4@declut.dev', name: 'Temi Adeyemi',   account_type: 'individual', area: 'Surulere, Lagos' },
+  ]
 
-  // 4. Fetch products from DummyJSON
-  console.log('\n⬇  Fetching products from dummyjson.com...')
-  const res = await fetch('https://dummyjson.com/products?limit=20&skip=0')
-  if (!res.ok) throw new Error(`DummyJSON fetch failed: ${res.status}`)
-  const { products } = await res.json()
-  console.log(`✓ Fetched ${products.length} products`)
+  const sellers = []
+  for (const profile of sellerProfiles) {
+    const { data, error } = await db
+      .from('users')
+      .insert({
+        email: profile.email,
+        name: profile.name,
+        password_hash: passwordHash,
+        account_type: profile.account_type,
+        stripe_account_id: `acct_seed_${profile.email.split('@')[0].replace('seed-', '')}`,
+        stripe_onboarding_complete: true,
+        email_verified: true,
+      })
+      .select('id, name, email')
+      .single()
 
-  // 5. Delete existing seed listings (clean re-seed)
-  await db.from('orders').delete().eq('seller_id', seller.id)
-  await db.from('listings').delete().eq('seller_id', seller.id)
+    if (error) throw new Error(`Seller insert failed for ${profile.email}: ${error.message}`)
+    sellers.push({ ...data, area: profile.area })
+    console.log(`  ✓ ${data.name} (${profile.email})`)
+  }
 
-  // 6. Insert listings
-  const listingRows = products.map((p, i) => ({
-    seller_id: seller.id,
-    title: p.title,
-    description: p.description ?? null,
-    price: Math.round(p.price * 1600),  // USD → NGN (rough)
-    category: p.category,
-    condition: pick(CONDITIONS, i),
-    listing_type: 'for_sale',
-    area: pick(AREAS, i),
-    // Store external URLs directly — rendered via ListingImage component
-    images: [p.thumbnail, ...p.images.slice(0, 2)].filter(Boolean),
-    status: 'available',
-  }))
+  const buyerProfiles = [
+    { email: 'seed-buyer1@declut.dev', name: 'Chidi Eze' },
+    { email: 'seed-buyer2@declut.dev', name: 'Fatima Bello' },
+  ]
 
-  const { data: listings, error: listErr } = await db
-    .from('listings')
-    .insert(listingRows)
-    .select('id')
+  const buyers = []
+  for (const profile of buyerProfiles) {
+    const { data, error } = await db
+      .from('users')
+      .insert({
+        email: profile.email,
+        name: profile.name,
+        password_hash: passwordHash,
+        account_type: 'individual',
+        email_verified: true,
+      })
+      .select('id, name')
+      .single()
 
-  if (listErr) throw new Error(`Listings insert failed: ${listErr.message}`)
-  console.log(`✓ Inserted ${listings.length} listings`)
+    if (error) throw new Error(`Buyer insert failed for ${profile.email}: ${error.message}`)
+    buyers.push(data)
+    console.log(`  ✓ ${data.name} (${profile.email})`)
+  }
 
-  // 7. Insert orders — first 6 are single-item, last group is 2-item (same seller)
-  //    listing indices 0-5: one listing each
-  //    listing indices 6-7: grouped into one order (two items, same seller)
-  const singleOrderRows = listings.slice(0, 6).map((l, i) => {
-    const isPickup = i % 3 === 0
-    const isLagos = listingRows[i].area.includes('Lagos')
-    const deliveryFee = isPickup ? 0 : (isLagos ? 3000 : 6000)
-    const itemPrice = listingRows[i].price
+  // ── 3. Fetch products from DummyJSON ───────────────────────────────────────
+  console.log('\n⬇  Fetching products from DummyJSON (no food categories)...')
+
+  const allProducts = []
+
+  for (const plan of FETCH_PLAN) {
+    const res = await fetch(`https://dummyjson.com/products${plan.path}`)
+    if (!res.ok) throw new Error(`DummyJSON fetch failed for ${plan.path}: ${res.status}`)
+    const { products } = await res.json()
+
+    for (const p of products) {
+      allProducts.push({
+        title: p.title,
+        description: p.description ?? '',
+        category: plan.category,
+        usdPrice: p.price,
+        mult: plan.mult,
+        images: [p.thumbnail, ...p.images.slice(0, 2)].filter(Boolean),
+      })
+    }
+
+    process.stdout.write(`  ✓ ${plan.category.padEnd(25)} ${products.length} products\n`)
+  }
+
+  // Append hardcoded items
+  let hardcodedIdx = 0
+  for (const item of HARDCODED) {
+    const cat = item.category
+    const prices = HARDCODED_PRICES[cat]
+    allProducts.push({
+      title: item.title,
+      description: item.description,
+      category: cat,
+      usdPrice: null,
+      mult: null,
+      ngnPriceFixed: prices[hardcodedIdx % prices.length],
+      images: item.images,
+    })
+    hardcodedIdx++
+  }
+
+  console.log(`\n  📦 Total products collected: ${allProducts.length}`)
+
+  // ── 4. Build and insert listings ───────────────────────────────────────────
+  console.log('\n📋 Inserting listings...')
+
+  const listingRows = allProducts.map((p, i) => {
+    const type = listingType(i)
+    const seller = sellers[i % sellers.length]
+    const condition = pick(CONDITIONS, i + 3)
+    const area = pick(AREAS, i + seller.id.charCodeAt(0))
+
+    let price = null
+    if (type === 'for_sale') {
+      price = p.ngnPriceFixed ?? ngnPrice(p.usdPrice, p.mult)
+      if (price < 500) price = 500
+    }
+
+    return {
+      seller_id: seller.id,
+      title: p.title,
+      description: p.description,
+      price,
+      category: p.category,
+      condition,
+      listing_type: type,
+      area,
+      images: p.images,
+      status: 'available',
+    }
+  })
+
+  const BATCH = 50
+  const insertedListings = []
+  for (let i = 0; i < listingRows.length; i += BATCH) {
+    const { data, error } = await db
+      .from('listings')
+      .insert(listingRows.slice(i, i + BATCH))
+      .select('id')
+
+    if (error) throw new Error(`Listings insert failed (batch ${i}): ${error.message}`)
+    insertedListings.push(...data)
+  }
+
+  console.log(`  ✓ Inserted ${insertedListings.length} listings`)
+
+  // Distribution summary
+  const typeCounts = listingRows.reduce((acc, l) => {
+    acc[l.listing_type] = (acc[l.listing_type] ?? 0) + 1
+    return acc
+  }, {})
+  const catCounts = listingRows.reduce((acc, l) => {
+    acc[l.category] = (acc[l.category] ?? 0) + 1
+    return acc
+  }, {})
+
+  console.log('\n  Listing types:')
+  for (const [type, count] of Object.entries(typeCounts)) {
+    console.log(`    ${type.padEnd(10)} ${count}`)
+  }
+  console.log('\n  Categories:')
+  for (const [cat, count] of Object.entries(catCounts)) {
+    console.log(`    ${cat.padEnd(30)} ${count}`)
+  }
+
+  // ── 5. Seed a handful of orders ────────────────────────────────────────────
+  console.log('\n🛒 Inserting sample orders...')
+
+  // Only order for_sale listings (they have a price)
+  const forSaleListings = insertedListings.filter((_, i) => listingRows[i].listing_type === 'for_sale')
+  const ORDER_STATUSES = ['paid', 'confirmed', 'shipped', 'delivered', 'completed', 'cancelled', 'paid', 'confirmed', 'shipped', 'delivered']
+
+  const orderRows = forSaleListings.slice(0, 10).map((l, i) => {
+    const row = listingRows[insertedListings.indexOf(l)]
+    const isPickup = i % 4 === 0
+    const isLagos = row.area.includes('Lagos')
+    const deliveryFee = isPickup ? 0 : (isLagos ? 1500 : 3500)
+    const buyer = buyers[i % buyers.length]
+
     return {
       listing_id: null,
       buyer_id: buyer.id,
-      seller_id: seller.id,
+      seller_id: row.seller_id,
       status: ORDER_STATUSES[i],
       delivery_type: isPickup ? 'pickup' : 'delivery',
-      item_price: itemPrice,
+      item_price: row.price,
       delivery_fee: deliveryFee,
-      total_price: itemPrice + deliveryFee,
+      total_price: row.price + deliveryFee,
       pickup_address: isPickup ? '12 Adeola Odeku Street, Victoria Island, Lagos' : null,
     }
   })
 
-  const groupedItemPrice = listingRows[6].price + listingRows[7].price
-  const groupedDeliveryFee = listingRows[6].area.includes('Lagos') ? 3000 : 6000
-  const groupedOrderRow = {
-    listing_id: null,
-    buyer_id: buyer.id,
-    seller_id: seller.id,
-    status: ORDER_STATUSES[6],
-    delivery_type: 'delivery',
-    item_price: groupedItemPrice,
-    delivery_fee: groupedDeliveryFee,
-    total_price: groupedItemPrice + groupedDeliveryFee,
-    pickup_address: null,
-  }
-
   const { data: orders, error: ordErr } = await db
     .from('orders')
-    .insert([...singleOrderRows, groupedOrderRow])
+    .insert(orderRows)
     .select('id')
 
   if (ordErr) throw new Error(`Orders insert failed: ${ordErr.message}`)
-  console.log(`✓ Inserted ${orders.length} orders`)
 
-  // 8. Insert order_items for each order
-  const orderItemRows = [
-    ...orders.slice(0, 6).map((o, i) => ({
-      order_id: o.id,
-      listing_id: listings[i].id,
-      item_price: listingRows[i].price,
-    })),
-    // Grouped order: two items
-    { order_id: orders[6].id, listing_id: listings[6].id, item_price: listingRows[6].price },
-    { order_id: orders[6].id, listing_id: listings[7].id, item_price: listingRows[7].price },
-  ]
+  const orderItemRows = orders.map((o, i) => ({
+    order_id: o.id,
+    listing_id: forSaleListings[i].id,
+    item_price: orderRows[i].item_price,
+  }))
 
   const { error: itemErr } = await db.from('order_items').insert(orderItemRows)
   if (itemErr) throw new Error(`Order items insert failed: ${itemErr.message}`)
-  console.log(`✓ Inserted ${orderItemRows.length} order items`)
 
+  console.log(`  ✓ Inserted ${orders.length} orders with ${orderItemRows.length} order items`)
+
+  // ── Done ───────────────────────────────────────────────────────────────────
   console.log(`
 ✅ Seed complete!
 
-  Seller  seed-seller@declut.dev  / password123
-  Buyer   seed-buyer@declut.dev   / password123
+  ${insertedListings.length} listings across ${Object.keys(catCounts).length} categories
+  ${Object.keys(typeCounts).map(t => `${typeCounts[t]} ${t}`).join(' · ')}
 
-Log in as the buyer to see purchases in /dashboard/orders?tab=purchases
-Log in as the seller to see incoming sales in /dashboard/orders?tab=sales
+  Sellers
+    seed-seller1@declut.dev  / password123  — Amara Okafor (Individual, Lagos)
+    seed-seller2@declut.dev  / password123  — Emeka Nwosu  (Business, Abuja)
+    seed-seller3@declut.dev  / password123  — Zainab Ibrahim (Individual, Kano)
+    seed-seller4@declut.dev  / password123  — Temi Adeyemi (Individual, Lagos)
+
+  Buyers
+    seed-buyer1@declut.dev   / password123  — Chidi Eze
+    seed-buyer2@declut.dev   / password123  — Fatima Bello
 `)
 }
 

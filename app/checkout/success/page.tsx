@@ -1,39 +1,42 @@
 "use client";
 
-import { useEffect } from 'react'
-import Link from 'next/link'
-import { CheckCircle } from 'lucide-react'
-import { clearSessionCart } from '@/lib/session-cart'
-import { useMe } from '@/lib/hooks/useAuth'
+import { useEffect } from "react";
+import Link from "next/link";
+import { CheckCircle } from "lucide-react";
+import { clearSessionCart } from "@/lib/session-cart";
+import { useMe } from "@/lib/hooks/useAuth";
 
-const ORDERS_URL = '/dashboard/orders?tab=purchases'
-const LOGIN_THEN_ORDERS_URL = '/auth/login?next=/dashboard/orders%3Ftab%3Dpurchases'
+const ORDERS_URL = "/dashboard/orders?tab=purchases";
+const LOGIN_THEN_ORDERS_URL =
+  "/auth/login?next=/dashboard/orders%3Ftab%3Dpurchases";
 
 export default function CheckoutSuccessPage() {
-  const { data: me, isLoading } = useMe()
+  const { data: me, isLoading } = useMe();
 
   useEffect(() => {
-    clearSessionCart()
+    clearSessionCart();
 
-    const piId = sessionStorage.getItem('checkout_pi_id')
-    if (piId) sessionStorage.removeItem('checkout_pi_id')
+    const piId = sessionStorage.getItem("checkout_pi_id");
+    if (piId) sessionStorage.removeItem("checkout_pi_id");
 
     // Belt-and-suspenders: settle order + clear DB cart client-side.
     // The webhook does the same work in production; this ensures local dev
     // (no Stripe CLI) and race-condition windows are covered.
     Promise.allSettled([
-      piId ? fetch('/api/orders/settle', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payment_intent_id: piId }),
-      }) : Promise.resolve(),
-      fetch('/api/cart', { method: 'DELETE' }),
+      piId
+        ? fetch("/api/orders/settle", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payment_intent_id: piId }),
+          })
+        : Promise.resolve(),
+      fetch("/api/cart", { method: "DELETE" }),
     ]).finally(() => {
-      window.dispatchEvent(new Event('cart-updated'))
-    })
-  }, [])
+      window.dispatchEvent(new Event("cart-updated"));
+    });
+  }, []);
 
-  const trackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL
+  const trackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL;
 
   return (
     <main className="min-h-screen bg-surface">
@@ -47,8 +50,8 @@ export default function CheckoutSuccessPage() {
             Payment successful
           </h1>
           <p className="text-text-muted text-sm max-w-sm mb-2">
-            Your order has been placed. The seller will be in touch within 12 hours
-            to arrange delivery or pickup.
+            Your order has been placed. The seller will be in touch within 12
+            hours to arrange delivery or pickup.
           </p>
           <p className="text-text-subtle text-xs mb-10">
             A confirmation has been sent to your email.
@@ -58,12 +61,12 @@ export default function CheckoutSuccessPage() {
             <Link
               href={trackHref}
               className="rounded-xl px-6 py-2.5 text-sm font-semibold text-white transition-opacity"
-              style={{ background: '#4f46e5' }}
+              style={{ background: "#4f46e5" }}
             >
               Track your order
             </Link>
             <Link
-              href="/listings"
+              href="/"
               className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
             >
               Continue browsing
@@ -72,5 +75,5 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

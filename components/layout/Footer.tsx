@@ -1,15 +1,16 @@
 import Link from "next/link";
 
 const NAV = [
-  { label: "Browse listings", href: "/listings" },
-  { label: "Sell an item",    href: "/listings/new" },
-  { label: "Sign up",         href: "/auth/signup" },
-  { label: "Log in",          href: "/auth/login" },
+  { label: "Browse listings", href: "/" },
+  { label: "Sell an item", href: "/dashboard/listings/new" },
+  { label: "About", href: "/about" },
+  { label: "Sign up", href: "/auth/signup" },
+  { label: "Log in", href: "/auth/login" },
 ];
 
 const LEGAL = [
   { label: "Privacy", href: "/privacy" },
-  { label: "Terms",   href: "/terms" },
+  { label: "Terms", href: "/terms" },
 ];
 
 export function Footer() {
@@ -23,7 +24,9 @@ export function Footer() {
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           {/* Brand */}
           <div className="max-w-xs">
-            <span className="font-display text-xl font-bold text-[#16130f]">declut</span>
+            <span className="font-display text-xl font-bold text-[#16130f]">
+              declut
+            </span>
             <p className="mt-2 text-sm leading-relaxed text-[#a8a09a]">
               Nigeria&apos;s marketplace for things that deserve a second home.
             </p>

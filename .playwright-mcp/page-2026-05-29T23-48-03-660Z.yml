@@ -1,0 +1,669 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - link [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e5]
+        - img [ref=e8]
+      - generic [ref=e16]:
+        - generic:
+          - generic:
+            - button "Where to?":
+              - generic: Where to?
+              - img
+            - button "Dates":
+              - generic: Dates
+              - img
+            - button "Guests":
+              - generic: Guests
+              - img
+            - button "Search":
+              - img
+      - generic [ref=e17]:
+        - button "List your property" [ref=e18] [cursor=pointer]
+        - button "Get Started" [ref=e19] [cursor=pointer]
+    - generic [ref=e20]:
+      - heading "Unique places, tailored for you." [level=1] [ref=e21]
+      - generic [ref=e24]:
+        - button "Where to?" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]:
+            - generic [ref=e27]: Where to?
+            - img [ref=e28]
+        - button "Dates" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]:
+            - generic [ref=e33]: Dates
+            - img [ref=e34]
+        - generic [ref=e37]:
+          - button "Guests" [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]:
+              - generic [ref=e40]: Guests
+              - img [ref=e41]
+          - button "Search" [ref=e43] [cursor=pointer]:
+            - img [ref=e44]
+    - generic [ref=e48]:
+      - button "All Stays" [ref=e49] [cursor=pointer]
+      - button "Apartment" [ref=e50] [cursor=pointer]
+      - button "Beach Houses" [ref=e51] [cursor=pointer]
+      - button "Party Houses" [ref=e52] [cursor=pointer]
+      - button "Creative Spaces" [ref=e53] [cursor=pointer]
+      - button "Villas" [ref=e54] [cursor=pointer]
+      - button "Hotels" [ref=e55] [cursor=pointer]
+      - button "Hostels" [ref=e56] [cursor=pointer]
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - link "Urban photos Urban 3.70 (1) Animashaun, Lagos 2 Guests · 2 Beds · 2 Baths ₦115,000 night Apartment" [ref=e61] [cursor=pointer]:
+            - /url: /listings/c4b37596-e96d-469b-a64b-b679cb137fe9?src=home&pos=1
+            - generic [ref=e62]:
+              - region "Urban photos" [ref=e63]:
+                - generic [ref=e64]:
+                  - group "1 of 5" [ref=e65]:
+                    - img "Urban" [ref=e66]
+                  - group "2 of 5" [ref=e67]:
+                    - img "Urban" [ref=e68]
+                  - group "3 of 5" [ref=e69]:
+                    - img "Urban" [ref=e70]
+                  - group "4 of 5" [ref=e71]:
+                    - img "Urban" [ref=e72]
+                  - group "5 of 5" [ref=e73]:
+                    - img "Urban" [ref=e74]
+                - button "Previous photo" [disabled] [ref=e75]:
+                  - img [ref=e76]
+                - button "Next photo" [ref=e78]:
+                  - img [ref=e79]
+              - button [ref=e81]:
+                - img [ref=e82]
+            - generic [ref=e84]:
+              - generic [ref=e85]:
+                - generic [ref=e86]:
+                  - generic [ref=e87]:
+                    - paragraph [ref=e88]: Urban
+                    - generic [ref=e89]:
+                      - img [ref=e90]
+                      - generic [ref=e92]: 3.70 (1)
+                  - paragraph [ref=e93]: Animashaun, Lagos
+                - generic [ref=e94]:
+                  - generic [ref=e95]: 2 Guests
+                  - generic [ref=e96]: ·
+                  - generic [ref=e97]: 2 Beds
+                  - generic [ref=e98]: ·
+                  - generic [ref=e99]: 2 Baths
+              - generic [ref=e100]:
+                - generic [ref=e101]:
+                  - paragraph [ref=e102]: ₦115,000 night
+                  - paragraph
+                - generic [ref=e103]:
+                  - img [ref=e104]
+                  - text: Apartment
+          - link "Cozy 2-bed - Ferrano court estate photos Cozy 2-bed - Ferrano court estate Ifako, Lagos 1 Guests · 1 Beds · 1 Baths ₦138,000 night Beach House" [ref=e107] [cursor=pointer]:
+            - /url: /listings/12243be4-46a1-4035-acef-6cc217cd9c7b?src=home&pos=2
+            - generic [ref=e108]:
+              - region "Cozy 2-bed - Ferrano court estate photos" [ref=e109]:
+                - generic [ref=e110]:
+                  - group "1 of 5" [ref=e111]:
+                    - img "Cozy 2-bed - Ferrano court estate" [ref=e112]
+                  - group "2 of 5" [ref=e113]:
+                    - img "Cozy 2-bed - Ferrano court estate" [ref=e114]
+                  - group "3 of 5" [ref=e115]:
+                    - img "Cozy 2-bed - Ferrano court estate" [ref=e116]
+                  - group "4 of 5" [ref=e117]:
+                    - img "Cozy 2-bed - Ferrano court estate" [ref=e118]
+                  - group "5 of 5" [ref=e119]:
+                    - img "Cozy 2-bed - Ferrano court estate" [ref=e120]
+                - button "Previous photo" [disabled] [ref=e121]:
+                  - img [ref=e122]
+                - button "Next photo" [ref=e124]:
+                  - img [ref=e125]
+              - button [ref=e127]:
+                - img [ref=e128]
+            - generic [ref=e130]:
+              - generic [ref=e131]:
+                - generic [ref=e132]:
+                  - paragraph [ref=e134]: Cozy 2-bed - Ferrano court estate
+                  - paragraph [ref=e135]: Ifako, Lagos
+                - generic [ref=e136]:
+                  - generic [ref=e137]: 1 Guests
+                  - generic [ref=e138]: ·
+                  - generic [ref=e139]: 1 Beds
+                  - generic [ref=e140]: ·
+                  - generic [ref=e141]: 1 Baths
+              - generic [ref=e142]:
+                - generic [ref=e143]:
+                  - paragraph [ref=e144]: ₦138,000 night
+                  - paragraph
+                - generic [ref=e145]:
+                  - img [ref=e146]
+                  - text: Beach House
+          - link "Modern Beach Retreat near Elegushi photos Modern Beach Retreat near Elegushi Elegushi, Lagos 5 Guests · 3 Beds · 2 Baths ₦138,000 night Beach House" [ref=e149] [cursor=pointer]:
+            - /url: /listings/a0000000-0000-0000-0000-000000000004?src=home&pos=3
+            - generic [ref=e150]:
+              - region "Modern Beach Retreat near Elegushi photos" [ref=e151]:
+                - generic [ref=e152]:
+                  - group "1 of 3" [ref=e153]:
+                    - img "Modern Beach Retreat near Elegushi" [ref=e154]
+                  - group "2 of 3" [ref=e155]:
+                    - img "Modern Beach Retreat near Elegushi" [ref=e156]
+                  - group "3 of 3" [ref=e157]:
+                    - img "Modern Beach Retreat near Elegushi" [ref=e158]
+                - button "Previous photo" [disabled] [ref=e159]:
+                  - img [ref=e160]
+                - button "Next photo" [ref=e162]:
+                  - img [ref=e163]
+              - button [ref=e165]:
+                - img [ref=e166]
+            - generic [ref=e168]:
+              - generic [ref=e169]:
+                - generic [ref=e170]:
+                  - paragraph [ref=e172]: Modern Beach Retreat near Elegushi
+                  - paragraph [ref=e173]: Elegushi, Lagos
+                - generic [ref=e174]:
+                  - generic [ref=e175]: 5 Guests
+                  - generic [ref=e176]: ·
+                  - generic [ref=e177]: 3 Beds
+                  - generic [ref=e178]: ·
+                  - generic [ref=e179]: 2 Baths
+              - generic [ref=e180]:
+                - generic [ref=e181]:
+                  - paragraph [ref=e182]: ₦138,000 night
+                  - paragraph
+                - generic [ref=e183]:
+                  - img [ref=e184]
+                  - text: Beach House
+          - link "Cozy 2 Bedroom Apartment photos Cozy 2 Bedroom Apartment Akoka, Lagos 2 Guests · 2 Beds · 2 Baths ₦28,750 night Apartment" [ref=e187] [cursor=pointer]:
+            - /url: /listings/42d72374-f73d-4272-8d35-4a08b8513434?src=home&pos=4
+            - generic [ref=e188]:
+              - region "Cozy 2 Bedroom Apartment photos" [ref=e189]:
+                - generic [ref=e190]:
+                  - group "1 of 5" [ref=e191]:
+                    - img "Cozy 2 Bedroom Apartment" [ref=e192]
+                  - group "2 of 5" [ref=e193]:
+                    - img "Cozy 2 Bedroom Apartment" [ref=e194]
+                  - group "3 of 5" [ref=e195]:
+                    - img "Cozy 2 Bedroom Apartment" [ref=e196]
+                  - group "4 of 5" [ref=e197]:
+                    - img "Cozy 2 Bedroom Apartment" [ref=e198]
+                  - group "5 of 5" [ref=e199]:
+                    - img "Cozy 2 Bedroom Apartment" [ref=e200]
+                - button "Previous photo" [disabled] [ref=e201]:
+                  - img [ref=e202]
+                - button "Next photo" [ref=e204]:
+                  - img [ref=e205]
+              - button [ref=e207]:
+                - img [ref=e208]
+            - generic [ref=e210]:
+              - generic [ref=e211]:
+                - generic [ref=e212]:
+                  - paragraph [ref=e214]: Cozy 2 Bedroom Apartment
+                  - paragraph [ref=e215]: Akoka, Lagos
+                - generic [ref=e216]:
+                  - generic [ref=e217]: 2 Guests
+                  - generic [ref=e218]: ·
+                  - generic [ref=e219]: 2 Beds
+                  - generic [ref=e220]: ·
+                  - generic [ref=e221]: 2 Baths
+              - generic [ref=e222]:
+                - generic [ref=e223]:
+                  - paragraph [ref=e224]: ₦28,750 night
+                  - paragraph
+                - generic [ref=e225]:
+                  - img [ref=e226]
+                  - text: Apartment
+          - link "Exclusive Villa on Banana Island photos Exclusive Villa on Banana Island Banana Island, Lagos 12 Guests · 7 Beds · 6 Baths ₦575,000 night Villa" [ref=e229] [cursor=pointer]:
+            - /url: /listings/a0000000-0000-0000-0000-000000000005?src=home&pos=5
+            - generic [ref=e230]:
+              - region "Exclusive Villa on Banana Island photos" [ref=e231]:
+                - generic [ref=e232]:
+                  - group "1 of 4" [ref=e233]:
+                    - img "Exclusive Villa on Banana Island" [ref=e234]
+                  - group "2 of 4" [ref=e235]:
+                    - img "Exclusive Villa on Banana Island" [ref=e236]
+                  - group "3 of 4" [ref=e237]:
+                    - img "Exclusive Villa on Banana Island" [ref=e238]
+                  - group "4 of 4" [ref=e239]:
+                    - img "Exclusive Villa on Banana Island" [ref=e240]
+                - button "Previous photo" [disabled] [ref=e241]:
+                  - img [ref=e242]
+                - button "Next photo" [ref=e244]:
+                  - img [ref=e245]
+              - button [ref=e247]:
+                - img [ref=e248]
+            - generic [ref=e250]:
+              - generic [ref=e251]:
+                - generic [ref=e252]:
+                  - paragraph [ref=e254]: Exclusive Villa on Banana Island
+                  - paragraph [ref=e255]: Banana Island, Lagos
+                - generic [ref=e256]:
+                  - generic [ref=e257]: 12 Guests
+                  - generic [ref=e258]: ·
+                  - generic [ref=e259]: 7 Beds
+                  - generic [ref=e260]: ·
+                  - generic [ref=e261]: 6 Baths
+              - generic [ref=e262]:
+                - generic [ref=e263]:
+                  - paragraph [ref=e264]: ₦575,000 night
+                  - paragraph
+                - generic [ref=e265]:
+                  - img [ref=e266]
+                  - text: Villa
+          - link "Cozy Studio on Victoria Island photos Cozy Studio on Victoria Island Victoria Island, Lagos 2 Guests · 1 Beds · 1 Baths ₦48,300 night Apartment" [ref=e269] [cursor=pointer]:
+            - /url: /listings/a0000000-0000-0000-0000-000000000002?src=home&pos=6
+            - generic [ref=e270]:
+              - region "Cozy Studio on Victoria Island photos" [ref=e271]:
+                - generic [ref=e272]:
+                  - group "1 of 3" [ref=e273]:
+                    - img "Cozy Studio on Victoria Island" [ref=e274]
+                  - group "2 of 3" [ref=e275]:
+                    - img "Cozy Studio on Victoria Island" [ref=e276]
+                  - group "3 of 3" [ref=e277]:
+                    - img "Cozy Studio on Victoria Island" [ref=e278]
+                - button "Previous photo" [disabled] [ref=e279]:
+                  - img [ref=e280]
+                - button "Next photo" [ref=e282]:
+                  - img [ref=e283]
+              - button [ref=e285]:
+                - img [ref=e286]
+            - generic [ref=e288]:
+              - generic [ref=e289]:
+                - generic [ref=e290]:
+                  - paragraph [ref=e292]: Cozy Studio on Victoria Island
+                  - paragraph [ref=e293]: Victoria Island, Lagos
+                - generic [ref=e294]:
+                  - generic [ref=e295]: 2 Guests
+                  - generic [ref=e296]: ·
+                  - generic [ref=e297]: 1 Beds
+                  - generic [ref=e298]: ·
+                  - generic [ref=e299]: 1 Baths
+              - generic [ref=e300]:
+                - generic [ref=e301]:
+                  - paragraph [ref=e302]: ₦48,300 night
+                  - paragraph
+                - generic [ref=e303]:
+                  - img [ref=e304]
+                  - text: Apartment
+          - link "Top Studios photos Top Studios Oregun, Lagos 1 Guests · 1 Beds · 1 Baths ₦34,500 hour Creative Space" [ref=e307] [cursor=pointer]:
+            - /url: /listings/aa4b46af-ab04-482a-8adc-95a28d9c0aee?src=home&pos=7
+            - generic [ref=e308]:
+              - region "Top Studios photos" [ref=e309]:
+                - generic [ref=e310]:
+                  - group "1 of 5" [ref=e311]:
+                    - img "Top Studios" [ref=e312]
+                  - group "2 of 5" [ref=e313]:
+                    - img "Top Studios" [ref=e314]
+                  - group "3 of 5" [ref=e315]:
+                    - img "Top Studios" [ref=e316]
+                  - group "4 of 5" [ref=e317]:
+                    - img "Top Studios" [ref=e318]
+                  - group "5 of 5" [ref=e319]:
+                    - img "Top Studios" [ref=e320]
+                - button "Previous photo" [disabled] [ref=e321]:
+                  - img [ref=e322]
+                - button "Next photo" [ref=e324]:
+                  - img [ref=e325]
+              - button [ref=e327]:
+                - img [ref=e328]
+            - generic [ref=e330]:
+              - generic [ref=e331]:
+                - generic [ref=e332]:
+                  - paragraph [ref=e334]: Top Studios
+                  - paragraph [ref=e335]: Oregun, Lagos
+                - generic [ref=e336]:
+                  - generic [ref=e337]: 1 Guests
+                  - generic [ref=e338]: ·
+                  - generic [ref=e339]: 1 Beds
+                  - generic [ref=e340]: ·
+                  - generic [ref=e341]: 1 Baths
+              - generic [ref=e342]:
+                - generic [ref=e343]:
+                  - paragraph [ref=e344]: ₦34,500 hour
+                  - paragraph
+                - generic [ref=e345]:
+                  - img [ref=e346]
+                  - text: Creative Space
+          - link "Serene Single-Story Villa in Maitama photos Serene Single-Story Villa in Maitama Maitama, Abuja 8 Guests · 4 Beds · 3 Baths ₦207,000 night Villa" [ref=e349] [cursor=pointer]:
+            - /url: /listings/a0000000-0000-0000-0000-000000000006?src=home&pos=8
+            - generic [ref=e350]:
+              - region "Serene Single-Story Villa in Maitama photos" [ref=e351]:
+                - generic [ref=e352]:
+                  - group "1 of 3" [ref=e353]:
+                    - img "Serene Single-Story Villa in Maitama" [ref=e354]
+                  - group "2 of 3" [ref=e355]:
+                    - img "Serene Single-Story Villa in Maitama" [ref=e356]
+                  - group "3 of 3" [ref=e357]:
+                    - img "Serene Single-Story Villa in Maitama" [ref=e358]
+                - button "Previous photo" [disabled] [ref=e359]:
+                  - img [ref=e360]
+                - button "Next photo" [ref=e362]:
+                  - img [ref=e363]
+              - button [ref=e365]:
+                - img [ref=e366]
+            - generic [ref=e368]:
+              - generic [ref=e369]:
+                - generic [ref=e370]:
+                  - paragraph [ref=e372]: Serene Single-Story Villa in Maitama
+                  - paragraph [ref=e373]: Maitama, Abuja
+                - generic [ref=e374]:
+                  - generic [ref=e375]: 8 Guests
+                  - generic [ref=e376]: ·
+                  - generic [ref=e377]: 4 Beds
+                  - generic [ref=e378]: ·
+                  - generic [ref=e379]: 3 Baths
+              - generic [ref=e380]:
+                - generic [ref=e381]:
+                  - paragraph [ref=e382]: ₦207,000 night
+                  - paragraph
+                - generic [ref=e383]:
+                  - img [ref=e384]
+                  - text: Villa
+          - link "Cozy 3 Bedroom Apartment photos Cozy 3 Bedroom Apartment Lekki Phase I, Lekki 1 Guests · 4 Beds · 5 Baths ₦57,500 night Apartment" [ref=e387] [cursor=pointer]:
+            - /url: /listings/3d68fa2c-2e21-4a8a-8324-a3e042b60c3b?src=home&pos=9
+            - generic [ref=e388]:
+              - region "Cozy 3 Bedroom Apartment photos" [ref=e389]:
+                - generic [ref=e390]:
+                  - group "1 of 5" [ref=e391]:
+                    - img "Cozy 3 Bedroom Apartment" [ref=e392]
+                  - group "2 of 5" [ref=e393]:
+                    - img "Cozy 3 Bedroom Apartment" [ref=e394]
+                  - group "3 of 5" [ref=e395]:
+                    - img "Cozy 3 Bedroom Apartment" [ref=e396]
+                  - group "4 of 5" [ref=e397]:
+                    - img "Cozy 3 Bedroom Apartment" [ref=e398]
+                  - group "5 of 5" [ref=e399]:
+                    - img "Cozy 3 Bedroom Apartment" [ref=e400]
+                - button "Previous photo" [disabled] [ref=e401]:
+                  - img [ref=e402]
+                - button "Next photo" [ref=e404]:
+                  - img [ref=e405]
+              - button [ref=e407]:
+                - img [ref=e408]
+            - generic [ref=e410]:
+              - generic [ref=e411]:
+                - generic [ref=e412]:
+                  - paragraph [ref=e414]: Cozy 3 Bedroom Apartment
+                  - paragraph [ref=e415]: Lekki Phase I, Lekki
+                - generic [ref=e416]:
+                  - generic [ref=e417]: 1 Guests
+                  - generic [ref=e418]: ·
+                  - generic [ref=e419]: 4 Beds
+                  - generic [ref=e420]: ·
+                  - generic [ref=e421]: 5 Baths
+              - generic [ref=e422]:
+                - generic [ref=e423]:
+                  - paragraph [ref=e424]: ₦57,500 night
+                  - paragraph
+                - generic [ref=e425]:
+                  - img [ref=e426]
+                  - text: Apartment
+          - link "Podcast & Recording Studio — Lekki phase 1 photos Podcast & Recording Studio — Lekki phase 1 Lekki Phase 2, Lagos 1 Guests · 0 Beds · 1 Baths ₦23,000 hour Creative Space" [ref=e429] [cursor=pointer]:
+            - /url: /listings/b0000000-0000-0000-0000-000000000006?src=home&pos=10
+            - generic [ref=e430]:
+              - region "Podcast & Recording Studio — Lekki phase 1 photos" [ref=e431]:
+                - generic [ref=e432]:
+                  - group "1 of 3" [ref=e433]:
+                    - img "Podcast & Recording Studio — Lekki phase 1" [ref=e434]
+                  - group "2 of 3" [ref=e435]:
+                    - img "Podcast & Recording Studio — Lekki phase 1" [ref=e436]
+                  - group "3 of 3" [ref=e437]:
+                    - img "Podcast & Recording Studio — Lekki phase 1" [ref=e438]
+                - button "Previous photo" [disabled] [ref=e439]:
+                  - img [ref=e440]
+                - button "Next photo" [ref=e442]:
+                  - img [ref=e443]
+              - button [ref=e445]:
+                - img [ref=e446]
+            - generic [ref=e448]:
+              - generic [ref=e449]:
+                - generic [ref=e450]:
+                  - paragraph [ref=e452]: Podcast & Recording Studio — Lekki phase 1
+                  - paragraph [ref=e453]: Lekki Phase 2, Lagos
+                - generic [ref=e454]:
+                  - generic [ref=e455]: 1 Guests
+                  - generic [ref=e456]: ·
+                  - generic [ref=e457]: 0 Beds
+                  - generic [ref=e458]: ·
+                  - generic [ref=e459]: 1 Baths
+              - generic [ref=e460]:
+                - generic [ref=e461]:
+                  - paragraph [ref=e462]: ₦23,000 hour
+                  - paragraph
+                - generic [ref=e463]:
+                  - img [ref=e464]
+                  - text: Creative Space
+          - link "Spacious 3BR Apartment — Gbagada photos Spacious 3BR Apartment — Gbagada Gbagada, Lagos 6 Guests · 4 Beds · 2 Baths ₦74,750 night Apartment" [ref=e467] [cursor=pointer]:
+            - /url: /listings/c0000000-0000-0000-0000-000000000001?src=home&pos=11
+            - generic [ref=e468]:
+              - region "Spacious 3BR Apartment — Gbagada photos" [ref=e469]:
+                - generic [ref=e470]:
+                  - group "1 of 4" [ref=e471]:
+                    - img "Spacious 3BR Apartment — Gbagada" [ref=e472]
+                  - group "2 of 4" [ref=e473]:
+                    - img "Spacious 3BR Apartment — Gbagada" [ref=e474]
+                  - group "3 of 4" [ref=e475]:
+                    - img "Spacious 3BR Apartment — Gbagada" [ref=e476]
+                  - group "4 of 4" [ref=e477]:
+                    - img "Spacious 3BR Apartment — Gbagada" [ref=e478]
+                - button "Previous photo" [disabled] [ref=e479]:
+                  - img [ref=e480]
+                - button "Next photo" [ref=e482]:
+                  - img [ref=e483]
+              - button [ref=e485]:
+                - img [ref=e486]
+            - generic [ref=e488]:
+              - generic [ref=e489]:
+                - generic [ref=e490]:
+                  - paragraph [ref=e492]: Spacious 3BR Apartment — Gbagada
+                  - paragraph [ref=e493]: Gbagada, Lagos
+                - generic [ref=e494]:
+                  - generic [ref=e495]: 6 Guests
+                  - generic [ref=e496]: ·
+                  - generic [ref=e497]: 4 Beds
+                  - generic [ref=e498]: ·
+                  - generic [ref=e499]: 2 Baths
+              - generic [ref=e500]:
+                - generic [ref=e501]:
+                  - paragraph [ref=e502]: ₦74,750 night
+                  - paragraph
+                - generic [ref=e503]:
+                  - img [ref=e504]
+                  - text: Apartment
+          - link "Diplomatic Quarter Villa — Asokoro photos Diplomatic Quarter Villa — Asokoro Asokoro, Abuja 14 Guests · 8 Beds · 6 Baths ₦747,500 night Villa" [ref=e507] [cursor=pointer]:
+            - /url: /listings/b0000000-0000-0000-0000-000000000004?src=home&pos=12
+            - generic [ref=e508]:
+              - region "Diplomatic Quarter Villa — Asokoro photos" [ref=e509]:
+                - generic [ref=e510]:
+                  - group "1 of 4" [ref=e511]:
+                    - img "Diplomatic Quarter Villa — Asokoro" [ref=e512]
+                  - group "2 of 4" [ref=e513]:
+                    - img "Diplomatic Quarter Villa — Asokoro" [ref=e514]
+                  - group "3 of 4" [ref=e515]:
+                    - img "Diplomatic Quarter Villa — Asokoro" [ref=e516]
+                  - group "4 of 4" [ref=e517]:
+                    - img "Diplomatic Quarter Villa — Asokoro" [ref=e518]
+                - button "Previous photo" [disabled] [ref=e519]:
+                  - img [ref=e520]
+                - button "Next photo" [ref=e522]:
+                  - img [ref=e523]
+              - button [ref=e525]:
+                - img [ref=e526]
+            - generic [ref=e528]:
+              - generic [ref=e529]:
+                - generic [ref=e530]:
+                  - paragraph [ref=e532]: Diplomatic Quarter Villa — Asokoro
+                  - paragraph [ref=e533]: Asokoro, Abuja
+                - generic [ref=e534]:
+                  - generic [ref=e535]: 14 Guests
+                  - generic [ref=e536]: ·
+                  - generic [ref=e537]: 8 Beds
+                  - generic [ref=e538]: ·
+                  - generic [ref=e539]: 6 Baths
+              - generic [ref=e540]:
+                - generic [ref=e541]:
+                  - paragraph [ref=e542]: ₦747,500 night
+                  - paragraph
+                - generic [ref=e543]:
+                  - img [ref=e544]
+                  - text: Villa
+        - button "View all listings →" [ref=e547] [cursor=pointer]
+    - generic [ref=e548]:
+      - generic [ref=e549]:
+        - heading "Stay by neighbourhood" [level=2] [ref=e550]
+        - paragraph [ref=e551]: Handpicked cities across Lagos
+      - generic [ref=e552]:
+        - link "Victoria Island & Ikoyi Victoria Island & Ikoyi" [ref=e553] [cursor=pointer]:
+          - /url: /search?location=Victoria%20Island%20%26%20Ikoyi
+          - generic [ref=e554]:
+            - img "Victoria Island & Ikoyi" [ref=e555]
+            - paragraph [ref=e558]: Victoria Island & Ikoyi
+        - link "Lekki & Chevron Lekki & Chevron" [ref=e559] [cursor=pointer]:
+          - /url: /search?location=Lekki%20%26%20Chevron
+          - generic [ref=e560]:
+            - img "Lekki & Chevron" [ref=e561]
+            - paragraph [ref=e564]: Lekki & Chevron
+        - link "Mainland, Lagos Mainland, Lagos" [ref=e565] [cursor=pointer]:
+          - /url: /search?location=Mainland%2C%20Lagos
+          - generic [ref=e566]:
+            - img "Mainland, Lagos" [ref=e567]
+            - paragraph [ref=e570]: Mainland, Lagos
+        - link "Beachfront Lagos Beachfront Lagos" [ref=e571] [cursor=pointer]:
+          - /url: /search?location=Beachfront%20Lagos
+          - generic [ref=e572]:
+            - img "Beachfront Lagos" [ref=e573]
+            - paragraph [ref=e576]: Beachfront Lagos
+    - generic [ref=e577]:
+      - heading "Popular places to stay in Lagos" [level=2] [ref=e578]
+      - generic [ref=e579]:
+        - link "Urban Urban Animashaun, Lagos ₦115,000 night" [ref=e581] [cursor=pointer]:
+          - /url: /listings/c4b37596-e96d-469b-a64b-b679cb137fe9
+          - generic [ref=e582]:
+            - img "Urban" [ref=e584]
+            - generic [ref=e585]:
+              - generic [ref=e586]:
+                - paragraph [ref=e587]: Urban
+                - paragraph [ref=e588]: Animashaun, Lagos
+              - paragraph [ref=e589]: ₦115,000 night
+        - link "Cozy 2-bed - Ferrano court estate Cozy 2-bed - Ferrano court estate Ifako, Lagos ₦138,000 night" [ref=e591] [cursor=pointer]:
+          - /url: /listings/12243be4-46a1-4035-acef-6cc217cd9c7b
+          - generic [ref=e592]:
+            - img "Cozy 2-bed - Ferrano court estate" [ref=e594]
+            - generic [ref=e595]:
+              - generic [ref=e596]:
+                - paragraph [ref=e597]: Cozy 2-bed - Ferrano court estate
+                - paragraph [ref=e598]: Ifako, Lagos
+              - paragraph [ref=e599]: ₦138,000 night
+        - link "Modern Beach Retreat near Elegushi Modern Beach Retreat near Elegushi Elegushi, Lagos ₦138,000 night" [ref=e601] [cursor=pointer]:
+          - /url: /listings/a0000000-0000-0000-0000-000000000004
+          - generic [ref=e602]:
+            - img "Modern Beach Retreat near Elegushi" [ref=e604]
+            - generic [ref=e605]:
+              - generic [ref=e606]:
+                - paragraph [ref=e607]: Modern Beach Retreat near Elegushi
+                - paragraph [ref=e608]: Elegushi, Lagos
+              - paragraph [ref=e609]: ₦138,000 night
+        - link "Cozy 2 Bedroom Apartment Cozy 2 Bedroom Apartment Akoka, Lagos ₦28,750 night" [ref=e611] [cursor=pointer]:
+          - /url: /listings/42d72374-f73d-4272-8d35-4a08b8513434
+          - generic [ref=e612]:
+            - img "Cozy 2 Bedroom Apartment" [ref=e614]
+            - generic [ref=e615]:
+              - generic [ref=e616]:
+                - paragraph [ref=e617]: Cozy 2 Bedroom Apartment
+                - paragraph [ref=e618]: Akoka, Lagos
+              - paragraph [ref=e619]: ₦28,750 night
+        - link "Exclusive Villa on Banana Island Exclusive Villa on Banana Island Banana Island, Lagos ₦575,000 night" [ref=e621] [cursor=pointer]:
+          - /url: /listings/a0000000-0000-0000-0000-000000000005
+          - generic [ref=e622]:
+            - img "Exclusive Villa on Banana Island" [ref=e624]
+            - generic [ref=e625]:
+              - generic [ref=e626]:
+                - paragraph [ref=e627]: Exclusive Villa on Banana Island
+                - paragraph [ref=e628]: Banana Island, Lagos
+              - paragraph [ref=e629]: ₦575,000 night
+        - link "Cozy Studio on Victoria Island Cozy Studio on Victoria Island Victoria Island, Lagos ₦48,300 night" [ref=e631] [cursor=pointer]:
+          - /url: /listings/a0000000-0000-0000-0000-000000000002
+          - generic [ref=e632]:
+            - img "Cozy Studio on Victoria Island" [ref=e634]
+            - generic [ref=e635]:
+              - generic [ref=e636]:
+                - paragraph [ref=e637]: Cozy Studio on Victoria Island
+                - paragraph [ref=e638]: Victoria Island, Lagos
+              - paragraph [ref=e639]: ₦48,300 night
+    - contentinfo [ref=e640]:
+      - generic [ref=e642]:
+        - paragraph [ref=e643]: Our Value Propositions
+        - paragraph [ref=e644]: Arrivo was built to bring order to short-stay rentals in Nigeria. From verified guests to secure payments and dispute handling, every feature is designed to protect both hosts and guests.
+      - generic [ref=e653]:
+        - generic [ref=e654]:
+          - link [ref=e656] [cursor=pointer]:
+            - /url: /
+            - img [ref=e657]
+            - img [ref=e660]
+          - generic [ref=e668]:
+            - paragraph [ref=e670]: Discovery
+            - generic [ref=e671]:
+              - link "Apartment & Shortlets" [ref=e673] [cursor=pointer]:
+                - /url: "#"
+              - link "Beach Houses" [ref=e675] [cursor=pointer]:
+                - /url: "#"
+              - link "Villas" [ref=e677] [cursor=pointer]:
+                - /url: "#"
+              - link "Party Houses" [ref=e679] [cursor=pointer]:
+                - /url: "#"
+              - link "Creative Spaces" [ref=e681] [cursor=pointer]:
+                - /url: "#"
+              - link "Popular in Lagos" [ref=e683] [cursor=pointer]:
+                - /url: "#"
+              - link "Watchlist" [ref=e685] [cursor=pointer]:
+                - /url: /account/watchlist
+          - generic [ref=e686]:
+            - paragraph [ref=e688]: Hosting
+            - generic [ref=e689]:
+              - link "List your property" [ref=e691] [cursor=pointer]:
+                - /url: "#"
+              - link "How hosting works" [ref=e693] [cursor=pointer]:
+                - /url: "#"
+              - link "Pricing & payouts" [ref=e695] [cursor=pointer]:
+                - /url: "#"
+              - link "Host protection & policies" [ref=e697] [cursor=pointer]:
+                - /url: "#"
+          - generic [ref=e698]:
+            - paragraph [ref=e700]: Support
+            - generic [ref=e701]:
+              - link "Contact Support" [ref=e703] [cursor=pointer]:
+                - /url: "#"
+              - link "Trust & Safety" [ref=e705] [cursor=pointer]:
+                - /url: "#"
+              - link "Report a listing" [ref=e707] [cursor=pointer]:
+                - /url: "#"
+              - link "Cancellation Policies" [ref=e709] [cursor=pointer]:
+                - /url: "#"
+          - generic [ref=e710]:
+            - paragraph [ref=e712]: Company & Legal
+            - generic [ref=e713]:
+              - link "About Arrivo" [ref=e715] [cursor=pointer]:
+                - /url: "#"
+              - link "Terms of service" [ref=e717] [cursor=pointer]:
+                - /url: "#"
+              - link "Privacy Policy" [ref=e719] [cursor=pointer]:
+                - /url: "#"
+              - link "Reviews & Ratings Policy" [ref=e721] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=e722]:
+          - paragraph [ref=e723]: © 2026 Arrivo. All rights reserved.
+          - generic [ref=e724]:
+            - generic [ref=e725]:
+              - img [ref=e726]
+              - generic [ref=e728]: English (US)
+            - generic [ref=e729]:
+              - link [ref=e730] [cursor=pointer]:
+                - /url: https://www.instagram.com/usearrivo
+                - img [ref=e731]
+              - link [ref=e733] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e734]
+              - link [ref=e736] [cursor=pointer]:
+                - /url: https://www.linkedin.com/company/arrivoplatforms/
+                - img [ref=e737]
+  - button "Open Arrivo AI (drag to reposition)" [ref=e739]:
+    - generic:
+      - img
+    - generic: Ask Arrivo AI
+  - region "Notifications alt+T"
+  - alert [ref=e740]

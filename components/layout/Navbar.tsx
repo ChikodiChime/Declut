@@ -6,14 +6,14 @@ export function Navbar() {
       className="sticky top-0 z-50 bg-surface/90 backdrop-blur-md"
       style={{ borderBottom: "1px solid #e8e4dc" }}
     >
-      <div className="max-w-6xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="declut" className="h-14 w-28" />
+          <img src="/logo.svg" alt="declut" className="h-14 w-36" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/listings" className="nav-link text-sm font-medium">
+          <Link href="/" className="nav-link text-sm font-medium">
             Browse
           </Link>
           <Link href="/auth/login" className="nav-link text-sm font-medium">

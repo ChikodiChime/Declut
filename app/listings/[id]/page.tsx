@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ListingImage } from "@/components/ui";
+import { BrowseCard } from "@/components/listings";
 import {
   ArrowLeft,
   MapPin,
@@ -13,8 +14,9 @@ import {
   Building2,
   CheckCircle2,
   Clock,
+  ArrowRight,
 } from "lucide-react";
-import { useListing } from "@/lib/hooks/useListings";
+import { useListing, usePublicListings } from "@/lib/hooks/useListings";
 import { useCart } from "@/lib/hooks/useCart";
 import { addToSessionCart } from "@/lib/session-cart";
 import type { ListingWithSeller } from "@/types";
@@ -29,15 +31,23 @@ import {
 
 const TYPE_CONFIG = {
   for_sale: { label: "For Sale", color: "#4f46e5", bg: "rgba(79,70,229,0.08)" },
-  free:     { label: "Free",     color: "#10b981", bg: "rgba(16,185,129,0.08)" },
-  donate:   { label: "Donated",  color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
+  free: { label: "Free", color: "#10b981", bg: "rgba(16,185,129,0.08)" },
+  donate: { label: "Donated", color: "#f59e0b", bg: "rgba(245,158,11,0.08)" },
 } as const;
 
 const CONDITION_LABELS: Record<string, string> = {
-  new: "New", like_new: "Like New", good: "Good", fair: "Fair", poor: "Poor",
+  new: "New",
+  like_new: "Like New",
+  good: "Good",
+  fair: "Fair",
+  poor: "Poor",
 };
 const CONDITION_LEVEL: Record<string, number> = {
-  new: 5, like_new: 4, good: 3, fair: 2, poor: 1,
+  new: 5,
+  like_new: 4,
+  good: 3,
+  fair: 2,
+  poor: 1,
 };
 
 // ── ImageGallery ──────────────────────────────────────────────────────────────
@@ -53,7 +63,9 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
       >
         <div className="flex flex-col items-center gap-3 text-[#a8a09a]">
           <Package size={48} strokeWidth={1} />
-          <span className="text-xs font-semibold tracking-[0.12em] uppercase">No photos</span>
+          <span className="text-xs font-semibold tracking-[0.12em] uppercase">
+            No photos
+          </span>
         </div>
       </div>
     );
@@ -88,7 +100,10 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
         {images.length > 1 && (
           <div
             className="absolute bottom-4 right-4 px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide backdrop-blur-md"
-            style={{ background: "rgba(22,19,15,0.48)", color: "rgba(255,255,255,0.92)" }}
+            style={{
+              background: "rgba(22,19,15,0.48)",
+              color: "rgba(255,255,255,0.92)",
+            }}
           >
             {active + 1} / {images.length}
           </div>
@@ -103,7 +118,10 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
               onClick={() => setActive(i)}
               className="relative shrink-0 w-[68px] h-[68px] rounded-xl overflow-hidden transition-all duration-200"
               style={{
-                outline: i === active ? "2.5px solid #4f46e5" : "2.5px solid transparent",
+                outline:
+                  i === active
+                    ? "2.5px solid #4f46e5"
+                    : "2.5px solid transparent",
                 outlineOffset: 2,
                 opacity: i === active ? 1 : 0.48,
               }}
@@ -159,7 +177,10 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
     return (
       <div
         className="rounded-2xl px-5 py-4 text-center"
-        style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}
+        style={{
+          background: "rgba(245,158,11,0.08)",
+          border: "1px solid rgba(245,158,11,0.2)",
+        }}
       >
         <p
           className="text-[11.5px] font-semibold uppercase tracking-[0.1em]"
@@ -178,7 +199,7 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   }
 
   const existingClaim = myClaims?.find(
-    (c) => c.listing_id === listing.id && c.status !== "cancelled"
+    (c) => c.listing_id === listing.id && c.status !== "cancelled",
   );
 
   if (existingClaim?.status === "pending") {
@@ -186,16 +207,29 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
       <div className="flex flex-col gap-3">
         <div
           className="rounded-2xl px-5 py-4 flex items-start gap-3"
-          style={{ background: "#fffbeb", border: "1px solid rgba(217,119,6,0.22)" }}
+          style={{
+            background: "#fffbeb",
+            border: "1px solid rgba(217,119,6,0.22)",
+          }}
         >
-          <Clock size={15} className="text-[#d97706] shrink-0 mt-0.5" strokeWidth={2} />
+          <Clock
+            size={15}
+            className="text-[#d97706] shrink-0 mt-0.5"
+            strokeWidth={2}
+          />
           <div>
-            <p className="text-[13.5px] font-semibold text-[#92400e]">Claim pending</p>
-            <p className="text-[12px] text-[#d97706] mt-0.5">Waiting for the seller to respond</p>
+            <p className="text-[13.5px] font-semibold text-[#92400e]">
+              Claim pending
+            </p>
+            <p className="text-[12px] text-[#d97706] mt-0.5">
+              Waiting for the seller to respond
+            </p>
           </div>
         </div>
         <button
-          onClick={() => updateClaim({ id: existingClaim.id, status: "cancelled" })}
+          onClick={() =>
+            updateClaim({ id: existingClaim.id, status: "cancelled" })
+          }
           disabled={updating}
           className="text-[12px] text-[#a8a09a] hover:text-[#78726c] underline underline-offset-4 text-center transition-colors disabled:opacity-50 py-1"
         >
@@ -210,11 +244,20 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
       <div className="flex flex-col gap-3">
         <div
           className="rounded-2xl px-5 py-4 flex items-start gap-3"
-          style={{ background: "#ecfdf5", border: "1px solid rgba(16,185,129,0.22)" }}
+          style={{
+            background: "#ecfdf5",
+            border: "1px solid rgba(16,185,129,0.22)",
+          }}
         >
-          <CheckCircle2 size={15} className="text-[#10b981] shrink-0 mt-0.5" strokeWidth={2} />
+          <CheckCircle2
+            size={15}
+            className="text-[#10b981] shrink-0 mt-0.5"
+            strokeWidth={2}
+          />
           <div>
-            <p className="text-[13.5px] font-semibold text-[#065f46]">Claim accepted!</p>
+            <p className="text-[13.5px] font-semibold text-[#065f46]">
+              Claim accepted!
+            </p>
             {existingClaim.pickup_address && (
               <p className="text-[12px] text-[#10b981] mt-1 flex items-center gap-1">
                 <MapPin size={11} strokeWidth={2.5} />
@@ -224,7 +267,9 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
           </div>
         </div>
         <button
-          onClick={() => updateClaim({ id: existingClaim.id, status: "completed" })}
+          onClick={() =>
+            updateClaim({ id: existingClaim.id, status: "completed" })
+          }
           disabled={updating}
           className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-60 text-white flex items-center justify-center gap-2"
           style={{ background: "#10b981" }}
@@ -243,7 +288,9 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
         className="rounded-2xl px-5 py-4 text-center"
         style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
       >
-        <p className="text-[13px] font-medium text-[#78726c]">You collected this item</p>
+        <p className="text-[13px] font-medium text-[#78726c]">
+          You collected this item
+        </p>
       </div>
     );
   }
@@ -256,9 +303,7 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
         className="rounded-2xl px-5 py-4 text-center"
         style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
       >
-        <p
-          className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-[#a8a09a]"
-        >
+        <p className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-[#a8a09a]">
           Already claimed
         </p>
       </div>
@@ -271,8 +316,12 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
         href={`/auth/login?next=/listings/${listing.id}`}
         className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 text-white flex items-center justify-center"
         style={{ background: "#10b981" }}
-        onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#059669")}
-        onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.background = "#10b981")}
+        onMouseEnter={(e) =>
+          ((e.currentTarget as HTMLElement).style.background = "#059669")
+        }
+        onMouseLeave={(e) =>
+          ((e.currentTarget as HTMLElement).style.background = "#10b981")
+        }
       >
         Claim for Free
       </Link>
@@ -285,8 +334,12 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
       disabled={claiming}
       className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-60 text-white flex items-center justify-center gap-2"
       style={{ background: "#10b981" }}
-      onMouseEnter={(e) => { if (!claiming) e.currentTarget.style.background = "#059669"; }}
-      onMouseLeave={(e) => { if (!claiming) e.currentTarget.style.background = "#10b981"; }}
+      onMouseEnter={(e) => {
+        if (!claiming) e.currentTarget.style.background = "#059669";
+      }}
+      onMouseLeave={(e) => {
+        if (!claiming) e.currentTarget.style.background = "#10b981";
+      }}
     >
       {claiming ? (
         <>
@@ -300,6 +353,88 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   );
 }
 
+// ── Hero config ───────────────────────────────────────────────────────────────
+
+const HERO_CONFIG = {
+  for_sale: {
+    gradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4338ca 100%)",
+    glow1: "rgba(99,102,241,0.40)",
+    glow2: "rgba(167,139,250,0.25)",
+  },
+  free: {
+    gradient: "linear-gradient(135deg, #064e3b 0%, #065f46 45%, #059669 100%)",
+    glow1: "rgba(16,185,129,0.40)",
+    glow2: "rgba(52,211,153,0.25)",
+  },
+  donate: {
+    gradient: "linear-gradient(135deg, #78350f 0%, #92400e 45%, #b45309 100%)",
+    glow1: "rgba(245,158,11,0.40)",
+    glow2: "rgba(251,191,36,0.20)",
+  },
+} as const;
+
+// ── RelatedItems ──────────────────────────────────────────────────────────────
+
+function RelatedItems({
+  category,
+  listingType,
+  currentId,
+}: {
+  category: string;
+  listingType: string;
+  currentId: string;
+}) {
+  const { data, isLoading } = usePublicListings({
+    category,
+    listing_type: listingType as "for_sale" | "free" | "donate",
+    limit: 7,
+    sort: "newest",
+  });
+
+  const listings = (data?.listings ?? []).filter((l) => l.id !== currentId).slice(0, 6);
+
+  if (!isLoading && listings.length === 0) return null;
+
+  return (
+    <section className="mt-14 mb-4">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-[15px] font-semibold text-[#16130f]">Related items</h2>
+        <Link
+          href={`/search?category=${encodeURIComponent(category)}&listing_type=${listingType}`}
+          className="inline-flex items-center gap-1 text-[12px] font-medium transition-colors"
+          style={{ color: "#4f46e5" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#4338ca"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#4f46e5"; }}
+        >
+          See all <ArrowRight size={12} strokeWidth={2.2} />
+        </Link>
+      </div>
+
+      <div className="no-scrollbar flex gap-3.5 overflow-x-auto pb-1 -mx-4 px-4 lg:-mx-10 lg:px-10">
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 animate-pulse overflow-hidden rounded-2xl border"
+                style={{ background: "white", borderColor: "#ebe5dc" }}
+              >
+                <div className="aspect-4/3" style={{ background: "#f0ece5" }} />
+                <div className="flex flex-col gap-2 p-3">
+                  <div className="h-3 w-3/4 rounded" style={{ background: "#f0ece5" }} />
+                  <div className="h-3 w-1/2 rounded" style={{ background: "#f0ece5" }} />
+                </div>
+              </div>
+            ))
+          : listings.map((listing) => (
+              <div key={listing.id} className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 flex flex-col">
+                <BrowseCard listing={listing} />
+              </div>
+            ))}
+      </div>
+    </section>
+  );
+}
+
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
 function ListingDetailSkeleton() {
@@ -308,7 +443,10 @@ function ListingDetailSkeleton() {
       <div className="max-w-6xl mx-auto">
         <div className="h-3.5 w-12 bg-[#e8e4dc] rounded animate-pulse mb-10" />
         <div className="grid grid-cols-1 lg:grid-cols-[58%_1fr] gap-8 lg:gap-14">
-          <div className="rounded-3xl bg-[#e8e4dc] animate-pulse" style={{ aspectRatio: "4/3" }} />
+          <div
+            className="rounded-3xl bg-[#e8e4dc] animate-pulse"
+            style={{ aspectRatio: "4/3" }}
+          />
           <div className="flex flex-col gap-5 pt-2">
             <div className="h-4 w-24 bg-[#e8e4dc] rounded-full animate-pulse" />
             <div className="h-9 w-4/5 bg-[#e8e4dc] rounded animate-pulse" />
@@ -363,12 +501,14 @@ export default function ListingDetailPage() {
           <div className="w-16 h-16 rounded-full bg-[#f0ece4] flex items-center justify-center mx-auto mb-5">
             <Package size={26} strokeWidth={1.25} className="text-[#a8a09a]" />
           </div>
-          <h2 className="font-display text-2xl text-[#16130f] mb-2">Not found</h2>
+          <h2 className="font-display text-2xl text-[#16130f] mb-2">
+            Not found
+          </h2>
           <p className="text-[#78726c] text-sm mb-6 leading-relaxed">
             This listing may have been removed or is no longer available.
           </p>
           <Link
-            href="/listings"
+            href="/"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#e8e4dc] text-[13px] font-medium text-[#16130f] hover:bg-[#f0ece4] transition-colors"
           >
             <ArrowLeft size={13} />
@@ -383,27 +523,88 @@ export default function ListingDetailPage() {
   const seller = listing.seller;
   const typeConfig = TYPE_CONFIG[listing.listing_type];
 
+  const heroConfig = HERO_CONFIG[listing.listing_type];
+
   return (
     <main className="min-h-screen bg-[#fafaf8]">
-      {/* Back nav */}
-      <div className="px-4 lg:px-10 pt-7 pb-2 max-w-6xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="group inline-flex items-center gap-2 text-[13px] font-medium text-[#b0a89f] hover:text-[#16130f] transition-colors duration-200"
-        >
-          <ArrowLeft
-            size={14}
-            strokeWidth={2.5}
-            className="transition-transform duration-200 group-hover:-translate-x-0.5"
-          />
-          Back
-        </button>
+      {/* ── Hero ── */}
+      <div
+        className="relative overflow-hidden"
+        style={{ background: heroConfig.gradient }}
+      >
+        {/* Ambient glow */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(ellipse at 15% 60%, ${heroConfig.glow1} 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, ${heroConfig.glow2} 0%, transparent 50%)`,
+          }}
+        />
+        {/* Dot grid */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+          }}
+        />
+
+        <div className="relative max-w-6xl mx-auto px-4 lg:px-10 pt-7 pb-12">
+          {/* Back + breadcrumb row */}
+          <div className="flex items-center gap-2 text-[12px] mb-8" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-white"
+              style={{ color: "inherit" }}
+            >
+              <ArrowLeft size={12} strokeWidth={2} />
+              Back
+            </button>
+            <span>·</span>
+            <Link href="/" className="transition-colors hover:text-white" style={{ color: "inherit" }}>Home</Link>
+            <span>›</span>
+            <Link
+              href={`/search?category=${encodeURIComponent(listing.category)}&listing_type=${listing.listing_type}`}
+              className="transition-colors hover:text-white"
+              style={{ color: "inherit" }}
+            >
+              {listing.category}
+            </Link>
+          </div>
+
+          {/* Type badge */}
+          <span
+            className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest mb-4"
+            style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.90)" }}
+          >
+            {typeConfig.label}
+          </span>
+
+          {/* Title */}
+          <h1
+            className="text-white font-bold leading-tight tracking-tight mb-5"
+            style={{ fontSize: "clamp(22px, 4vw, 40px)", maxWidth: "720px" }}
+          >
+            {listing.title}
+          </h1>
+
+          {/* Price */}
+          {listing.listing_type === "for_sale" && listing.price != null ? (
+            <p className="text-white font-bold" style={{ fontSize: "clamp(20px, 3vw, 28px)" }}>
+              ₦{listing.price.toLocaleString()}
+            </p>
+          ) : listing.listing_type === "free" ? (
+            <p className="font-bold text-white" style={{ fontSize: "clamp(20px, 3vw, 28px)" }}>
+              Free
+            </p>
+          ) : null}
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="px-4 lg:px-10 py-7 pb-16 max-w-6xl mx-auto">
+      {/* Content + Related */}
+      <div className="px-4 lg:px-10 py-10 pb-16 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[58%_1fr] gap-8 lg:gap-16">
-
           {/* ── Left: Images ── */}
           <ImageGallery images={listing.images} title={listing.title} />
 
@@ -414,43 +615,6 @@ export default function ListingDetailPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Type + category */}
-            <div className="flex items-center gap-2.5">
-              <span
-                className="px-3 py-1 rounded-full text-[11px] font-semibold uppercase"
-                style={{
-                  color: typeConfig.color,
-                  background: typeConfig.bg,
-                  letterSpacing: "0.08em",
-                }}
-              >
-                {typeConfig.label}
-              </span>
-              <span
-                className="text-[11px] font-semibold uppercase text-[#a8a09a]"
-                style={{ letterSpacing: "0.08em" }}
-              >
-                {listing.category}
-              </span>
-            </div>
-
-            {/* Title */}
-            <h1 className="font-display leading-[1.15] text-[#16130f] tracking-[-0.01em]" style={{ fontSize: "clamp(1.5rem, 5vw, 2.4rem)" }}>
-              {listing.title}
-            </h1>
-
-            {/* Price */}
-            {listing.listing_type === "for_sale" && listing.price != null ? (
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-display text-[#4f46e5] leading-none" style={{ fontSize: "clamp(1rem, 3.5vw, 1.4rem)" }}>₦</span>
-                <span className="font-display text-[#4f46e5] leading-none tracking-tight" style={{ fontSize: "clamp(1.75rem, 7vw, 3rem)" }}>
-                  {listing.price.toLocaleString()}
-                </span>
-              </div>
-            ) : listing.listing_type === "free" ? (
-              <span className="font-display text-[#10b981] leading-none" style={{ fontSize: "clamp(1.75rem, 7vw, 2.8rem)" }}>Free</span>
-            ) : null}
-
             {/* Description */}
             {listing.description && (
               <p className="text-[14px] text-[#78726c] leading-[1.8] whitespace-pre-wrap">
@@ -465,7 +629,11 @@ export default function ListingDetailPage() {
             <div className="flex flex-col gap-3">
               <ConditionBar condition={listing.condition} />
               <div className="flex items-center gap-2 text-[13px] text-[#78726c]">
-                <MapPin size={12} strokeWidth={2.5} className="text-[#b0a89f]" />
+                <MapPin
+                  size={12}
+                  strokeWidth={2.5}
+                  className="text-[#b0a89f]"
+                />
                 <span>{listing.area}</span>
               </div>
             </div>
@@ -481,9 +649,17 @@ export default function ListingDetailPage() {
                   style={{ background: "#f0ece4" }}
                 >
                   {seller.account_type === "business" ? (
-                    <Building2 size={16} strokeWidth={1.75} className="text-[#78726c]" />
+                    <Building2
+                      size={16}
+                      strokeWidth={1.75}
+                      className="text-[#78726c]"
+                    />
                   ) : (
-                    <User size={16} strokeWidth={1.75} className="text-[#78726c]" />
+                    <User
+                      size={16}
+                      strokeWidth={1.75}
+                      className="text-[#78726c]"
+                    />
                   )}
                 </div>
                 <div>
@@ -504,48 +680,63 @@ export default function ListingDetailPage() {
             <div className="h-px bg-[#ede9e2]" />
 
             {/* CTA */}
-            {listing.listing_type === "for_sale" && listing.status === "available" && (
-              <button
-                onClick={handleAddToCart}
-                disabled={inCart || addingToCart}
-                className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
-                style={{
-                  background: inCart ? "#f0ece4" : "#4f46e5",
-                  color: inCart ? "#78726c" : "#ffffff",
-                }}
-                onMouseEnter={(e) => { if (!inCart) e.currentTarget.style.background = "#4338ca"; }}
-                onMouseLeave={(e) => { if (!inCart) e.currentTarget.style.background = "#4f46e5"; }}
-              >
-                {addingToCart ? (
-                  <>
-                    <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                    Adding…
-                  </>
-                ) : inCart ? (
-                  "In Cart"
-                ) : (
-                  "Add to Cart"
-                )}
-              </button>
-            )}
-
-            {listing.listing_type === "for_sale" && listing.status === "sold" && (
-              <div
-                className="rounded-2xl px-5 py-4 text-center"
-                style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
-              >
-                <p
-                  className="text-[11.5px] font-semibold uppercase text-[#a8a09a]"
-                  style={{ letterSpacing: "0.1em" }}
+            {listing.listing_type === "for_sale" &&
+              listing.status === "available" && (
+                <button
+                  onClick={handleAddToCart}
+                  disabled={inCart || addingToCart}
+                  className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+                  style={{
+                    background: inCart ? "#f0ece4" : "#4f46e5",
+                    color: inCart ? "#78726c" : "#ffffff",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!inCart) e.currentTarget.style.background = "#4338ca";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!inCart) e.currentTarget.style.background = "#4f46e5";
+                  }}
                 >
-                  Sold
-                </p>
-              </div>
-            )}
+                  {addingToCart ? (
+                    <>
+                      <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                      Adding…
+                    </>
+                  ) : inCart ? (
+                    "In Cart"
+                  ) : (
+                    "Add to Cart"
+                  )}
+                </button>
+              )}
 
-            {listing.listing_type !== "for_sale" && <ClaimCTA listing={listing} />}
+            {listing.listing_type === "for_sale" &&
+              listing.status === "sold" && (
+                <div
+                  className="rounded-2xl px-5 py-4 text-center"
+                  style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
+                >
+                  <p
+                    className="text-[11.5px] font-semibold uppercase text-[#a8a09a]"
+                    style={{ letterSpacing: "0.1em" }}
+                  >
+                    Sold
+                  </p>
+                </div>
+              )}
+
+            {listing.listing_type !== "for_sale" && (
+              <ClaimCTA listing={listing} />
+            )}
           </motion.div>
         </div>
+
+        {/* ── Related items ── */}
+        <RelatedItems
+          category={listing.category}
+          listingType={listing.listing_type}
+          currentId={listing.id}
+        />
       </div>
     </main>
   );
