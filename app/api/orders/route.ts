@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     const { data: cartItems, error: cartError } = await supabaseAdmin
       .from('cart_items')
       .select(
-        'id, listing_id, listing:listings(id, title, price, listing_type, status, seller_id, area, images)'
+        'id, listing_id, listing:listings(id, title, price, listing_type, status, seller_id, area, size_category, images)'
       )
       .eq('user_id', authUser.id)
 
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     const { data: listings, error: listingsError } = await supabaseAdmin
       .from('listings')
-      .select('id, title, price, listing_type, status, seller_id, area, images')
+      .select('id, title, price, listing_type, status, seller_id, area, size_category, images')
       .in('id', listing_ids)
 
     if (listingsError) return err('Failed to fetch listings', 'DB_ERROR', 500)
@@ -62,7 +62,11 @@ export async function POST(req: Request) {
   const validation = validateCartItems(items)
   if ('error' in validation) return err(validation.error, 'VALIDATION_ERROR', 409)
 
-  const groups = groupBySeller(items, delivery_type)
+  const buyerState =
+    delivery_type === 'delivery'
+      ? (authUser ? (body as Record<string, unknown>).delivery_state : buyer_info?.address_state) ?? null
+      : null
+  const groups = groupBySeller(items, delivery_type, buyerState as string | null)
   const grandTotal = calculateGrandTotal(groups)
 
   const orderInserts = groups.map((group) => ({
