@@ -6,6 +6,7 @@ import Link from "next/link";
 import { X, ChevronLeft, MapPin } from "lucide-react";
 import { ListingImage } from "@/components/ui";
 import DeliveryTypeSelector from "@/components/checkout/DeliveryTypeSelector";
+import PlacesAddressInput from "@/components/checkout/PlacesAddressInput";
 import { groupBySeller, calculateGrandTotal } from "@/app/api/orders/utils";
 import type { CartItemWithListing, SellerGroup } from "@/app/api/orders/utils";
 import { getSessionCart, removeFromSessionCart } from "@/lib/session-cart";
@@ -35,6 +36,8 @@ type SummaryPanelProps = {
   ctaLabel: string;
   formId?: string;
   onCheckout?: () => void;
+  showDeliveryFee?: boolean;
+  deliveryFeeHint?: string;
 };
 
 function SummaryPanel({
@@ -45,6 +48,8 @@ function SummaryPanel({
   ctaLabel,
   formId,
   onCheckout,
+  showDeliveryFee,
+  deliveryFeeHint,
 }: SummaryPanelProps) {
   const buttonProps = formId
     ? { form: formId, type: "submit" as const }
@@ -72,7 +77,7 @@ function SummaryPanel({
                 </span>
               </div>
             ))}
-            {group.delivery_fee > 0 && (
+            {showDeliveryFee !== false && group.delivery_fee > 0 && (
               <div className="flex justify-between">
                 <span className="text-sm text-text-muted">Delivery</span>
                 <span className="text-sm text-text-muted">
@@ -83,6 +88,10 @@ function SummaryPanel({
           </div>
         ))}
       </div>
+
+      {deliveryFeeHint && (
+        <p className="text-xs text-text-muted mt-2">{deliveryFeeHint}</p>
+      )}
 
       <div className="border-t border-border my-5" />
 
@@ -122,10 +131,14 @@ export default function CartPage() {
     email: "",
     phone: "",
     address: "",
+    address_state: null as string | null,
   });
   const [showDeliveryStep, setShowDeliveryStep] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryState, setDeliveryState] = useState<string | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
+
+  const hasSavedAddress = Boolean(user?.address);
 
   useEffect(() => {
     async function fetchCart() {
@@ -158,11 +171,12 @@ export default function CartPage() {
     window.dispatchEvent(new Event("cart-updated"));
   }
 
-  async function submitOrder(address: string | null) {
+  async function submitOrder(address: string | null, state: string | null = null) {
     setCheckingOut(true);
     setError("");
     const body: Record<string, unknown> = { delivery_type: deliveryType };
     if (address) body.delivery_address = address.trim();
+    if (state) body.delivery_state = state;
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -187,6 +201,7 @@ export default function CartPage() {
       setError("");
       setUseNewAddress(false);
       setDeliveryAddress(user?.address ?? "");
+      setDeliveryState(user?.address_state ?? null);
       setShowDeliveryStep(true);
       return;
     }
@@ -217,12 +232,15 @@ export default function CartPage() {
   }
 
   async function handleDeliveryAddressConfirm() {
-    const addr = deliveryAddress.trim();
+    const addr =
+      hasSavedAddress && !useNewAddress ? user?.address ?? "" : deliveryAddress.trim();
     if (!addr) {
       setError("Please enter a delivery address");
       return;
     }
-    await submitOrder(addr);
+    const state =
+      hasSavedAddress && !useNewAddress ? user?.address_state ?? null : deliveryState;
+    await submitOrder(addr, state);
   }
 
   const groups = groupBySeller(items, deliveryType);
@@ -272,6 +290,12 @@ export default function CartPage() {
   // ── Anonymous buyer form ─────────────────────────────────────────────────
 
   if (showBuyerForm && !user) {
+    const anonGroups =
+      deliveryType === "delivery" && buyerInfo.address_state
+        ? groupBySeller(items, "delivery", buyerInfo.address_state)
+        : groups;
+    const anonGrandTotal = calculateGrandTotal(anonGroups);
+
     return (
       <main className="min-h-screen bg-surface">
         <div className="max-w-5xl mx-auto px-6 py-16">
@@ -346,27 +370,32 @@ export default function CartPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-text mb-1.5">
-                    {deliveryType === "delivery"
-                      ? "Delivery address"
-                      : "Contact address"}
-                  </label>
-                  <textarea
-                    required
-                    value={buyerInfo.address}
-                    onChange={(e) =>
-                      setBuyerInfo({ ...buyerInfo, address: e.target.value })
+                  <PlacesAddressInput
+                    label={deliveryType === "delivery" ? "Delivery address" : "Contact address"}
+                    placeholder={
+                      deliveryType === "delivery"
+                        ? "Search for your delivery address"
+                        : "Search for your address"
                     }
-                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors min-h-[90px] resize-none"
-                    placeholder="Enter your full address"
+                    required
+                    onSelect={(result) =>
+                      setBuyerInfo({
+                        ...buyerInfo,
+                        address: result.formatted_address,
+                        address_state: result.state,
+                      })
+                    }
+                    onClear={() =>
+                      setBuyerInfo({ ...buyerInfo, address: "", address_state: null })
+                    }
                   />
                 </div>
               </form>
             </div>
 
             <SummaryPanel
-              groups={groups}
-              grandTotal={grandTotal}
+              groups={anonGroups}
+              grandTotal={anonGrandTotal}
               checkingOut={checkingOut}
               error={error}
               ctaLabel="Continue to payment"
@@ -381,8 +410,9 @@ export default function CartPage() {
   // ── Delivery address step (logged-in users, delivery only) ───────────────
 
   if (showDeliveryStep && user) {
-    const hasSavedAddress = Boolean(user.address);
     const showTextarea = !hasSavedAddress || useNewAddress;
+    const deliveryGroups = groupBySeller(items, "delivery", deliveryState);
+    const deliveryGrandTotal = calculateGrandTotal(deliveryGroups);
 
     return (
       <main className="min-h-screen bg-surface">
@@ -420,22 +450,18 @@ export default function CartPage() {
               )}
 
               {showTextarea && (
-                <div>
-                  <label
-                    htmlFor="delivery-address"
-                    className="block text-sm font-medium text-text mb-1.5"
-                  >
-                    Delivery address
-                  </label>
-                  <textarea
-                    id="delivery-address"
-                    autoFocus
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-card px-4 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-primary transition-colors min-h-[90px] resize-none mb-4"
-                    placeholder="Enter your full delivery address"
-                  />
-                </div>
+                <PlacesAddressInput
+                  label="Delivery address"
+                  placeholder="Search for your delivery address"
+                  onSelect={(result) => {
+                    setDeliveryAddress(result.formatted_address);
+                    setDeliveryState(result.state);
+                  }}
+                  onClear={() => {
+                    setDeliveryAddress("");
+                    setDeliveryState(null);
+                  }}
+                />
               )}
 
               {hasSavedAddress && !useNewAddress && (
@@ -456,7 +482,7 @@ export default function CartPage() {
                 Order summary
               </p>
               <div className="space-y-4">
-                {groups.map((group) => (
+                {deliveryGroups.map((group) => (
                   <div key={group.seller_id} className="space-y-1.5">
                     {group.items.map((item) => (
                       <div
@@ -490,7 +516,7 @@ export default function CartPage() {
                   Total
                 </span>
                 <span className="font-display text-2xl font-bold text-text">
-                  ₦{grandTotal.toLocaleString()}
+                  ₦{deliveryGrandTotal.toLocaleString()}
                 </span>
               </div>
               <button
@@ -589,6 +615,8 @@ export default function CartPage() {
             error={error}
             ctaLabel="Proceed to checkout"
             onCheckout={handleCheckout}
+            showDeliveryFee={false}
+            deliveryFeeHint={deliveryType === "delivery" ? "Delivery fee calculated after entering address" : undefined}
           />
         </div>
       </div>
