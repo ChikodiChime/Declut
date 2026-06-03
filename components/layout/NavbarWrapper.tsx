@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 import { useCart } from "@/lib/hooks/useCart";
+import { NavbarSearch } from "@/components/layout/NavbarSearch";
 
 const HIDDEN_PREFIXES = [
   "/dashboard",
@@ -207,101 +208,6 @@ function MenuLink({
       <Icon size={14} strokeWidth={1.8} style={{ color: "#a8a09a" }} />
       {children}
     </Link>
-  );
-}
-
-function NavbarSearch({
-  onSearch,
-  autoFocus,
-}: {
-  onSearch?: () => void;
-  autoFocus?: boolean;
-}) {
-  const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState("");
-
-  useEffect(() => {
-    if (autoFocus) inputRef.current?.focus();
-  }, [autoFocus]);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const q = value.trim();
-    if (q) {
-      router.push(`/search?q=${encodeURIComponent(q)}`);
-      onSearch?.();
-    }
-  }
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex items-stretch w-full overflow-hidden"
-      style={{
-        maxWidth: 440,
-        borderRadius: "10px",
-        border: "1.5px solid #c7d2fe",
-        background: "#eef2ff",
-        transition: "border-color 180ms, box-shadow 180ms",
-      }}
-      onFocusCapture={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "#4f46e5";
-        (e.currentTarget as HTMLElement).style.boxShadow =
-          "0 0 0 3px rgba(79,70,229,0.12)";
-      }}
-      onBlurCapture={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = "#c7d2fe";
-        (e.currentTarget as HTMLElement).style.boxShadow = "none";
-      }}
-    >
-      <div
-        className="relative flex-1 flex items-center"
-        style={{ minWidth: 0 }}
-      >
-        <Search
-          size={14}
-          strokeWidth={2}
-          className="absolute left-3.5 pointer-events-none shrink-0"
-          style={{ color: "#6366f1" }}
-        />
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Search listings…"
-          className="w-full h-10 pl-9 pr-3 text-[13.5px] bg-transparent focus:outline-none"
-          style={{ color: "#16130f" }}
-        />
-        {value && (
-          <button
-            type="button"
-            onClick={() => {
-              setValue("");
-              inputRef.current?.focus();
-            }}
-            className="absolute right-2 flex h-5 w-5 items-center justify-center rounded-full shrink-0"
-            style={{ color: "#6366f1" }}
-          >
-            <X size={11} strokeWidth={2.5} />
-          </button>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="h-10 w-10 flex shrink-0 items-center justify-center transition-all duration-150"
-        style={{ background: "#4f46e5", color: "#ffffff" }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = "#4338ca";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.background = "#4f46e5";
-        }}
-      >
-        <Search size={14} strokeWidth={2.5} />
-      </button>
-    </form>
   );
 }
 
