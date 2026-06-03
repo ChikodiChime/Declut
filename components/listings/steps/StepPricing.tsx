@@ -1,60 +1,72 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Script from "next/script";
-import { useForm } from "react-hook-form";
-import { MapPin, ArrowRight, Banknote } from "lucide-react";
+import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import {
+  ArrowRight,
+  Banknote,
+  Bike,
+  Car,
+  Truck,
+  Package,
+} from "lucide-react";
 import { Input, Button } from "@/components/ui";
-import type { ListingType } from "@/types";
+import PlacesAddressInput from "@/components/checkout/PlacesAddressInput";
+import type { ListingType, SizeCategory } from "@/types";
 
 interface StepPricingData {
   price: number | null;
   area: string;
+  size_category: SizeCategory;
+  pickup_address: string;
 }
 
-type PlacePrediction = { description: string };
-
-type AutocompleteService = {
-  getPlacePredictions: (
-    request: {
-      input: string;
-      types?: ["(regions)"];
-      componentRestrictions?: { country: string };
-    },
-    callback: (predictions: PlacePrediction[] | null, status: string) => void,
-  ) => void;
-};
-
-declare global {
-  interface Window {
-    google?: {
-      maps?: {
-        places?: {
-          AutocompleteService: new () => AutocompleteService;
-        };
-      };
-    };
-  }
-}
+const SIZE_OPTIONS: {
+  value: SizeCategory;
+  label: string;
+  description: string;
+  vehicle: string;
+  icon: React.ComponentType<{
+    size?: number;
+    className?: string;
+    strokeWidth?: number;
+  }>;
+}[] = [
+  {
+    value: "small",
+    label: "Small",
+    description: "Fits in a bag — clothes, phones, accessories",
+    vehicle: "Motorbike",
+    icon: Bike,
+  },
+  {
+    value: "medium",
+    label: "Medium",
+    description: "Boxed items — small appliances, shoes",
+    vehicle: "Car",
+    icon: Car,
+  },
+  {
+    value: "large",
+    label: "Large",
+    description: "Bulky items — TVs, large appliances",
+    vehicle: "Van",
+    icon: Truck,
+  },
+  {
+    value: "extra_large",
+    label: "Extra Large",
+    description: "Heavy/oversized — furniture, fridges",
+    vehicle: "Large Van",
+    icon: Package,
+  },
+];
 
 interface StepPricingProps {
   listingType: ListingType;
   defaultValues?: Partial<StepPricingData>;
   onNext: (data: StepPricingData) => void;
   onBack: () => void;
-}
-
-function normalizeAreaSuggestion(description: string) {
-  const parts = description
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
-
-  if (parts.length >= 2) {
-    return `${parts[0]}, ${parts[1]}`;
-  }
-
-  return parts[0] ?? description.trim();
 }
 
 export function StepPricing({
@@ -67,86 +79,31 @@ export function StepPricing({
     register,
     handleSubmit,
     setValue,
+    control,
     formState: { errors },
   } = useForm<StepPricingData>({ defaultValues });
-  const [areaInput, setAreaInput] = useState(defaultValues?.area ?? "");
-  const [areaSuggestions, setAreaSuggestions] = useState<string[]>([]);
-  const [isPlacesReady, setIsPlacesReady] = useState(false);
-  const serviceRef = useRef<AutocompleteService | null>(null);
-  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  useEffect(() => {
-    if (!isPlacesReady || serviceRef.current) return;
-    const AutocompleteServiceCtor =
-      window.google?.maps?.places?.AutocompleteService;
-    if (!AutocompleteServiceCtor) return;
-    serviceRef.current = new AutocompleteServiceCtor();
-  }, [isPlacesReady]);
+  const [pickupError, setPickupError] = useState("");
 
-  useEffect(() => {
-    const query = areaInput.trim();
-    if (!query || query.length < 2 || !serviceRef.current) return;
-
-    const timeout = window.setTimeout(() => {
-      serviceRef.current?.getPlacePredictions(
-        {
-          input: query,
-          types: ["(regions)"],
-          componentRestrictions: { country: "ng" },
-        },
-        (predictions, status) => {
-          if (!predictions || status !== "OK") {
-            setAreaSuggestions([]);
-            return;
-          }
-
-          const uniqueSuggestions = Array.from(
-            new Set(
-              predictions.map((item) =>
-                normalizeAreaSuggestion(item.description),
-              ),
-            ),
-          ).slice(0, 6);
-
-          setAreaSuggestions(uniqueSuggestions);
-        },
-      );
-    }, 250);
-
-    return () => window.clearTimeout(timeout);
-  }, [areaInput]);
-
-  function chooseSuggestion(suggestion: string) {
-    setAreaInput(suggestion);
-    setValue("area", suggestion, {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
-    });
-    setAreaSuggestions([]);
+  function handlePickupSelect(result: { formatted_address: string; city: string | null; state: string | null }) {
+    setValue("pickup_address", result.formatted_address, { shouldValidate: true });
+    const area = result.city
+      ? `${result.city}, ${result.state ?? ""}`.trim().replace(/,\s*$/, "")
+      : result.state ?? "";
+    setValue("area", area);
+    setPickupError("");
   }
 
-  const areaField = register("area", {
-    required: "Area is required",
-    onChange: (event) => {
-      const value = event.target.value as string;
-      setAreaInput(value);
-      if (value.trim().length < 2) {
-        setAreaSuggestions([]);
-      }
-    },
-  });
+  function onSubmit(data: StepPricingData) {
+    if (!data.pickup_address) {
+      setPickupError("Please search for and select a pickup address");
+      return;
+    }
+    onNext(data);
+  }
 
   return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-5">
-      {mapsApiKey && (
-        <Script
-          src={`https://maps.googleapis.com/maps/api/js?key=${mapsApiKey}&libraries=places`}
-          strategy="afterInteractive"
-          onLoad={() => setIsPlacesReady(true)}
-        />
-      )}
-
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div>
         <h2 className="text-xl font-bold text-text">Pricing &amp; location</h2>
         <p className="text-sm text-text-muted mt-1">
@@ -172,32 +129,81 @@ export function StepPricing({
         />
       )}
 
-      <div className="relative">
-        <Input
-          label="Area"
-          placeholder="e.g. Ajah, Lagos"
-          error={errors.area?.message}
-          autoComplete="off"
-          leadingIcon={<MapPin size={16} className="text-text-muted" />}
-          {...areaField}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-text">
+          Item size{" "}
+          <span className="text-text-muted text-xs font-normal">
+            — determines delivery vehicle
+          </span>
+        </label>
+        <Controller
+          name="size_category"
+          control={control}
+          rules={{ required: "Please select a size" }}
+          render={({ field }) => (
+            <div className="grid grid-cols-2 gap-2">
+              {SIZE_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                const isSelected = field.value === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => field.onChange(opt.value)}
+                    className={[
+                      "flex items-start gap-3 p-3 rounded-xl border-2 text-left transition-all duration-150",
+                      isSelected
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-card hover:border-border-strong",
+                    ].join(" ")}
+                  >
+                    <div
+                      className={`mt-0.5 shrink-0 ${isSelected ? "text-primary" : "text-text-muted"}`}
+                    >
+                      <Icon size={18} strokeWidth={1.75} />
+                    </div>
+                    <div className="min-w-0">
+                      <p
+                        className={`text-sm font-semibold ${isSelected ? "text-primary" : "text-text"}`}
+                      >
+                        {opt.label}
+                      </p>
+                      <p className="text-xs text-text-muted leading-snug">
+                        {opt.description}
+                      </p>
+                      <p
+                        className={`text-xs font-medium mt-1 ${isSelected ? "text-primary" : "text-text-muted"}`}
+                      >
+                        via {opt.vehicle}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         />
-
-        {areaSuggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-20 rounded-md border border-border bg-card shadow-card overflow-hidden">
-            {areaSuggestions.map((suggestion) => (
-              <button
-                key={suggestion}
-                type="button"
-                className="w-full px-4 py-2.5 text-left text-sm text-text hover:bg-surface transition-colors"
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => chooseSuggestion(suggestion)}
-              >
-                {suggestion}
-              </button>
-            ))}
-          </div>
+        {errors.size_category && (
+          <p className="text-sm text-error">{errors.size_category.message}</p>
         )}
       </div>
+
+      {/* Hidden fields — set programmatically from PlacesAddressInput */}
+      <input type="hidden" {...register("pickup_address")} />
+      <input type="hidden" {...register("area")} />
+
+      <PlacesAddressInput
+        label="Pickup address"
+        placeholder="Search for your pickup address"
+        defaultValue={defaultValues?.pickup_address ?? ""}
+        onSelect={handlePickupSelect}
+        onClear={() => {
+          setValue("pickup_address", "");
+          setValue("area", "");
+        }}
+        error={pickupError}
+        required
+      />
 
       <div className="flex gap-3 pt-2">
         <Button
