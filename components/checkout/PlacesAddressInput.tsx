@@ -44,6 +44,7 @@ export default function PlacesAddressInput({
   const autocompleteRef = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
   const attrRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!placesLib || !attrRef.current) return;
@@ -57,8 +58,10 @@ export default function PlacesAddressInput({
       setPredictions([]);
       return;
     }
+    const svc = autocompleteRef.current;
     const timer = window.setTimeout(() => {
-      autocompleteRef.current!.getPlacePredictions(
+      if (!svc) return;
+      svc.getPlacePredictions(
         {
           input: query,
           types: ["address"],
@@ -82,16 +85,21 @@ export default function PlacesAddressInput({
 
   const handleSelect = useCallback(
     (prediction: Prediction) => {
+      if (!placesServiceRef.current) return;
       setInputValue(prediction.description);
       setPredictions([]);
 
-      placesServiceRef.current!.getDetails(
+      placesServiceRef.current.getDetails(
         {
           placeId: prediction.place_id,
           fields: ["formatted_address", "address_components"],
         },
         (place, status) => {
-          if (status !== "OK" || !place) return;
+          if (status !== "OK" || !place) {
+            setInputValue("");
+            setPredictions([]);
+            return;
+          }
 
           const components = place.address_components ?? [];
           const city =
@@ -120,16 +128,37 @@ export default function PlacesAddressInput({
     [onSelect]
   );
 
-  function confirmStateOverride() {
+  const confirmStateOverride = useCallback(() => {
     if (!pendingResult || !stateOverride.trim()) return;
     onSelect({ ...pendingResult, state: stateOverride.trim() });
     setShowStateFallback(false);
     setPendingResult(null);
     setStateOverride("");
-  }
+  }, [pendingResult, stateOverride, onSelect]);
+
+  useEffect(() => {
+    if (predictions.length === 0) return;
+
+    function handleClose(e: MouseEvent | KeyboardEvent) {
+      if (e instanceof KeyboardEvent) {
+        if (e.key === "Escape") setPredictions([]);
+        return;
+      }
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setPredictions([]);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClose);
+    document.addEventListener("keydown", handleClose);
+    return () => {
+      document.removeEventListener("mousedown", handleClose);
+      document.removeEventListener("keydown", handleClose);
+    };
+  }, [predictions.length]);
 
   return (
-    <div className="space-y-2">
+    <div ref={containerRef} className="space-y-2">
       {label && (
         <label className="block text-sm font-medium text-text">
           {label}
