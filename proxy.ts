@@ -13,8 +13,11 @@ export async function proxy(request: NextRequest) {
   // UUID pattern — all listing/order IDs are UUIDs
   const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
-  // Public browse: GET /api/listings or GET /api/listings/<uuid>
+  // Public browse: GET /api/listings, GET /api/listings/<uuid>, or GET /api/listings/suggestions
   if (request.method === 'GET' && pathname === '/api/listings') {
+    return NextResponse.next()
+  }
+  if (request.method === 'GET' && pathname === '/api/listings/suggestions') {
     return NextResponse.next()
   }
   if (request.method === 'GET' && new RegExp(`^/api/listings/${UUID}$`).test(pathname)) {
