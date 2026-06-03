@@ -704,7 +704,7 @@ function AddressForm({ currentAddress, onClose }: { currentAddress: string; onCl
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selected?.address.trim()) {
+    if (!selected?.address?.trim()) {
       setError("Please search for and select your address");
       return;
     }
