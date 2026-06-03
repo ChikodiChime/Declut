@@ -210,6 +210,10 @@ export default function CartPage() {
 
   async function handleAnonymousCheckout(e: React.FormEvent) {
     e.preventDefault();
+    if (deliveryType === "delivery" && !buyerInfo.address) {
+      setError("Please search for and select a delivery address");
+      return;
+    }
     setCheckingOut(true);
     setError("");
     const res = await fetch("/api/orders", {
@@ -411,7 +415,13 @@ export default function CartPage() {
 
   if (showDeliveryStep && user) {
     const showTextarea = !hasSavedAddress || useNewAddress;
-    const deliveryGroups = groupBySeller(items, "delivery", deliveryState);
+    const deliveryGroups = groupBySeller(
+      items,
+      "delivery",
+      hasSavedAddress && !useNewAddress
+        ? (user?.address_state ?? undefined)
+        : (deliveryState ?? undefined)
+    );
     const deliveryGrandTotal = calculateGrandTotal(deliveryGroups);
 
     return (
@@ -469,6 +479,7 @@ export default function CartPage() {
                   onClick={() => {
                     setUseNewAddress(true);
                     setDeliveryAddress("");
+                    setDeliveryState(null);
                   }}
                   className="text-sm text-text-muted hover:text-text underline underline-offset-2 transition-colors"
                 >
