@@ -4,6 +4,7 @@ import { ReactLenis } from "lenis/react";
 import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { APIProvider } from "@vis.gl/react-google-maps";
 import { CART_QUERY_KEY } from "@/lib/hooks/useCart";
 
 function CartSyncProvider({ children }: { children: React.ReactNode }) {
@@ -41,10 +42,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={client}>
-      <CartSyncProvider>
-        <LenisProvider>{children}</LenisProvider>
-      </CartSyncProvider>
-    </QueryClientProvider>
+    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+      <QueryClientProvider client={client}>
+        <CartSyncProvider>
+          <LenisProvider>{children}</LenisProvider>
+        </CartSyncProvider>
+      </QueryClientProvider>
+    </APIProvider>
   );
 }
