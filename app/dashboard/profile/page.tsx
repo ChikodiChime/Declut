@@ -23,6 +23,7 @@ import {
 import { useMe, useUpdateProfile, useChangePassword, useSendVerification } from '@/lib/hooks/useAuth'
 import { useUploadImage } from '@/lib/hooks/useListings'
 import { Modal } from '@/components/ui'
+import PlacesAddressInput from "@/components/checkout/PlacesAddressInput"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -695,53 +696,60 @@ function PhoneForm({ currentPhone, onClose }: { currentPhone: string; onClose: (
 // ─── Address modal form ───────────────────────────────────────────────────────
 
 function AddressForm({ currentAddress, onClose }: { currentAddress: string; onClose: () => void }) {
-  const [address, setAddress] = useState(currentAddress)
-  const [error, setError] = useState('')
-  const { mutate, isPending } = useUpdateProfile()
+  const [selected, setSelected] = useState<{ address: string; state: string | null } | null>(
+    currentAddress ? { address: currentAddress, state: null } : null
+  );
+  const [error, setError] = useState("");
+  const { mutate, isPending } = useUpdateProfile();
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const trimmed = address.trim()
-    if (!trimmed) { setError('Address cannot be empty'); return }
-    if (trimmed.length > 300) { setError('Address must be 300 characters or less'); return }
-    setError('')
-    mutate({ address: trimmed }, { onSuccess: onClose, onError: (e) => setError(e.message) })
+    e.preventDefault();
+    if (!selected?.address.trim()) {
+      setError("Please search for and select your address");
+      return;
+    }
+    setError("");
+    mutate(
+      { address: selected.address, address_state: selected.state },
+      { onSuccess: onClose, onError: (e) => setError(e.message) }
+    );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-xs font-medium text-text-muted mb-1.5">Delivery address</label>
-        <textarea
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          maxLength={300}
-          rows={3}
-          className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors resize-none"
-          placeholder="House number, street, area, city"
-          autoFocus
-        />
-        <p className="mt-1 text-[10px] text-text-subtle text-right">{address.length}/300</p>
-        {error && <p className="mt-1 text-xs text-error">{error}</p>}
-      </div>
-      <div className="flex gap-2.5 pt-1">
+      <PlacesAddressInput
+        label="Delivery address"
+        defaultValue={currentAddress}
+        placeholder="Search for your delivery address"
+        onSelect={(result) =>
+          setSelected({ address: result.formatted_address, state: result.state })
+        }
+        onClear={() => setSelected(null)}
+        error={error}
+      />
+      {selected && (
+        <p className="text-xs text-text-muted">
+          Selected: <span className="text-text">{selected.address}</span>
+        </p>
+      )}
+      <div className="flex gap-3 pt-2">
         <button
           type="button"
           onClick={onClose}
-          className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface transition-colors"
+          className="flex-1 rounded-xl border border-border py-2.5 text-sm font-medium text-text hover:bg-surface transition-colors"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isPending}
-          className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
+          className="flex-1 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
         >
-          {isPending ? 'Saving…' : 'Save'}
+          {isPending ? "Saving…" : "Save address"}
         </button>
       </div>
     </form>
-  )
+  );
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
