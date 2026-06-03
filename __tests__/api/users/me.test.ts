@@ -15,6 +15,7 @@ describe('formatUserResponse', () => {
       avatar_url: null,
       phone: null,
       address: null,
+      address_state: null,
       created_at: '2026-01-01T00:00:00Z',
       email_verified: false,
       otp_code: null,

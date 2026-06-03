@@ -1,6 +1,7 @@
 export type AccountType = 'individual' | 'business' | 'dispatcher' | 'admin'
 export type ListingType = 'for_sale' | 'free' | 'donate'
 export type Condition = 'new' | 'like_new' | 'good' | 'fair' | 'poor'
+export type SizeCategory = 'small' | 'medium' | 'large' | 'extra_large'
 export type ListingStatus = 'available' | 'sold' | 'claimed' | 'donated' | 'removed'
 export type OrderStatus = 'pending' | 'paid' | 'confirmed' | 'shipped' | 'delivered' | 'completed' | 'cancelled'
 export type DeliveryType = 'delivery' | 'pickup'
@@ -16,6 +17,7 @@ export interface User {
   avatar_url: string | null
   phone: string | null
   address: string | null
+  address_state: string | null
   created_at: string
   email_verified: boolean
   otp_code: string | null
@@ -33,6 +35,8 @@ export interface Listing {
   condition: Condition
   listing_type: ListingType
   area: string
+  size_category: SizeCategory | null
+  pickup_address: string | null
   images: string[]
   status: ListingStatus
   created_at: string
@@ -82,6 +86,8 @@ export interface ListingFormData {
   condition: Condition
   price: number | null   // null for free/donate listings
   area: string
+  size_category: SizeCategory
+  pickup_address: string
   images: string[]       // Cloudinary public_ids
 }
 

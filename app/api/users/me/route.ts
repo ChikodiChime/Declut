@@ -22,16 +22,16 @@ export async function PATCH(req: Request) {
   const authUser = await getAuthUser()
   if (!authUser) return err('Unauthorized', 'UNAUTHORIZED', 401)
 
-  let body: { name?: unknown; avatar_url?: unknown; phone?: unknown; address?: unknown }
+  let body: { name?: unknown; avatar_url?: unknown; phone?: unknown; address?: unknown; address_state?: unknown }
   try {
     body = await req.json()
   } catch {
     return err('Invalid request body', 'PARSE_ERROR', 400)
   }
 
-  const { name, avatar_url, phone, address } = body
+  const { name, avatar_url, phone, address, address_state } = body
 
-  if (name === undefined && avatar_url === undefined && phone === undefined && address === undefined) {
+  if (name === undefined && avatar_url === undefined && phone === undefined && address === undefined && address_state === undefined) {
     return err('At least one field required', 'VALIDATION_ERROR', 400)
   }
 
@@ -69,6 +69,13 @@ export async function PATCH(req: Request) {
       return err('Address must be 1–300 characters', 'VALIDATION_ERROR', 400)
     }
     updates.address = address === null ? null : (address as string).trim()
+  }
+
+  if (address_state !== undefined) {
+    if (address_state !== null && (typeof address_state !== 'string' || address_state.trim().length > 100)) {
+      return err('address_state must be 100 characters or less', 'VALIDATION_ERROR', 400)
+    }
+    updates.address_state = address_state === null ? null : (address_state as string).trim()
   }
 
   const { data: user, error } = await supabaseAdmin
