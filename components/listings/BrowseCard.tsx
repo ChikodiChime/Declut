@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "sonner";
 import { ListingImage } from "@/components/ui";
 import {
   Package,
@@ -12,8 +13,6 @@ import {
   ChevronRight,
   Loader2,
   Check,
-  Clock,
-  X,
 } from "lucide-react";
 
 import { useCart } from "@/lib/hooks/useCart";
@@ -24,15 +23,15 @@ import type { Listing } from "@/types";
 
 type ActionState = "idle" | "loading" | "done";
 
-type ClaimFeedback = {
-  kind: "success" | "error";
-  text: string;
-  sub?: string;
-} | null;
-
 const TYPE_CONFIG: Record<
   string,
-  { label: string; color: string; bg: string; border: string; borderHover: string }
+  {
+    label: string;
+    color: string;
+    bg: string;
+    border: string;
+    borderHover: string;
+  }
 > = {
   for_sale: {
     label: "For Sale",
@@ -74,7 +73,6 @@ export function BrowseCard({ listing }: BrowseCardProps) {
   const { isInCart, addToCartOptimistic } = useCart();
   const [cartState, setCartState] = useState<ActionState>("idle");
   const [claimState, setClaimState] = useState<ActionState>("idle");
-  const [claimFeedback, setClaimFeedback] = useState<ClaimFeedback>(null);
   const [imgIdx, setImgIdx] = useState(0);
   const type = TYPE_CONFIG[listing.listing_type] ?? TYPE_CONFIG.for_sale;
   const inCart = isInCart(listing.id);
@@ -142,53 +140,55 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       return;
     }
 
-    let feedback: ClaimFeedback;
     if (res.ok) {
-      feedback = {
-        kind: "success",
-        text: "Claim sent!",
-        sub: "Waiting for the seller to respond",
-      };
+      toast.success("Claim sent! Waiting for the seller to respond.");
       setClaimState("done");
       setTimeout(() => setClaimState("idle"), 3000);
     } else {
       const body = await res.json().catch(() => ({}));
       const msg: string = body?.error?.message ?? "";
       if (res.status === 409) {
-        feedback = msg.includes("no longer available")
-          ? { kind: "error", text: "No longer available", sub: "Someone else may have claimed it" }
-          : { kind: "error", text: "Already claimed", sub: "You already have a pending claim" };
+        if (msg.includes("no longer available")) {
+          toast.error(
+            "No longer available — someone else may have claimed it.",
+          );
+        } else if (msg.includes("3 active claims")) {
+          toast.error(
+            "Claim limit reached. Complete or cancel an existing claim first.",
+          );
+        } else {
+          toast.error("You already have a pending claim on this item.");
+        }
       } else {
-        feedback = { kind: "error", text: "Couldn't claim", sub: "Please try again" };
+        toast.error("Couldn't claim — please try again.");
       }
       setClaimState("idle");
     }
-
-    setClaimFeedback(feedback);
-    setTimeout(() => setClaimFeedback(null), 4000);
   }
 
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card transition-all duration-300"
+      className="group relative flex h-full flex-col rounded-2xl bg-white transition-all duration-300"
       style={{
-        borderColor: type.border,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = type.borderHover;
-        el.style.boxShadow = `0 4px 16px rgba(22,19,15,0.10), 0 0 0 1px ${type.borderHover}`;
+        el.style.boxShadow =
+          "0 6px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = type.border;
-        el.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)";
+        el.style.boxShadow =
+          "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)";
       }}
     >
       {/* ── Image + carousel ── */}
-      <div className="relative aspect-4/3 overflow-hidden" style={{ background: type.bg }}>
+      <div
+        className="relative aspect-4/3 overflow-hidden rounded-t-2xl"
+        style={{ background: type.bg }}
+      >
         {images.length === 0 ? (
           <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-text-subtle">
             <Package size={28} strokeWidth={1.5} />
@@ -201,7 +201,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             style={{ transform: `translateX(-${imgIdx * 100}%)` }}
           >
             {images.map((src, i) => (
-              <div key={src || i} className="relative w-full h-full shrink-0 overflow-hidden">
+              <div
+                key={src || i}
+                className="relative w-full h-full shrink-0 overflow-hidden"
+              >
                 <ListingImage
                   src={src}
                   fill
@@ -225,13 +228,34 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         </div>
 
         {/* Hover action button — top right */}
+        {listing.listing_type === "free" && listing.status === "claimed" && (
+          <div className="absolute right-2.5 top-2.5 z-10">
+            <span
+              className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold"
+              style={{
+                background: "rgba(16,185,129,0.18)",
+                color: "#10b981",
+                backdropFilter: "blur(6px)",
+                border: "1px solid rgba(16,185,129,0.28)",
+              }}
+            >
+              <Check size={10} strokeWidth={2.5} />
+              Claimed
+            </span>
+          </div>
+        )}
+
         {listing.status === "available" && (
           <div className="absolute right-2.5 top-2.5 z-10">
             {listing.listing_type === "for_sale" && (
               <button
                 onClick={handleAddToCart}
                 disabled={cartState === "loading"}
-                aria-label={inCart || cartState === "done" ? "Added to cart" : "Add to cart"}
+                aria-label={
+                  inCart || cartState === "done"
+                    ? "Added to cart"
+                    : "Add to cart"
+                }
                 className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed ${
                   inCart || cartState !== "idle"
                     ? "opacity-100 pointer-events-auto"
@@ -245,7 +269,8 @@ export function BrowseCard({ listing }: BrowseCardProps) {
                 }}
                 onMouseEnter={(e) => {
                   if (cartState !== "idle") return;
-                  (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "scale(1.1)";
                 }}
                 onMouseLeave={(e) => {
                   if (cartState !== "idle") return;
@@ -253,7 +278,12 @@ export function BrowseCard({ listing }: BrowseCardProps) {
                 }}
               >
                 {cartState === "loading" ? (
-                  <Loader2 size={22} strokeWidth={2} className="animate-spin" style={{ color: type.color }} />
+                  <Loader2
+                    size={22}
+                    strokeWidth={2}
+                    className="animate-spin"
+                    style={{ color: type.color }}
+                  />
                 ) : inCart || cartState === "done" ? (
                   <CartDoneIcon color={type.color} />
                 ) : (
@@ -274,14 +304,17 @@ export function BrowseCard({ listing }: BrowseCardProps) {
                 }`}
                 style={{
                   background:
-                    claimState === "done" ? type.color : "rgba(255,255,255,0.92)",
+                    claimState === "done"
+                      ? type.color
+                      : "rgba(255,255,255,0.92)",
                   backdropFilter: "blur(6px)",
                   boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
                   transform: claimState === "done" ? "scale(1.18)" : "scale(1)",
                 }}
                 onMouseEnter={(e) => {
                   if (claimState !== "idle") return;
-                  (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "scale(1.1)";
                 }}
                 onMouseLeave={(e) => {
                   if (claimState !== "idle") return;
@@ -298,7 +331,11 @@ export function BrowseCard({ listing }: BrowseCardProps) {
                 ) : claimState === "done" ? (
                   <Check size={22} strokeWidth={2} style={{ color: "white" }} />
                 ) : (
-                  <Gift size={22} strokeWidth={1.5} style={{ color: "#374151" }} />
+                  <Gift
+                    size={22}
+                    strokeWidth={1.5}
+                    style={{ color: "#374151" }}
+                  />
                 )}
               </button>
             )}
@@ -311,7 +348,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             onClick={prevImg}
             aria-label="Previous image"
             className="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+            style={{
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(4px)",
+            }}
           >
             <ChevronLeft size={14} strokeWidth={2.5} />
           </button>
@@ -323,7 +363,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             onClick={nextImg}
             aria-label="Next image"
             className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-            style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+            style={{
+              background: "rgba(0,0,0,0.45)",
+              backdropFilter: "blur(4px)",
+            }}
           >
             <ChevronRight size={14} strokeWidth={2.5} />
           </button>
@@ -348,42 +391,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             ))}
           </div>
         )}
-
-        {/* Claim feedback overlay */}
-        {claimFeedback && (
-          <div
-            className="absolute inset-x-0 bottom-0 z-20 flex items-start gap-2 px-3 py-2.5 transition-all duration-300"
-            style={{
-              background:
-                claimFeedback.kind === "success"
-                  ? "rgba(5,95,70,0.93)"
-                  : "rgba(127,29,29,0.93)",
-              backdropFilter: "blur(6px)",
-            }}
-          >
-            <div className="mt-0.5 shrink-0">
-              {claimFeedback.kind === "success" ? (
-                <Clock size={12} strokeWidth={2.5} style={{ color: "rgba(255,255,255,0.85)" }} />
-              ) : (
-                <X size={12} strokeWidth={2.5} style={{ color: "rgba(255,255,255,0.85)" }} />
-              )}
-            </div>
-            <div>
-              <p className="text-[12px] font-semibold leading-tight text-white">
-                {claimFeedback.text}
-              </p>
-              {claimFeedback.sub && (
-                <p className="text-[10.5px] mt-0.5 leading-tight" style={{ color: "rgba(255,255,255,0.72)" }}>
-                  {claimFeedback.sub}
-                </p>
-              )}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ── Card body ── */}
-      <div className="flex flex-col flex-1 p-3.5 gap-2.5">
+      <div className="flex flex-col flex-1 p-3.5 gap-2.5 ">
         {/* Title */}
         <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-text">
           {listing.title}
@@ -391,7 +402,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
 
         {/* Price + condition — same row, clear hierarchy */}
         <div className="flex items-center justify-between gap-2">
-          <p className="font-display text-[15px] font-bold leading-none" style={{ color: type.color }}>
+          <p
+            className="font-display text-[15px] font-bold leading-none"
+            style={{ color: type.color }}
+          >
             {listing.listing_type === "for_sale" && listing.price != null
               ? `₦${listing.price.toLocaleString()}`
               : type.label}
@@ -406,12 +420,16 @@ export function BrowseCard({ listing }: BrowseCardProps) {
 
         {/* Location */}
         <div className="flex items-center gap-1.5">
-          <MapPin size={10} strokeWidth={2} className="shrink-0" style={{ color: "#b8b0a8" }} />
+          <MapPin
+            size={10}
+            strokeWidth={2}
+            className="shrink-0"
+            style={{ color: "#b8b0a8" }}
+          />
           <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
             {listing.area}
           </span>
         </div>
-
       </div>
     </Link>
   );

@@ -4,9 +4,14 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import {
-  ArrowRight, ArrowDown,
-  Tag, Handshake, Heart,
-  Repeat2, Sprout, Users,
+  ArrowRight,
+  ArrowDown,
+  Tag,
+  Handshake,
+  Heart,
+  Repeat2,
+  Sprout,
+  Users,
 } from "lucide-react";
 
 // ─── Animation primitive ──────────────────────────────────────────────────────
@@ -125,8 +130,7 @@ const STATS = [
 
 export default function AboutPage() {
   return (
-    <main style={{ background: "#fafaf8" }}>
-
+    <main style={{ background: "#f4f4f5" }}>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden flex flex-col"
@@ -166,7 +170,6 @@ export default function AboutPage() {
         {/* Content pinned to bottom */}
         <div className="relative mt-auto w-full">
           <div className="max-w-screen-xl mx-auto px-6 md:px-12 pb-14 md:pb-20">
-
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -182,12 +185,16 @@ export default function AboutPage() {
               <motion.h1
                 initial={{ opacity: 0, y: 44 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: 0.9,
+                  delay: 0.2,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 className="font-display leading-[1.0] tracking-tight text-white"
                 style={{ fontSize: "clamp(44px, 8vw, 100px)", maxWidth: 780 }}
               >
-                Things that deserve<br />
-                a{" "}
+                Things that deserve
+                <br />a{" "}
                 <em style={{ color: "#f59e0b", fontStyle: "italic" }}>
                   second life.
                 </em>
@@ -197,7 +204,11 @@ export default function AboutPage() {
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.65, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration: 0.65,
+                  delay: 0.5,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
                 className="flex flex-col gap-6 md:max-w-[300px] md:pb-2 shrink-0"
               >
                 <p
@@ -212,12 +223,16 @@ export default function AboutPage() {
                   className="inline-flex items-center gap-2 h-11 px-6 rounded-full font-semibold text-[13px] text-white self-start transition-all duration-200"
                   style={{ background: "#4f46e5" }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "#4338ca";
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "#4338ca";
+                    (e.currentTarget as HTMLElement).style.transform =
+                      "translateY(-1px)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "#4f46e5";
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                    (e.currentTarget as HTMLElement).style.background =
+                      "#4f46e5";
+                    (e.currentTarget as HTMLElement).style.transform =
+                      "translateY(0)";
                   }}
                 >
                   Browse listings <ArrowRight size={14} strokeWidth={2.5} />
@@ -235,7 +250,11 @@ export default function AboutPage() {
             >
               <motion.div
                 animate={{ y: [0, 5, 0] }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                transition={{
+                  duration: 2.2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
               >
                 <ArrowDown size={15} strokeWidth={1.5} />
               </motion.div>
@@ -260,7 +279,8 @@ export default function AboutPage() {
               }}
             >
               &ldquo;Your spare room is a small museum
-              <br className="hidden md:block" /> of things you meant to deal with.&rdquo;
+              <br className="hidden md:block" /> of things you meant to deal
+              with.&rdquo;
             </blockquote>
           </FadeUp>
 
@@ -321,17 +341,26 @@ export default function AboutPage() {
                   {/* Foreground number */}
                   <span
                     className="font-display leading-none relative"
-                    style={{ fontSize: "clamp(40px, 5vw, 56px)", color: stat.color }}
+                    style={{
+                      fontSize: "clamp(40px, 5vw, 56px)",
+                      color: stat.color,
+                    }}
                   >
                     {stat.value}
                   </span>
 
                   {/* Label */}
                   <div className="relative">
-                    <p className="text-[13px] leading-snug font-medium" style={{ color: "#16130f", maxWidth: 180 }}>
+                    <p
+                      className="text-[13px] leading-snug font-medium"
+                      style={{ color: "#16130f", maxWidth: 180 }}
+                    >
                       {stat.label}
                     </p>
-                    <p className="text-[11px] font-semibold mt-1.5" style={{ color: stat.color }}>
+                    <p
+                      className="text-[11px] font-semibold mt-1.5"
+                      style={{ color: stat.color }}
+                    >
                       {stat.aside}
                     </p>
                   </div>
@@ -431,7 +460,10 @@ export default function AboutPage() {
       </section>
 
       {/* ── Values / dark manifesto ───────────────────────────────────────────── */}
-      <section className="relative overflow-hidden" style={{ background: "#16130f" }}>
+      <section
+        className="relative overflow-hidden"
+        style={{ background: "#16130f" }}
+      >
         {/* Dot grid */}
         <div
           aria-hidden
@@ -464,9 +496,12 @@ export default function AboutPage() {
               className="font-display leading-[1.05] tracking-tight text-white"
               style={{ fontSize: "clamp(32px, 5vw, 62px)", maxWidth: 540 }}
             >
-              Less clutter,<br />
+              Less clutter,
+              <br />
               more{" "}
-              <em style={{ color: "#f59e0b", fontStyle: "italic" }}>meaning.</em>
+              <em style={{ color: "#f59e0b", fontStyle: "italic" }}>
+                meaning.
+              </em>
             </h2>
           </FadeUp>
 
@@ -499,7 +534,11 @@ export default function AboutPage() {
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   >
-                    <v.icon size={18} strokeWidth={2} style={{ color: "#f59e0b" }} />
+                    <v.icon
+                      size={18}
+                      strokeWidth={2}
+                      style={{ color: "#f59e0b" }}
+                    />
                   </div>
 
                   {/* Text */}
@@ -562,11 +601,13 @@ export default function AboutPage() {
                 style={{ background: "#f59e0b", color: "#16130f" }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.background = "#d97706";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "translateY(-1px)";
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.background = "#f59e0b";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLElement).style.transform =
+                    "translateY(0)";
                 }}
               >
                 List an item <ArrowRight size={15} strokeWidth={2.5} />
@@ -579,12 +620,15 @@ export default function AboutPage() {
                   border: "1px solid rgba(255,255,255,0.1)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.24)";
+                  (e.currentTarget as HTMLElement).style.borderColor =
+                    "rgba(255,255,255,0.24)";
                   (e.currentTarget as HTMLElement).style.color = "white";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)";
-                  (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.6)";
+                  (e.currentTarget as HTMLElement).style.borderColor =
+                    "rgba(255,255,255,0.1)";
+                  (e.currentTarget as HTMLElement).style.color =
+                    "rgba(255,255,255,0.6)";
                 }}
               >
                 Browse
@@ -593,7 +637,6 @@ export default function AboutPage() {
           </div>
         </FadeUp>
       </section>
-
     </main>
   );
 }

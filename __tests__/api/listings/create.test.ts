@@ -10,6 +10,8 @@ describe('validateListingBody', () => {
     condition: 'like_new',
     price: 15000,
     area: 'Ajah, Lagos',
+    size_category: 'small',
+    pickup_address: '15 Admiralty Way, Lekki Phase 1',
     images: ['listings/abc123'],
   }
 

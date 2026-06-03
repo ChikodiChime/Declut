@@ -1,7 +1,8 @@
-import type { ListingFormData, ListingType, Condition } from '@/types'
+import type { ListingFormData, ListingType, Condition, SizeCategory } from '@/types'
 
 export const VALID_LISTING_TYPES: ListingType[] = ['for_sale', 'free', 'donate']
 export const VALID_CONDITIONS: Condition[] = ['new', 'like_new', 'good', 'fair', 'poor']
+export const VALID_SIZE_CATEGORIES: SizeCategory[] = ['small', 'medium', 'large', 'extra_large']
 export const VALID_CATEGORIES = [
   'Electronics',
   'Furniture & Home',
@@ -22,6 +23,8 @@ interface ListingBody {
   condition?: unknown
   price?: unknown
   area?: unknown
+  size_category?: unknown
+  pickup_address?: unknown
   images?: unknown
 }
 
@@ -58,6 +61,12 @@ export function validateListingBody(body: ListingBody):
   if (!body.area || typeof body.area !== 'string' || body.area.trim().length === 0) {
     return { error: 'area is required' }
   }
+  if (!body.size_category || !VALID_SIZE_CATEGORIES.includes(body.size_category as SizeCategory)) {
+    return { error: 'size_category must be small, medium, large, or extra_large' }
+  }
+  if (!body.pickup_address || typeof body.pickup_address !== 'string' || body.pickup_address.trim().length === 0) {
+    return { error: 'pickup_address is required' }
+  }
   if (!Array.isArray(body.images) || body.images.length < 1 || body.images.length > 5) {
     return { error: 'between 1 and 5 images are required' }
   }
@@ -75,6 +84,8 @@ export function validateListingBody(body: ListingBody):
       condition: body.condition as Condition,
       price: body.listing_type === 'for_sale' ? (body.price as number) : null,
       area: (body.area as string).trim(),
+      size_category: body.size_category as SizeCategory,
+      pickup_address: (body.pickup_address as string).trim(),
       images: body.images as string[],
     },
   }

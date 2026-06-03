@@ -112,7 +112,7 @@ function colSpanClass(n: number) {
 export function CategoryStripSection() {
   return (
     <section
-      className="bg-[#fafaf8] py-20"
+      className="bg-[#f4f4f5] py-20"
       style={{ borderTop: "1px solid #e8e4dc" }}
     >
       <div className="max-w-6xl mx-auto px-5 md:px-8">

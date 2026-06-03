@@ -57,6 +57,8 @@ export default function EditListingPage({
     condition: listing.condition,
     price: listing.price,
     area: listing.area,
+    size_category: listing.size_category ?? undefined,
+    pickup_address: listing.pickup_address ?? "",
     images: listing.images,
   };
 

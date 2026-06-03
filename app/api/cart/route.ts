@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     const { data: items, error } = await supabaseAdmin
       .from('cart_items')
       .select(
-        'id, listing_id, listing:listings(id, title, price, listing_type, status, seller_id, area, images, condition, category)'
+        'id, listing_id, listing:listings(id, title, price, listing_type, status, seller_id, area, size_category, images, condition, category)'
       )
       .eq('user_id', authUser.id)
       .order('created_at', { ascending: false })
@@ -32,7 +32,7 @@ export async function GET(req: Request) {
 
   const { data: listings, error } = await supabaseAdmin
     .from('listings')
-    .select('id, title, price, listing_type, status, seller_id, area, images, condition, category')
+    .select('id, title, price, listing_type, status, seller_id, area, size_category, images, condition, category')
     .in('id', ids)
 
   if (error) return err('Failed to fetch listings', 'DB_ERROR', 500)

@@ -63,7 +63,9 @@ export function ListingForm({
   isPending,
   onCancel,
 }: ListingFormProps) {
-  const [user, setUser] = useState<{ stripe_onboarding_complete: boolean } | null>(null)
+  const [user, setUser] = useState<{
+    stripe_onboarding_complete: boolean;
+  } | null>(null);
   const [state, dispatch] = useReducer(formReducer, {
     step: 1,
     direction: 1,
@@ -71,11 +73,11 @@ export function ListingForm({
   });
 
   useEffect(() => {
-    fetch('/api/users/me')
+    fetch("/api/users/me")
       .then((r) => r.json())
       .then((res) => setUser(res.data ?? null))
-      .catch(() => null)
-  }, [])
+      .catch(() => null);
+  }, []);
 
   function next(payload: Partial<ListingFormData>) {
     dispatch({ type: "NEXT", payload });
@@ -103,10 +105,10 @@ export function ListingForm({
     <div className="w-full">
       {user && !user.stripe_onboarding_complete && (
         <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-          You need to{' '}
+          You need to{" "}
           <Link href="/dashboard/billing" className="font-medium underline">
             connect your Stripe account
-          </Link>{' '}
+          </Link>{" "}
           before you can list items.
         </div>
       )}
@@ -236,6 +238,8 @@ export function ListingForm({
                     defaultValues={{
                       price: state.data.price,
                       area: state.data.area,
+                      size_category: state.data.size_category,
+                      pickup_address: state.data.pickup_address,
                     }}
                     onNext={(data) => next(data)}
                     onBack={back}

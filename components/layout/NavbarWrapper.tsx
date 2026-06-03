@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { CldImage } from "next-cloudinary";
 import {
@@ -217,8 +217,6 @@ export function NavbarWrapper() {
   const [showSearch, setShowSearch] = useState(false);
   const { data: me, isLoading } = useMe();
   const { mutate: signOut } = useSignOut();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -229,19 +227,6 @@ export function NavbarWrapper() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    setMobileOpen(false);
-    setSearchOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (mobileOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [mobileOpen]);
 
   if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
 
@@ -255,17 +240,65 @@ export function NavbarWrapper() {
   const linkHover = transparent ? "#ffffff" : "#16130f";
 
   return (
+    <NavbarContent
+      key={pathname}
+      scrolled={scrolled}
+      showSearch={showSearch}
+      isSearchPage={isSearchPage}
+      transparent={transparent}
+      linkColor={linkColor}
+      linkHover={linkHover}
+      me={me}
+      isLoading={isLoading}
+      signOut={signOut}
+    />
+  );
+}
+
+function NavbarContent({
+  scrolled,
+  showSearch,
+  isSearchPage,
+  transparent,
+  linkColor,
+  linkHover,
+  me,
+  isLoading,
+  signOut,
+}: {
+  scrolled: boolean;
+  showSearch: boolean;
+  isSearchPage: boolean;
+  transparent: boolean;
+  linkColor: string;
+  linkHover: string;
+  me: {
+    name?: string | null;
+    email?: string;
+    avatar_url?: string | null;
+  } | null;
+  isLoading: boolean;
+  signOut: () => void;
+}) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  return (
     <>
       <header
         className="sticky top-0 z-50 w-full"
         style={{
           background: transparent ? "transparent" : "#ffffff",
-          borderBottom: scrolled ? "1px solid #e8e4dc" : "none",
-          boxShadow: scrolled
-            ? "0 1px 0 0 #e8e4dc, 0 4px 16px -4px rgba(22,19,15,0.08)"
-            : "none",
-          transition:
-            "background 300ms ease, box-shadow 300ms ease, border-color 300ms ease",
+          boxShadow: scrolled ? "0 1px 3px rgba(0,0,0,0.04)" : "none",
+          transition: "background 300ms ease, box-shadow 300ms ease",
         }}
       >
         {/* Top-scrim so logo/links are legible over the dark hero photo */}

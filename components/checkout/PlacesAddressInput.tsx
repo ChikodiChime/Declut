@@ -43,8 +43,11 @@ export default function PlacesAddressInput({
   const placesLib = useMapsLibrary("places");
   const autocompleteRef = useRef<google.maps.places.AutocompleteService | null>(null);
   const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
+  const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const attrRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Tracks whether the current inputValue change came from the user typing (not a programmatic set)
+  const userTypingRef = useRef(false);
 
   useEffect(() => {
     if (!placesLib || !attrRef.current) return;
@@ -54,11 +57,17 @@ export default function PlacesAddressInput({
 
   useEffect(() => {
     const query = inputValue.trim();
-    if (!query || query.length < 2 || !autocompleteRef.current) {
+    if (!query || query.length < 3 || !autocompleteRef.current || !userTypingRef.current) {
       setPredictions([]);
       return;
     }
     const svc = autocompleteRef.current;
+    // Create a session token on the first keystroke of a new search to group
+    // all autocomplete requests + one getDetails call into a single billed session.
+    if (!sessionTokenRef.current && placesLib) {
+      sessionTokenRef.current = new placesLib.AutocompleteSessionToken();
+    }
+    const token = sessionTokenRef.current ?? undefined;
     const timer = window.setTimeout(() => {
       if (!svc) return;
       svc.getPlacePredictions(
@@ -66,6 +75,7 @@ export default function PlacesAddressInput({
           input: query,
           types: ["address"],
           componentRestrictions: { country: "ng" },
+          sessionToken: token,
         },
         (results, status) => {
           if (status !== "OK" || !results) {
@@ -79,20 +89,28 @@ export default function PlacesAddressInput({
           );
         }
       );
-    }, 250);
+    }, 300);
     return () => window.clearTimeout(timer);
-  }, [inputValue]);
+  }, [inputValue, placesLib]);
 
   const handleSelect = useCallback(
     (prediction: Prediction) => {
       if (!placesServiceRef.current) return;
+      // Mark as programmatic so the autocomplete effect doesn't re-fetch
+      userTypingRef.current = false;
       setInputValue(prediction.description);
       setPredictions([]);
+
+      const token = sessionTokenRef.current ?? undefined;
+      // After getDetails, the session is complete — clear the token so the
+      // next search gets a fresh one (and a fresh billing session).
+      sessionTokenRef.current = null;
 
       placesServiceRef.current.getDetails(
         {
           placeId: prediction.place_id,
           fields: ["formatted_address", "address_components"],
+          sessionToken: token,
         },
         (place, status) => {
           if (status !== "OK" || !place) {
@@ -177,6 +195,7 @@ export default function PlacesAddressInput({
           type="text"
           value={inputValue}
           onChange={(e) => {
+            userTypingRef.current = true;
             setInputValue(e.target.value);
             if (!e.target.value) onClear?.();
           }}

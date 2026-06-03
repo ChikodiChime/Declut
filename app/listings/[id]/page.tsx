@@ -17,11 +17,15 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  Bike,
+  Car,
+  Truck,
 } from "lucide-react";
+import { DELIVERY_RATES, DEFAULT_SIZE_CATEGORY } from "@/lib/constants";
 import { useListing, usePublicListings } from "@/lib/hooks/useListings";
 import { useCart } from "@/lib/hooks/useCart";
 import { addToSessionCart } from "@/lib/session-cart";
-import type { ListingWithSeller } from "@/types";
+import type { ListingWithSeller, SizeCategory } from "@/types";
 import { useMe } from "@/lib/hooks/useAuth";
 import {
   useMyClaims,
@@ -64,11 +68,17 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
     return (
       <div
         className="rounded-2xl flex items-center justify-center"
-        style={{ aspectRatio: "4/3", background: "#f0ece4", border: "1px solid #e8e2da" }}
+        style={{
+          aspectRatio: "4/3",
+          background: "#f0ece4",
+          border: "1px solid #e8e2da",
+        }}
       >
         <div className="flex flex-col items-center gap-3 text-[#a8a09a]">
           <Package size={48} strokeWidth={1} />
-          <span className="text-xs font-semibold tracking-[0.12em] uppercase">No photos</span>
+          <span className="text-xs font-semibold tracking-[0.12em] uppercase">
+            No photos
+          </span>
         </div>
       </div>
     );
@@ -79,7 +89,11 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
       {/* Main image */}
       <div
         className="relative rounded-2xl overflow-hidden"
-        style={{ aspectRatio: "4/3", background: "#f0ece4", border: "1px solid #e8e2da" }}
+        style={{
+          aspectRatio: "4/3",
+          background: "#f0ece4",
+          border: "1px solid #e8e2da",
+        }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -122,7 +136,10 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
             {/* Counter */}
             <div
               className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md"
-              style={{ background: "rgba(22,19,15,0.48)", color: "rgba(255,255,255,0.92)" }}
+              style={{
+                background: "rgba(22,19,15,0.48)",
+                color: "rgba(255,255,255,0.92)",
+              }}
             >
               {active + 1} / {total}
             </div>
@@ -141,8 +158,10 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
               style={{
                 width: 80,
                 height: 80,
-                border: i === active ? "2px solid #4f46e5" : "2px solid #e8e2da",
-                boxShadow: i === active ? "0 0 0 3px rgba(79,70,229,0.15)" : "none",
+                border:
+                  i === active ? "2px solid #4f46e5" : "2px solid #e8e2da",
+                boxShadow:
+                  i === active ? "0 0 0 3px rgba(79,70,229,0.15)" : "none",
               }}
             >
               <ListingImage
@@ -306,7 +325,7 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
     return (
       <div
         className="rounded-2xl px-5 py-4 text-center"
-        style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
+        style={{ background: "#f4f4f5", border: "1px solid #e8e4dc" }}
       >
         <p className="text-[13px] font-medium text-[#78726c]">
           You collected this item
@@ -321,7 +340,7 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
     return (
       <div
         className="rounded-2xl px-5 py-4 text-center"
-        style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
+        style={{ background: "#f4f4f5", border: "1px solid #e8e4dc" }}
       >
         <p className="text-[11.5px] font-semibold uppercase tracking-[0.1em] text-[#a8a09a]">
           Already claimed
@@ -381,10 +400,27 @@ const HERO_CONFIG = {
   glow2: "rgba(167,139,250,0.25)",
 } as const;
 
+const VEHICLE_MAP: Record<
+  SizeCategory,
+  {
+    label: string;
+    icon: React.ComponentType<{
+      size?: number;
+      strokeWidth?: number;
+      className?: string;
+    }>;
+  }
+> = {
+  small: { label: "Motorbike", icon: Bike },
+  medium: { label: "Car", icon: Car },
+  large: { label: "Van", icon: Truck },
+  extra_large: { label: "Large Van", icon: Package },
+};
+
 const TYPE_BADGE = {
   for_sale: { bg: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.90)" },
-  free:     { bg: "rgba(16,185,129,0.90)",  color: "#ffffff" },
-  donate:   { bg: "rgba(245,158,11,0.90)",  color: "#ffffff" },
+  free: { bg: "rgba(16,185,129,0.90)", color: "#ffffff" },
+  donate: { bg: "rgba(245,158,11,0.90)", color: "#ffffff" },
 } as const;
 
 // ── RelatedItems ──────────────────────────────────────────────────────────────
@@ -405,20 +441,28 @@ function RelatedItems({
     sort: "newest",
   });
 
-  const listings = (data?.listings ?? []).filter((l) => l.id !== currentId).slice(0, 6);
+  const listings = (data?.listings ?? [])
+    .filter((l) => l.id !== currentId)
+    .slice(0, 6);
 
   if (!isLoading && listings.length === 0) return null;
 
   return (
     <section className="mt-14 mb-4">
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-[15px] font-semibold text-[#16130f]">Related items</h2>
+        <h2 className="text-[15px] font-semibold text-[#16130f]">
+          Related items
+        </h2>
         <Link
           href={`/search?category=${encodeURIComponent(category)}&listing_type=${listingType}`}
           className="inline-flex items-center gap-1 text-[12px] font-medium transition-colors"
           style={{ color: "#4f46e5" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#4338ca"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#4f46e5"; }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.color = "#4338ca";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.color = "#4f46e5";
+          }}
         >
           See all <ArrowRight size={12} strokeWidth={2.2} />
         </Link>
@@ -434,13 +478,22 @@ function RelatedItems({
               >
                 <div className="aspect-4/3" style={{ background: "#f0ece5" }} />
                 <div className="flex flex-col gap-2 p-3">
-                  <div className="h-3 w-3/4 rounded" style={{ background: "#f0ece5" }} />
-                  <div className="h-3 w-1/2 rounded" style={{ background: "#f0ece5" }} />
+                  <div
+                    className="h-3 w-3/4 rounded"
+                    style={{ background: "#f0ece5" }}
+                  />
+                  <div
+                    className="h-3 w-1/2 rounded"
+                    style={{ background: "#f0ece5" }}
+                  />
                 </div>
               </div>
             ))
           : listings.map((listing) => (
-              <div key={listing.id} className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 flex flex-col">
+              <div
+                key={listing.id}
+                className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 flex flex-col"
+              >
                 <BrowseCard listing={listing} />
               </div>
             ))}
@@ -453,7 +506,7 @@ function RelatedItems({
 
 function ListingDetailSkeleton() {
   return (
-    <main className="min-h-screen bg-[#fafaf8] px-4 lg:px-8 py-8">
+    <main className="min-h-screen bg-[#f4f4f5] px-4 lg:px-8 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="h-3.5 w-12 bg-[#e8e4dc] rounded animate-pulse mb-10" />
         <div className="grid grid-cols-1 lg:grid-cols-[58%_1fr] gap-8 lg:gap-14">
@@ -510,7 +563,7 @@ export default function ListingDetailPage() {
 
   if (error || !data?.listing) {
     return (
-      <main className="min-h-screen bg-[#fafaf8] flex items-center justify-center px-4">
+      <main className="min-h-screen bg-[#f4f4f5] flex items-center justify-center px-4">
         <div className="text-center max-w-xs">
           <div className="w-16 h-16 rounded-full bg-[#f0ece4] flex items-center justify-center mx-auto mb-5">
             <Package size={26} strokeWidth={1.25} className="text-[#a8a09a]" />
@@ -540,7 +593,7 @@ export default function ListingDetailPage() {
   const badgeStyle = TYPE_BADGE[listing.listing_type];
 
   return (
-    <main className="min-h-screen bg-[#fafaf8]">
+    <main className="min-h-screen bg-[#f4f4f5]">
       {/* ── Hero ── */}
       <div
         className="relative overflow-hidden"
@@ -559,14 +612,18 @@ export default function ListingDetailPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
 
         <div className="relative max-w-6xl mx-auto px-4 lg:px-10 pt-7 pb-12">
           {/* Back + breadcrumb row */}
-          <div className="flex items-center gap-2 text-[12px] mb-8" style={{ color: "rgba(255,255,255,0.45)" }}>
+          <div
+            className="flex items-center gap-2 text-[12px] mb-8"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+          >
             <button
               onClick={() => router.back()}
               className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-white"
@@ -576,7 +633,13 @@ export default function ListingDetailPage() {
               Back
             </button>
             <span>·</span>
-            <Link href="/" className="transition-colors hover:text-white" style={{ color: "inherit" }}>Home</Link>
+            <Link
+              href="/"
+              className="transition-colors hover:text-white"
+              style={{ color: "inherit" }}
+            >
+              Home
+            </Link>
             <span>›</span>
             <Link
               href={`/search?category=${encodeURIComponent(listing.category)}&listing_type=${listing.listing_type}`}
@@ -605,11 +668,17 @@ export default function ListingDetailPage() {
 
           {/* Price */}
           {listing.listing_type === "for_sale" && listing.price != null ? (
-            <p className="text-white font-bold" style={{ fontSize: "clamp(20px, 3vw, 28px)" }}>
+            <p
+              className="text-white font-bold"
+              style={{ fontSize: "clamp(20px, 3vw, 28px)" }}
+            >
               ₦{listing.price.toLocaleString()}
             </p>
           ) : listing.listing_type === "free" ? (
-            <p className="font-bold text-white" style={{ fontSize: "clamp(20px, 3vw, 28px)" }}>
+            <p
+              className="font-bold text-white"
+              style={{ fontSize: "clamp(20px, 3vw, 28px)" }}
+            >
               Free
             </p>
           ) : null}
@@ -651,6 +720,51 @@ export default function ListingDetailPage() {
                 <span>{listing.area}</span>
               </div>
             </div>
+
+            {/* ── Divider ── */}
+            <div className="h-px bg-[#ede9e2]" />
+
+            {/* Delivery info */}
+            {listing.listing_type === "for_sale" &&
+              (() => {
+                const sizeKey = listing.size_category ?? DEFAULT_SIZE_CATEGORY;
+                const vehicle = VEHICLE_MAP[sizeKey];
+                const Icon = vehicle.icon;
+                const lagosFee = DELIVERY_RATES.lagos[sizeKey];
+                const outsideFee = DELIVERY_RATES.outside[sizeKey];
+                return (
+                  <div
+                    className="flex items-start gap-3 rounded-xl px-4 py-3.5"
+                    style={{
+                      background: "#f8f6f3",
+                      border: "1px solid #ede9e2",
+                    }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: "#ede9e2" }}
+                    >
+                      <Icon
+                        size={15}
+                        strokeWidth={1.75}
+                        className="text-[#78726c]"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#b0a89f]">
+                        Delivery
+                      </p>
+                      <p className="text-[13.5px] font-semibold text-[#16130f] mt-0.5">
+                        via {vehicle.label}
+                      </p>
+                      <p className="text-[12px] text-[#78726c] mt-0.5">
+                        ₦{lagosFee.toLocaleString()} Lagos · ₦
+                        {outsideFee.toLocaleString()} outside
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
 
             {/* ── Divider ── */}
             <div className="h-px bg-[#ede9e2]" />
@@ -728,7 +842,7 @@ export default function ListingDetailPage() {
               listing.status === "sold" && (
                 <div
                   className="rounded-2xl px-5 py-4 text-center"
-                  style={{ background: "#fafaf8", border: "1px solid #e8e4dc" }}
+                  style={{ background: "#f4f4f5", border: "1px solid #e8e4dc" }}
                 >
                   <p
                     className="text-[11.5px] font-semibold uppercase text-[#a8a09a]"

@@ -4,7 +4,7 @@ export function Navbar() {
   return (
     <header
       className="sticky top-0 z-50 bg-surface/90 backdrop-blur-md"
-      style={{ borderBottom: "1px solid #e8e4dc" }}
+      style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}
     >
       <div className="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="shrink-0">

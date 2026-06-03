@@ -1,5 +1,4 @@
 import { Truck, MapPin } from "lucide-react";
-import { LAGOS_DELIVERY_FEE, OUTSIDE_LAGOS_DELIVERY_FEE } from "@/lib/constants";
 
 type Props = {
   value: "delivery" | "pickup";
@@ -9,7 +8,9 @@ type Props = {
 export default function DeliveryTypeSelector({ value, onChange }: Props) {
   return (
     <div>
-      <p className="text-sm font-medium text-text-muted mb-3">Delivery option</p>
+      <p className="text-sm font-medium text-text-muted mb-3">
+        Delivery option
+      </p>
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
@@ -23,12 +24,13 @@ export default function DeliveryTypeSelector({ value, onChange }: Props) {
         >
           <Truck
             size={18}
-            className={value === "delivery" ? "text-primary" : "text-text-muted"}
+            className={
+              value === "delivery" ? "text-primary" : "text-text-muted"
+            }
           />
           <p className="font-semibold text-sm mt-2 text-text">Delivery</p>
           <p className="text-xs text-text-muted mt-0.5">
-            ₦{LAGOS_DELIVERY_FEE.toLocaleString()} Lagos /{" "}
-            ₦{OUTSIDE_LAGOS_DELIVERY_FEE.toLocaleString()} outside
+            Calculated at checkout
           </p>
         </button>
 

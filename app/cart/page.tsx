@@ -249,6 +249,7 @@ export default function CartPage() {
 
   const groups = groupBySeller(items, deliveryType);
   const grandTotal = calculateGrandTotal(groups);
+  const itemsSubtotal = items.reduce((sum, i) => sum + i.listing.price, 0);
 
   // ── Loading ──────────────────────────────────────────────────────────────
 
@@ -294,11 +295,13 @@ export default function CartPage() {
   // ── Anonymous buyer form ─────────────────────────────────────────────────
 
   if (showBuyerForm && !user) {
+    const hasAnonAddress = Boolean(buyerInfo.address_state);
     const anonGroups =
-      deliveryType === "delivery" && buyerInfo.address_state
+      deliveryType === "delivery" && hasAnonAddress
         ? groupBySeller(items, "delivery", buyerInfo.address_state)
         : groups;
     const anonGrandTotal = calculateGrandTotal(anonGroups);
+    const anonDisplayTotal = deliveryType === "delivery" && !hasAnonAddress ? itemsSubtotal : anonGrandTotal;
 
     return (
       <main className="min-h-screen bg-surface">
@@ -399,11 +402,13 @@ export default function CartPage() {
 
             <SummaryPanel
               groups={anonGroups}
-              grandTotal={anonGrandTotal}
+              grandTotal={anonDisplayTotal}
               checkingOut={checkingOut}
               error={error}
               ctaLabel="Continue to payment"
               formId="buyer-form"
+              showDeliveryFee={deliveryType !== "delivery" || hasAnonAddress}
+              deliveryFeeHint={deliveryType === "delivery" && !hasAnonAddress ? "Delivery fee calculated after entering address" : undefined}
             />
           </div>
         </div>
@@ -415,6 +420,7 @@ export default function CartPage() {
 
   if (showDeliveryStep && user) {
     const showTextarea = !hasSavedAddress || useNewAddress;
+    const feeKnown = (hasSavedAddress && !useNewAddress) || deliveryState !== null;
     const deliveryGroups = groupBySeller(
       items,
       "delivery",
@@ -423,6 +429,9 @@ export default function CartPage() {
         : (deliveryState ?? null)
     );
     const deliveryGrandTotal = calculateGrandTotal(deliveryGroups);
+    const deliveryDisplayTotal = feeKnown
+      ? deliveryGrandTotal
+      : deliveryGroups.reduce((sum, g) => sum + g.subtotal, 0);
 
     return (
       <main className="min-h-screen bg-surface">
@@ -508,7 +517,7 @@ export default function CartPage() {
                         </span>
                       </div>
                     ))}
-                    {group.delivery_fee > 0 && (
+                    {feeKnown && group.delivery_fee > 0 && (
                       <div className="flex justify-between">
                         <span className="text-sm text-text-muted">
                           Delivery
@@ -521,13 +530,18 @@ export default function CartPage() {
                   </div>
                 ))}
               </div>
+              {!feeKnown && (
+                <p className="text-xs text-text-muted mt-2">
+                  Delivery fee calculated after entering address
+                </p>
+              )}
               <div className="border-t border-border my-5" />
               <div className="flex items-baseline justify-between mb-6">
                 <span className="text-sm font-medium text-text-muted">
                   Total
                 </span>
                 <span className="font-display text-2xl font-bold text-text">
-                  ₦{deliveryGrandTotal.toLocaleString()}
+                  ₦{deliveryDisplayTotal.toLocaleString()}
                 </span>
               </div>
               <button
@@ -621,7 +635,7 @@ export default function CartPage() {
           {/* Right: sticky summary panel */}
           <SummaryPanel
             groups={groups}
-            grandTotal={grandTotal}
+            grandTotal={deliveryType === "pickup" ? grandTotal : itemsSubtotal}
             checkingOut={checkingOut}
             error={error}
             ctaLabel="Proceed to checkout"

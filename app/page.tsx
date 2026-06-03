@@ -218,7 +218,7 @@ function FreeItemsSection() {
         </div>
 
         {/* Horizontal scroll row — 4 cards visible on desktop */}
-        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 px-4">
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => (
                 <div
@@ -417,7 +417,7 @@ function DonationPileSection() {
         </div>
 
         {/* Horizontal scroll row */}
-        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
+        <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 px-4">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
                 <div
@@ -483,7 +483,9 @@ function CategoryCard({ cat, Icon }: { cat: string; Icon: LucideIcon }) {
         minWidth: "96px",
         flex: "1 1 0",
         background: hovered ? "#16130f" : "white",
-        border: `1px solid ${hovered ? "#16130f" : "#e8e2da"}`,
+        boxShadow: hovered
+          ? "0 4px 12px rgba(0,0,0,0.08)"
+          : "0 1px 3px rgba(0,0,0,0.04)",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -492,7 +494,11 @@ function CategoryCard({ cat, Icon }: { cat: string; Icon: LucideIcon }) {
         className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-200"
         style={{ background: hovered ? "rgba(255,255,255,0.10)" : "#f5f0ea" }}
       >
-        <Icon size={18} strokeWidth={1.75} style={{ color: hovered ? "white" : "#16130f" }} />
+        <Icon
+          size={18}
+          strokeWidth={1.75}
+          style={{ color: hovered ? "white" : "#16130f" }}
+        />
       </div>
       <span
         className="text-[11px] font-medium leading-tight"
@@ -598,7 +604,7 @@ function CategorySection({ category }: { category: string }) {
       </div>
 
       {/* Horizontal scroll row */}
-      <div className="no-scrollbar flex gap-3.5 overflow-x-auto pb-1 px-4 sm:px-6">
+      <div className="no-scrollbar flex gap-3.5 overflow-x-auto pb-1 pb-5 px-5 sm:px-7">
         {isLoading
           ? Array.from({ length: 5 }).map((_, i) => (
               <div
@@ -655,7 +661,7 @@ function HomeContent() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: "#ffffff" }}>
+    <main className="min-h-screen">
       {/* ── Hero ── */}
       <div
         className="relative overflow-hidden flex flex-col"
