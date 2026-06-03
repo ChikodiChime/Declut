@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   const authUser = await getAuthUser()
 
   const body = await req.json()
-  const { delivery_type, listing_ids, buyer_info, delivery_address } = body
+  const { delivery_type, listing_ids, buyer_info, delivery_address, delivery_state } = body
 
   if (delivery_type !== 'delivery' && delivery_type !== 'pickup') {
     return err('delivery_type must be delivery or pickup', 'VALIDATION_ERROR', 400)
@@ -62,11 +62,10 @@ export async function POST(req: Request) {
   const validation = validateCartItems(items)
   if ('error' in validation) return err(validation.error, 'VALIDATION_ERROR', 409)
 
-  const rawDeliveryState = (body as Record<string, unknown>).delivery_state
   const buyerState: string | null =
     delivery_type === 'delivery'
       ? (authUser
-          ? (typeof rawDeliveryState === 'string' ? rawDeliveryState : null)
+          ? (typeof delivery_state === 'string' ? delivery_state : null)
           : (typeof buyer_info?.address_state === 'string' ? buyer_info.address_state : null))
       : null
   const groups = groupBySeller(items, delivery_type, buyerState)
