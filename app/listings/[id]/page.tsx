@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   Clock,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useListing, usePublicListings } from "@/lib/hooks/useListings";
 import { useCart } from "@/lib/hooks/useCart";
@@ -54,18 +56,19 @@ const CONDITION_LEVEL: Record<string, number> = {
 
 function ImageGallery({ images, title }: { images: string[]; title: string }) {
   const [active, setActive] = useState(0);
+  const total = images.length;
+  const prev = () => setActive((i) => (i - 1 + total) % total);
+  const next = () => setActive((i) => (i + 1) % total);
 
-  if (images.length === 0) {
+  if (total === 0) {
     return (
       <div
-        className="rounded-3xl flex items-center justify-center"
-        style={{ aspectRatio: "4/3", background: "#f0ece4" }}
+        className="rounded-2xl flex items-center justify-center"
+        style={{ aspectRatio: "4/3", background: "#f0ece4", border: "1px solid #e8e2da" }}
       >
         <div className="flex flex-col items-center gap-3 text-[#a8a09a]">
           <Package size={48} strokeWidth={1} />
-          <span className="text-xs font-semibold tracking-[0.12em] uppercase">
-            No photos
-          </span>
+          <span className="text-xs font-semibold tracking-[0.12em] uppercase">No photos</span>
         </div>
       </div>
     );
@@ -73,9 +76,10 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Main image */}
       <div
-        className="relative rounded-3xl overflow-hidden"
-        style={{ aspectRatio: "4/3", background: "#f0ece4" }}
+        className="relative rounded-2xl overflow-hidden"
+        style={{ aspectRatio: "4/3", background: "#f0ece4", border: "1px solid #e8e2da" }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -83,7 +87,7 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
+            transition={{ duration: 0.2 }}
             className="absolute inset-0"
           >
             <ListingImage
@@ -97,40 +101,56 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           </motion.div>
         </AnimatePresence>
 
-        {images.length > 1 && (
-          <div
-            className="absolute bottom-4 right-4 px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide backdrop-blur-md"
-            style={{
-              background: "rgba(22,19,15,0.48)",
-              color: "rgba(255,255,255,0.92)",
-            }}
-          >
-            {active + 1} / {images.length}
-          </div>
+        {/* Prev / Next arrows */}
+        {total > 1 && (
+          <>
+            <button
+              onClick={prev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md transition-all duration-150 hover:scale-105"
+              style={{ background: "rgba(22,19,15,0.52)", color: "white" }}
+            >
+              <ChevronLeft size={18} strokeWidth={2} />
+            </button>
+            <button
+              onClick={next}
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md transition-all duration-150 hover:scale-105"
+              style={{ background: "rgba(22,19,15,0.52)", color: "white" }}
+            >
+              <ChevronRight size={18} strokeWidth={2} />
+            </button>
+
+            {/* Counter */}
+            <div
+              className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md"
+              style={{ background: "rgba(22,19,15,0.48)", color: "rgba(255,255,255,0.92)" }}
+            >
+              {active + 1} / {total}
+            </div>
+          </>
         )}
       </div>
 
-      {images.length > 1 && (
+      {/* Thumbnails */}
+      {total > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-0.5 no-scrollbar">
           {images.map((img, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}
-              className="relative shrink-0 w-[68px] h-[68px] rounded-xl overflow-hidden transition-all duration-200"
+              className="relative shrink-0 rounded-xl overflow-hidden transition-all duration-200"
               style={{
-                outline:
-                  i === active
-                    ? "2.5px solid #4f46e5"
-                    : "2.5px solid transparent",
-                outlineOffset: 2,
-                opacity: i === active ? 1 : 0.48,
+                width: 80,
+                height: 80,
+                border: i === active ? "2px solid #4f46e5" : "2px solid #e8e2da",
+                boxShadow: i === active ? "0 0 0 3px rgba(79,70,229,0.15)" : "none",
               }}
             >
               <ListingImage
                 src={img}
                 fill
-                sizes="68px"
-                className="object-cover"
+                sizes="80px"
+                className="object-cover transition-opacity duration-200"
+                style={{ opacity: i === active ? 1 : 0.65 }}
                 alt={`Thumbnail ${i + 1}`}
               />
             </button>
@@ -356,21 +376,15 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
 // ── Hero config ───────────────────────────────────────────────────────────────
 
 const HERO_CONFIG = {
-  for_sale: {
-    gradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4338ca 100%)",
-    glow1: "rgba(99,102,241,0.40)",
-    glow2: "rgba(167,139,250,0.25)",
-  },
-  free: {
-    gradient: "linear-gradient(135deg, #064e3b 0%, #065f46 45%, #059669 100%)",
-    glow1: "rgba(16,185,129,0.40)",
-    glow2: "rgba(52,211,153,0.25)",
-  },
-  donate: {
-    gradient: "linear-gradient(135deg, #78350f 0%, #92400e 45%, #b45309 100%)",
-    glow1: "rgba(245,158,11,0.40)",
-    glow2: "rgba(251,191,36,0.20)",
-  },
+  gradient: "linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4338ca 100%)",
+  glow1: "rgba(99,102,241,0.40)",
+  glow2: "rgba(167,139,250,0.25)",
+} as const;
+
+const TYPE_BADGE = {
+  for_sale: { bg: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.90)" },
+  free:     { bg: "rgba(16,185,129,0.90)",  color: "#ffffff" },
+  donate:   { bg: "rgba(245,158,11,0.90)",  color: "#ffffff" },
 } as const;
 
 // ── RelatedItems ──────────────────────────────────────────────────────────────
@@ -523,21 +537,21 @@ export default function ListingDetailPage() {
   const seller = listing.seller;
   const typeConfig = TYPE_CONFIG[listing.listing_type];
 
-  const heroConfig = HERO_CONFIG[listing.listing_type];
+  const badgeStyle = TYPE_BADGE[listing.listing_type];
 
   return (
     <main className="min-h-screen bg-[#fafaf8]">
       {/* ── Hero ── */}
       <div
         className="relative overflow-hidden"
-        style={{ background: heroConfig.gradient }}
+        style={{ background: HERO_CONFIG.gradient }}
       >
         {/* Ambient glow */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(ellipse at 15% 60%, ${heroConfig.glow1} 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, ${heroConfig.glow2} 0%, transparent 50%)`,
+            backgroundImage: `radial-gradient(ellipse at 15% 60%, ${HERO_CONFIG.glow1} 0%, transparent 55%), radial-gradient(ellipse at 80% 10%, ${HERO_CONFIG.glow2} 0%, transparent 50%)`,
           }}
         />
         {/* Dot grid */}
@@ -576,7 +590,7 @@ export default function ListingDetailPage() {
           {/* Type badge */}
           <span
             className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest mb-4"
-            style={{ background: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.90)" }}
+            style={{ background: badgeStyle.bg, color: badgeStyle.color }}
           >
             {typeConfig.label}
           </span>

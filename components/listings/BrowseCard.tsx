@@ -7,14 +7,28 @@ import { ListingImage } from "@/components/ui";
 import {
   Package,
   MapPin,
-  ShoppingCart,
   Gift,
   ChevronLeft,
   ChevronRight,
+  Loader2,
+  Check,
+  Clock,
+  X,
 } from "lucide-react";
+
 import { useCart } from "@/lib/hooks/useCart";
 import { addToSessionCart } from "@/lib/session-cart";
+import { CartIdleIcon } from "@/components/icons/CartIdleIcon";
+import { CartDoneIcon } from "@/components/icons/CartDoneIcon";
 import type { Listing } from "@/types";
+
+type ActionState = "idle" | "loading" | "done";
+
+type ClaimFeedback = {
+  kind: "success" | "error";
+  text: string;
+  sub?: string;
+} | null;
 
 const TYPE_CONFIG: Record<
   string,
@@ -58,7 +72,10 @@ interface BrowseCardProps {
 export function BrowseCard({ listing }: BrowseCardProps) {
   const router = useRouter();
   const { isInCart, addToCartOptimistic } = useCart();
-  const [addingToCart, setAddingToCart] = useState(false);
+  const [cartState, setCartState] = useState<ActionState>("idle");
+  const [claimState, setClaimState] = useState<ActionState>("idle");
+  const [claimFeedback, setClaimFeedback] = useState<ClaimFeedback>(null);
+  const [isHovered, setIsHovered] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
   const type = TYPE_CONFIG[listing.listing_type] ?? TYPE_CONFIG.for_sale;
   const inCart = isInCart(listing.id);
@@ -86,27 +103,70 @@ export function BrowseCard({ listing }: BrowseCardProps) {
   async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    if (inCart || addingToCart) return;
+    if (inCart || cartState !== "idle") return;
     addToCartOptimistic(listing.id);
-    setAddingToCart(true);
-    const res = await fetch("/api/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ listing_id: listing.id }),
-    });
-    setAddingToCart(false);
+    setCartState("loading");
+    const [res] = await Promise.all([
+      fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listing_id: listing.id }),
+      }),
+      new Promise<void>((r) => setTimeout(r, 700)),
+    ]);
     if (res.status === 401) {
       addToSessionCart(listing.id);
       window.dispatchEvent(new Event("cart-updated"));
-      return;
+    } else if (res.ok) {
+      window.dispatchEvent(new Event("cart-updated"));
     }
-    if (res.ok) window.dispatchEvent(new Event("cart-updated"));
+    setCartState("done");
+    setTimeout(() => setCartState("idle"), 2000);
   }
 
   async function handleClaim(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    router.push(`/${listing.id}`);
+    if (claimState !== "idle") return;
+    setClaimState("loading");
+    const [res] = await Promise.all([
+      fetch("/api/claims", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listing_id: listing.id }),
+      }),
+      new Promise<void>((r) => setTimeout(r, 700)),
+    ]);
+
+    if (res.status === 401) {
+      router.push(`/auth/login?next=/listings/${listing.id}`);
+      return;
+    }
+
+    let feedback: ClaimFeedback;
+    if (res.ok) {
+      feedback = {
+        kind: "success",
+        text: "Claim sent!",
+        sub: "Waiting for the seller to respond",
+      };
+      setClaimState("done");
+      setTimeout(() => setClaimState("idle"), 3000);
+    } else {
+      const body = await res.json().catch(() => ({}));
+      const msg: string = body?.error?.message ?? "";
+      if (res.status === 409) {
+        feedback = msg.includes("no longer available")
+          ? { kind: "error", text: "No longer available", sub: "Someone else may have claimed it" }
+          : { kind: "error", text: "Already claimed", sub: "You already have a pending claim" };
+      } else {
+        feedback = { kind: "error", text: "Couldn't claim", sub: "Please try again" };
+      }
+      setClaimState("idle");
+    }
+
+    setClaimFeedback(feedback);
+    setTimeout(() => setClaimFeedback(null), 4000);
   }
 
   return (
@@ -118,11 +178,13 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)",
       }}
       onMouseEnter={(e) => {
+        setIsHovered(true);
         const el = e.currentTarget as HTMLElement;
         el.style.borderColor = type.borderHover;
         el.style.boxShadow = `0 4px 16px rgba(22,19,15,0.10), 0 0 0 1px ${type.borderHover}`;
       }}
       onMouseLeave={(e) => {
+        setIsHovered(false);
         const el = e.currentTarget as HTMLElement;
         el.style.borderColor = type.border;
         el.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)";
@@ -164,6 +226,85 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             {type.label}
           </span>
         </div>
+
+        {/* Hover action button — top right */}
+        {listing.status === "available" && (
+          <div className="absolute right-2.5 top-2.5 z-10">
+            {listing.listing_type === "for_sale" && (
+              <button
+                onClick={handleAddToCart}
+                disabled={cartState === "loading"}
+                aria-label={inCart || cartState === "done" ? "Added to cart" : "Add to cart"}
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed"
+                style={{
+                  background: "rgba(255,255,255,0.92)",
+                  backdropFilter: "blur(6px)",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
+                  opacity: isHovered || inCart || cartState !== "idle" ? 1 : 0,
+                  transform: cartState === "done" ? "scale(1.18)" : "scale(1)",
+                  pointerEvents: isHovered || inCart || cartState !== "idle" ? "auto" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (cartState !== "idle") return;
+                  (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
+                }}
+                onMouseLeave={(e) => {
+                  if (cartState !== "idle") return;
+                  (e.currentTarget as HTMLElement).style.transform = "scale(1)";
+                }}
+              >
+                {cartState === "loading" ? (
+                  <Loader2 size={22} strokeWidth={2} className="animate-spin" style={{ color: type.color }} />
+                ) : inCart || cartState === "done" ? (
+                  <CartDoneIcon color={type.color} />
+                ) : (
+                  <CartIdleIcon color="#374151" />
+                )}
+              </button>
+            )}
+
+            {listing.listing_type === "free" && (
+              <button
+                onClick={handleClaim}
+                disabled={claimState === "loading"}
+                aria-label="Claim item"
+                className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed"
+                style={{
+                  background:
+                    claimState === "done"
+                      ? type.color
+                      : "rgba(255,255,255,0.92)",
+                  backdropFilter: "blur(6px)",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
+                  opacity: isHovered || claimState !== "idle" ? 1 : 0,
+                  transform: claimState === "done" ? "scale(1.18)" : "scale(1)",
+                  pointerEvents: isHovered || claimState !== "idle" ? "auto" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (claimState !== "idle") return;
+                  (e.currentTarget as HTMLElement).style.transform = "scale(1.1)";
+                }}
+                onMouseLeave={(e) => {
+                  if (claimState !== "idle") return;
+                  (e.currentTarget as HTMLElement).style.transform = "scale(1)";
+                }}
+              >
+                {claimState === "loading" ? (
+                  <Loader2
+                    size={22}
+                    strokeWidth={2}
+                    className="animate-spin"
+                    style={{ color: type.color }}
+                  />
+                ) : claimState === "done" ? (
+                  <Check size={22} strokeWidth={2} style={{ color: "white" }} />
+                ) : (
+                  <Gift size={22} strokeWidth={1.5} style={{ color: "#374151" }} />
+                )}
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Prev arrow */}
         {hasMultiple && imgIdx > 0 && (
@@ -208,6 +349,38 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             ))}
           </div>
         )}
+
+        {/* Claim feedback overlay */}
+        {claimFeedback && (
+          <div
+            className="absolute inset-x-0 bottom-0 z-20 flex items-start gap-2 px-3 py-2.5 transition-all duration-300"
+            style={{
+              background:
+                claimFeedback.kind === "success"
+                  ? "rgba(5,95,70,0.93)"
+                  : "rgba(127,29,29,0.93)",
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            <div className="mt-0.5 shrink-0">
+              {claimFeedback.kind === "success" ? (
+                <Clock size={12} strokeWidth={2.5} style={{ color: "rgba(255,255,255,0.85)" }} />
+              ) : (
+                <X size={12} strokeWidth={2.5} style={{ color: "rgba(255,255,255,0.85)" }} />
+              )}
+            </div>
+            <div>
+              <p className="text-[12px] font-semibold leading-tight text-white">
+                {claimFeedback.text}
+              </p>
+              {claimFeedback.sub && (
+                <p className="text-[10.5px] mt-0.5 leading-tight" style={{ color: "rgba(255,255,255,0.72)" }}>
+                  {claimFeedback.sub}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Card body ── */}
@@ -240,32 +413,6 @@ export function BrowseCard({ listing }: BrowseCardProps) {
           </span>
         </div>
 
-        {/* CTA */}
-        {listing.listing_type === "for_sale" && listing.status === "available" && (
-          <button
-            onClick={handleAddToCart}
-            disabled={inCart}
-            className="mt-auto flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200 disabled:cursor-not-allowed"
-            style={{
-              background: inCart ? "#f5f1eb" : type.color,
-              color: inCart ? "#78726c" : "white",
-            }}
-          >
-            <ShoppingCart size={12} strokeWidth={2} />
-            {inCart ? "In Cart" : "Add to Cart"}
-          </button>
-        )}
-
-        {listing.listing_type === "free" && listing.status === "available" && (
-          <button
-            onClick={handleClaim}
-            className="mt-auto flex w-full items-center justify-center gap-1.5 rounded-xl py-2 text-xs font-semibold transition-all duration-200"
-            style={{ background: type.color, color: "white" }}
-          >
-            <Gift size={12} strokeWidth={2} />
-            Claim
-          </button>
-        )}
       </div>
     </Link>
   );

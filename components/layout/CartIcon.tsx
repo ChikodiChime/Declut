@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { CartIcon as CartSvgIcon } from "@/components/icons/CartIcon";
 import { getSessionCart } from "@/lib/session-cart";
 
 export function CartIcon({ transparent = false }: { transparent?: boolean }) {
@@ -47,11 +47,9 @@ export function CartIcon({ transparent = false }: { transparent?: boolean }) {
       className="relative inline-flex items-center justify-center transition-opacity hover:opacity-70"
       aria-label={`Cart (${count} items)`}
     >
-      <ShoppingCart
-        size={20}
-        strokeWidth={1.75}
-        style={{ color: transparent ? "rgba(255,255,255,0.82)" : "#78726c" }}
-        className="transition-colors duration-300"
+      <CartSvgIcon
+        size={22}
+        color={transparent ? "rgba(255,255,255,0.82)" : "#78726c"}
       />
       {count > 0 && (
         <span

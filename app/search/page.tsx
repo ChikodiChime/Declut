@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   Search,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Check,
   X,
   SlidersHorizontal,
@@ -15,7 +17,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { BrowseCard } from "@/components/listings";
-import { Button } from "@/components/ui";
 import {
   usePublicListings,
   useBusinessSellers,
@@ -535,6 +536,53 @@ function SidebarFilters({
   );
 }
 
+// ─── Pagination component ─────────────────────────────────────────────────────
+
+function Pagination({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (p: number) => void }) {
+  if (totalPages <= 1) return null;
+
+  const pages: (number | "…")[] = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    pages.push(1);
+    if (page > 3) pages.push("…");
+    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
+    if (page < totalPages - 2) pages.push("…");
+    pages.push(totalPages);
+  }
+
+  const btn = (label: React.ReactNode, target: number, active = false, disabled = false) => (
+    <button
+      key={String(label)}
+      onClick={() => { if (!disabled) { onChange(target); window.scrollTo({ top: 0, behavior: "smooth" }); } }}
+      disabled={disabled}
+      className="flex h-9 min-w-[36px] items-center justify-center rounded-lg px-2 text-[13px] font-medium transition-all duration-150 disabled:opacity-40"
+      style={{
+        background: active ? "#4f46e5" : "transparent",
+        color: active ? "#ffffff" : "#56524d",
+        border: active ? "none" : "1px solid transparent",
+      }}
+      onMouseEnter={(e) => { if (!active && !disabled) (e.currentTarget as HTMLElement).style.background = "#f0ece6"; }}
+      onMouseLeave={(e) => { if (!active && !disabled) (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+    >
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="mt-10 flex items-center justify-center gap-1">
+      {btn(<ChevronLeft size={15} strokeWidth={2} />, page - 1, false, page === 1)}
+      {pages.map((p, i) =>
+        p === "…"
+          ? <span key={`ellipsis-${i}`} className="flex h-9 w-9 items-center justify-center text-[13px]" style={{ color: "#a8a09a" }}>…</span>
+          : btn(p, p as number, p === page)
+      )}
+      {btn(<ChevronRight size={15} strokeWidth={2} />, page + 1, false, page === totalPages)}
+    </div>
+  );
+}
+
 // ─── Filter state ─────────────────────────────────────────────────────────────
 
 function useFilter() {
@@ -550,7 +598,7 @@ function useFilter() {
   const [price_min, _setPriceMin] = useState(searchParams.get("price_min") ?? "");
   const [price_max, _setPriceMax] = useState(searchParams.get("price_max") ?? "");
   const [sort, _setSort] = useState<BrowseParams["sort"]>((searchParams.get("sort") as BrowseParams["sort"]) ?? "newest");
-  const [limit, setLimit] = useState(PAGE_SIZE);
+  const [page, setPage] = useState(1);
 
   const updateUrl = useCallback(
     (params: Record<string, string>) => {
@@ -568,24 +616,24 @@ function useFilter() {
   // Sync q from URL when the navbar navigates to /search?q=...
   useEffect(() => {
     const urlQ = searchParams.get("q") ?? "";
-    if (urlQ !== q) { _setQ(urlQ); setLimit(PAGE_SIZE); }
+    if (urlQ !== q) { _setQ(urlQ); setPage(1); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  function setQ(v: string) { _setQ(v); setLimit(PAGE_SIZE); }
-  function setListingType(v: ListingType | "") { _setListingType(v); setLimit(PAGE_SIZE); }
-  function setCategory(v: string) { _setCategory(v); setLimit(PAGE_SIZE); }
-  function setCondition(v: Condition | "") { _setCondition(v); setLimit(PAGE_SIZE); }
-  function setArea(v: string) { _setArea(v); setLimit(PAGE_SIZE); }
-  function setSellerId(v: string) { _setSellerId(v); setLimit(PAGE_SIZE); }
-  function setPriceMin(v: string) { _setPriceMin(v); setLimit(PAGE_SIZE); }
-  function setPriceMax(v: string) { _setPriceMax(v); setLimit(PAGE_SIZE); }
-  function setSort(v: BrowseParams["sort"]) { _setSort(v); setLimit(PAGE_SIZE); }
+  function setQ(v: string) { _setQ(v); setPage(1); }
+  function setListingType(v: ListingType | "") { _setListingType(v); setPage(1); }
+  function setCategory(v: string) { _setCategory(v); setPage(1); }
+  function setCondition(v: Condition | "") { _setCondition(v); setPage(1); }
+  function setArea(v: string) { _setArea(v); setPage(1); }
+  function setSellerId(v: string) { _setSellerId(v); setPage(1); }
+  function setPriceMin(v: string) { _setPriceMin(v); setPage(1); }
+  function setPriceMax(v: string) { _setPriceMax(v); setPage(1); }
+  function setSort(v: BrowseParams["sort"]) { _setSort(v); setPage(1); }
 
   const hasFilters = !!(q || listing_type || category || condition || area || seller_id || price_min || price_max);
 
   function clearFilters() {
-    _setQ(""); _setListingType(""); _setCategory(""); _setCondition(""); _setArea(""); _setSellerId(""); _setPriceMin(""); _setPriceMax(""); _setSort("newest"); setLimit(PAGE_SIZE);
+    _setQ(""); _setListingType(""); _setCategory(""); _setCondition(""); _setArea(""); _setSellerId(""); _setPriceMin(""); _setPriceMax(""); _setSort("newest"); setPage(1);
   }
 
   return {
@@ -598,7 +646,7 @@ function useFilter() {
     price_min, setPriceMin,
     price_max, setPriceMax,
     sort, setSort,
-    limit, setLimit,
+    page, setPage,
     hasFilters, clearFilters,
   };
 }
@@ -616,7 +664,7 @@ function SearchContent() {
     price_min, setPriceMin,
     price_max, setPriceMax,
     sort, setSort,
-    limit, setLimit,
+    page, setPage,
     hasFilters, clearFilters,
   } = useFilter();
 
@@ -666,14 +714,14 @@ function SearchContent() {
     price_min: price_min ? Number(price_min) : undefined,
     price_max: price_max ? Number(price_max) : undefined,
     sort,
-    limit,
-    offset: 0,
+    limit: PAGE_SIZE,
+    offset: (page - 1) * PAGE_SIZE,
   };
 
   const { data, isLoading, isFetching } = usePublicListings(browseParams);
   const listings = data?.listings ?? [];
   const total = data?.total ?? 0;
-  const hasMore = listings.length < total;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const activeFilterCount = [
     !!listing_type, !!category, !!condition, !!area, !!seller_id, !!price_min, !!price_max,
@@ -810,7 +858,7 @@ function SearchContent() {
           </div>
 
           {/* Results */}
-          <div className="px-6 py-6">
+          <div className="px-6 py-6 max-w-[1400px] mx-auto">
             {!isLoading && (
               <p className="mb-5 text-xs" style={{ color: "#a8a09a" }}>
                 {total === 0 ? "No listings found" : `${total.toLocaleString()} listing${total === 1 ? "" : "s"}`}
@@ -820,7 +868,7 @@ function SearchContent() {
             )}
 
             {isLoading && (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="animate-pulse overflow-hidden rounded-xl border" style={{ background: "white", borderColor: "#ebe5dc" }}>
                     <div className="aspect-4/3" style={{ background: "#f0ece5" }} />
@@ -834,7 +882,7 @@ function SearchContent() {
             )}
 
             {!isLoading && listings.length > 0 && (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                 {listings.map((listing) => (
                   <BrowseCard key={listing.id} listing={listing} />
                 ))}
@@ -856,12 +904,8 @@ function SearchContent() {
               </div>
             )}
 
-            {!isLoading && hasMore && (
-              <div className="mt-10 text-center">
-                <Button variant="outline" loading={isFetching} onClick={() => setLimit((l) => l + PAGE_SIZE)}>
-                  Load more
-                </Button>
-              </div>
+            {!isLoading && (
+              <Pagination page={page} totalPages={totalPages} onChange={setPage} />
             )}
           </div>
         </div>

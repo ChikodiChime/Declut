@@ -3,9 +3,21 @@
 import { Suspense, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Search, X, ArrowRight, MapPin,
-  Smartphone, Shirt, Armchair, Plug, Dumbbell,
-  Gift, Heart,
+  Search,
+  X,
+  ArrowRight,
+  MapPin,
+  Smartphone,
+  Shirt,
+  Armchair,
+  Plug,
+  Dumbbell,
+  Gift,
+  Heart,
+  BookOpen,
+  Baby,
+  Car,
+  Package,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -24,12 +36,19 @@ const FEATURED_CATEGORIES = [
   "Sports & Outdoors",
 ];
 
-const CATEGORY_CONFIG: Record<string, { Icon: LucideIcon; bg: string; color: string }> = {
-  "Electronics":            { Icon: Smartphone, bg: "#eef2ff", color: "#4f46e5" },
-  "Clothing & Accessories": { Icon: Shirt,      bg: "#fdf2f8", color: "#c026d3" },
-  "Furniture & Home":       { Icon: Armchair,   bg: "#fff7ed", color: "#ea580c" },
-  "Appliances":             { Icon: Plug,       bg: "#eff6ff", color: "#2563eb" },
-  "Sports & Outdoors":      { Icon: Dumbbell,   bg: "#f0fdf4", color: "#16a34a" },
+const CATEGORY_CONFIG: Record<
+  string,
+  { Icon: LucideIcon; bg: string; color: string }
+> = {
+  Electronics: { Icon: Smartphone, bg: "#eef2ff", color: "#4f46e5" },
+  "Clothing & Accessories": { Icon: Shirt, bg: "#fdf2f8", color: "#c026d3" },
+  "Furniture & Home": { Icon: Armchair, bg: "#fff7ed", color: "#ea580c" },
+  Appliances: { Icon: Plug, bg: "#eff6ff", color: "#2563eb" },
+  "Sports & Outdoors": { Icon: Dumbbell, bg: "#f0fdf4", color: "#16a34a" },
+  "Books & Stationery": { Icon: BookOpen, bg: "#fefce8", color: "#ca8a04" },
+  "Kids & Baby": { Icon: Baby, bg: "#fff1f2", color: "#e11d48" },
+  "Vehicles & Parts": { Icon: Car, bg: "#f0f9ff", color: "#0284c7" },
+  Other: { Icon: Package, bg: "#f5f5f4", color: "#78716c" },
 };
 
 const CONDITION_LABELS: Record<string, string> = {
@@ -78,13 +97,18 @@ function FreeItemCard({ listing }: { listing: Listing }) {
             alt={listing.title}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xl">📦</div>
+          <div className="flex h-full w-full items-center justify-center text-xl">
+            📦
+          </div>
         )}
       </div>
 
       {/* Details — flex column, fills remaining width */}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <p className="line-clamp-2 text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>
+        <p
+          className="line-clamp-2 text-sm font-semibold leading-snug"
+          style={{ color: "#16130f" }}
+        >
           {listing.title}
         </p>
 
@@ -97,7 +121,11 @@ function FreeItemCard({ listing }: { listing: Listing }) {
           </span>
           <span style={{ color: "#d1d5db" }}>·</span>
           <div className="flex min-w-0 items-center gap-1">
-            <MapPin size={9} strokeWidth={2} style={{ color: "#b8b0a8", flexShrink: 0 }} />
+            <MapPin
+              size={9}
+              strokeWidth={2}
+              style={{ color: "#b8b0a8", flexShrink: 0 }}
+            />
             <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
               {listing.area}
             </span>
@@ -106,11 +134,19 @@ function FreeItemCard({ listing }: { listing: Listing }) {
 
         {/* Claim sits at the bottom of the text column */}
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(`/listings/${listing.id}`); }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            router.push(`/listings/${listing.id}`);
+          }}
           className="mt-1 self-start rounded-full px-4 py-1.5 text-[11px] font-bold transition-all duration-150"
           style={{ background: "#10b981", color: "white" }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#059669"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#10b981"; }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "#059669";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "#10b981";
+          }}
         >
           Claim for free
         </button>
@@ -133,39 +169,31 @@ function FreeItemsSection() {
   if (!isLoading && listings.length === 0) return null;
 
   return (
-    <section
-      className="relative py-12 my-6"
-      style={{
-        background: "linear-gradient(180deg, #f0fdf8 0%, #ecfdf5 100%)",
-        borderTop: "1px solid #c6f0e2",
-        borderBottom: "1px solid #c6f0e2",
-      }}
-    >
-      {/* Subtle dot texture */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.4]"
-        style={{
-          backgroundImage: "radial-gradient(circle, #a7f3d0 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
-
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+    <section className="py-10 max-w-6xl mx-auto px-4 sm:px-6">
+      <div>
         {/* Header */}
         <div className="flex items-start justify-between mb-7 gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ background: "rgba(16,185,129,0.12)" }}>
+              <div
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: "rgba(16,185,129,0.12)" }}
+              >
                 <Gift size={17} strokeWidth={2} style={{ color: "#059669" }} />
               </div>
-              <h2 className="text-xl font-semibold" style={{ color: "#064e3b" }}>
+              <h2
+                className="text-xl font-semibold"
+                style={{ color: "#16130f" }}
+              >
                 Free Items
               </h2>
               {!isLoading && total > 0 && (
                 <span
                   className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                  style={{ background: "rgba(16,185,129,0.15)", color: "#059669" }}
+                  style={{
+                    background: "rgba(16,185,129,0.15)",
+                    color: "#059669",
+                  }}
                 >
                   {total}
                 </span>
@@ -179,7 +207,11 @@ function FreeItemsSection() {
           <Link
             href="/search?listing_type=free"
             className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition-all duration-150 hover:gap-2.5"
-            style={{ borderColor: "#a7f3d0", color: "#059669", background: "white" }}
+            style={{
+              borderColor: "#a7f3d0",
+              color: "#059669",
+              background: "white",
+            }}
           >
             See all <ArrowRight size={12} strokeWidth={2.2} />
           </Link>
@@ -194,16 +226,31 @@ function FreeItemsSection() {
                   className="w-[280px] lg:w-[320px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
                   style={{ border: "1px solid #e8f5ee" }}
                 >
-                  <div className="h-[72px] w-[72px] shrink-0 rounded-xl" style={{ background: "#d1fae5" }} />
+                  <div
+                    className="h-[72px] w-[72px] shrink-0 rounded-xl"
+                    style={{ background: "#d1fae5" }}
+                  />
                   <div className="flex flex-1 flex-col gap-2">
-                    <div className="h-3.5 w-3/4 rounded" style={{ background: "#d1fae5" }} />
-                    <div className="h-3 w-1/2 rounded" style={{ background: "#d1fae5" }} />
+                    <div
+                      className="h-3.5 w-3/4 rounded"
+                      style={{ background: "#d1fae5" }}
+                    />
+                    <div
+                      className="h-3 w-1/2 rounded"
+                      style={{ background: "#d1fae5" }}
+                    />
                   </div>
-                  <div className="h-7 w-14 shrink-0 rounded-full" style={{ background: "#d1fae5" }} />
+                  <div
+                    className="h-7 w-14 shrink-0 rounded-full"
+                    style={{ background: "#d1fae5" }}
+                  />
                 </div>
               ))
             : listings.map((listing) => (
-                <div key={listing.id} className="w-[280px] lg:w-[320px] shrink-0">
+                <div
+                  key={listing.id}
+                  className="w-[280px] lg:w-[320px] shrink-0"
+                >
                   <FreeItemCard listing={listing} />
                 </div>
               ))}
@@ -249,13 +296,18 @@ function DonationItemCard({ listing }: { listing: Listing }) {
             alt={listing.title}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xl">📦</div>
+          <div className="flex h-full w-full items-center justify-center text-xl">
+            📦
+          </div>
         )}
       </div>
 
       {/* Details */}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <p className="line-clamp-2 text-sm font-semibold leading-snug" style={{ color: "#16130f" }}>
+        <p
+          className="line-clamp-2 text-sm font-semibold leading-snug"
+          style={{ color: "#16130f" }}
+        >
           {listing.title}
         </p>
 
@@ -268,7 +320,11 @@ function DonationItemCard({ listing }: { listing: Listing }) {
           </span>
           <span style={{ color: "#d1d5db" }}>·</span>
           <div className="flex min-w-0 items-center gap-1">
-            <MapPin size={9} strokeWidth={2} style={{ color: "#b8b0a8", flexShrink: 0 }} />
+            <MapPin
+              size={9}
+              strokeWidth={2}
+              style={{ color: "#b8b0a8", flexShrink: 0 }}
+            />
             <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
               {listing.area}
             </span>
@@ -300,60 +356,61 @@ function DonationPileSection() {
   if (!isLoading && listings.length === 0) return null;
 
   return (
-    <section
-      className="relative py-12 my-6"
-      style={{
-        background: "linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%)",
-        borderTop: "1px solid #fde68a",
-        borderBottom: "1px solid #fde68a",
-      }}
-    >
-      {/* Subtle dot texture */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
-        style={{
-          backgroundImage: "radial-gradient(circle, #fcd34d 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
-        }}
-      />
-
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+    <section className="py-10 max-w-6xl mx-auto px-4 sm:px-6">
+      <div>
         {/* Header */}
         <div className="flex items-start justify-between mb-7 gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl" style={{ background: "rgba(245,158,11,0.12)" }}>
+              <div
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                style={{ background: "rgba(245,158,11,0.12)" }}
+              >
                 <Heart size={17} strokeWidth={2} style={{ color: "#b45309" }} />
               </div>
-              <h2 className="text-xl font-semibold" style={{ color: "#78350f" }}>
+              <h2
+                className="text-xl font-semibold"
+                style={{ color: "#16130f" }}
+              >
                 Donation Pile
               </h2>
               {!isLoading && total > 0 && (
                 <span
                   className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                  style={{ background: "rgba(245,158,11,0.18)", color: "#b45309" }}
+                  style={{
+                    background: "rgba(245,158,11,0.18)",
+                    color: "#b45309",
+                  }}
                 >
                   {total}
                 </span>
               )}
             </div>
-            <p className="text-sm" style={{ color: "#92400e" }}>
+            <p className="text-sm" style={{ color: "#6b7280" }}>
               Items going to charities — give them a good send-off
             </p>
-            <p className="mt-3 text-sm max-w-md" style={{ color: "#78350f" }}>
+            <p className="mt-3 text-sm max-w-md" style={{ color: "#6b7280" }}>
               Got something gathering dust?{" "}
-              <Link href="/dashboard/listings/new" className="font-semibold underline underline-offset-2 hover:no-underline" style={{ color: "#b45309" }}>
+              <Link
+                href="/dashboard/listings/new"
+                className="font-semibold underline underline-offset-2 hover:no-underline"
+                style={{ color: "#16130f" }}
+              >
                 List it as a donation
               </Link>{" "}
-              and let it go to a charity that actually needs it. Takes 2 minutes.
+              and let it go to a charity that actually needs it. Takes 2
+              minutes.
             </p>
           </div>
 
           <Link
             href="/search?listing_type=donate"
             className="shrink-0 inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-xs font-semibold transition-all duration-150 hover:gap-2.5"
-            style={{ borderColor: "#fbbf24", color: "#b45309", background: "white" }}
+            style={{
+              borderColor: "#fbbf24",
+              color: "#b45309",
+              background: "white",
+            }}
           >
             See all <ArrowRight size={12} strokeWidth={2.2} />
           </Link>
@@ -368,20 +425,109 @@ function DonationPileSection() {
                   className="w-[280px] lg:w-[320px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
                   style={{ border: "1px solid #fde8a0" }}
                 >
-                  <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#fde68a" }} />
+                  <div
+                    className="h-20 w-20 shrink-0 rounded-xl"
+                    style={{ background: "#fde68a" }}
+                  />
                   <div className="flex flex-1 flex-col gap-2">
-                    <div className="h-3.5 w-3/4 rounded" style={{ background: "#fde68a" }} />
-                    <div className="h-3 w-1/2 rounded" style={{ background: "#fde68a" }} />
-                    <div className="h-5 w-1/3 rounded-full mt-1" style={{ background: "#fde68a" }} />
+                    <div
+                      className="h-3.5 w-3/4 rounded"
+                      style={{ background: "#fde68a" }}
+                    />
+                    <div
+                      className="h-3 w-1/2 rounded"
+                      style={{ background: "#fde68a" }}
+                    />
+                    <div
+                      className="h-5 w-1/3 rounded-full mt-1"
+                      style={{ background: "#fde68a" }}
+                    />
                   </div>
                 </div>
               ))
             : listings.map((listing) => (
-                <div key={listing.id} className="w-[280px] lg:w-[320px] shrink-0">
+                <div
+                  key={listing.id}
+                  className="w-[280px] lg:w-[320px] shrink-0"
+                >
                   <DonationItemCard listing={listing} />
                 </div>
               ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Browse by category section ───────────────────────────────────────────────
+
+const ALL_CATEGORIES = [
+  "Electronics",
+  "Clothing & Accessories",
+  "Furniture & Home",
+  "Appliances",
+  "Sports & Outdoors",
+  "Books & Stationery",
+  "Kids & Baby",
+  "Vehicles & Parts",
+  "Other",
+] as const;
+
+function CategoryCard({ cat, Icon }: { cat: string; Icon: LucideIcon }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Link
+      href={`/search?category=${encodeURIComponent(cat)}`}
+      className="shrink-0 flex flex-col items-center gap-2.5 rounded-2xl px-4 py-4 text-center transition-all duration-200"
+      style={{
+        minWidth: "96px",
+        flex: "1 1 0",
+        background: hovered ? "#16130f" : "white",
+        border: `1px solid ${hovered ? "#16130f" : "#e8e2da"}`,
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-200"
+        style={{ background: hovered ? "rgba(255,255,255,0.10)" : "#f5f0ea" }}
+      >
+        <Icon size={18} strokeWidth={1.75} style={{ color: hovered ? "white" : "#16130f" }} />
+      </div>
+      <span
+        className="text-[11px] font-medium leading-tight"
+        style={{ color: hovered ? "rgba(255,255,255,0.85)" : "#44403c" }}
+      >
+        {cat}
+      </span>
+    </Link>
+  );
+}
+
+function BrowseByCategorySection() {
+  return (
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-4">
+      {/* <div className="flex items-center justify-between mb-5">
+        <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: "#a8a09a" }}>
+          Browse by category
+        </h2>
+        <Link
+          href="/search"
+          className="flex items-center gap-1 text-xs font-medium transition-colors"
+          style={{ color: "#78726c" }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#16130f"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#78726c"; }}
+        >
+          All listings <ArrowRight size={11} strokeWidth={2.2} />
+        </Link>
+      </div> */}
+
+      <div className="no-scrollbar flex gap-2.5 overflow-x-auto pb-1">
+        {ALL_CATEGORIES.map((cat) => {
+          const cfg = CATEGORY_CONFIG[cat];
+          if (!cfg) return null;
+          return <CategoryCard key={cat} cat={cat} Icon={cfg.Icon} />;
+        })}
       </div>
     </section>
   );
@@ -411,13 +557,13 @@ function CategorySection({ category }: { category: string }) {
           {(() => {
             const cfg = CATEGORY_CONFIG[category];
             if (!cfg) return null;
-            const { Icon, bg, color } = cfg;
+            const { Icon } = cfg;
             return (
               <div
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                style={{ background: bg }}
+                style={{ background: "#f0ece6" }}
               >
-                <Icon size={15} strokeWidth={2} style={{ color }} />
+                <Icon size={15} strokeWidth={2} style={{ color: "#44403c" }} />
               </div>
             );
           })()}
@@ -439,8 +585,12 @@ function CategorySection({ category }: { category: string }) {
             href={searchHref}
             className="flex items-center gap-1 text-xs font-medium transition-colors"
             style={{ color: "#4f46e5" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#4338ca"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#4f46e5"; }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "#4338ca";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.color = "#4f46e5";
+            }}
           >
             See all <ArrowRight size={12} strokeWidth={2.2} />
           </Link>
@@ -456,16 +606,31 @@ function CategorySection({ category }: { category: string }) {
                 className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 animate-pulse overflow-hidden rounded-2xl border"
                 style={{ background: "white", borderColor: "#ebe5dc" }}
               >
-                <div className="aspect-4/3 rounded-t-2xl" style={{ background: "#f0ece5" }} />
+                <div
+                  className="aspect-4/3 rounded-t-2xl"
+                  style={{ background: "#f0ece5" }}
+                />
                 <div className="flex flex-col gap-2 p-3.5">
-                  <div className="h-3.5 w-3/4 rounded" style={{ background: "#f0ece5" }} />
-                  <div className="h-3 w-1/2 rounded" style={{ background: "#f0ece5" }} />
-                  <div className="h-7 w-full rounded-xl mt-1" style={{ background: "#f0ece5" }} />
+                  <div
+                    className="h-3.5 w-3/4 rounded"
+                    style={{ background: "#f0ece5" }}
+                  />
+                  <div
+                    className="h-3 w-1/2 rounded"
+                    style={{ background: "#f0ece5" }}
+                  />
+                  <div
+                    className="h-7 w-full rounded-xl mt-1"
+                    style={{ background: "#f0ece5" }}
+                  />
                 </div>
               </div>
             ))
           : listings.map((listing) => (
-              <div key={listing.id} className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 flex flex-col">
+              <div
+                key={listing.id}
+                className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 flex flex-col"
+              >
                 <BrowseCard listing={listing} />
               </div>
             ))}
@@ -490,11 +655,11 @@ function HomeContent() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: "#fafaf8" }}>
+    <main className="min-h-screen" style={{ background: "#ffffff" }}>
       {/* ── Hero ── */}
       <div
         className="relative overflow-hidden flex flex-col"
-        style={{ marginTop: "-68px", minHeight: "100vh" }}
+        style={{ marginTop: "-76px" }}
       >
         {/* Background photo */}
         <div
@@ -511,14 +676,15 @@ function HomeContent() {
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
-            background: "linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.80) 35%, rgba(0,0,0,0.40) 65%, rgba(0,0,0,0.05) 100%)",
+            background:
+              "linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.80) 35%, rgba(0,0,0,0.40) 65%, rgba(0,0,0,0.05) 100%)",
           }}
         />
 
         {/* Left-aligned content — mirrors Fiverr's layout */}
         <div
-          className="relative flex-1 flex flex-col justify-center px-8 sm:px-12 lg:px-20 pt-32 pb-16"
-          style={{ maxWidth: "1160px" }}
+          className="relative w-full flex-1 flex flex-col justify-center px-6 md:px-10 pt-44 pb-40 mx-auto"
+          style={{ maxWidth: "1280px" }}
         >
           {/* Headline */}
           <h1
@@ -558,7 +724,10 @@ function HomeContent() {
               boxShadow: "0 8px 40px rgba(0,0,0,0.5)",
             }}
           >
-            <div className="relative flex-1 flex items-center" style={{ minWidth: 0 }}>
+            <div
+              className="relative flex-1 flex items-center"
+              style={{ minWidth: 0 }}
+            >
               <input
                 ref={inputRef}
                 type="text"
@@ -571,7 +740,10 @@ function HomeContent() {
               {inputValue && (
                 <button
                   type="button"
-                  onClick={() => { setInputValue(""); inputRef.current?.focus(); }}
+                  onClick={() => {
+                    setInputValue("");
+                    inputRef.current?.focus();
+                  }}
                   className="absolute right-3 flex h-6 w-6 items-center justify-center rounded-full"
                   style={{ color: "#9ca3af" }}
                 >
@@ -583,8 +755,12 @@ function HomeContent() {
               type="submit"
               className="h-[60px] w-[60px] flex shrink-0 items-center justify-center transition-colors duration-150"
               style={{ background: "#16130f", color: "white" }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#4f46e5"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "#16130f"; }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "#4f46e5";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "#16130f";
+              }}
             >
               <Search size={20} strokeWidth={2} />
             </button>
@@ -595,7 +771,11 @@ function HomeContent() {
             {FEATURED_CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                onClick={() => router.push(`/search?category=${encodeURIComponent(cat)}&listing_type=for_sale`)}
+                onClick={() =>
+                  router.push(
+                    `/search?category=${encodeURIComponent(cat)}&listing_type=for_sale`,
+                  )
+                }
                 className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-medium transition-all duration-150"
                 style={{
                   borderRadius: "99px",
@@ -620,11 +800,13 @@ function HomeContent() {
             ))}
           </div>
         </div>
-
       </div>
 
+      {/* ── Browse by category ── */}
+      <BrowseByCategorySection />
+
       {/* ── Category sections ── */}
-      <div className="max-w-6xl mx-auto pt-8 pb-6">
+      <div className="max-w-6xl mx-auto pt-4 pb-6">
         {FEATURED_CATEGORIES.map((category) => (
           <CategorySection key={category} category={category} />
         ))}
@@ -645,8 +827,12 @@ function HomeContent() {
           }}
         >
           <div>
-            <p className="text-white font-semibold text-base">Looking for something specific?</p>
-            <p className="text-white/55 text-sm mt-0.5">Search and filter across all listings</p>
+            <p className="text-white font-semibold text-base">
+              Looking for something specific?
+            </p>
+            <p className="text-white/55 text-sm mt-0.5">
+              Search and filter across all listings
+            </p>
           </div>
           <Link
             href="/search"
