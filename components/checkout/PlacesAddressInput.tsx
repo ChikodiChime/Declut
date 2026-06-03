@@ -96,8 +96,11 @@ export default function PlacesAddressInput({
         },
         (place, status) => {
           if (status !== "OK" || !place) {
-            setInputValue("");
+            // Keep the selected description visible; don't blank the input
             setPredictions([]);
+            // Surface a generic error — the user can try again
+            setPendingResult(null);
+            setShowStateFallback(false);
             return;
           }
 

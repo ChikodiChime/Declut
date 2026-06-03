@@ -176,7 +176,7 @@ export default function CartPage() {
     setError("");
     const body: Record<string, unknown> = { delivery_type: deliveryType };
     if (address) body.delivery_address = address.trim();
-    if (state) body.delivery_state = state;
+    if (deliveryType === "delivery") body.delivery_state = state ?? null;
     const res = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -419,8 +419,8 @@ export default function CartPage() {
       items,
       "delivery",
       hasSavedAddress && !useNewAddress
-        ? (user?.address_state ?? undefined)
-        : (deliveryState ?? undefined)
+        ? (user?.address_state ?? null)
+        : (deliveryState ?? null)
     );
     const deliveryGrandTotal = calculateGrandTotal(deliveryGroups);
 
