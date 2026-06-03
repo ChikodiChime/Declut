@@ -527,7 +527,7 @@ export function NavbarWrapper() {
 
       {/* Mobile search panel */}
       <div
-        className="md:hidden sticky top-[76px] z-40 w-full overflow-hidden"
+        className="md:hidden sticky top-[76px] z-40 w-full"
         style={{
           background: "#ffffff",
           maxHeight: searchOpen ? "72px" : "0px",
