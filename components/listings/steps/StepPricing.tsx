@@ -11,7 +11,7 @@ import {
   Package,
 } from "lucide-react";
 import { Input, Button } from "@/components/ui";
-import PlacesAddressInput from "@/components/checkout/PlacesAddressInput";
+import PlacesAddressInput, { type PlaceResult } from "@/components/checkout/PlacesAddressInput";
 import type { ListingType, SizeCategory } from "@/types";
 
 interface StepPricingData {
@@ -85,7 +85,7 @@ export function StepPricing({
 
   const [pickupError, setPickupError] = useState("");
 
-  function handlePickupSelect(result: { formatted_address: string; city: string | null; state: string | null }) {
+  function handlePickupSelect(result: PlaceResult) {
     setValue("pickup_address", result.formatted_address, { shouldValidate: true });
     const area = result.city
       ? `${result.city}, ${result.state ?? ""}`.trim().replace(/,\s*$/, "")
