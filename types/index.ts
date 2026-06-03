@@ -103,3 +103,11 @@ export interface JwtPayload {
   iat?: number       // issued at (set by jose automatically)
   exp?: number       // expiry (set by jose automatically)
 }
+
+// Search suggestion for listings
+export type Suggestion = {
+  id: string
+  title: string
+  listing_type: ListingType
+  images: string[]
+}
