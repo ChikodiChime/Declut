@@ -227,29 +227,29 @@ function RecentRow({
   onRemove: (e: React.MouseEvent) => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="group w-full flex items-center gap-3 px-3.5 py-2 text-left transition-colors duration-100"
+    <div
+      className="group w-full flex items-center gap-3 px-3.5 py-2 cursor-pointer transition-colors duration-100"
       style={{ background: active ? "#f5f3ff" : "transparent" }}
       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "#f5f3ff"; }}
       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = active ? "#f5f3ff" : "transparent"; }}
     >
-      <Clock size={13} strokeWidth={1.8} style={{ color: "#a8a09a", flexShrink: 0 }} />
-      <span className="flex-1 truncate text-[13px]" style={{ color: "#16130f" }}>{text}</span>
-      <span
+      <button type="button" onClick={onSelect} className="flex items-center gap-3 flex-1 min-w-0 text-left">
+        <Clock size={13} strokeWidth={1.8} style={{ color: "#a8a09a", flexShrink: 0 }} />
+        <span className="flex-1 truncate text-[13px]" style={{ color: "#16130f" }}>{text}</span>
+      </button>
+      <button
+        type="button"
         onClick={onRemove}
-        className="flex items-center justify-center w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+        className="flex items-center justify-center w-5 h-5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-150 shrink-0"
         style={{ color: "#a8a09a" }}
+        aria-label={`Remove ${text}`}
         onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#4f46e5"; }}
         onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#a8a09a"; }}
-        role="button"
-        aria-label={`Remove ${text}`}
       >
         <X size={11} strokeWidth={2.5} />
-      </span>
+      </button>
       <ArrowUpLeft size={13} strokeWidth={1.8} style={{ color: "#c7d2fe", flexShrink: 0 }} />
-    </button>
+    </div>
   );
 }
 
