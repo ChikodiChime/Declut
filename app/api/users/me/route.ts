@@ -72,8 +72,8 @@ export async function PATCH(req: Request) {
   }
 
   if (address_state !== undefined) {
-    if (address_state !== null && (typeof address_state !== 'string' || address_state.trim().length > 100)) {
-      return err('address_state must be 100 characters or less', 'VALIDATION_ERROR', 400)
+    if (address_state !== null && (typeof address_state !== 'string' || address_state.trim().length === 0 || address_state.trim().length > 100)) {
+      return err('address_state must be 1–100 characters', 'VALIDATION_ERROR', 400)
     }
     updates.address_state = address_state === null ? null : (address_state as string).trim()
   }
