@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSessionCart } from '@/lib/session-cart'
 
@@ -24,12 +24,6 @@ export function useCart() {
     queryFn: fetchCartItemIds,
     staleTime: 30_000,
   })
-
-  useEffect(() => {
-    const onUpdate = () => queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY })
-    window.addEventListener('cart-updated', onUpdate)
-    return () => window.removeEventListener('cart-updated', onUpdate)
-  }, [queryClient])
 
   const isInCart = useCallback(
     (listingId: string) => cartItemIds.includes(listingId),

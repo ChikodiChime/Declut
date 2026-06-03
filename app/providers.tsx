@@ -1,9 +1,20 @@
 "use client";
 
 import { ReactLenis } from "lenis/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { CART_QUERY_KEY } from "@/lib/hooks/useCart";
+
+function CartSyncProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    const onUpdate = () => queryClient.invalidateQueries({ queryKey: CART_QUERY_KEY });
+    window.addEventListener("cart-updated", onUpdate);
+    return () => window.removeEventListener("cart-updated", onUpdate);
+  }, [queryClient]);
+  return <>{children}</>;
+}
 
 function LenisProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -31,7 +42,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={client}>
-      <LenisProvider>{children}</LenisProvider>
+      <CartSyncProvider>
+        <LenisProvider>{children}</LenisProvider>
+      </CartSyncProvider>
     </QueryClientProvider>
   );
 }

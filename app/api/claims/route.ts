@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
+import { sendClaimRequestEmail } from '@/lib/email'
 
 export async function POST(req: Request) {
   const authUser = await getAuthUser()
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
   const { data: listing, error: listingError } = await supabaseAdmin
     .from('listings')
-    .select('id, listing_type, status, seller_id')
+    .select('id, listing_type, status, seller_id, title, seller:users(id, name, email)')
     .eq('id', listing_id)
     .single()
 
@@ -28,6 +29,20 @@ export async function POST(req: Request) {
   if (listing.listing_type !== 'free') return err('Listing is not a free item', 'VALIDATION_ERROR', 400)
   if (listing.status !== 'available') return err('Listing is no longer available', 'CONFLICT', 409)
   if (listing.seller_id === authUser.id) return err('Cannot claim your own listing', 'VALIDATION_ERROR', 400)
+
+  const { count: activeCount } = await supabaseAdmin
+    .from('claims')
+    .select('id', { count: 'exact', head: true })
+    .eq('buyer_id', authUser.id)
+    .in('status', ['pending', 'accepted'])
+
+  if ((activeCount ?? 0) >= 3) {
+    return err(
+      'You already have 3 active claims. Complete or cancel one before claiming another item.',
+      'CONFLICT',
+      409
+    )
+  }
 
   const { data: existingClaim } = await supabaseAdmin
     .from('claims')
@@ -72,6 +87,23 @@ export async function POST(req: Request) {
     .from('listings')
     .update({ status: 'claimed' })
     .eq('id', listing_id)
+
+  const seller = listing.seller as { name: string | null; email: string } | null
+  if (seller?.email) {
+    supabaseAdmin
+      .from('users')
+      .select('name')
+      .eq('id', authUser.id)
+      .single()
+      .then(({ data: buyer }) => {
+        sendClaimRequestEmail({
+          to: seller.email,
+          sellerName: seller.name ?? 'there',
+          claimerName: buyer?.name ?? 'Someone',
+          listingTitle: listing.title as string,
+        }).catch((e) => console.error('Claim request email failed:', e))
+      })
+  }
 
   return ok(claim, 201)
 }

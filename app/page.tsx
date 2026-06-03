@@ -688,7 +688,7 @@ function HomeContent() {
         >
           {/* Headline */}
           <h1
-            className="text-white leading-[1.04] tracking-[-0.02em] font-bold"
+            className="text-white leading-[1.04] tracking-tight font-display"
             style={{ fontSize: "clamp(38px, 5.5vw, 72px)" }}
           >
             Sell what you{" "}

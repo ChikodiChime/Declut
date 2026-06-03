@@ -1,0 +1,1394 @@
+[     146ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    2226ms] [LOG] [Fast Refresh] done in 2183ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    2859ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    2926ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    3173ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    3183ms] [LOG] [Fast Refresh] done in 122ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    3443ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/users/me:0
+[    3638ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/cart:0
+[    3748ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    3765ms] [LOG] [Fast Refresh] done in 122ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    3876ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[    5201ms] [LOG] [Fast Refresh] done in 1431ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   29832ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[   29885ms] [LOG] [Fast Refresh] done in 166ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  108851ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  108871ms] [LOG] [Fast Refresh] done in 131ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  118017ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  118049ms] [LOG] [Fast Refresh] done in 140ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  118677ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  118678ms] [LOG] [Fast Refresh] done in 103ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  231233ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  248368ms] [LOG] [Fast Refresh] done in 17237ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  248496ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  260611ms] [LOG] [Fast Refresh] done in 12212ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  260739ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  261564ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  261950ms] [LOG] [Fast Refresh] done in 495ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  262167ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  262214ms] [LOG] [Fast Refresh] done in 150ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  262335ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  264383ms] [LOG] [Fast Refresh] done in 2149ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  265095ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  265245ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  265766ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/users/me:0
+[  265847ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/cart:0
+[  272254ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  272459ms] [LOG] [Fast Refresh] done in 306ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  320086ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  320203ms] [LOG] [Fast Refresh] done in 225ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  322025ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  322042ms] [LOG] [Fast Refresh] done in 119ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  343602ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  343646ms] [LOG] [Fast Refresh] done in 145ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  343820ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  345607ms] [LOG] [Fast Refresh] done in 1887ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  346682ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  346707ms] [LOG] [Fast Refresh] done in 128ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  425803ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  428980ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/cart:0
+[  429344ms] [LOG] [Fast Refresh] done in 3302ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  852780ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[  853290ms] [LOG] [Fast Refresh] done in 371ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1030360ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1041299ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/users/me:0
+[ 1043064ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/cart:0
+[ 1043421ms] [LOG] [Fast Refresh] done in 10460ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1043640ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1043783ms] [LOG] [Fast Refresh] done in 246ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1043982ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1045522ms] [LOG] [Fast Refresh] done in 1641ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1045992ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1046606ms] [LOG] [Fast Refresh] done in 732ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1046760ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1046928ms] [LOG] [Fast Refresh] done in 296ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1047045ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1048169ms] [LOG] [Fast Refresh] done in 1226ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1049358ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1049811ms] [LOG] [Fast Refresh] done in 577ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1050078ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1050608ms] [LOG] [Fast Refresh] done in 650ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1050794ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1053304ms] [LOG] [Fast Refresh] done in 2664ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1053944ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1054138ms] [LOG] [Fast Refresh] done in 297ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1054246ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1054829ms] [LOG] [Fast Refresh] done in 689ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1054945ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1055596ms] [LOG] [Fast Refresh] done in 752ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1056519ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1062148ms] [LOG] [Fast Refresh] done in 5759ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1062541ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1062986ms] [LOG] [Fast Refresh] done in 579ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1063173ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1063409ms] [LOG] [Fast Refresh] done in 366ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1063768ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1064137ms] [LOG] [Fast Refresh] done in 505ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1064246ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1064549ms] [LOG] [Fast Refresh] done in 406ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1065004ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1065405ms] [LOG] [Fast Refresh] done in 531ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1066104ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1066445ms] [LOG] [Fast Refresh] done in 467ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1066964ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1067203ms] [LOG] [Fast Refresh] done in 381ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1067558ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1067716ms] [LOG] [Fast Refresh] done in 280ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1068192ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1069203ms] [LOG] [Fast Refresh] done in 1113ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1069374ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1069412ms] [LOG] [Fast Refresh] done in 178ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1070107ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1070271ms] [LOG] [Fast Refresh] done in 266ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1070852ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1071287ms] [LOG] [Fast Refresh] done in 565ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1071602ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1071658ms] [LOG] [Fast Refresh] done in 179ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1071909ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1072266ms] [LOG] [Fast Refresh] done in 465ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1073166ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1073617ms] [LOG] [Fast Refresh] done in 561ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1073965ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1074537ms] [LOG] [Fast Refresh] done in 673ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1075146ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1075413ms] [LOG] [Fast Refresh] done in 407ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1075721ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1076170ms] [LOG] [Fast Refresh] done in 566ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1076364ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1077223ms] [LOG] [Fast Refresh] done in 965ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1077368ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1077391ms] [LOG] [Fast Refresh] done in 126ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1077589ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1077975ms] [LOG] [Fast Refresh] done in 506ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1078179ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1078964ms] [LOG] [Fast Refresh] done in 885ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1079109ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1079141ms] [LOG] [Fast Refresh] done in 134ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1079378ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1080023ms] [LOG] [Fast Refresh] done in 799ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1080191ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1080773ms] [LOG] [Fast Refresh] done in 709ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1080951ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1082335ms] [LOG] [Fast Refresh] done in 1495ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1082781ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1083271ms] [LOG] [Fast Refresh] done in 620ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1083595ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1084216ms] [LOG] [Fast Refresh] done in 735ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1084606ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1085139ms] [LOG] [Fast Refresh] done in 657ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1085382ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1086047ms] [LOG] [Fast Refresh] done in 792ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1086441ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1086910ms] [LOG] [Fast Refresh] done in 603ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1087194ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1087448ms] [LOG] [Fast Refresh] done in 401ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1087553ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1087923ms] [LOG] [Fast Refresh] done in 472ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1088200ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1088202ms] [LOG] [Fast Refresh] done in 128ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1088333ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1088400ms] [LOG] [Fast Refresh] done in 197ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1088504ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1089108ms] [LOG] [Fast Refresh] done in 705ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1089261ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1089700ms] [LOG] [Fast Refresh] done in 546ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1090311ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1091321ms] [LOG] [Fast Refresh] done in 1123ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1091510ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1091803ms] [LOG] [Fast Refresh] done in 439ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092071ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092189ms] [LOG] [Fast Refresh] done in 243ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092296ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092320ms] [LOG] [Fast Refresh] done in 126ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092429ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092759ms] [LOG] [Fast Refresh] done in 437ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1092953ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1093958ms] [LOG] [Fast Refresh] done in 1110ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1094216ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1094271ms] [LOG] [Fast Refresh] done in 177ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1094378ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1094804ms] [LOG] [Fast Refresh] done in 532ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1094911ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1095082ms] [LOG] [Fast Refresh] done in 276ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1096154ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1096538ms] [LOG] [Fast Refresh] done in 530ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1096951ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1097087ms] [LOG] [Fast Refresh] done in 273ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1097244ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1097724ms] [LOG] [Fast Refresh] done in 590ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1098086ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1098584ms] [LOG] [Fast Refresh] done in 622ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1099218ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1099649ms] [LOG] [Fast Refresh] done in 560ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1099823ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1099833ms] [LOG] [Fast Refresh] done in 144ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1100073ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1100834ms] [LOG] [Fast Refresh] done in 905ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1100939ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1100972ms] [LOG] [Fast Refresh] done in 133ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1101078ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1101355ms] [LOG] [Fast Refresh] done in 379ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1101477ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1101704ms] [LOG] [Fast Refresh] done in 335ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1102157ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1102646ms] [LOG] [Fast Refresh] done in 606ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1102760ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1102798ms] [LOG] [Fast Refresh] done in 147ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1102912ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1103537ms] [LOG] [Fast Refresh] done in 736ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1103766ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1103852ms] [LOG] [Fast Refresh] done in 208ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1103971ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1104832ms] [LOG] [Fast Refresh] done in 980ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1105156ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1105801ms] [LOG] [Fast Refresh] done in 760ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1106013ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1106138ms] [LOG] [Fast Refresh] done in 227ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1535012ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1535166ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1535292ms] [LOG] [Fast Refresh] done in 227ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1535469ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1535829ms] [LOG] [Fast Refresh] done in 470ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1537233ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1537581ms] [LOG] [Fast Refresh] done in 454ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1537817ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1537876ms] [LOG] [Fast Refresh] done in 160ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1539806ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1540466ms] [LOG] [Fast Refresh] done in 762ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1543365ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1543695ms] [LOG] [Fast Refresh] done in 434ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1612380ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1612819ms] [LOG] [Fast Refresh] done in 548ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1616762ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1617191ms] [LOG] [Fast Refresh] done in 532ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1620046ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1620112ms] [LOG] [Fast Refresh] done in 169ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1726491ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1726922ms] [LOG] [Fast Refresh] done in 538ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1730475ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1730883ms] [LOG] [Fast Refresh] done in 511ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1779872ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1779904ms] [LOG] [Fast Refresh] done in 134ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1915398ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1915748ms] [LOG] [Fast Refresh] done in 451ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1915962ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1916021ms] [LOG] [Fast Refresh] done in 199ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1949543ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1949892ms] [LOG] [Fast Refresh] done in 449ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1954171ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1961174ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1961391ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1961403ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1961544ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1961734ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1961938ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1961942ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1962048ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962115ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962161ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1962287ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962328ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962454ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962565ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1962572ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962754ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962756ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1962906ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1962973ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963020ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963140ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963150ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1963251ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963302ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963389ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963429ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1963521ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963555ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963688ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1963700ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963800ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963847ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963931ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1963957ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1964053ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964088ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1964184ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964217ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1964319ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964340ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1964459ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964475ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1964568ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964623ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964684ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964734ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964789ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964835ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964874ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964977ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1964994ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1965106ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965143ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1965252ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965266ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1965371ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965403ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965486ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965537ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965654ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965710ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965788ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965835ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965947ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1965978ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966103ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966128ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1966275ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966275ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1966413ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966439ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1966552ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966602ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966707ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966752ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966870ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1966895ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1967030ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967035ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1967154ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967200ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1967301ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967333ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967421ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967484ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967534ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967621ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967641ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1967787ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967813ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1967934ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1967956ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 1968041ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1968088ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1968149ms] [ERROR] ./components/layout/NavbarWrapper.tsx:214:10
+the name `NavbarSearch` is defined multiple times
+  212 | }
+  213 |
+> 214 | function NavbarSearch({
+      |          ^^^^^^^^^^^^
+  215 |   onSearch,
+  216 |   autoFocus,
+  217 | }: {
+
+Ecmascript file had an error
+
+Import trace:
+  Server Component:
+    ./components/layout/NavbarWrapper.tsx
+    ./app/layout.tsx @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:3272
+[ 1968262ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2037005ms] [LOG] [Fast Refresh] done in 68845ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2037303ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2038265ms] [LOG] [Fast Refresh] done in 1087ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2038377ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2039584ms] [LOG] [Fast Refresh] done in 1316ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2040069ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2042056ms] [LOG] [Fast Refresh] done in 2127ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2042177ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2043739ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2043837ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2044259ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2045087ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/users/me:0
+[ 2045132ms] [LOG] [Fast Refresh] done in 987ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2045294ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2045812ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/cart:0
+[ 2045854ms] [LOG] [Fast Refresh] done in 670ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2046142ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2046925ms] [LOG] [Fast Refresh] done in 882ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2047962ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2047980ms] [LOG] [Fast Refresh] done in 120ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2123568ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2125477ms] [LOG] [Fast Refresh] done in 1743ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2192330ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431
+[ 2194343ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3000/api/cart:0
+[ 2194390ms] [LOG] [Fast Refresh] done in 1774ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2431

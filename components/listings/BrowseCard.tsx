@@ -75,7 +75,6 @@ export function BrowseCard({ listing }: BrowseCardProps) {
   const [cartState, setCartState] = useState<ActionState>("idle");
   const [claimState, setClaimState] = useState<ActionState>("idle");
   const [claimFeedback, setClaimFeedback] = useState<ClaimFeedback>(null);
-  const [isHovered, setIsHovered] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
   const type = TYPE_CONFIG[listing.listing_type] ?? TYPE_CONFIG.for_sale;
   const inCart = isInCart(listing.id);
@@ -178,13 +177,11 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)",
       }}
       onMouseEnter={(e) => {
-        setIsHovered(true);
         const el = e.currentTarget as HTMLElement;
         el.style.borderColor = type.borderHover;
         el.style.boxShadow = `0 4px 16px rgba(22,19,15,0.10), 0 0 0 1px ${type.borderHover}`;
       }}
       onMouseLeave={(e) => {
-        setIsHovered(false);
         const el = e.currentTarget as HTMLElement;
         el.style.borderColor = type.border;
         el.style.boxShadow = "0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)";
@@ -235,14 +232,16 @@ export function BrowseCard({ listing }: BrowseCardProps) {
                 onClick={handleAddToCart}
                 disabled={cartState === "loading"}
                 aria-label={inCart || cartState === "done" ? "Added to cart" : "Add to cart"}
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed"
+                className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed ${
+                  inCart || cartState !== "idle"
+                    ? "opacity-100 pointer-events-auto"
+                    : "opacity-100 sm:opacity-0 sm:pointer-events-none sm:group-hover:opacity-100 sm:group-hover:pointer-events-auto"
+                }`}
                 style={{
                   background: "rgba(255,255,255,0.92)",
                   backdropFilter: "blur(6px)",
                   boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
-                  opacity: isHovered || inCart || cartState !== "idle" ? 1 : 0,
                   transform: cartState === "done" ? "scale(1.18)" : "scale(1)",
-                  pointerEvents: isHovered || inCart || cartState !== "idle" ? "auto" : "none",
                 }}
                 onMouseEnter={(e) => {
                   if (cartState !== "idle") return;
@@ -268,17 +267,17 @@ export function BrowseCard({ listing }: BrowseCardProps) {
                 onClick={handleClaim}
                 disabled={claimState === "loading"}
                 aria-label="Claim item"
-                className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed"
+                className={`flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 ease-out disabled:cursor-not-allowed ${
+                  claimState !== "idle"
+                    ? "opacity-100 pointer-events-auto"
+                    : "opacity-100 sm:opacity-0 sm:pointer-events-none sm:group-hover:opacity-100 sm:group-hover:pointer-events-auto"
+                }`}
                 style={{
                   background:
-                    claimState === "done"
-                      ? type.color
-                      : "rgba(255,255,255,0.92)",
+                    claimState === "done" ? type.color : "rgba(255,255,255,0.92)",
                   backdropFilter: "blur(6px)",
                   boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
-                  opacity: isHovered || claimState !== "idle" ? 1 : 0,
                   transform: claimState === "done" ? "scale(1.18)" : "scale(1)",
-                  pointerEvents: isHovered || claimState !== "idle" ? "auto" : "none",
                 }}
                 onMouseEnter={(e) => {
                   if (claimState !== "idle") return;
@@ -386,7 +385,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       {/* ── Card body ── */}
       <div className="flex flex-col flex-1 p-3.5 gap-2.5">
         {/* Title */}
-        <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-text">
+        <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-text">
           {listing.title}
         </h3>
 

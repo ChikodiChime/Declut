@@ -1,0 +1,159 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "declut home" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "declut" [ref=e5]
+        - img [ref=e6]
+      - link "Browse" [ref=e8] [cursor=pointer]:
+        - /url: /search
+      - generic [ref=e9]:
+        - generic:
+          - generic:
+            - generic:
+              - img
+              - textbox "Search listings…"
+            - button:
+              - img
+      - generic [ref=e10]:
+        - link "List an item" [ref=e11] [cursor=pointer]:
+          - /url: /dashboard/listings/new
+          - img [ref=e12]
+          - text: List an item
+        - generic [ref=e14]:
+          - link "Sign in" [ref=e15] [cursor=pointer]:
+            - /url: /auth/login
+          - link "Sign up" [ref=e16] [cursor=pointer]:
+            - /url: /auth/signup
+  - main [ref=e17]:
+    - generic [ref=e19]:
+      - heading "Sell what you don't need. Find what you do." [level=1] [ref=e20]:
+        - text: Sell what you
+        - generic [ref=e21]:
+          - text: don't need.
+          - img [ref=e22]
+        - text: Find what you do.
+      - generic [ref=e24]:
+        - textbox "Search for phones, furniture, clothes…" [ref=e26]
+        - button [ref=e27]:
+          - img [ref=e28]
+      - generic [ref=e31]:
+        - button "Electronics" [ref=e32]:
+          - text: Electronics
+          - img [ref=e33]
+        - button "Clothing & Accessories" [ref=e35]:
+          - text: Clothing & Accessories
+          - img [ref=e36]
+        - button "Furniture & Home" [ref=e38]:
+          - text: Furniture & Home
+          - img [ref=e39]
+        - button "Appliances" [ref=e41]:
+          - text: Appliances
+          - img [ref=e42]
+        - button "Sports & Outdoors" [ref=e44]:
+          - text: Sports & Outdoors
+          - img [ref=e45]
+    - generic [ref=e48]:
+      - link "Electronics" [ref=e49] [cursor=pointer]:
+        - /url: /search?category=Electronics
+        - img [ref=e51]
+        - generic [ref=e53]: Electronics
+      - link "Clothing & Accessories" [ref=e54] [cursor=pointer]:
+        - /url: /search?category=Clothing%20%26%20Accessories
+        - img [ref=e56]
+        - generic [ref=e58]: Clothing & Accessories
+      - link "Furniture & Home" [ref=e59] [cursor=pointer]:
+        - /url: /search?category=Furniture%20%26%20Home
+        - img [ref=e61]
+        - generic [ref=e64]: Furniture & Home
+      - link "Appliances" [ref=e65] [cursor=pointer]:
+        - /url: /search?category=Appliances
+        - img [ref=e67]
+        - generic [ref=e69]: Appliances
+      - link "Sports & Outdoors" [ref=e70] [cursor=pointer]:
+        - /url: /search?category=Sports%20%26%20Outdoors
+        - img [ref=e72]
+        - generic [ref=e78]: Sports & Outdoors
+      - link "Books & Stationery" [ref=e79] [cursor=pointer]:
+        - /url: /search?category=Books%20%26%20Stationery
+        - img [ref=e81]
+        - generic [ref=e83]: Books & Stationery
+      - link "Kids & Baby" [ref=e84] [cursor=pointer]:
+        - /url: /search?category=Kids%20%26%20Baby
+        - img [ref=e86]
+        - generic [ref=e89]: Kids & Baby
+      - link "Vehicles & Parts" [ref=e90] [cursor=pointer]:
+        - /url: /search?category=Vehicles%20%26%20Parts
+        - img [ref=e92]
+        - generic [ref=e96]: Vehicles & Parts
+      - link "Other" [ref=e97] [cursor=pointer]:
+        - /url: /search?category=Other
+        - img [ref=e99]
+        - generic [ref=e103]: Other
+    - generic [ref=e104]:
+      - generic [ref=e107]:
+        - img [ref=e109]
+        - heading "Electronics" [level=2] [ref=e111]
+      - generic [ref=e145]:
+        - img [ref=e147]
+        - heading "Clothing & Accessories" [level=2] [ref=e149]
+      - generic [ref=e183]:
+        - img [ref=e185]
+        - heading "Furniture & Home" [level=2] [ref=e188]
+      - generic [ref=e222]:
+        - img [ref=e224]
+        - heading "Appliances" [level=2] [ref=e226]
+      - generic [ref=e260]:
+        - img [ref=e262]
+        - heading "Sports & Outdoors" [level=2] [ref=e268]
+    - generic [ref=e302]:
+      - generic [ref=e303]:
+        - generic [ref=e304]:
+          - img [ref=e306]
+          - heading "Free Items" [level=2] [ref=e310]
+        - paragraph [ref=e311]: Claim something for nothing — no strings attached
+      - link "See all" [ref=e312] [cursor=pointer]:
+        - /url: /search?listing_type=free
+        - text: See all
+        - img [ref=e313]
+    - generic [ref=e348]:
+      - generic [ref=e349]:
+        - generic [ref=e350]:
+          - img [ref=e352]
+          - heading "Donation Pile" [level=2] [ref=e354]
+        - paragraph [ref=e355]: Items going to charities — give them a good send-off
+        - paragraph [ref=e356]:
+          - text: Got something gathering dust?
+          - link "List it as a donation" [ref=e357] [cursor=pointer]:
+            - /url: /dashboard/listings/new
+          - text: and let it go to a charity that actually needs it. Takes 2 minutes.
+      - link "See all" [ref=e358] [cursor=pointer]:
+        - /url: /search?listing_type=donate
+        - text: See all
+        - img [ref=e359]
+    - generic [ref=e387]:
+      - generic [ref=e388]:
+        - paragraph [ref=e389]: Looking for something specific?
+        - paragraph [ref=e390]: Search and filter across all listings
+      - link "Search all listings" [ref=e391] [cursor=pointer]:
+        - /url: /search
+        - text: Search all listings
+        - img [ref=e392]
+  - contentinfo [ref=e394]:
+    - generic [ref=e395]:
+      - generic [ref=e396]:
+        - img "declut" [ref=e397]
+        - navigation [ref=e398]:
+          - link "About" [ref=e399] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy" [ref=e400] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e401] [cursor=pointer]:
+            - /url: /terms
+      - generic [ref=e402]:
+        - paragraph [ref=e403]: © 2026 Declut
+        - generic [ref=e404]: Beta
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e410] [cursor=pointer]:
+    - img [ref=e411]
+  - alert [ref=e414]

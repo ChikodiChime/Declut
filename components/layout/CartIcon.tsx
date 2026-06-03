@@ -1,45 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CartIcon as CartSvgIcon } from "@/components/icons/CartIcon";
-import { getSessionCart } from "@/lib/session-cart";
+import { useCart } from "@/lib/hooks/useCart";
 
 export function CartIcon({ transparent = false }: { transparent?: boolean }) {
-  const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const { count, loading } = useCart();
 
-  useEffect(() => {
-    async function fetchCartCount() {
-      try {
-        const res = await fetch("/api/cart");
-        if (res.ok) {
-          const data = await res.json();
-          setCount(data.data?.length ?? 0);
-        } else if (res.status === 401) {
-          const sessionCart = getSessionCart();
-          setCount(sessionCart.length);
-        }
-      } catch (error) {
-        console.error("Failed to fetch cart count:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchCartCount();
-
-    const handleCartUpdate = () => {
-      fetchCartCount();
-    };
-
-    window.addEventListener("cart-updated", handleCartUpdate);
-    return () => window.removeEventListener("cart-updated", handleCartUpdate);
-  }, []);
-
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   return (
     <Link

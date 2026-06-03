@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
+import { sendClaimAcceptedEmail, sendClaimDeclinedEmail } from '@/lib/email'
 
 const SELLER_TRANSITIONS: Record<string, string> = {
   accepted: 'pending',
@@ -23,7 +24,7 @@ export async function PATCH(
 
   const { data: claim, error: fetchError } = await supabaseAdmin
     .from('claims')
-    .select('*, listing:listings(seller_id)')
+    .select('*, listing:listings(id, seller_id, title), buyer:users(id, name, email)')
     .eq('id', id)
     .single()
 
@@ -87,6 +88,27 @@ export async function PATCH(
   if (updateError || !updated) {
     console.error('Update claim error:', updateError)
     return err('Failed to update claim', 'SERVER_ERROR', 500)
+  }
+
+  if (isSeller && (status === 'accepted' || status === 'cancelled')) {
+    const buyer = claim.buyer as { name: string | null; email: string } | null
+    const listing = claim.listing as { title: string } | null
+    if (buyer?.email && listing?.title) {
+      if (status === 'accepted') {
+        sendClaimAcceptedEmail({
+          to: buyer.email,
+          buyerName: buyer.name ?? 'there',
+          listingTitle: listing.title,
+          pickupAddress: (pickup_address as string).trim(),
+        }).catch((e) => console.error('Claim accepted email failed:', e))
+      } else {
+        sendClaimDeclinedEmail({
+          to: buyer.email,
+          buyerName: buyer.name ?? 'there',
+          listingTitle: listing.title,
+        }).catch((e) => console.error('Claim declined email failed:', e))
+      }
+    }
   }
 
   if (status === 'cancelled') {

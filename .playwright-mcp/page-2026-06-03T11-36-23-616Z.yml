@@ -1,0 +1,645 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "declut home" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "declut" [ref=e5]
+        - img [ref=e6]
+      - link "Browse" [ref=e8] [cursor=pointer]:
+        - /url: /search
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - img
+          - textbox "Search listings…" [active] [ref=e14]
+        - button [ref=e15]:
+          - img [ref=e16]
+      - generic [ref=e19]:
+        - link "List an item" [ref=e20] [cursor=pointer]:
+          - /url: /dashboard/listings/new
+          - img [ref=e21]
+          - text: List an item
+        - link "Cart (0 items)" [ref=e166] [cursor=pointer]:
+          - /url: /cart
+          - img [ref=e167]
+        - generic [ref=e171]:
+          - link "Sign in" [ref=e172] [cursor=pointer]:
+            - /url: /auth/login
+          - link "Sign up" [ref=e173] [cursor=pointer]:
+            - /url: /auth/signup
+  - main [ref=e23]:
+    - generic [ref=e25]:
+      - link "Home" [ref=e26] [cursor=pointer]:
+        - /url: /
+        - img [ref=e27]
+        - text: Home
+      - heading "Browse all listings" [level=1] [ref=e29]
+      - paragraph [ref=e174]: 117 listings
+    - generic [ref=e30]:
+      - complementary [ref=e31]:
+        - generic [ref=e33]:
+          - generic [ref=e35]: Filters
+          - generic [ref=e36]:
+            - paragraph [ref=e37]: Type
+            - generic [ref=e38]:
+              - button "All" [ref=e39]: All
+              - button "For Sale" [ref=e42]: For Sale
+              - button "Free" [ref=e44]: Free
+              - button "Donate" [ref=e46]: Donate
+          - generic [ref=e49]:
+            - paragraph [ref=e50]: Category
+            - generic [ref=e51]:
+              - button "All categories" [ref=e52]:
+                - text: All categories
+                - img [ref=e53]
+              - button "Electronics" [ref=e55]
+              - button "Furniture & Home" [ref=e56]
+              - button "Clothing & Accessories" [ref=e57]
+              - button "Appliances" [ref=e58]
+              - button "Books & Stationery" [ref=e59]
+              - button "Kids & Baby" [ref=e60]
+              - button "Sports & Outdoors" [ref=e61]
+              - button "Vehicles & Parts" [ref=e62]
+              - button "Other" [ref=e63]
+          - generic [ref=e65]:
+            - paragraph [ref=e66]: Price Range
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e69]: ₦0
+                - generic [ref=e70]: Any max
+              - generic [ref=e71]:
+                - button [ref=e74]
+                - button [ref=e75]
+          - generic [ref=e77]:
+            - paragraph [ref=e78]: Condition
+            - generic [ref=e79]:
+              - button "Any" [ref=e80]:
+                - text: Any
+                - img [ref=e81]
+              - button "New" [ref=e83]
+              - button "Like New" [ref=e84]
+              - button "Good" [ref=e85]
+              - button "Fair" [ref=e86]
+              - button "Poor" [ref=e87]
+          - generic [ref=e89]:
+            - paragraph [ref=e90]: Location
+            - generic [ref=e91]:
+              - img
+              - textbox "e.g. Lagos, Abuja…" [ref=e92]
+          - generic [ref=e94]:
+            - paragraph [ref=e95]: Seller
+            - button "Any seller" [ref=e97]:
+              - img [ref=e98]
+              - generic [ref=e101]: Any seller
+              - img [ref=e102]
+          - generic [ref=e105]:
+            - paragraph [ref=e106]: Sort by
+            - generic [ref=e107]:
+              - button "Newest first" [ref=e108]:
+                - text: Newest first
+                - img [ref=e109]
+              - 'button "Price: Low → High" [ref=e111]'
+              - 'button "Price: High → Low" [ref=e112]'
+      - generic [ref=e114]:
+        - paragraph [ref=e175]: 117 listings
+        - generic [ref=e176]:
+          - link "LG 2-Door Refrigerator 200L For Sale Add to cart LG 2-Door Refrigerator 200L ₦95,000 Poor Yaba, Lagos" [ref=e177] [cursor=pointer]:
+            - /url: /listings/420d1482-97d5-4f32-b5a6-07a4c1354a12
+            - generic [ref=e178]:
+              - img "LG 2-Door Refrigerator 200L" [ref=e181]
+              - generic [ref=e182]: For Sale
+              - generic [ref=e183]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e184]:
+              - heading "LG 2-Door Refrigerator 200L" [level=3] [ref=e185]
+              - generic [ref=e186]:
+                - paragraph [ref=e187]: ₦95,000
+                - generic [ref=e188]: Poor
+              - generic [ref=e189]:
+                - img [ref=e190]
+                - generic [ref=e193]: Yaba, Lagos
+          - link "Blender – National 3-in-1 For Sale Add to cart Blender – National 3-in-1 ₦12,000 Fair Lekki Phase 1, Lagos" [ref=e194] [cursor=pointer]:
+            - /url: /listings/4f9f85df-4d48-433d-8b3e-6155d5d007fd
+            - generic [ref=e195]:
+              - img "Blender – National 3-in-1" [ref=e198]
+              - generic [ref=e199]: For Sale
+              - generic [ref=e200]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e201]:
+              - heading "Blender – National 3-in-1" [level=3] [ref=e202]
+              - generic [ref=e203]:
+                - paragraph [ref=e204]: ₦12,000
+                - generic [ref=e205]: Fair
+              - generic [ref=e206]:
+                - img [ref=e207]
+                - generic [ref=e210]: Lekki Phase 1, Lagos
+          - link "The Alchemist – Paulo Coelho For Sale Add to cart The Alchemist – Paulo Coelho ₦1,800 Poor Victoria Island, Lagos" [ref=e211] [cursor=pointer]:
+            - /url: /listings/dac0908a-7b6a-4350-997a-e33712973593
+            - generic [ref=e212]:
+              - img "The Alchemist – Paulo Coelho" [ref=e215]
+              - generic [ref=e216]: For Sale
+              - generic [ref=e217]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e218]:
+              - heading "The Alchemist – Paulo Coelho" [level=3] [ref=e219]
+              - generic [ref=e220]:
+                - paragraph [ref=e221]: ₦1,800
+                - generic [ref=e222]: Poor
+              - generic [ref=e223]:
+                - img [ref=e224]
+                - generic [ref=e227]: Victoria Island, Lagos
+          - link "Brown Leather Belt Watch Brown Leather Belt Watch Brown Leather Belt Watch For Sale Add to cart Next image Image 1 Image 2 Image 3 Brown Leather Belt Watch ₦34,000 Good Lekki Phase 1, Lagos" [ref=e228] [cursor=pointer]:
+            - /url: /listings/9e2d1c60-7553-4959-951b-a37fd75fbc37
+            - generic [ref=e229]:
+              - generic [ref=e230]:
+                - img "Brown Leather Belt Watch" [ref=e232]
+                - img "Brown Leather Belt Watch" [ref=e234]
+                - img "Brown Leather Belt Watch" [ref=e236]
+              - generic [ref=e237]: For Sale
+              - generic [ref=e238]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e239]:
+                - img [ref=e240]
+              - generic [ref=e242]:
+                - button "Image 1" [ref=e243]
+                - button "Image 2" [ref=e244]
+                - button "Image 3" [ref=e245]
+            - generic [ref=e246]:
+              - heading "Brown Leather Belt Watch" [level=3] [ref=e247]
+              - generic [ref=e248]:
+                - paragraph [ref=e249]: ₦34,000
+                - generic [ref=e250]: Good
+              - generic [ref=e251]:
+                - img [ref=e252]
+                - generic [ref=e255]: Lekki Phase 1, Lagos
+          - link "Rolex Cellini Moonphase Rolex Cellini Moonphase Rolex Cellini Moonphase Free Claim item Next image Image 1 Image 2 Image 3 Rolex Cellini Moonphase Free Like New Yaba, Lagos" [ref=e256] [cursor=pointer]:
+            - /url: /listings/047381ec-5d55-4b5f-abba-239ae91b2771
+            - generic [ref=e257]:
+              - generic [ref=e258]:
+                - img "Rolex Cellini Moonphase" [ref=e260]
+                - img "Rolex Cellini Moonphase" [ref=e262]
+                - img "Rolex Cellini Moonphase" [ref=e264]
+              - generic [ref=e265]: Free
+              - generic [ref=e266]:
+                - button "Claim item":
+                  - img
+              - button "Next image" [ref=e267]:
+                - img [ref=e268]
+              - generic [ref=e270]:
+                - button "Image 1" [ref=e271]
+                - button "Image 2" [ref=e272]
+                - button "Image 3" [ref=e273]
+            - generic [ref=e274]:
+              - heading "Rolex Cellini Moonphase" [level=3] [ref=e275]
+              - generic [ref=e276]:
+                - paragraph [ref=e277]: Free
+                - generic [ref=e278]: Like New
+              - generic [ref=e279]:
+                - img [ref=e280]
+                - generic [ref=e283]: Yaba, Lagos
+          - link "Green Oval Earring Green Oval Earring Green Oval Earring For Sale Add to cart Next image Image 1 Image 2 Image 3 Green Oval Earring ₦8,000 Poor GRA, Port Harcourt" [ref=e284] [cursor=pointer]:
+            - /url: /listings/509074e3-04cb-4e1f-abb0-d9cd4376758e
+            - generic [ref=e285]:
+              - generic [ref=e286]:
+                - img "Green Oval Earring" [ref=e288]
+                - img "Green Oval Earring" [ref=e290]
+                - img "Green Oval Earring" [ref=e292]
+              - generic [ref=e293]: For Sale
+              - generic [ref=e294]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e295]:
+                - img [ref=e296]
+              - generic [ref=e298]:
+                - button "Image 1" [ref=e299]
+                - button "Image 2" [ref=e300]
+                - button "Image 3" [ref=e301]
+            - generic [ref=e302]:
+              - heading "Green Oval Earring" [level=3] [ref=e303]
+              - generic [ref=e304]:
+                - paragraph [ref=e305]: ₦8,000
+                - generic [ref=e306]: Poor
+              - generic [ref=e307]:
+                - img [ref=e308]
+                - generic [ref=e311]: GRA, Port Harcourt
+          - link "WAEC & JAMB Past Questions Bundle (2018–2023) For Sale Add to cart WAEC & JAMB Past Questions Bundle (2018–2023) ₦5,000 New Maitama, Abuja" [ref=e312] [cursor=pointer]:
+            - /url: /listings/fa9bfaeb-8448-4c6d-9e49-cfe3c725cb5f
+            - generic [ref=e313]:
+              - img "WAEC & JAMB Past Questions Bundle (2018–2023)" [ref=e316]
+              - generic [ref=e317]: For Sale
+              - generic [ref=e318]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e319]:
+              - heading "WAEC & JAMB Past Questions Bundle (2018–2023)" [level=3] [ref=e320]
+              - generic [ref=e321]:
+                - paragraph [ref=e322]: ₦5,000
+                - generic [ref=e323]: New
+              - generic [ref=e324]:
+                - img [ref=e325]
+                - generic [ref=e328]: Maitama, Abuja
+          - link "Scanfrost Microwave Oven 25L Donate Scanfrost Microwave Oven 25L Donate Good Maitama, Abuja" [ref=e329] [cursor=pointer]:
+            - /url: /listings/e7ffe9d3-ece9-4783-8c53-1f959574dfa8
+            - generic [ref=e330]:
+              - img "Scanfrost Microwave Oven 25L" [ref=e333]
+              - generic [ref=e334]: Donate
+            - generic [ref=e335]:
+              - heading "Scanfrost Microwave Oven 25L" [level=3] [ref=e336]
+              - generic [ref=e337]:
+                - paragraph [ref=e338]: Donate
+                - generic [ref=e339]: Good
+              - generic [ref=e340]:
+                - img [ref=e341]
+                - generic [ref=e344]: Maitama, Abuja
+          - link "Blue Frock Blue Frock Blue Frock For Sale Add to cart Next image Image 1 Image 2 Image 3 Blue Frock ₦8,000 Fair Bodija, Ibadan" [ref=e345] [cursor=pointer]:
+            - /url: /listings/3be3044f-d491-4cdd-a588-1f9289a2c12b
+            - generic [ref=e346]:
+              - generic [ref=e347]:
+                - img "Blue Frock" [ref=e349]
+                - img "Blue Frock" [ref=e351]
+                - img "Blue Frock" [ref=e353]
+              - generic [ref=e354]: For Sale
+              - generic [ref=e355]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e356]:
+                - img [ref=e357]
+              - generic [ref=e359]:
+                - button "Image 1" [ref=e360]
+                - button "Image 2" [ref=e361]
+                - button "Image 3" [ref=e362]
+            - generic [ref=e363]:
+              - heading "Blue Frock" [level=3] [ref=e364]
+              - generic [ref=e365]:
+                - paragraph [ref=e366]: ₦8,000
+                - generic [ref=e367]: Fair
+              - generic [ref=e368]:
+                - img [ref=e369]
+                - generic [ref=e372]: Bodija, Ibadan
+          - link "Short Frock Short Frock Short Frock For Sale Add to cart Next image Image 1 Image 2 Image 3 Short Frock ₦6,500 Like New Garki 2, Abuja" [ref=e373] [cursor=pointer]:
+            - /url: /listings/f22bcaac-a26b-48f3-8c10-09d2bb2a2573
+            - generic [ref=e374]:
+              - generic [ref=e375]:
+                - img "Short Frock" [ref=e377]
+                - img "Short Frock" [ref=e379]
+                - img "Short Frock" [ref=e381]
+              - generic [ref=e382]: For Sale
+              - generic [ref=e383]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e384]:
+                - img [ref=e385]
+              - generic [ref=e387]:
+                - button "Image 1" [ref=e388]
+                - button "Image 2" [ref=e389]
+                - button "Image 3" [ref=e390]
+            - generic [ref=e391]:
+              - heading "Short Frock" [level=3] [ref=e392]
+              - generic [ref=e393]:
+                - paragraph [ref=e394]: ₦6,500
+                - generic [ref=e395]: Like New
+              - generic [ref=e396]:
+                - img [ref=e397]
+                - generic [ref=e400]: Garki 2, Abuja
+          - link "Rolex Cellini Date Black Dial Rolex Cellini Date Black Dial Rolex Cellini Date Black Dial Free Claim item Next image Image 1 Image 2 Image 3 Rolex Cellini Date Black Dial Free Poor Garki 2, Abuja" [ref=e401] [cursor=pointer]:
+            - /url: /listings/7bda4a08-9ac9-4943-9a55-76da38087eeb
+            - generic [ref=e402]:
+              - generic [ref=e403]:
+                - img "Rolex Cellini Date Black Dial" [ref=e405]
+                - img "Rolex Cellini Date Black Dial" [ref=e407]
+                - img "Rolex Cellini Date Black Dial" [ref=e409]
+              - generic [ref=e410]: Free
+              - generic [ref=e411]:
+                - button "Claim item":
+                  - img
+              - button "Next image" [ref=e412]:
+                - img [ref=e413]
+              - generic [ref=e415]:
+                - button "Image 1" [ref=e416]
+                - button "Image 2" [ref=e417]
+                - button "Image 3" [ref=e418]
+            - generic [ref=e419]:
+              - heading "Rolex Cellini Date Black Dial" [level=3] [ref=e420]
+              - generic [ref=e421]:
+                - paragraph [ref=e422]: Free
+                - generic [ref=e423]: Poor
+              - generic [ref=e424]:
+                - img [ref=e425]
+                - generic [ref=e428]: Garki 2, Abuja
+          - link "IWC Ingenieur Automatic Steel IWC Ingenieur Automatic Steel IWC Ingenieur Automatic Steel Free Claim item Next image Image 1 Image 2 Image 3 IWC Ingenieur Automatic Steel Free New Nasarawa GRA, Kano" [ref=e429] [cursor=pointer]:
+            - /url: /listings/ee309c01-6ae7-4514-b589-463b46cd39c3
+            - generic [ref=e430]:
+              - generic [ref=e431]:
+                - img "IWC Ingenieur Automatic Steel" [ref=e433]
+                - img "IWC Ingenieur Automatic Steel" [ref=e435]
+                - img "IWC Ingenieur Automatic Steel" [ref=e437]
+              - generic [ref=e438]: Free
+              - generic [ref=e439]:
+                - button "Claim item":
+                  - img
+              - button "Next image" [ref=e440]:
+                - img [ref=e441]
+              - generic [ref=e443]:
+                - button "Image 1" [ref=e444]
+                - button "Image 2" [ref=e445]
+                - button "Image 3" [ref=e446]
+            - generic [ref=e447]:
+              - heading "IWC Ingenieur Automatic Steel" [level=3] [ref=e448]
+              - generic [ref=e449]:
+                - paragraph [ref=e450]: Free
+                - generic [ref=e451]: New
+              - generic [ref=e452]:
+                - img [ref=e453]
+                - generic [ref=e456]: Nasarawa GRA, Kano
+          - link "Rolex Datejust Women Rolex Datejust Women Rolex Datejust Women Donate Next image Image 1 Image 2 Image 3 Rolex Datejust Women Donate Good Ikeja GRA, Lagos" [ref=e457] [cursor=pointer]:
+            - /url: /listings/f942547b-c6a0-4eee-af87-7178e33b2233
+            - generic [ref=e458]:
+              - generic [ref=e459]:
+                - img "Rolex Datejust Women" [ref=e461]
+                - img "Rolex Datejust Women" [ref=e463]
+                - img "Rolex Datejust Women" [ref=e465]
+              - generic [ref=e466]: Donate
+              - button "Next image" [ref=e467]:
+                - img [ref=e468]
+              - generic [ref=e470]:
+                - button "Image 1" [ref=e471]
+                - button "Image 2" [ref=e472]
+                - button "Image 3" [ref=e473]
+            - generic [ref=e474]:
+              - heading "Rolex Datejust Women" [level=3] [ref=e475]
+              - generic [ref=e476]:
+                - paragraph [ref=e477]: Donate
+                - generic [ref=e478]: Good
+              - generic [ref=e479]:
+                - img [ref=e480]
+                - generic [ref=e483]: Ikeja GRA, Lagos
+          - link "Green Crystal Earring Green Crystal Earring Green Crystal Earring For Sale Add to cart Next image Image 1 Image 2 Image 3 Green Crystal Earring ₦9,500 Fair Nasarawa GRA, Kano" [ref=e484] [cursor=pointer]:
+            - /url: /listings/f4274d9b-7e89-4911-aa6c-d4b6b277bb49
+            - generic [ref=e485]:
+              - generic [ref=e486]:
+                - img "Green Crystal Earring" [ref=e488]
+                - img "Green Crystal Earring" [ref=e490]
+                - img "Green Crystal Earring" [ref=e492]
+              - generic [ref=e493]: For Sale
+              - generic [ref=e494]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e495]:
+                - img [ref=e496]
+              - generic [ref=e498]:
+                - button "Image 1" [ref=e499]
+                - button "Image 2" [ref=e500]
+                - button "Image 3" [ref=e501]
+            - generic [ref=e502]:
+              - heading "Green Crystal Earring" [level=3] [ref=e503]
+              - generic [ref=e504]:
+                - paragraph [ref=e505]: ₦9,500
+                - generic [ref=e506]: Fair
+              - generic [ref=e507]:
+                - img [ref=e508]
+                - generic [ref=e511]: Nasarawa GRA, Kano
+          - link "Black Whisk Black Whisk For Sale Add to cart Next image Image 1 Image 2 Black Whisk ₦3,500 Fair Ajah, Lagos" [ref=e512] [cursor=pointer]:
+            - /url: /listings/a044a829-4795-4e71-a700-d3dd55c17c1f
+            - generic [ref=e513]:
+              - generic [ref=e514]:
+                - img "Black Whisk" [ref=e516]
+                - img "Black Whisk" [ref=e518]
+              - generic [ref=e519]: For Sale
+              - generic [ref=e520]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e521]:
+                - img [ref=e522]
+              - generic [ref=e524]:
+                - button "Image 1" [ref=e525]
+                - button "Image 2" [ref=e526]
+            - generic [ref=e527]:
+              - heading "Black Whisk" [level=3] [ref=e528]
+              - generic [ref=e529]:
+                - paragraph [ref=e530]: ₦3,500
+                - generic [ref=e531]: Fair
+              - generic [ref=e532]:
+                - img [ref=e533]
+                - generic [ref=e536]: Ajah, Lagos
+          - link "Think and Grow Rich – Napoleon Hill For Sale Add to cart Think and Grow Rich – Napoleon Hill ₦2,500 Fair Ajah, Lagos" [ref=e537] [cursor=pointer]:
+            - /url: /listings/6bcae745-a06e-45cc-b1f3-4f15e41ff9ed
+            - generic [ref=e538]:
+              - img "Think and Grow Rich – Napoleon Hill" [ref=e541]
+              - generic [ref=e542]: For Sale
+              - generic [ref=e543]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e544]:
+              - heading "Think and Grow Rich – Napoleon Hill" [level=3] [ref=e545]
+              - generic [ref=e546]:
+                - paragraph [ref=e547]: ₦2,500
+                - generic [ref=e548]: Fair
+              - generic [ref=e549]:
+                - img [ref=e550]
+                - generic [ref=e553]: Ajah, Lagos
+          - link "Longines Master Collection Longines Master Collection Longines Master Collection For Sale Add to cart Next image Image 1 Image 2 Image 3 Longines Master Collection ₦570,000 Fair Trans-Amadi, Port Harcourt" [ref=e554] [cursor=pointer]:
+            - /url: /listings/64b3c4d5-87c3-4f1c-9441-1cb1ccf4250b
+            - generic [ref=e555]:
+              - generic [ref=e556]:
+                - img "Longines Master Collection" [ref=e558]
+                - img "Longines Master Collection" [ref=e560]
+                - img "Longines Master Collection" [ref=e562]
+              - generic [ref=e563]: For Sale
+              - generic [ref=e564]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e565]:
+                - img [ref=e566]
+              - generic [ref=e568]:
+                - button "Image 1" [ref=e569]
+                - button "Image 2" [ref=e570]
+                - button "Image 3" [ref=e571]
+            - generic [ref=e572]:
+              - heading "Longines Master Collection" [level=3] [ref=e573]
+              - generic [ref=e574]:
+                - paragraph [ref=e575]: ₦570,000
+                - generic [ref=e576]: Fair
+              - generic [ref=e577]:
+                - img [ref=e578]
+                - generic [ref=e581]: Trans-Amadi, Port Harcourt
+          - link "Office Stationery Set For Sale Add to cart Office Stationery Set ₦3,000 Like New Bodija, Ibadan" [ref=e582] [cursor=pointer]:
+            - /url: /listings/0f8021cb-18f6-46b3-9c43-b2f5115ef3ee
+            - generic [ref=e583]:
+              - img "Office Stationery Set" [ref=e586]
+              - generic [ref=e587]: For Sale
+              - generic [ref=e588]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e589]:
+              - heading "Office Stationery Set" [level=3] [ref=e590]
+              - generic [ref=e591]:
+                - paragraph [ref=e592]: ₦3,000
+                - generic [ref=e593]: Like New
+              - generic [ref=e594]:
+                - img [ref=e595]
+                - generic [ref=e598]: Bodija, Ibadan
+          - link "Wooden Toy Building Blocks (50 pcs) For Sale Add to cart Wooden Toy Building Blocks (50 pcs) ₦8,500 Good Gbagada, Lagos" [ref=e599] [cursor=pointer]:
+            - /url: /listings/ee529b0e-2f7d-40d6-aa05-576d5df4ae6e
+            - generic [ref=e600]:
+              - img "Wooden Toy Building Blocks (50 pcs)" [ref=e603]
+              - generic [ref=e604]: For Sale
+              - generic [ref=e605]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e606]:
+              - heading "Wooden Toy Building Blocks (50 pcs)" [level=3] [ref=e607]
+              - generic [ref=e608]:
+                - paragraph [ref=e609]: ₦8,500
+                - generic [ref=e610]: Good
+              - generic [ref=e611]:
+                - img [ref=e612]
+                - generic [ref=e615]: Gbagada, Lagos
+          - link "Baby Stroller – Portable Foldable For Sale Add to cart Baby Stroller – Portable Foldable ₦22,000 Fair Surulere, Lagos" [ref=e616] [cursor=pointer]:
+            - /url: /listings/b8c5dbcb-4a40-4bd4-a521-db942c1744fc
+            - generic [ref=e617]:
+              - img "Baby Stroller – Portable Foldable" [ref=e620]
+              - generic [ref=e621]: For Sale
+              - generic [ref=e622]:
+                - button "Add to cart":
+                  - img
+            - generic [ref=e623]:
+              - heading "Baby Stroller – Portable Foldable" [level=3] [ref=e624]
+              - generic [ref=e625]:
+                - paragraph [ref=e626]: ₦22,000
+                - generic [ref=e627]: Fair
+              - generic [ref=e628]:
+                - img [ref=e629]
+                - generic [ref=e632]: Surulere, Lagos
+          - link "Girl Summer Dress Girl Summer Dress Girl Summer Dress For Sale Add to cart Next image Image 1 Image 2 Image 3 Girl Summer Dress ₦5,000 Poor Sabon Gari, Kano" [ref=e633] [cursor=pointer]:
+            - /url: /listings/8a6db7b2-abc3-442b-ae1c-3c27a00dd8da
+            - generic [ref=e634]:
+              - generic [ref=e635]:
+                - img "Girl Summer Dress" [ref=e637]
+                - img "Girl Summer Dress" [ref=e639]
+                - img "Girl Summer Dress" [ref=e641]
+              - generic [ref=e642]: For Sale
+              - generic [ref=e643]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e644]:
+                - img [ref=e645]
+              - generic [ref=e647]:
+                - button "Image 1" [ref=e648]
+                - button "Image 2" [ref=e649]
+                - button "Image 3" [ref=e650]
+            - generic [ref=e651]:
+              - heading "Girl Summer Dress" [level=3] [ref=e652]
+              - generic [ref=e653]:
+                - paragraph [ref=e654]: ₦5,000
+                - generic [ref=e655]: Poor
+              - generic [ref=e656]:
+                - img [ref=e657]
+                - generic [ref=e660]: Sabon Gari, Kano
+          - link "Gray Dress Gray Dress Gray Dress For Sale Add to cart Next image Image 1 Image 2 Image 3 Gray Dress ₦9,000 New Ikeja GRA, Lagos" [ref=e661] [cursor=pointer]:
+            - /url: /listings/d776c622-d756-411b-b4ab-875de4f1fc52
+            - generic [ref=e662]:
+              - generic [ref=e663]:
+                - img "Gray Dress" [ref=e665]
+                - img "Gray Dress" [ref=e667]
+                - img "Gray Dress" [ref=e669]
+              - generic [ref=e670]: For Sale
+              - generic [ref=e671]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e672]:
+                - img [ref=e673]
+              - generic [ref=e675]:
+                - button "Image 1" [ref=e676]
+                - button "Image 2" [ref=e677]
+                - button "Image 3" [ref=e678]
+            - generic [ref=e679]:
+              - heading "Gray Dress" [level=3] [ref=e680]
+              - generic [ref=e681]:
+                - paragraph [ref=e682]: ₦9,000
+                - generic [ref=e683]: New
+              - generic [ref=e684]:
+                - img [ref=e685]
+                - generic [ref=e688]: Ikeja GRA, Lagos
+          - link "Children's Story Books Bundle (10 books) Free Claim item Children's Story Books Bundle (10 books) Free Poor Bodija, Ibadan" [ref=e689] [cursor=pointer]:
+            - /url: /listings/4f6ddb00-ac77-41d0-a538-34b725908e43
+            - generic [ref=e690]:
+              - img "Children's Story Books Bundle (10 books)" [ref=e693]
+              - generic [ref=e694]: Free
+              - generic [ref=e695]:
+                - button "Claim item":
+                  - img
+            - generic [ref=e696]:
+              - heading "Children's Story Books Bundle (10 books)" [level=3] [ref=e697]
+              - generic [ref=e698]:
+                - paragraph [ref=e699]: Free
+                - generic [ref=e700]: Poor
+              - generic [ref=e701]:
+                - img [ref=e702]
+                - generic [ref=e705]: Bodija, Ibadan
+          - link "Tropical Earring Tropical Earring Tropical Earring For Sale Add to cart Next image Image 1 Image 2 Image 3 Tropical Earring ₦6,500 New Wuse 2, Abuja" [ref=e706] [cursor=pointer]:
+            - /url: /listings/0f399c90-5fab-4a9e-8a95-9dfa4c2664fd
+            - generic [ref=e707]:
+              - generic [ref=e708]:
+                - img "Tropical Earring" [ref=e710]
+                - img "Tropical Earring" [ref=e712]
+                - img "Tropical Earring" [ref=e714]
+              - generic [ref=e715]: For Sale
+              - generic [ref=e716]:
+                - button "Add to cart":
+                  - img
+              - button "Next image" [ref=e717]:
+                - img [ref=e718]
+              - generic [ref=e720]:
+                - button "Image 1" [ref=e721]
+                - button "Image 2" [ref=e722]
+                - button "Image 3" [ref=e723]
+            - generic [ref=e724]:
+              - heading "Tropical Earring" [level=3] [ref=e725]
+              - generic [ref=e726]:
+                - paragraph [ref=e727]: ₦6,500
+                - generic [ref=e728]: New
+              - generic [ref=e729]:
+                - img [ref=e730]
+                - generic [ref=e733]: Wuse 2, Abuja
+        - generic [ref=e734]:
+          - button [disabled] [ref=e735]:
+            - img [ref=e736]
+          - button "1" [ref=e738]
+          - button "2" [ref=e739]
+          - button "3" [ref=e740]
+          - button "4" [ref=e741]
+          - button "5" [ref=e742]
+          - button [ref=e743]:
+            - img [ref=e744]
+  - contentinfo [ref=e146]:
+    - generic [ref=e147]:
+      - generic [ref=e148]:
+        - img "declut" [ref=e149]
+        - navigation [ref=e150]:
+          - link "About" [ref=e151] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy" [ref=e152] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e153] [cursor=pointer]:
+            - /url: /terms
+      - generic [ref=e154]:
+        - paragraph [ref=e155]: © 2026 Declut
+        - generic [ref=e156]: Beta
+  - region "Notifications alt+T"
+  - generic [ref=e161] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e162]:
+      - img [ref=e163]
+    - generic [ref=e746]:
+      - button "Open issues overlay" [ref=e747]:
+        - generic [ref=e748]:
+          - generic [ref=e749]: "1"
+          - generic [ref=e750]: "2"
+        - generic [ref=e751]:
+          - text: Issue
+          - generic [ref=e752]: s
+      - button "Collapse issues badge" [ref=e753]:
+        - img [ref=e754]
+  - alert [ref=e756]

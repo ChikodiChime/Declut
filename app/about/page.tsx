@@ -130,7 +130,7 @@ export default function AboutPage() {
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section
         className="relative overflow-hidden flex flex-col"
-        style={{ minHeight: "100svh", marginTop: -68 }}
+        style={{ minHeight: "clamp(620px, 85svh, 900px)", marginTop: -76 }}
       >
         {/* Background photo */}
         <div
