@@ -62,11 +62,14 @@ export async function POST(req: Request) {
   const validation = validateCartItems(items)
   if ('error' in validation) return err(validation.error, 'VALIDATION_ERROR', 409)
 
-  const buyerState =
+  const rawDeliveryState = (body as Record<string, unknown>).delivery_state
+  const buyerState: string | null =
     delivery_type === 'delivery'
-      ? (authUser ? (body as Record<string, unknown>).delivery_state : buyer_info?.address_state) ?? null
+      ? (authUser
+          ? (typeof rawDeliveryState === 'string' ? rawDeliveryState : null)
+          : (typeof buyer_info?.address_state === 'string' ? buyer_info.address_state : null))
       : null
-  const groups = groupBySeller(items, delivery_type, buyerState as string | null)
+  const groups = groupBySeller(items, delivery_type, buyerState)
   const grandTotal = calculateGrandTotal(groups)
 
   const orderInserts = groups.map((group) => ({
