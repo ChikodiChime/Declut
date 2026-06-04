@@ -394,41 +394,42 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       </div>
 
       {/* ── Card body ── */}
-      <div className="flex flex-col flex-1 p-3.5 gap-2.5 ">
+      <div className="flex flex-col flex-1 p-3.5 gap-2">
+        {/* Price */}
+        <p
+          className="font-display text-lg font-bold leading-none"
+          style={{ color: type.color }}
+        >
+          {listing.listing_type === "for_sale" && listing.price != null
+            ? `₦${listing.price.toLocaleString()}`
+            : type.label}
+        </p>
+
         {/* Title */}
-        <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-text">
+        <h3 className="line-clamp-1 text-sm font-medium leading-snug text-text">
           {listing.title}
         </h3>
 
-        {/* Price + condition — same row, clear hierarchy */}
-        <div className="flex items-center justify-between gap-2">
-          <p
-            className="font-display text-[15px] font-bold leading-none"
-            style={{ color: type.color }}
-          >
-            {listing.listing_type === "for_sale" && listing.price != null
-              ? `₦${listing.price.toLocaleString()}`
-              : type.label}
-          </p>
+        {/* Meta: condition + location */}
+        <div className="flex items-center gap-1.5">
           <span
             className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
-            style={{ background: "#f0ece6", color: "#78726c" }}
+            style={{ background: type.bg, color: type.color }}
           >
             {CONDITION_LABELS[listing.condition]}
           </span>
-        </div>
-
-        {/* Location */}
-        <div className="flex items-center gap-1.5">
-          <MapPin
-            size={10}
-            strokeWidth={2}
-            className="shrink-0"
-            style={{ color: "#b8b0a8" }}
-          />
-          <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
-            {listing.area}
-          </span>
+          <span style={{ color: "#d1d5db" }}>·</span>
+          <div className="flex min-w-0 items-center gap-1">
+            <MapPin
+              size={10}
+              strokeWidth={2}
+              className="shrink-0"
+              style={{ color: "#b8b0a8" }}
+            />
+            <span className="truncate text-[11px]" style={{ color: "#a8a09a" }}>
+              {listing.area}
+            </span>
+          </div>
         </div>
       </div>
     </Link>
