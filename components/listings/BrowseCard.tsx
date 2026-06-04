@@ -171,17 +171,18 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       href={`/listings/${listing.id}`}
       className="group relative flex h-full flex-col rounded-2xl bg-white transition-all duration-300"
       style={{
-        boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
+        border: `1px solid ${type.border}`,
+        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.boxShadow =
-          "0 6px 20px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04)";
+        el.style.borderColor = type.borderHover;
+        el.style.boxShadow = "0 8px 24px rgba(0,0,0,0.10)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.boxShadow =
-          "0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)";
+        el.style.borderColor = type.border;
+        el.style.boxShadow = "0 2px 8px rgba(0,0,0,0.05)";
       }}
     >
       {/* ── Image + carousel ── */}
@@ -432,6 +433,15 @@ export function BrowseCard({ listing }: BrowseCardProps) {
           </div>
         </div>
       </div>
+
+      {/* Accent strip */}
+      <div
+        style={{
+          height: 3,
+          background: type.color,
+          borderRadius: "0 0 16px 16px",
+        }}
+      />
     </Link>
   );
 }
