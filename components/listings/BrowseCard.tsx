@@ -401,8 +401,10 @@ export function BrowseCard({ listing }: BrowseCardProps) {
           className="font-display text-lg font-bold leading-none"
           style={{ color: type.color }}
         >
-          {listing.listing_type === "for_sale" && listing.price != null
-            ? `₦${listing.price.toLocaleString()}`
+          {listing.listing_type === "for_sale"
+            ? listing.price != null
+              ? `₦${listing.price.toLocaleString()}`
+              : "—"
             : type.label}
         </p>
 
@@ -417,7 +419,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
             className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
             style={{ background: type.bg, color: type.color }}
           >
-            {CONDITION_LABELS[listing.condition]}
+            {CONDITION_LABELS[listing.condition] ?? listing.condition}
           </span>
           <span style={{ color: "#d1d5db" }}>·</span>
           <div className="flex min-w-0 items-center gap-1">
@@ -436,11 +438,11 @@ export function BrowseCard({ listing }: BrowseCardProps) {
 
       {/* Accent strip */}
       <div
+        className="rounded-b-2xl"
         style={{
           height: 3,
           flexShrink: 0,
           background: type.color,
-          borderRadius: "0 0 16px 16px",
         }}
       />
     </Link>
