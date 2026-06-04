@@ -438,6 +438,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       <div
         style={{
           height: 3,
+          flexShrink: 0,
           background: type.color,
           borderRadius: "0 0 16px 16px",
         }}
