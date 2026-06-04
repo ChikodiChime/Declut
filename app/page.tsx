@@ -613,7 +613,7 @@ function CategorySection({ category }: { category: string }) {
                 style={{ background: "white", borderColor: "#ebe5dc" }}
               >
                 <div
-                  className="aspect-4/3 rounded-t-2xl"
+                  className="aspect-3/4 rounded-t-2xl"
                   style={{ background: "#f0ece5" }}
                 />
                 <div className="flex flex-col gap-2 p-3.5">
