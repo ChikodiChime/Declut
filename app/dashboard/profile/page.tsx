@@ -6,19 +6,14 @@ import { CldImage } from 'next-cloudinary'
 import Link from 'next/link'
 import {
   User,
-  Mail,
   Building2,
-  Shield,
   Camera,
   Pencil,
   CheckCircle2,
   AlertCircle,
-  ChevronRight,
   Eye,
   EyeOff,
   Loader2,
-  Phone,
-  MapPin,
 } from 'lucide-react'
 import { useMe, useUpdateProfile, useChangePassword, useSendVerification } from '@/lib/hooks/useAuth'
 import { useUploadImage } from '@/lib/hooks/useListings'
@@ -31,361 +26,242 @@ function formatMemberSince(iso: string) {
   return new Date(iso).toLocaleDateString('en-NG', { month: 'long', year: 'numeric' })
 }
 
-// ─── Avatar ───────────────────────────────────────────────────────────────────
-
-function Avatar({
-  avatarUrl,
-  name,
-  size = 80,
-}: {
-  avatarUrl?: string | null
-  name?: string | null
-  size?: number
-}) {
+function Avatar({ avatarUrl, name, size = 80 }: { avatarUrl?: string | null; name?: string | null; size?: number }) {
   if (avatarUrl) {
-    return (
-      <CldImage
-        src={avatarUrl}
-        width={size}
-        height={size}
-        className="rounded-2xl object-cover"
-        alt={name ?? 'Avatar'}
-        style={{ width: size, height: size }}
-      />
-    )
+    return <CldImage src={avatarUrl} width={size} height={size} className="rounded-2xl object-cover" alt={name ?? 'Avatar'} style={{ width: size, height: size }} />
   }
   return (
-    <div
-      className="rounded-2xl bg-primary/10 flex items-center justify-center shrink-0"
-      style={{ width: size, height: size }}
-    >
-      <span className="font-bold text-primary" style={{ fontSize: size * 0.38 }}>
-        {name?.[0]?.toUpperCase() ?? 'U'}
-      </span>
+    <div className="rounded-2xl bg-primary/10 flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
+      <span className="font-bold text-primary" style={{ fontSize: size * 0.38 }}>{name?.[0]?.toUpperCase() ?? 'U'}</span>
     </div>
   )
 }
 
-// ─── Hero card ────────────────────────────────────────────────────────────────
 
-function HeroCard({
+// ─── Profile sidebar (left panel) ────────────────────────────────────────────
+
+function ProfileSidebar({
   me,
-  onEditName,
   onEditAvatar,
 }: {
   me: ReturnType<typeof useMe>['data']
-  onEditName: () => void
   onEditAvatar: () => void
 }) {
+  const accountType = (me as { account_type?: string })?.account_type ?? 'personal'
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="relative rounded-2xl border border-border bg-card overflow-hidden p-6"
+      className="w-64 shrink-0 rounded-2xl border border-border bg-card"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
-      <div
-        className="absolute top-0 right-0 w-56 h-56 opacity-[0.05] pointer-events-none"
-        style={{ background: 'radial-gradient(circle at center, #4f46e5 0%, transparent 70%)' }}
-      />
+      {/* Coloured header — avatar sits at the bottom edge */}
+      <div className="relative h-20 bg-primary rounded-t-2xl overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cpath d='M36 0H0V36' fill='none' stroke='rgba(255,255,255,0.07)' stroke-width='1'/%3E%3C/svg%3E\")",
+            backgroundSize: '36px 36px',
+          }}
+        />
+      </div>
 
-      <div className="relative flex items-start gap-5">
-        {/* Avatar with edit overlay */}
-        <div className="relative group shrink-0">
-          <Avatar avatarUrl={me?.avatar_url} name={me?.name} size={80} />
+      {/* Avatar bridging the two sections */}
+      <div className="flex flex-col items-center -mt-10 px-5 pb-4">
+        <div className="relative group mb-3">
+          <div className="w-20 h-20 rounded-full overflow-hidden ring-[3px] ring-card shadow-md">
+            {me?.avatar_url ? (
+              <CldImage src={me.avatar_url} width={80} height={80} alt={me.name ?? 'Avatar'} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-primary flex items-center justify-center">
+                <span className="text-2xl font-bold text-white">{me?.name?.[0]?.toUpperCase() ?? 'U'}</span>
+              </div>
+            )}
+          </div>
           <button
             onClick={onEditAvatar}
-            className="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+            className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
             aria-label="Change photo"
           >
-            <Camera size={18} strokeWidth={2} className="text-white" />
+            <Camera size={15} strokeWidth={2} className="text-white" />
           </button>
         </div>
 
-        {/* Name + email + meta */}
-        <div className="flex-1 min-w-0">
-          {/* Name row */}
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-bold text-text truncate">{me?.name ?? '—'}</p>
-            <button
-              onClick={onEditName}
-              className="shrink-0 rounded-lg p-1 hover:bg-surface transition-colors text-text-subtle hover:text-text"
-              aria-label="Edit name"
-            >
-              <Pencil size={13} strokeWidth={2} />
-            </button>
-          </div>
+        <p className="text-sm font-bold text-text text-center leading-tight">{me?.name ?? '—'}</p>
+        <span className={[
+          'mt-1.5 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold',
+          accountType === 'business' ? 'bg-accent/10 text-accent' : 'bg-primary/10 text-primary',
+        ].join(' ')}>
+          {accountType === 'business' ? <><Building2 size={9} strokeWidth={2.5} /> Business</> : <><User size={9} strokeWidth={2.5} /> Individual</>}
+        </span>
+      </div>
 
-          {/* Email + verification badge */}
-          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-            <p className="text-sm text-text-muted truncate">{me?.email ?? '—'}</p>
-            {me && (
-              me.email_verified ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-2 py-0.5 text-[10px] font-semibold">
-                  <CheckCircle2 size={9} strokeWidth={2.5} />
-                  Verified
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200 px-2 py-0.5 text-[10px] font-semibold">
-                  <AlertCircle size={9} strokeWidth={2.5} />
-                  Unverified
-                </span>
-              )
-            )}
+      <div className="border-t border-border divide-y divide-border">
+        {[
+          { label: 'EMAIL', value: me?.email ?? '—' },
+          { label: 'PHONE', value: me?.phone ?? '—' },
+        ].map(({ label, value }) => (
+          <div key={label} className="px-5 py-3">
+            <p className="text-[10px] font-semibold tracking-widest text-text-subtle mb-0.5">{label}</p>
+            <p className="text-xs text-text truncate">{value}</p>
           </div>
-
-          {/* Account type + member since */}
-          <div className="flex items-center gap-2.5 mt-2.5 flex-wrap">
-            <span className={[
-              'inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold',
-              me?.account_type === 'business'
-                ? 'bg-accent/10 text-accent'
-                : 'bg-primary/10 text-primary',
-            ].join(' ')}>
-              {me?.account_type === 'business'
-                ? <><Building2 size={10} strokeWidth={2.5} /> Business</>
-                : <><User size={10} strokeWidth={2.5} /> Individual</>
-              }
-            </span>
-            {me?.created_at && (
-              <span className="text-[11px] text-text-subtle">
-                Member since {formatMemberSince(me.created_at)}
-              </span>
-            )}
-          </div>
-        </div>
+        ))}
       </div>
     </motion.div>
   )
 }
 
-// ─── Account section ──────────────────────────────────────────────────────────
+// ─── Info card + row ──────────────────────────────────────────────────────────
 
-function AccountSection({ me }: { me: ReturnType<typeof useMe>['data'] }) {
-  const { mutate: sendVerification, isPending, isSuccess, data: sendData, reset } = useSendVerification()
+const INPUT_CLS = "w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
 
-  useEffect(() => {
-    if (!isSuccess) return
-    const timer = setTimeout(reset, 30_000)
-    return () => clearTimeout(timer)
-  }, [isSuccess, reset])
-
-  const stripeConnected = me?.stripe_onboarding_complete
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.08 }}
-      className="rounded-2xl border border-border bg-card overflow-hidden divide-y divide-border"
-      style={{ boxShadow: 'var(--shadow-card)' }}
-    >
-      {/* Email verification */}
-      <div className="flex items-center gap-4 px-5 py-4">
-        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
-          <Mail size={15} strokeWidth={1.75} className="text-text-muted" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Email</p>
-          <p className="text-sm font-medium text-text mt-0.5 truncate">{me?.email ?? '—'}</p>
-        </div>
-        <div className="shrink-0">
-          {me?.email_verified ? (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-3 py-1.5 text-[11px] font-semibold">
-              <CheckCircle2 size={11} strokeWidth={2.5} />
-              Verified
-            </span>
-          ) : (
-            <div className="flex flex-col items-end gap-1">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200 px-3 py-1.5 text-[11px] font-semibold">
-                <AlertCircle size={11} strokeWidth={2.5} />
-                Unverified
-              </span>
-              {isSuccess && sendData?.sent ? (
-                <p className="text-[10px] text-success">Code sent — check your inbox</p>
-              ) : isSuccess && !sendData?.sent ? (
-                <p className="text-[10px] text-text-subtle">
-                  Try again in {sendData?.retryAfter ?? 60}s
-                </p>
-              ) : (
-                <button
-                  onClick={() => sendVerification()}
-                  disabled={isPending}
-                  className="text-[10px] text-primary underline underline-offset-2 disabled:opacity-50"
-                >
-                  {isPending ? 'Sending…' : 'Resend verification'}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Stripe connect status */}
-      <div className="flex items-center gap-4 px-5 py-4">
-        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
-          <Shield size={15} strokeWidth={1.75} className="text-text-muted" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Payouts</p>
-          <p className="text-sm font-medium text-text mt-0.5">
-            {stripeConnected ? 'Stripe connected' : 'Not connected'}
-          </p>
-        </div>
-        <Link
-          href="/dashboard/billing"
-          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-text transition-colors"
-        >
-          {stripeConnected ? 'Manage' : 'Set up'}
-          <ChevronRight size={12} strokeWidth={2.5} />
-        </Link>
-      </div>
-    </motion.div>
-  )
-}
-
-// ─── Contact section ──────────────────────────────────────────────────────────
-
-function ContactSection({
-  me,
-  onEditPhone,
-  onEditAddress,
+function InfoCard({
+  title,
+  subtitle,
+  children,
+  delay = 0,
+  editing = false,
+  onEdit,
+  onCancel,
+  onSave,
+  saving = false,
 }: {
-  me: ReturnType<typeof useMe>['data']
-  onEditPhone: () => void
-  onEditAddress: () => void
+  title: string
+  subtitle?: string
+  children: React.ReactNode
+  delay?: number
+  editing?: boolean
+  onEdit?: () => void
+  onCancel?: () => void
+  onSave?: () => void
+  saving?: boolean
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.11 }}
-      className="rounded-2xl border border-border bg-card overflow-hidden divide-y divide-border"
+      transition={{ duration: 0.35, delay }}
+      className="rounded-2xl border border-border bg-card"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
-      {/* Phone */}
-      <div className="flex items-center gap-4 px-5 py-4">
-        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
-          <Phone size={15} strokeWidth={1.75} className="text-text-muted" />
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-bold text-text">{title}</p>
+          {subtitle && <p className="text-xs text-text-muted mt-0.5">{subtitle}</p>}
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Phone</p>
-          <p className="text-sm font-medium text-text mt-0.5 truncate">
-            {me?.phone ?? <span className="text-text-subtle italic">Not set</span>}
-          </p>
-        </div>
-        <button
-          onClick={onEditPhone}
-          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-text transition-colors"
-        >
-          {me?.phone ? 'Edit' : 'Add'}
-          <ChevronRight size={12} strokeWidth={2.5} />
-        </button>
+        {onEdit && (
+          editing ? (
+            <div className="flex items-center gap-2 shrink-0">
+              {onCancel && (
+                <button onClick={onCancel} className="text-xs font-semibold text-text-muted hover:text-text px-3 py-1.5 rounded-lg hover:bg-surface transition-colors">
+                  Cancel
+                </button>
+              )}
+              {onSave && (
+                <button onClick={onSave} disabled={saving} className="text-xs font-semibold text-white bg-primary hover:bg-primary-hover disabled:opacity-60 px-3 py-1.5 rounded-lg transition-colors">
+                  {saving ? 'Saving…' : 'Save'}
+                </button>
+              )}
+            </div>
+          ) : (
+            <button onClick={onEdit} className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-hover transition-colors shrink-0">
+              <Pencil size={11} strokeWidth={2.5} />
+              Edit
+            </button>
+          )
+        )}
       </div>
-
-      {/* Address */}
-      <div className="flex items-center gap-4 px-5 py-4">
-        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
-          <MapPin size={15} strokeWidth={1.75} className="text-text-muted" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Delivery address</p>
-          <p className="text-sm font-medium text-text mt-0.5 truncate">
-            {me?.address ?? <span className="text-text-subtle italic">Not set</span>}
-          </p>
-        </div>
-        <button
-          onClick={onEditAddress}
-          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-text transition-colors"
-        >
-          {me?.address ? 'Edit' : 'Add'}
-          <ChevronRight size={12} strokeWidth={2.5} />
-        </button>
-      </div>
+      <div className="divide-y divide-border">{children}</div>
     </motion.div>
   )
 }
 
-// ─── Security section ─────────────────────────────────────────────────────────
-
-function SecuritySection({ onChangePassword }: { onChangePassword: () => void }) {
+function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.14 }}
-      className="rounded-2xl border border-border bg-card overflow-hidden"
-      style={{ boxShadow: 'var(--shadow-card)' }}
-    >
-      <div className="flex items-center gap-4 px-5 py-4">
-        <div className="w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center shrink-0">
-          <Shield size={15} strokeWidth={1.75} className="text-text-muted" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-text-subtle font-medium uppercase tracking-wider">Security</p>
-          <p className="text-sm font-medium text-text mt-0.5">Password</p>
-        </div>
-        <button
-          onClick={onChangePassword}
-          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-text-muted hover:text-text transition-colors"
-        >
-          Change
-          <ChevronRight size={12} strokeWidth={2.5} />
-        </button>
-      </div>
-    </motion.div>
+    <div className="flex items-center justify-between px-5 py-3.5 gap-4">
+      <span className="text-sm text-text-muted shrink-0">{label}</span>
+      <span className="text-sm text-text text-right truncate">{value}</span>
+    </div>
   )
 }
 
-// ─── Name modal form ──────────────────────────────────────────────────────────
+// ─── Personal Information card ────────────────────────────────────────────────
 
-function NameForm({ currentName, onClose }: { currentName: string; onClose: () => void }) {
-  const [name, setName] = useState(currentName)
-  const [error, setError] = useState('')
+function PersonalInfoCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState('')
+  const [nameError, setNameError] = useState('')
   const { mutate, isPending } = useUpdateProfile()
+  const { mutate: sendVerification, isPending: sendingVerif, isSuccess: verificSent, data: verificData, reset: resetVerif } = useSendVerification()
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  useEffect(() => {
+    if (!verificSent) return
+    const t = setTimeout(resetVerif, 30_000)
+    return () => clearTimeout(t)
+  }, [verificSent, resetVerif])
+
+  function startEdit() { setName(me?.name ?? ''); setNameError(''); setEditing(true) }
+  function cancel() { setEditing(false); setNameError('') }
+  function save() {
     const trimmed = name.trim()
-    if (!trimmed) { setError('Name cannot be empty'); return }
-    if (trimmed.length > 100) { setError('Name must be 100 characters or less'); return }
-    setError('')
-    mutate({ name: trimmed }, { onSuccess: onClose, onError: (err) => setError(err.message) })
+    if (!trimmed) { setNameError('Name cannot be empty'); return }
+    if (trimmed.length > 100) { setNameError('Name must be 100 characters or less'); return }
+    setNameError('')
+    mutate({ name: trimmed }, { onSuccess: () => setEditing(false), onError: e => setNameError(e.message) })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-xs font-medium text-text-muted mb-1.5">Full name</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          maxLength={100}
-          className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-          placeholder="Your name"
-          autoFocus
-        />
-        {error && <p className="mt-1.5 text-xs text-error">{error}</p>}
-      </div>
-      <div className="flex gap-2.5 pt-1">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
-        >
-          {isPending ? 'Saving…' : 'Save'}
-        </button>
-      </div>
-    </form>
+    <InfoCard title="Personal Information" subtitle="Your name and contact details" editing={editing} onEdit={startEdit} onCancel={cancel} onSave={save} saving={isPending} delay={0.05}>
+      {editing ? (
+        <div className="px-5 py-4 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-text-muted mb-1.5">Full name</label>
+            <input type="text" value={name} onChange={e => setName(e.target.value)} autoFocus maxLength={100} placeholder="Your name" className={INPUT_CLS} />
+            {nameError && <p className="mt-1.5 text-xs text-error">{nameError}</p>}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-text-muted mb-1.5">Email</label>
+            <input type="email" value={me?.email ?? ''} disabled className={`${INPUT_CLS} opacity-60 cursor-not-allowed`} />
+            <p className="mt-1 text-xs text-text-subtle">Email cannot be changed.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <InfoRow label="Name" value={me?.name ?? '—'} />
+          <div className="flex items-center justify-between px-5 py-3.5 gap-4">
+            <span className="text-sm text-text-muted shrink-0">Email</span>
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-sm text-text truncate">{me?.email ?? '—'}</span>
+              {me && (me.email_verified ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-2 py-0.5 text-[10px] font-semibold shrink-0">
+                  <CheckCircle2 size={9} strokeWidth={2.5} /> Verified
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 text-amber-700 ring-1 ring-amber-200 px-2 py-0.5 text-[10px] font-semibold shrink-0">
+                  <AlertCircle size={9} strokeWidth={2.5} /> Unverified
+                </span>
+              ))}
+            </div>
+          </div>
+          {me && !me.email_verified && (
+            <div className="px-5 pb-3 -mt-1 flex justify-end">
+              {verificSent && verificData?.sent ? (
+                <p className="text-[11px] text-success">Code sent — check your inbox</p>
+              ) : verificSent && !verificData?.sent ? (
+                <p className="text-[11px] text-text-subtle">Try again in {verificData?.retryAfter ?? 60}s</p>
+              ) : (
+                <button onClick={() => sendVerification()} disabled={sendingVerif} className="text-[11px] text-primary underline underline-offset-2 disabled:opacity-50">
+                  {sendingVerif ? 'Sending…' : 'Resend verification'}
+                </button>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </InfoCard>
   )
 }
 
@@ -548,274 +424,167 @@ function PasswordField({
   )
 }
 
-function PasswordForm({ onClose }: { onClose: () => void }) {
+// ─── Contact card ─────────────────────────────────────────────────────────────
+
+function ContactCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
+  const [editing, setEditing] = useState(false)
+  const [phone, setPhone] = useState('')
+  const [phoneError, setPhoneError] = useState('')
+  const [selectedAddress, setSelectedAddress] = useState<{ address: string; state: string | null } | null>(null)
+  const [saveError, setSaveError] = useState('')
+  const { mutate, isPending } = useUpdateProfile()
+
+  function startEdit() {
+    setPhone(me?.phone ?? '')
+    setSelectedAddress(me?.address ? { address: me.address, state: null } : null)
+    setPhoneError('')
+    setSaveError('')
+    setEditing(true)
+  }
+
+  function cancel() { setEditing(false); setPhoneError(''); setSaveError('') }
+
+  function save() {
+    const trimmedPhone = phone.trim()
+    if (trimmedPhone && trimmedPhone.length > 30) { setPhoneError('Phone must be 30 characters or less'); return }
+    setPhoneError('')
+    setSaveError('')
+    mutate(
+      { phone: trimmedPhone || undefined, address: selectedAddress?.address || undefined, address_state: selectedAddress?.state || undefined },
+      { onSuccess: () => setEditing(false), onError: e => setSaveError(e.message) }
+    )
+  }
+
+  return (
+    <InfoCard title="Contact" subtitle="Phone number and delivery address" editing={editing} onEdit={startEdit} onCancel={cancel} onSave={save} saving={isPending} delay={0.1}>
+      {editing ? (
+        <div className="px-5 py-4 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-text-muted mb-1.5">Phone number</label>
+            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} autoFocus maxLength={30} placeholder="+234 800 000 0000" className={INPUT_CLS} />
+            {phoneError && <p className="mt-1.5 text-xs text-error">{phoneError}</p>}
+          </div>
+          <PlacesAddressInput
+            label="Delivery address"
+            defaultValue={me?.address ?? ''}
+            placeholder="Search for your delivery address"
+            onSelect={result => setSelectedAddress({ address: result.formatted_address, state: result.state })}
+            onClear={() => setSelectedAddress(null)}
+            error={saveError}
+          />
+        </div>
+      ) : (
+        <>
+          <InfoRow label="Phone" value={me?.phone ?? <span className="text-text-subtle">—</span>} />
+          <InfoRow label="Delivery address" value={me?.address ?? <span className="text-text-subtle">—</span>} />
+        </>
+      )}
+    </InfoCard>
+  )
+}
+
+// ─── Security & Payouts card ──────────────────────────────────────────────────
+
+function SecurityCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
+  const [editing, setEditing] = useState(false)
   const [current, setCurrent] = useState('')
   const [next, setNext] = useState('')
   const [confirm, setConfirm] = useState('')
   const [errors, setErrors] = useState<{ current?: string; next?: string; confirm?: string }>({})
   const [success, setSuccess] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
   const { mutate, isPending } = useChangePassword()
 
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
+  useEffect(() => { return () => { if (timerRef.current) clearTimeout(timerRef.current) } }, [])
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  const stripeConnected = me?.stripe_onboarding_complete
+
+  function startEdit() { setCurrent(''); setNext(''); setConfirm(''); setErrors({}); setSuccess(false); setEditing(true) }
+  function cancel() { setEditing(false); setErrors({}) }
+  function save() {
     const errs: typeof errors = {}
     if (!current) errs.current = 'Required'
     if (next.trim().length < 8) errs.next = 'Must be at least 8 characters'
     if (next !== confirm) errs.confirm = 'Passwords do not match'
     if (Object.keys(errs).length) { setErrors(errs); return }
     setErrors({})
-
     mutate(
       { current_password: current, new_password: next },
       {
-        onSuccess: () => {
-          setSuccess(true)
-          timerRef.current = setTimeout(onClose, 1200)
-        },
-        onError: (err) => {
-          const msg = err.message
-          if (msg.toLowerCase().includes('current')) {
-            setErrors({ current: 'Current password is incorrect' })
-          } else {
-            setErrors({ current: msg })
-          }
-        },
+        onSuccess: () => { setSuccess(true); timerRef.current = setTimeout(() => setEditing(false), 1500) },
+        onError: err => setErrors({ current: err.message.toLowerCase().includes('current') ? 'Current password is incorrect' : err.message }),
       }
     )
   }
 
-  if (success) {
-    return (
-      <div className="flex flex-col items-center gap-3 py-4 text-center">
-        <CheckCircle2 size={32} strokeWidth={1.5} className="text-success" />
-        <p className="text-sm font-semibold text-text">Password updated</p>
-      </div>
-    )
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <PasswordField
-        label="Current password"
-        value={current}
-        onChange={setCurrent}
-        error={errors.current}
-      />
-      <PasswordField
-        label="New password"
-        value={next}
-        onChange={setNext}
-        error={errors.next}
-      />
-      <PasswordField
-        label="Confirm new password"
-        value={confirm}
-        onChange={setConfirm}
-        error={errors.confirm}
-      />
-      <div className="flex gap-2.5 pt-1">
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={isPending}
-          className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface transition-colors disabled:opacity-50"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
-        >
-          {isPending ? 'Saving…' : 'Update password'}
-        </button>
-      </div>
-    </form>
-  )
-}
-
-// ─── Phone modal form ─────────────────────────────────────────────────────────
-
-function PhoneForm({ currentPhone, onClose }: { currentPhone: string; onClose: () => void }) {
-  const [phone, setPhone] = useState(currentPhone)
-  const [error, setError] = useState('')
-  const { mutate, isPending } = useUpdateProfile()
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const trimmed = phone.trim()
-    if (!trimmed) { setError('Phone number cannot be empty'); return }
-    if (trimmed.length > 30) { setError('Phone must be 30 characters or less'); return }
-    setError('')
-    mutate({ phone: trimmed }, { onSuccess: onClose, onError: (e) => setError(e.message) })
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-xs font-medium text-text-muted mb-1.5">Phone number</label>
-        <input
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          maxLength={30}
-          className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-          placeholder="+234 800 000 0000"
-          autoFocus
-        />
-        {error && <p className="mt-1.5 text-xs text-error">{error}</p>}
-      </div>
-      <div className="flex gap-2.5 pt-1">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-text-muted hover:bg-surface transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
-        >
-          {isPending ? 'Saving…' : 'Save'}
-        </button>
-      </div>
-    </form>
-  )
-}
-
-// ─── Address modal form ───────────────────────────────────────────────────────
-
-function AddressForm({ currentAddress, onClose }: { currentAddress: string; onClose: () => void }) {
-  const [selected, setSelected] = useState<{ address: string; state: string | null } | null>(
-    currentAddress ? { address: currentAddress, state: null } : null
-  );
-  const [error, setError] = useState("");
-  const { mutate, isPending } = useUpdateProfile();
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!selected?.address?.trim()) {
-      setError("Please search for and select your address");
-      return;
-    }
-    setError("");
-    mutate(
-      { address: selected.address, address_state: selected.state },
-      { onSuccess: onClose, onError: (e) => setError(e.message) }
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <PlacesAddressInput
-        label="Delivery address"
-        defaultValue={currentAddress}
-        placeholder="Search for your delivery address"
-        onSelect={(result) =>
-          setSelected({ address: result.formatted_address, state: result.state })
-        }
-        onClear={() => setSelected(null)}
-        error={error}
-      />
-      {selected && (
-        <p className="text-xs text-text-muted">
-          Selected: <span className="text-text">{selected.address}</span>
-        </p>
+    <InfoCard
+      title="Security & Payouts"
+      subtitle="Password and payout settings"
+      editing={editing}
+      onEdit={startEdit}
+      onCancel={success ? undefined : cancel}
+      onSave={success ? undefined : save}
+      saving={isPending}
+      delay={0.15}
+    >
+      {editing ? (
+        <div className="px-5 py-4">
+          {success ? (
+            <div className="flex items-center gap-2 py-1 text-success">
+              <CheckCircle2 size={15} strokeWidth={2} />
+              <span className="text-sm font-semibold">Password updated</span>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <PasswordField label="Current password" value={current} onChange={setCurrent} error={errors.current} />
+              <PasswordField label="New password" value={next} onChange={setNext} error={errors.next} />
+              <PasswordField label="Confirm new password" value={confirm} onChange={setConfirm} error={errors.confirm} />
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <InfoRow label="Password" value="••••••••" />
+          <div className="flex items-center justify-between px-5 py-3.5 gap-4">
+            <span className="text-sm text-text-muted shrink-0">Payouts</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-text">{stripeConnected ? 'Stripe connected' : 'Not connected'}</span>
+              <Link href="/dashboard/billing" className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors shrink-0">
+                {stripeConnected ? 'Manage' : 'Set up'}
+              </Link>
+            </div>
+          </div>
+        </>
       )}
-      <div className="flex gap-3 pt-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 rounded-xl border border-border py-2.5 text-sm font-medium text-text hover:bg-surface transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="flex-1 rounded-xl bg-foreground py-2.5 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {isPending ? "Saving…" : "Save address"}
-        </button>
-      </div>
-    </form>
-  );
+    </InfoCard>
+  )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type ModalType = 'name' | 'avatar' | 'password' | 'phone' | 'address' | null
-
 export default function ProfilePage() {
   const { data: me } = useMe()
-  const [modal, setModal] = useState<ModalType>(null)
-
-  function close() { setModal(null) }
+  const [avatarOpen, setAvatarOpen] = useState(false)
 
   return (
-    <div className="space-y-4 max-w-xl">
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
+    <div>
+      <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="mb-5">
         <h1 className="text-2xl font-bold text-text tracking-tight">Profile</h1>
         <p className="text-sm text-text-muted mt-1">Manage your account information and security.</p>
       </motion.div>
 
-      <HeroCard
-        me={me}
-        onEditName={() => setModal('name')}
-        onEditAvatar={() => setModal('avatar')}
-      />
+      <div className="flex gap-5 items-start">
+        <ProfileSidebar me={me} onEditAvatar={() => setAvatarOpen(true)} />
+        <div className="flex-1 space-y-4">
+          <PersonalInfoCard me={me} />
+          <ContactCard me={me} />
+          <SecurityCard me={me} />
+        </div>
+      </div>
 
-      <AccountSection me={me} />
-
-      <ContactSection
-        me={me}
-        onEditPhone={() => setModal('phone')}
-        onEditAddress={() => setModal('address')}
-      />
-
-      <SecuritySection onChangePassword={() => setModal('password')} />
-
-      {/* Name modal */}
-      <Modal open={modal === 'name'} onClose={close} title="Edit name">
-        <NameForm currentName={me?.name ?? ''} onClose={close} />
-      </Modal>
-
-      {/* Avatar modal */}
-      <Modal open={modal === 'avatar'} onClose={close} title="Change photo">
-        <AvatarForm
-          currentAvatarUrl={me?.avatar_url}
-          currentName={me?.name}
-          onClose={close}
-        />
-      </Modal>
-
-      {/* Phone modal */}
-      <Modal open={modal === 'phone'} onClose={close} title={me?.phone ? 'Edit phone number' : 'Add phone number'}>
-        <PhoneForm currentPhone={me?.phone ?? ''} onClose={close} />
-      </Modal>
-
-      {/* Address modal */}
-      <Modal open={modal === 'address'} onClose={close} title={me?.address ? 'Edit delivery address' : 'Add delivery address'}>
-        <AddressForm currentAddress={me?.address ?? ''} onClose={close} />
-      </Modal>
-
-      {/* Password modal */}
-      <Modal open={modal === 'password'} onClose={close} title="Change password">
-        <PasswordForm onClose={close} />
+      <Modal open={avatarOpen} onClose={() => setAvatarOpen(false)} title="Change photo">
+        <AvatarForm currentAvatarUrl={me?.avatar_url} currentName={me?.name} onClose={() => setAvatarOpen(false)} />
       </Modal>
     </div>
   )

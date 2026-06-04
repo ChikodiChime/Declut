@@ -1,4 +1,3 @@
-// app/dashboard/orders/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -15,6 +14,10 @@ import {
   Truck,
   KeyRound,
   ChevronRight,
+  Gift,
+  ShoppingBag,
+  Inbox,
+  CheckCircle2,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -41,18 +44,52 @@ import {
 function OrderSkeleton() {
   return (
     <div className="animate-pulse rounded-2xl border border-border bg-card p-5 flex gap-4">
-      <div
-        className="w-20 h-20 rounded-xl shrink-0"
-        style={{ background: "#f0ece5" }}
-      />
+      <div className="w-20 h-20 rounded-xl shrink-0 bg-surface" />
       <div className="flex-1 flex flex-col gap-2">
-        <div className="h-4 w-2/3 rounded" style={{ background: "#f0ece5" }} />
-        <div className="h-3 w-1/3 rounded" style={{ background: "#f0ece5" }} />
-        <div className="h-3 w-1/2 rounded" style={{ background: "#f0ece5" }} />
+        <div className="h-4 w-2/3 rounded bg-surface" />
+        <div className="h-3 w-1/3 rounded bg-surface" />
+        <div className="h-3 w-1/2 rounded bg-surface" />
       </div>
     </div>
   );
 }
+
+function EmptyState({
+  icon: Icon,
+  heading,
+  body,
+  action,
+}: {
+  icon: React.ElementType;
+  heading: string;
+  body: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col items-center py-16 text-center">
+      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 flex items-center justify-center mb-5">
+        <Icon size={28} strokeWidth={1.5} className="text-primary" />
+      </div>
+      <p className="text-base font-semibold text-text mb-2">{heading}</p>
+      <p className="text-sm text-text-muted max-w-xs leading-relaxed">{body}</p>
+      {action && <div className="mt-6">{action}</div>}
+    </div>
+  );
+}
+
+const CLAIM_STATUS_CLS: Record<string, string> = {
+  pending: "bg-accent/10 text-accent",
+  accepted: "bg-success/10 text-success",
+  completed: "bg-border text-text-muted",
+  cancelled: "bg-border text-text-subtle",
+};
+
+const CLAIM_STATUS_LABEL: Record<string, string> = {
+  pending: "Pending",
+  accepted: "Accepted",
+  completed: "Collected",
+  cancelled: "Cancelled",
+};
 
 // ─── Sales tab ────────────────────────────────────────────────────────────────
 
@@ -68,61 +105,28 @@ const SALES_TABS: SalesTab[] = [
   { label: "Delivered", status: "delivered" },
 ];
 
-const SALES_EMPTY_STATE: Record<
-  string,
-  { emoji: string; heading: string; body: string }
-> = {
+const SALES_EMPTY: Record<string, { icon: React.ElementType; heading: string; body: string }> = {
   paid: {
-    emoji: "🛍️",
+    icon: ShoppingBag,
     heading: "No new orders yet",
     body: "When a buyer completes payment, their order will land here for you to confirm.",
   },
   confirmed: {
-    emoji: "✅",
+    icon: CheckCircle2,
     heading: "Nothing confirmed yet",
     body: "Orders you confirm will move here. Delivery orders await a dispatcher; pickup orders await the buyer.",
   },
   shipped: {
-    emoji: "🚚",
+    icon: Truck,
     heading: "No deliveries in transit",
     body: "Orders picked up by a dispatcher will appear here while in transit.",
   },
   delivered: {
-    emoji: "📦",
+    icon: Package,
     heading: "No deliveries yet",
     body: "Orders confirmed as received will be recorded here.",
   },
 };
-
-function SalesEmptyState({ status }: { status: string }) {
-  const config = SALES_EMPTY_STATE[status] ?? SALES_EMPTY_STATE.paid;
-  return (
-    <div className="flex flex-col items-center py-24 text-center">
-      <div className="relative mb-6">
-        <div
-          className="h-20 w-20 rounded-3xl"
-          style={{
-            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
-            boxShadow:
-              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-          }}
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-3xl leading-none">{config.emoji}</span>
-        </div>
-      </div>
-      <p className="text-base font-semibold mb-2" style={{ color: "#16130f" }}>
-        {config.heading}
-      </p>
-      <p
-        className="text-sm max-w-xs leading-relaxed"
-        style={{ color: "#a8a09a" }}
-      >
-        {config.body}
-      </p>
-    </div>
-  );
-}
 
 function PickupCodeEntry({ orderId }: { orderId: string }) {
   const [code, setCode] = useState("");
@@ -130,12 +134,7 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
   return (
     <div className="flex items-center gap-2">
       <div className="relative">
-        <KeyRound
-          size={12}
-          strokeWidth={2}
-          className="absolute left-2.5 top-1/2 -translate-y-1/2"
-          style={{ color: "#a8a09a" }}
-        />
+        <KeyRound size={12} strokeWidth={2} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-subtle" />
         <input
           type="text"
           inputMode="numeric"
@@ -143,19 +142,13 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
           placeholder="0000"
-          className="w-24 rounded-xl border pl-7 pr-2 py-2 text-xs font-mono tracking-widest outline-none focus:ring-2"
-          style={{
-            borderColor: "#e8e4dc",
-            background: "#faf9f7",
-            color: "#16130f",
-          }}
+          className="w-24 rounded-xl border border-border bg-surface pl-7 pr-2 py-2 text-xs font-mono tracking-widest text-text outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
         />
       </div>
       <button
         onClick={() => verify({ id: orderId, code })}
         disabled={isPending || code.length !== 4}
-        className="rounded-xl px-3 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-        style={{ background: "#10b981" }}
+        className="rounded-xl bg-success px-3 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
       >
         {isPending ? "Verifying…" : "Confirm pickup"}
       </button>
@@ -163,13 +156,7 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
   );
 }
 
-function SellerOrderCard({
-  order,
-  tab,
-}: {
-  order: SellerOrder;
-  tab: SalesTab;
-}) {
+function SellerOrderCard({ order, tab }: { order: SellerOrder; tab: SalesTab }) {
   const { mutate: confirm, isPending: confirming } = useConfirmOrder();
   const firstItem = order.order_items?.[0];
   const extraItems = (order.order_items ?? []).slice(1);
@@ -179,121 +166,79 @@ function SellerOrderCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="rounded-2xl border bg-card p-5 flex flex-col sm:flex-row gap-4"
-      style={{ borderColor: "#e8e4dc" }}
+      className="rounded-2xl border border-border bg-card p-5 flex flex-col sm:flex-row gap-4"
+      style={{ boxShadow: "var(--shadow-card)" }}
     >
+      {/* Images */}
       <div className="flex sm:flex-col gap-2 shrink-0">
-        <div
-          className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center"
-          style={{ background: "#f0ece5" }}
-        >
-          {firstItem?.listing.images?.[0] ? (
-            <ListingImage
-              src={firstItem.listing.images[0]}
-              fill
-              sizes="80px"
-              className="object-cover"
-              alt={firstItem.listing.title}
-            />
-          ) : (
-            <Package size={22} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
-          )}
-        </div>
-        {extraItems.map((item) => (
-          <div
-            key={item.id}
-            className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center"
-            style={{ background: "#f0ece5" }}
-          >
-            {item.listing.images?.[0] ? (
-              <ListingImage
-                src={item.listing.images[0]}
-                fill
-                sizes="80px"
-                className="object-cover"
-                alt={item.listing.title}
-              />
-            ) : (
-              <Package
-                size={18}
-                strokeWidth={1.5}
-                style={{ color: "#a8a09a" }}
-              />
-            )}
-          </div>
-        ))}
+        {[firstItem, ...extraItems].map((item, i) =>
+          item ? (
+            <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center bg-surface border border-border">
+              {item.listing.images?.[0] ? (
+                <ListingImage src={item.listing.images[0]} fill sizes="80px" className="object-cover" alt={item.listing.title} />
+              ) : (
+                <Package size={20} strokeWidth={1.5} className="text-text-subtle" />
+              )}
+            </div>
+          ) : null
+        )}
       </div>
+
+      {/* Content */}
       <div className="flex-1 min-w-0">
+        {/* Title + price + delivery badge */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
           <div>
             <div className="space-y-0.5 mb-1">
               {(order.order_items ?? []).map((item) => (
-                <h3
-                  key={item.id}
-                  className="text-sm font-semibold leading-snug"
-                  style={{ color: "#16130f" }}
-                >
+                <h3 key={item.id} className="text-sm font-semibold text-text leading-snug">
                   {item.listing.title}
                 </h3>
               ))}
             </div>
-            <p className="text-base mt-0.5" style={{ color: "#4f46e5" }}>
+            <p className="text-base font-bold text-primary mt-0.5">
               ₦{order.total_price.toLocaleString()}
             </p>
           </div>
-          <span
-            className="self-start inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium shrink-0"
-            style={
-              order.delivery_type === "delivery"
-                ? { background: "rgba(79,70,229,0.08)", color: "#4f46e5" }
-                : { background: "rgba(16,185,129,0.08)", color: "#10b981" }
-            }
-          >
-            {order.delivery_type === "delivery" ? (
-              <Truck size={11} strokeWidth={2} />
-            ) : (
-              <MapPin size={11} strokeWidth={2} />
-            )}
-            {order.delivery_type === "delivery" ? "Delivery" : "Pickup"}
+          <span className={[
+            "self-start inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium shrink-0",
+            order.delivery_type === "delivery"
+              ? "bg-primary/8 text-primary"
+              : "bg-success/8 text-success",
+          ].join(" ")}>
+            {order.delivery_type === "delivery"
+              ? <><Truck size={11} strokeWidth={2} /> Delivery</>
+              : <><MapPin size={11} strokeWidth={2} /> Pickup</>}
           </span>
         </div>
-        <div className="flex flex-col gap-1 mb-4">
-          <div
-            className="flex items-center gap-1.5 text-xs"
-            style={{ color: "#78726c" }}
-          >
-            <User size={11} strokeWidth={2} className="shrink-0" />
-            <span>{order.buyer_name}</span>
+
+        {/* Buyer info — 2-col grid */}
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-4">
+          <div className="flex items-center gap-1.5 text-xs text-text-muted">
+            <User size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
+            <span className="truncate">{order.buyer_name}</span>
           </div>
-          <div
-            className="flex items-center gap-1.5 text-xs"
-            style={{ color: "#78726c" }}
-          >
-            <Mail size={11} strokeWidth={2} className="shrink-0" />
-            <span>{order.buyer_email}</span>
+          <div className="flex items-center gap-1.5 text-xs text-text-muted">
+            <Phone size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
+            <span className="truncate">{order.buyer_phone}</span>
           </div>
-          <div
-            className="flex items-center gap-1.5 text-xs"
-            style={{ color: "#78726c" }}
-          >
-            <Phone size={11} strokeWidth={2} className="shrink-0" />
-            <span>{order.buyer_phone}</span>
+          <div className="flex items-center gap-1.5 text-xs text-text-muted col-span-2">
+            <Mail size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
+            <span className="truncate">{order.buyer_email}</span>
           </div>
-          <div
-            className="flex items-center gap-1.5 text-xs"
-            style={{ color: "#78726c" }}
-          >
-            <MapPin size={11} strokeWidth={2} className="shrink-0" />
+          <div className="flex items-center gap-1.5 text-xs text-text-muted col-span-2">
+            <MapPin size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
             <span className="line-clamp-1">{order.buyer_address}</span>
           </div>
         </div>
+
+        {/* Actions */}
         <div className="flex items-center gap-2 flex-wrap">
           {tab.status === "paid" && (
             <button
               onClick={() => confirm(order.id)}
               disabled={confirming}
-              className="rounded-xl px-4 py-2 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-              style={{ background: "#4f46e5" }}
+              className="rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
             >
               {confirming ? "Confirming…" : "Confirm order"}
             </button>
@@ -302,19 +247,15 @@ function SellerOrderCard({
             <PickupCodeEntry orderId={order.id} />
           )}
           {tab.status === "confirmed" && order.delivery_type === "delivery" && (
-            <span
-              className="text-xs rounded-full px-3 py-1.5 font-medium"
-              style={{ background: "rgba(79,70,229,0.08)", color: "#4f46e5" }}
-            >
+            <span className="text-xs rounded-full px-3 py-1.5 font-medium bg-primary/8 text-primary">
               Awaiting dispatcher
             </span>
           )}
           <a
-            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent(`Your Declutter order`)}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
+            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent("Your Declutter order")}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl border px-4 py-2 text-xs font-semibold transition-colors hover:bg-[#f5f1eb]"
-            style={{ borderColor: "#e8e4dc", color: "#78726c" }}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-4 py-2 text-xs font-semibold text-text-muted hover:bg-surface hover:text-text transition-colors"
           >
             <Mail size={12} strokeWidth={2} />
             Contact buyer
@@ -330,18 +271,15 @@ function SalesTabContent({ tab }: { tab: SalesTab }) {
   if (isLoading)
     return (
       <div className="flex flex-col gap-4">
-        {[1, 2, 3].map((i) => (
-          <OrderSkeleton key={i} />
-        ))}
+        {[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}
       </div>
     );
+  const cfg = SALES_EMPTY[tab.status] ?? SALES_EMPTY.paid;
   if (!orders || orders.length === 0)
-    return <SalesEmptyState status={tab.status} />;
+    return <EmptyState icon={cfg.icon} heading={cfg.heading} body={cfg.body} />;
   return (
     <div className="flex flex-col gap-4">
-      {orders.map((o) => (
-        <SellerOrderCard key={o.id} order={o} tab={tab} />
-      ))}
+      {orders.map((o) => <SellerOrderCard key={o.id} order={o} tab={tab} />)}
     </div>
   );
 }
@@ -350,22 +288,17 @@ function SalesPanel() {
   const [activeTab, setActiveTab] = useState<SalesTab>(SALES_TABS[0]);
   return (
     <div className="space-y-6">
-      <div
-        className="inline-flex gap-0.5 rounded-full p-0.5"
-        style={{ background: "#f0ece5" }}
-      >
+      <div className="inline-flex gap-0.5 bg-surface rounded-full p-0.5 border border-border">
         {SALES_TABS.map((tab) => {
           const isActive = activeTab.status === tab.status;
           return (
             <button
               key={tab.status}
               onClick={() => setActiveTab(tab)}
-              className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200"
-              style={{
-                background: isActive ? "#4f46e5" : "transparent",
-                color: isActive ? "white" : "#78726c",
-                boxShadow: isActive ? "0 1px 4px rgba(79,70,229,0.35)" : "none",
-              }}
+              className={[
+                "rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200",
+                isActive ? "bg-primary text-white shadow-sm" : "text-text-muted hover:text-text",
+              ].join(" ")}
             >
               {tab.label}
             </button>
@@ -380,74 +313,45 @@ function SalesPanel() {
 // ─── Purchases tab ────────────────────────────────────────────────────────────
 
 function SellerOrderRow({ order }: { order: BuyerOrder }) {
-  const statusStyle =
-    PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
+  const statusStyle = PURCHASE_STATUS_STYLE[order.status] ?? PURCHASE_STATUS_STYLE.pending;
   const firstItem = order.order_items?.[0];
   const extraCount = (order.order_items?.length ?? 1) - 1;
 
   return (
     <Link
       href={`/dashboard/orders/${order.id}`}
-      className="flex items-center gap-3 p-3 rounded-xl transition-colors hover:bg-[#f5f1eb]"
+      className="flex items-center gap-3 p-3 rounded-xl transition-colors hover:bg-surface"
     >
-      <div
-        className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center"
-        style={{ background: "#f0ece5" }}
-      >
+      <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface border border-border">
         {firstItem?.listing.images?.[0] ? (
-          <ListingImage
-            src={firstItem.listing.images[0]}
-            fill
-            sizes="48px"
-            className="object-cover"
-            alt={firstItem.listing.title}
-          />
+          <ListingImage src={firstItem.listing.images[0]} fill sizes="48px" className="object-cover" alt={firstItem.listing.title} />
         ) : (
-          <Package size={16} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+          <Package size={16} strokeWidth={1.5} className="text-text-subtle" />
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p
-          className="text-sm font-medium truncate"
-          style={{ color: "#16130f" }}
-        >
+        <p className="text-sm font-medium text-text truncate">
           {firstItem?.listing.title ?? "Order"}
-          {extraCount > 0 && (
-            <span style={{ color: "#a8a09a" }}> +{extraCount} more</span>
-          )}
+          {extraCount > 0 && <span className="text-text-subtle"> +{extraCount} more</span>}
         </p>
-        <p className="text-xs mt-0.5" style={{ color: "#4f46e5" }}>
+        <p className="text-xs text-primary mt-0.5 font-semibold">
           ₦{order.total_price.toLocaleString()}
         </p>
         {order.seller?.name && (
-          <p className="text-[10px] mt-0.5" style={{ color: "#a8a09a" }}>
-            from {order.seller.name}
-          </p>
+          <p className="text-[10px] text-text-subtle mt-0.5">from {order.seller.name}</p>
         )}
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
-        <span
-          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-          style={statusStyle}
-        >
+        <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium" style={statusStyle}>
           {PURCHASE_STATUS_LABEL[order.status] ?? order.status}
         </span>
-        <span
-          className="flex items-center gap-0.5 text-[10px]"
-          style={{ color: "#a8a09a" }}
-        >
-          {order.delivery_type === "delivery" ? (
-            <>
-              <Truck size={9} strokeWidth={2} /> Delivery
-            </>
-          ) : (
-            <>
-              <MapPin size={9} strokeWidth={2} /> Pickup
-            </>
-          )}
+        <span className="flex items-center gap-0.5 text-[10px] text-text-subtle">
+          {order.delivery_type === "delivery"
+            ? <><Truck size={9} strokeWidth={2} /> Delivery</>
+            : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
         </span>
       </div>
-      <ChevronRight size={14} strokeWidth={1.5} style={{ color: "#c8c2bb" }} />
+      <ChevronRight size={14} strokeWidth={1.5} className="text-border-strong" />
     </Link>
   );
 }
@@ -465,7 +369,7 @@ function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(order);
   }
-  return Array.from(map.entries()).map(([key, group]) => ({
+  return Array.from(map.entries()).map(([, group]) => ({
     paymentIntentId: group[0].stripe_payment_intent_id,
     orders: group,
     createdAt: group[0].created_at,
@@ -475,9 +379,7 @@ function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
 function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
   const grandTotal = group.orders.reduce((s, o) => s + o.total_price, 0);
   const date = new Date(group.createdAt).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
+    day: "numeric", month: "short", year: "numeric",
   });
   const multiVendor = group.orders.length > 1;
 
@@ -486,32 +388,19 @@ function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl border bg-card overflow-hidden"
-      style={{ borderColor: "#e8e4dc" }}
+      className="rounded-2xl border border-border bg-card overflow-hidden"
+      style={{ boxShadow: "var(--shadow-card)" }}
     >
       {multiVendor && (
-        <div
-          className="flex items-center justify-between px-4 py-2.5 border-b"
-          style={{ borderColor: "#f0ece5", background: "#faf9f7" }}
-        >
-          <span
-            className="text-[11px] font-semibold uppercase tracking-widest"
-            style={{ color: "#a8a09a" }}
-          >
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-surface">
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-text-subtle">
             {group.orders.length} vendors · {date}
           </span>
-          <span className="text-xs font-semibold" style={{ color: "#16130f" }}>
-            ₦{grandTotal.toLocaleString()}
-          </span>
+          <span className="text-xs font-semibold text-text">₦{grandTotal.toLocaleString()}</span>
         </div>
       )}
-      <div
-        className={multiVendor ? "divide-y" : ""}
-        style={{ borderColor: "#f0ece5" }}
-      >
-        {group.orders.map((order) => (
-          <SellerOrderRow key={order.id} order={order} />
-        ))}
+      <div className={multiVendor ? "divide-y divide-border" : ""}>
+        {group.orders.map((order) => <SellerOrderRow key={order.id} order={order} />)}
       </div>
     </motion.div>
   );
@@ -520,81 +409,38 @@ function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
 function PurchasesPanel() {
   const { data: orders, isLoading } = useBuyerOrders();
 
-  if (isLoading) {
+  if (isLoading)
     return (
       <div className="flex flex-col gap-3">
-        {[1, 2, 3].map((i) => (
-          <OrderSkeleton key={i} />
-        ))}
+        {[1, 2, 3].map((i) => <OrderSkeleton key={i} />)}
       </div>
     );
-  }
 
-  if (!orders || orders.length === 0) {
+  if (!orders || orders.length === 0)
     return (
-      <div className="flex flex-col items-center py-24 text-center">
-        <div
-          className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
-          style={{
-            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
-            boxShadow:
-              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-          }}
-        >
-          <span className="text-3xl">🛍️</span>
-        </div>
-        <p
-          className="text-base font-semibold mb-2"
-          style={{ color: "#16130f" }}
-        >
-          No purchases yet
-        </p>
-        <p
-          className="text-sm max-w-xs leading-relaxed mb-6"
-          style={{ color: "#a8a09a" }}
-        >
-          When you buy something on Declutter, your orders will appear here.
-        </p>
-        <Link
-          href="/"
-          className="rounded-xl border px-5 py-2 text-sm font-medium transition-colors hover:bg-card"
-          style={{ borderColor: "#e8e4dc", color: "#78726c" }}
-        >
-          Browse listings
-        </Link>
-      </div>
+      <EmptyState
+        icon={ShoppingBag}
+        heading="No purchases yet"
+        body="When you buy something on Declutter, your orders will appear here."
+        action={
+          <Link href="/" className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-text-muted hover:bg-surface transition-colors">
+            Browse listings
+          </Link>
+        }
+      />
     );
-  }
 
   const groups = groupByCheckout(orders);
-
   return (
     <div className="flex flex-col gap-3">
       {groups.map((group) => (
-        <CheckoutGroupCard
-          key={group.paymentIntentId ?? group.orders[0].id}
-          group={group}
-        />
+        <CheckoutGroupCard key={group.paymentIntentId ?? group.orders[0].id} group={group} />
       ))}
     </div>
   );
 }
 
 // ─── Claims tab ───────────────────────────────────────────────────────────────
-
-const CLAIM_STATUS_STYLE: Record<string, React.CSSProperties> = {
-  pending: { background: "rgba(245,158,11,0.10)", color: "#d97706" },
-  accepted: { background: "rgba(16,185,129,0.10)", color: "#10b981" },
-  completed: { background: "rgba(168,160,154,0.10)", color: "#78726c" },
-  cancelled: { background: "rgba(168,160,154,0.10)", color: "#a8a09a" },
-};
-
-const CLAIM_STATUS_LABEL: Record<string, string> = {
-  pending: "Pending",
-  accepted: "Accepted",
-  completed: "Collected",
-  cancelled: "Cancelled",
-};
 
 function MyClaimCard({ claim }: { claim: MyClaim }) {
   const { mutate: updateClaim, isPending } = useUpdateClaim();
@@ -605,48 +451,26 @@ function MyClaimCard({ claim }: { claim: MyClaim }) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="rounded-2xl border bg-card p-4 flex gap-4"
-      style={{ borderColor: "#e8e4dc" }}
+      className="rounded-2xl border border-border bg-card p-4 flex gap-4"
+      style={{ boxShadow: "var(--shadow-card)" }}
     >
-      <div
-        className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-        style={{ background: "#f0ece5" }}
-      >
-        {img ? (
-          <ListingImage
-            src={img}
-            fill
-            sizes="64px"
-            className="object-cover"
-            alt={claim.listing.title}
-          />
-        ) : (
-          <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
-        )}
+      <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-surface border border-border">
+        {img
+          ? <ListingImage src={img} fill sizes="64px" className="object-cover" alt={claim.listing.title} />
+          : <Package size={18} strokeWidth={1.5} className="text-text-subtle" />}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2 mb-1">
-          <p
-            className="text-sm font-semibold truncate"
-            style={{ color: "#16130f" }}
-          >
-            {claim.listing.title}
-          </p>
-          <span
-            className="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
-            style={CLAIM_STATUS_STYLE[claim.status]}
-          >
+          <p className="text-sm font-semibold text-text truncate">{claim.listing.title}</p>
+          <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${CLAIM_STATUS_CLS[claim.status] ?? ""}`}>
             {CLAIM_STATUS_LABEL[claim.status]}
           </span>
         </div>
-        <p className="text-xs mb-1" style={{ color: "#a8a09a" }}>
+        <p className="text-xs text-text-subtle mb-1">
           from {claim.listing.seller?.name ?? "Seller"} · {claim.listing.area}
         </p>
         {claim.status === "accepted" && claim.pickup_address && (
-          <p
-            className="text-xs rounded-lg px-2 py-1.5 mb-2"
-            style={{ background: "rgba(16,185,129,0.08)", color: "#10b981" }}
-          >
+          <p className="text-xs rounded-lg px-2 py-1.5 mb-2 bg-success/8 text-success">
             Pickup: {claim.pickup_address}
           </p>
         )}
@@ -655,8 +479,7 @@ function MyClaimCard({ claim }: { claim: MyClaim }) {
             <button
               onClick={() => updateClaim({ id: claim.id, status: "cancelled" })}
               disabled={isPending}
-              className="rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[#f5f1eb] disabled:opacity-50"
-              style={{ borderColor: "#e8e4dc", color: "#78726c" }}
+              className="rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-text-muted hover:bg-surface transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
@@ -665,8 +488,7 @@ function MyClaimCard({ claim }: { claim: MyClaim }) {
             <button
               onClick={() => updateClaim({ id: claim.id, status: "completed" })}
               disabled={isPending}
-              className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-              style={{ background: "#10b981" }}
+              className="rounded-xl bg-success px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
             >
               {isPending ? "Updating…" : "Mark as Collected"}
             </button>
@@ -683,49 +505,24 @@ function MyClaimsPanel() {
   if (isLoading)
     return (
       <div className="flex flex-col gap-3">
-        {[1, 2].map((i) => (
-          <OrderSkeleton key={i} />
-        ))}
+        {[1, 2].map((i) => <OrderSkeleton key={i} />)}
       </div>
     );
 
   const active = (claims ?? []).filter((c) => c.status !== "cancelled");
 
-  if (active.length === 0) {
+  if (active.length === 0)
     return (
-      <div className="flex flex-col items-center py-24 text-center">
-        <div
-          className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
-          style={{
-            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
-            boxShadow:
-              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-          }}
-        >
-          <span className="text-3xl">🎁</span>
-        </div>
-        <p
-          className="text-base font-semibold mb-2"
-          style={{ color: "#16130f" }}
-        >
-          No active claims
-        </p>
-        <p
-          className="text-sm max-w-xs leading-relaxed"
-          style={{ color: "#a8a09a" }}
-        >
-          When you claim a free item, it will appear here while you wait for the
-          seller to accept.
-        </p>
-      </div>
+      <EmptyState
+        icon={Gift}
+        heading="No active claims"
+        body="When you claim a free item, it will appear here while you wait for the seller to accept."
+      />
     );
-  }
 
   return (
     <div className="flex flex-col gap-3">
-      {active.map((c) => (
-        <MyClaimCard key={c.id} claim={c} />
-      ))}
+      {active.map((c) => <MyClaimCard key={c.id} claim={c} />)}
     </div>
   );
 }
@@ -745,47 +542,34 @@ function AcceptClaimModal({
 
   function handleAccept() {
     if (!address.trim()) return;
-    updateClaim(
-      { id: claim.id, status: "accepted", pickup_address: address.trim() },
-      { onSuccess: onClose },
-    );
+    updateClaim({ id: claim.id, status: "accepted", pickup_address: address.trim() }, { onSuccess: onClose });
   }
 
   return (
     <Modal open onClose={onClose} title="Accept claim">
       <div className="flex flex-col gap-4">
-        <p className="text-sm" style={{ color: "#78726c" }}>
+        <p className="text-sm text-text-muted">
           Enter the pickup address you want to share with{" "}
-          <strong style={{ color: "#16130f" }}>
-            {claim.buyer.name ?? "the buyer"}
-          </strong>
-          .
+          <strong className="text-text">{claim.buyer.name ?? "the buyer"}</strong>.
         </p>
         <textarea
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="e.g. 12 Bode Thomas St, Surulere, Lagos"
           rows={3}
-          className="w-full rounded-xl border px-3 py-2.5 text-sm resize-none outline-none focus:ring-2 focus:ring-[#4f46e5]/30"
-          style={{
-            borderColor: "#e8e4dc",
-            background: "#faf9f7",
-            color: "#16130f",
-          }}
+          className="w-full rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-text resize-none outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
         />
         <div className="flex gap-2 justify-end">
           <button
             onClick={onClose}
-            className="rounded-xl border px-4 py-2 text-sm font-medium transition-colors hover:bg-[#f5f1eb]"
-            style={{ borderColor: "#e8e4dc", color: "#78726c" }}
+            className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleAccept}
             disabled={!address.trim() || isPending}
-            className="rounded-xl px-4 py-2 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
-            style={{ background: "#10b981" }}
+            className="rounded-xl bg-success px-4 py-2 text-sm font-semibold text-white transition-opacity disabled:opacity-50"
           >
             {isPending ? "Accepting…" : "Accept & share address"}
           </button>
@@ -806,46 +590,24 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="rounded-2xl border bg-card p-4 flex gap-4"
-        style={{ borderColor: "#e8e4dc" }}
+        className="rounded-2xl border border-border bg-card p-4 flex gap-4"
+        style={{ boxShadow: "var(--shadow-card)" }}
       >
-        <div
-          className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
-          style={{ background: "#f0ece5" }}
-        >
-          {img ? (
-            <ListingImage
-              src={img}
-              fill
-              sizes="64px"
-              className="object-cover"
-              alt={claim.listing.title}
-            />
-          ) : (
-            <Package size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
-          )}
+        <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-surface border border-border">
+          {img
+            ? <ListingImage src={img} fill sizes="64px" className="object-cover" alt={claim.listing.title} />
+            : <Package size={18} strokeWidth={1.5} className="text-text-subtle" />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 mb-1">
-            <p
-              className="text-sm font-semibold truncate"
-              style={{ color: "#16130f" }}
-            >
-              {claim.listing.title}
-            </p>
-            <span
-              className="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
-              style={CLAIM_STATUS_STYLE[claim.status]}
-            >
+            <p className="text-sm font-semibold text-text truncate">{claim.listing.title}</p>
+            <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${CLAIM_STATUS_CLS[claim.status] ?? ""}`}>
               {CLAIM_STATUS_LABEL[claim.status]}
             </span>
           </div>
-          <p className="text-xs mb-2" style={{ color: "#a8a09a" }}>
+          <p className="text-xs text-text-subtle mb-2">
             claimed by {claim.buyer.name ?? "Buyer"} ·{" "}
-            {new Date(claim.claimed_at).toLocaleDateString("en-NG", {
-              day: "numeric",
-              month: "short",
-            })}
+            {new Date(claim.claimed_at).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
           </p>
           <div className="flex items-center gap-2">
             {claim.status === "pending" && (
@@ -853,18 +615,14 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
                 <button
                   onClick={() => setIsAccepting(true)}
                   disabled={isAccepting}
-                  className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
-                  style={{ background: "#10b981" }}
+                  className="rounded-xl bg-success px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50 transition-opacity"
                 >
                   Accept
                 </button>
                 <button
-                  onClick={() =>
-                    updateClaim({ id: claim.id, status: "cancelled" })
-                  }
+                  onClick={() => updateClaim({ id: claim.id, status: "cancelled" })}
                   disabled={isPending}
-                  className="rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-[#f5f1eb] disabled:opacity-50"
-                  style={{ borderColor: "#e8e4dc", color: "#78726c" }}
+                  className="rounded-xl border border-border px-3 py-1.5 text-xs font-medium text-text-muted hover:bg-surface transition-colors disabled:opacity-50"
                 >
                   Decline
                 </button>
@@ -872,12 +630,9 @@ function SellerClaimCard({ claim }: { claim: SellerClaim }) {
             )}
             {claim.status === "accepted" && (
               <button
-                onClick={() =>
-                  updateClaim({ id: claim.id, status: "completed" })
-                }
+                onClick={() => updateClaim({ id: claim.id, status: "completed" })}
                 disabled={isPending}
-                className="rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-opacity disabled:opacity-60"
-                style={{ background: "#4f46e5" }}
+                className="rounded-xl bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
               >
                 {isPending ? "Updating…" : "Mark as Collected"}
               </button>
@@ -903,50 +658,24 @@ function IncomingClaimsPanel() {
   if (isLoading)
     return (
       <div className="flex flex-col gap-3">
-        {[1, 2].map((i) => (
-          <OrderSkeleton key={i} />
-        ))}
+        {[1, 2].map((i) => <OrderSkeleton key={i} />)}
       </div>
     );
 
-  const active = (claims ?? []).filter(
-    (c) => c.status !== "cancelled" && c.status !== "completed",
-  );
+  const active = (claims ?? []).filter((c) => c.status !== "cancelled" && c.status !== "completed");
 
-  if (active.length === 0) {
+  if (active.length === 0)
     return (
-      <div className="flex flex-col items-center py-24 text-center">
-        <div
-          className="h-20 w-20 rounded-3xl flex items-center justify-center mb-6"
-          style={{
-            background: "linear-gradient(135deg, #f5f1eb 0%, #ede8e0 100%)",
-            boxShadow:
-              "0 2px 12px rgba(22,19,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-          }}
-        >
-          <span className="text-3xl">📬</span>
-        </div>
-        <p
-          className="text-base font-semibold mb-2"
-          style={{ color: "#16130f" }}
-        >
-          No incoming claims
-        </p>
-        <p
-          className="text-sm max-w-xs leading-relaxed"
-          style={{ color: "#a8a09a" }}
-        >
-          When someone claims one of your free listings, it will appear here.
-        </p>
-      </div>
+      <EmptyState
+        icon={Inbox}
+        heading="No incoming claims"
+        body="When someone claims one of your free listings, it will appear here."
+      />
     );
-  }
 
   return (
     <div className="flex flex-col gap-3">
-      {active.map((c) => (
-        <SellerClaimCard key={c.id} claim={c} />
-      ))}
+      {active.map((c) => <SellerClaimCard key={c.id} claim={c} />)}
     </div>
   );
 }
@@ -958,24 +687,17 @@ function ClaimsPanel() {
 
   return (
     <div className="space-y-6">
-      <div
-        className="inline-flex gap-0.5 rounded-full p-0.5"
-        style={{ background: "#f0ece5" }}
-      >
+      <div className="inline-flex gap-0.5 bg-surface rounded-full p-0.5 border border-border">
         {(["mine", "incoming"] as ClaimsSubTab[]).map((tab) => {
           const isActive = subTab === tab;
           return (
             <button
               key={tab}
               onClick={() => setSubTab(tab)}
-              className="rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200"
-              style={{
-                background: isActive ? "#10b981" : "transparent",
-                color: isActive ? "white" : "#78726c",
-                boxShadow: isActive
-                  ? "0 1px 4px rgba(16,185,129,0.35)"
-                  : "none",
-              }}
+              className={[
+                "rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200",
+                isActive ? "bg-success text-white shadow-sm" : "text-text-muted hover:text-text",
+              ].join(" ")}
             >
               {tab === "mine" ? "My Claims" : "Incoming"}
             </button>
@@ -991,84 +713,62 @@ function ClaimsPanel() {
 
 type TopTab = "sales" | "purchases" | "claims";
 
+const TOP_TAB_LABELS: Record<TopTab, string> = {
+  sales: "Sales",
+  purchases: "Purchases",
+  claims: "Claims",
+};
+
+const TOP_TAB_SUBTITLES: Record<TopTab, string> = {
+  sales: "Manage orders from buyers.",
+  purchases: "Track everything you've bought on Declutter.",
+  claims: "Manage free item claims — yours and incoming.",
+};
+
 function OrdersPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const rawTab = searchParams.get("tab");
   const topTab: TopTab =
-    rawTab === "purchases"
-      ? "purchases"
-      : rawTab === "claims"
-        ? "claims"
-        : "sales";
+    rawTab === "purchases" ? "purchases" : rawTab === "claims" ? "claims" : "sales";
 
   function setTopTab(tab: TopTab) {
     router.replace(`/dashboard/orders?tab=${tab}`);
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <h1 className="text-2xl font-bold" style={{ color: "#16130f" }}>
-          Orders
-        </h1>
-        <p className="mt-1 text-sm" style={{ color: "#78726c" }}>
-          {topTab === "sales"
-            ? "Manage orders from buyers."
-            : topTab === "purchases"
-              ? "Track everything you've bought on Declutter."
-              : "Manage free item claims — yours and incoming."}
-        </p>
+    <div className="space-y-6">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+        <h1 className="text-2xl font-bold text-text tracking-tight">Orders</h1>
+        <p className="mt-1 text-sm text-text-muted">{TOP_TAB_SUBTITLES[topTab]}</p>
       </motion.div>
 
-      {/* Top toggle */}
-      <div
-        className="inline-flex gap-0.5 rounded-full p-0.5"
-        style={{ background: "#e8e4dc" }}
-      >
+      <div className="inline-flex gap-0.5 bg-surface rounded-full p-0.5 border border-border">
         {(["sales", "purchases", "claims"] as TopTab[]).map((tab) => {
           const isActive = topTab === tab;
           return (
             <button
               key={tab}
               onClick={() => setTopTab(tab)}
-              className="rounded-full px-5 py-2 text-xs font-semibold capitalize transition-all duration-200"
-              style={{
-                background: isActive ? "white" : "transparent",
-                color: isActive ? "#16130f" : "#78726c",
-                boxShadow: isActive ? "0 1px 4px rgba(22,19,15,0.10)" : "none",
-              }}
+              className={[
+                "rounded-full px-5 py-2 text-xs font-semibold transition-all duration-200",
+                isActive ? "bg-card text-text shadow-sm" : "text-text-muted hover:text-text",
+              ].join(" ")}
             >
-              {tab}
+              {TOP_TAB_LABELS[tab]}
             </button>
           );
         })}
       </div>
 
-      {topTab === "sales" ? (
-        <SalesPanel />
-      ) : topTab === "purchases" ? (
-        <PurchasesPanel />
-      ) : (
-        <ClaimsPanel />
-      )}
+      {topTab === "sales" ? <SalesPanel /> : topTab === "purchases" ? <PurchasesPanel /> : <ClaimsPanel />}
     </div>
   );
 }
 
 export default function OrdersPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="space-y-6 max-w-3xl">
-          <OrderSkeleton />
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="space-y-6"><OrderSkeleton /></div>}>
       <OrdersPageContent />
     </Suspense>
   );

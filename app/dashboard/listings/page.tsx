@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Package,
@@ -11,7 +11,11 @@ import {
   Filter,
   X,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui";
 import { ListingCard } from "@/components/listings";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -25,6 +29,14 @@ export default function DashboardListingsPage() {
     "all" | "available" | "sold" | "claimed" | "donated"
   >("all");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  function scrollSlider(dir: "left" | "right") {
+    sliderRef.current?.scrollBy({
+      left: dir === "right" ? 300 : -300,
+      behavior: "smooth",
+    });
+  }
 
   const availableListings = listings.filter(
     (l) => l.status === "available",
@@ -48,7 +60,7 @@ export default function DashboardListingsPage() {
   });
 
   return (
-    <div className="space-y-8 max-w-7xl">
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -59,65 +71,104 @@ export default function DashboardListingsPage() {
               : `${listings.length} total listing${listings.length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <Button href="/dashboard/listings/new" size="lg" className="gap-2">
-          <Package size={18} />
+        <Link
+          href="/dashboard/listings/new"
+          className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 transition-all duration-150"
+        >
+          <Plus size={15} strokeWidth={2.5} />
           Create New Listing
-        </Button>
+        </Link>
       </div>
       {/* Stats Cards */}
       {!isLoading && listings.length > 0 && (
-        <motion.div
-          className="grid grid-cols-2 lg:grid-cols-5 gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <StatCard
-            label="Total"
-            value={listings.length}
-            icon={Package}
-            color="text-primary"
-            bgColor="bg-primary/10"
-            lineColor="bg-primary"
-            onClick={() => setStatusFilter("all")}
-          />
-          <StatCard
-            label="Available"
-            value={availableListings}
-            icon={TrendingUp}
-            color="text-green-600"
-            bgColor="bg-green-500/10"
-            lineColor="bg-green-500"
-            onClick={() => setStatusFilter("available")}
-          />
-          <StatCard
-            label="Sold"
-            value={soldListings}
-            icon={DollarSign}
-            color="text-blue-600"
-            bgColor="bg-blue-500/10"
-            lineColor="bg-blue-500"
-            onClick={() => setStatusFilter("sold")}
-          />
-          <StatCard
-            label="Claimed"
-            value={claimedListings}
-            icon={Clock}
-            color="text-amber-600"
-            bgColor="bg-amber-500/10"
-            lineColor="bg-amber-500"
-            onClick={() => setStatusFilter("claimed")}
-          />
-          <StatCard
-            label="Donated"
-            value={donatedListings}
-            icon={Package}
-            color="text-purple-600"
-            bgColor="bg-purple-500/10"
-            lineColor="bg-purple-500"
-            onClick={() => setStatusFilter("donated")}
-          />
-        </motion.div>
+        <div>
+          <div className="flex justify-end gap-1 mb-3">
+            <button
+              onClick={() => scrollSlider("left")}
+              className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors"
+            >
+              <ChevronLeft size={14} strokeWidth={2} />
+            </button>
+            <button
+              onClick={() => scrollSlider("right")}
+              className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors"
+            >
+              <ChevronRight size={14} strokeWidth={2} />
+            </button>
+          </div>
+          <div
+            ref={sliderRef}
+            className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1"
+          >
+            {[
+              {
+                label: "Total",
+                value: listings.length,
+                icon: Package,
+                color: "text-primary",
+                bgColor: "bg-primary/10",
+                lineColor: "bg-primary",
+                filter: "all",
+              },
+              {
+                label: "Available",
+                value: availableListings,
+                icon: TrendingUp,
+                color: "text-green-600",
+                bgColor: "bg-green-500/10",
+                lineColor: "bg-green-500",
+                filter: "available",
+              },
+              {
+                label: "Sold",
+                value: soldListings,
+                icon: DollarSign,
+                color: "text-blue-600",
+                bgColor: "bg-blue-500/10",
+                lineColor: "bg-blue-500",
+                filter: "sold",
+              },
+              {
+                label: "Claimed",
+                value: claimedListings,
+                icon: Clock,
+                color: "text-amber-600",
+                bgColor: "bg-amber-500/10",
+                lineColor: "bg-amber-500",
+                filter: "claimed",
+              },
+              {
+                label: "Donated",
+                value: donatedListings,
+                icon: Package,
+                color: "text-purple-600",
+                bgColor: "bg-purple-500/10",
+                lineColor: "bg-purple-500",
+                filter: "donated",
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={card.label}
+                className="w-72 shrink-0 snap-start"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.07 }}
+              >
+                <StatCard
+                  label={card.label}
+                  value={card.value}
+                  icon={card.icon}
+                  color={card.color}
+                  bgColor={card.bgColor}
+                  lineColor={card.lineColor}
+                  onClick={() =>
+                    setStatusFilter(card.filter as typeof statusFilter)
+                  }
+                />
+              </motion.div>
+            ))}
+          </div>
+        </div>
       )}
       {/* Filter Bar */}
       {!isLoading && listings.length > 0 && (
@@ -296,17 +347,17 @@ export default function DashboardListingsPage() {
       )}
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-card rounded-2xl shadow-card overflow-hidden animate-pulse border border-border/50"
+              className="bg-card rounded-2xl overflow-hidden animate-pulse border border-border/50"
             >
-              <div className="aspect-4/3 bg-border/60" />
-              <div className="p-5 space-y-3">
-                <div className="h-5 bg-border/60 rounded w-3/4" />
-                <div className="h-4 bg-border/60 rounded w-1/2" />
-                <div className="h-3 bg-border/60 rounded w-1/3 mt-4" />
+              <div className="aspect-[4/3] bg-border/60" />
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-border/60 rounded w-3/4" />
+                <div className="h-3 bg-border/60 rounded w-1/2" />
+                <div className="h-8 bg-border/60 rounded mt-2" />
               </div>
             </div>
           ))}
@@ -324,51 +375,53 @@ export default function DashboardListingsPage() {
           </p>
         </motion.div>
       )}
-      &apos;
       {/* Empty State */}
       {!isLoading && !error && filteredListings.length === 0 && (
         <motion.div
-          className="bg-card rounded-3xl shadow-card p-16 text-center border border-border/50"
+          className="flex flex-col items-center py-16 text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mx-auto mb-6 ring-1 ring-primary/10">
-            <Package size={36} className="text-primary" strokeWidth={1.5} />
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 flex items-center justify-center mb-6">
+            <Package size={36} strokeWidth={1.5} className="text-primary" />
           </div>
           <h3 className="text-xl font-semibold text-text mb-2">
             No listings yet
           </h3>
-          <p className="text-text-muted mb-8 max-w-md mx-auto">
-            Start selling by creating your first listing. It's quick and easy to
-            get started.
+          <p className="text-text-muted mb-8 max-w-sm mx-auto leading-relaxed">
+            Start selling by creating your first listing. It&apos;s quick and
+            easy to get started.
           </p>
-          <Button href="/dashboard/listings/new" size="lg" className="gap-2">
-            <Package size={18} />
-            Create Your First Listing
-          </Button>
+          <Link
+            href="/dashboard/listings/new"
+            className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 transition-all duration-150"
+          >
+            <Plus size={14} strokeWidth={2.5} />
+            Create New Listing
+          </Link>
         </motion.div>
       )}
       {/* Listings Grid */}
       {!isLoading && filteredListings.length > 0 && (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
           initial="hidden"
           animate="visible"
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.08 } },
+            visible: { transition: { staggerChildren: 0.06 } },
           }}
         >
           {filteredListings.map((listing) => (
             <motion.div
               key={listing.id}
               variants={{
-                hidden: { opacity: 0, y: 20 },
+                hidden: { opacity: 0, y: 16 },
                 visible: {
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 0.4, ease: "easeOut" },
+                  transition: { duration: 0.35, ease: "easeOut" },
                 },
               }}
             >

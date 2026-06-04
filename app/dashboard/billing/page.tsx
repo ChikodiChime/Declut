@@ -411,41 +411,64 @@ function ConnectCard({
   }
 
   // not_connected
+  const benefits = [
+    { icon: Wallet, label: 'Direct to bank', sub: 'Funds sent straight to your account' },
+    { icon: Calendar, label: 'Auto payouts', sub: 'Weekly or monthly, automatically' },
+    { icon: TrendingUp, label: '10% fee only', sub: 'Deducted per completed sale' },
+  ]
+
   return (
     <div
-      className="relative rounded-2xl border border-border bg-card overflow-hidden p-6 sm:p-8"
+      className="rounded-2xl border border-border bg-card overflow-hidden"
       style={{ boxShadow: 'var(--shadow-elevated)' }}
     >
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at bottom right, #4f46e5 0%, transparent 70%)' }}
-      />
-      <div className="relative max-w-sm">
-        <div className="inline-flex rounded-xl bg-primary/10 p-2.5 mb-4">
-          <Wallet size={18} strokeWidth={1.5} className="text-primary" />
-        </div>
-        <h3 className="text-base font-bold text-text mb-1">Connect your payout account</h3>
-        <p className="text-sm text-text-muted leading-relaxed mb-5">
-          Link a Stripe account to start selling. Stripe securely handles all payments and transfers funds directly to your bank.
-        </p>
+      {/* Hero band */}
+      <div className="relative bg-primary px-8 pt-10 pb-16 overflow-hidden">
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cpath d='M36 0H0V36' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3C/svg%3E\")",
+            backgroundSize: '36px 36px',
+          }}
+        />
+        <div aria-hidden className="absolute -right-10 -top-10 w-52 h-52 rounded-full border-[28px] border-white/5 pointer-events-none" />
+        <div aria-hidden className="absolute right-32 -bottom-8 w-32 h-32 rounded-full border-[16px] border-white/5 pointer-events-none" />
 
-        <div className="space-y-2 mb-5">
-          {[
-            'Funds deposited directly to your bank',
-            'Automatic weekly or monthly payouts',
-            '10% platform fee deducted per sale',
-          ].map((item) => (
-            <div key={item} className="flex items-center gap-2 text-xs text-text-muted">
-              <CheckCircle2 size={12} strokeWidth={2.5} className="text-success shrink-0" />
-              {item}
+        <div className="relative">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 mb-5">
+            <Wallet size={22} strokeWidth={1.5} className="text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-white leading-tight tracking-tight mb-2">
+            Start getting paid
+          </h3>
+          <p className="text-sm text-white/65 leading-relaxed max-w-sm">
+            Connect a Stripe account to receive payouts directly to your bank after every sale.
+          </p>
+        </div>
+      </div>
+
+      {/* Benefits row — overlaps the hero band */}
+      <div className="relative z-10 px-8 -mt-8">
+        <div className="grid grid-cols-3 gap-3">
+          {benefits.map(({ icon: Icon, label, sub }) => (
+            <div key={label} className="rounded-xl border border-border bg-card px-3.5 py-3 shadow-sm">
+              <div className="w-7 h-7 rounded-lg bg-primary/8 flex items-center justify-center mb-2">
+                <Icon size={13} strokeWidth={2} className="text-primary" />
+              </div>
+              <p className="text-xs font-semibold text-text leading-tight">{label}</p>
+              <p className="text-[10.5px] text-text-subtle mt-0.5 leading-snug">{sub}</p>
             </div>
           ))}
         </div>
+      </div>
 
+      {/* CTA */}
+      <div className="px-8 py-6">
         <button
           onClick={onConnect}
           disabled={connecting}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors shadow-sm"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
         >
           {connecting ? 'Opening Stripe…' : 'Connect with Stripe'}
           {!connecting && <ArrowUpRight size={14} strokeWidth={2.5} />}
@@ -493,7 +516,7 @@ function BillingContent() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-6">
       {/* New-listing redirect notice */}
       {searchParams.get('from') === 'new-listing' && (
         <motion.div

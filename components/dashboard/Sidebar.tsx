@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { CldImage } from "next-cloudinary";
 import {
   LayoutDashboard,
   Package,
@@ -13,7 +12,8 @@ import {
   ChevronRight,
   Store,
 } from "lucide-react";
-import { useSignOut, useMe } from "@/lib/hooks/useAuth";
+import { CldImage } from "next-cloudinary";
+import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 
 interface NavItem {
   href: string;
@@ -33,17 +33,21 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { mutate: signOut } = useSignOut();
   const { data: me } = useMe();
+  const { mutate: signOut } = useSignOut();
 
   return (
-    <aside className="hidden lg:flex flex-col w-(--sidebar-width) h-screen  top-0 bg-primary shrink-0 rounded-r-4xl relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-white/5" />
-        <div className="absolute -bottom-20 -left-16 w-56 h-56 rounded-full bg-white/5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-white/3" />
-      </div>
+    <aside className="hidden lg:flex flex-col w-(--sidebar-width) h-screen top-0 bg-primary shrink-0 rounded-r-4xl relative overflow-hidden">
+      {/* Grid pattern */}
+      <div
+        aria-hidden
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cpath d='M36 0H0V36' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1'/%3E%3C/svg%3E\")",
+          backgroundSize: "36px 36px",
+        }}
+      />
 
       {/* Logo */}
       <div className="relative z-10 px-6 py-5 shrink-0">
@@ -53,8 +57,8 @@ export function Sidebar() {
         </Link>
       </div>
 
-      {/* Nav — scrollable */}
-      <nav className="relative z-10 flex-1 flex flex-col px-3 py-2 gap-1 overflow-y-auto">
+      {/* Nav */}
+      <nav className="relative z-10 flex-1 flex flex-col px-3 py-2 gap-0.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -66,7 +70,7 @@ export function Sidebar() {
             return (
               <div
                 key={item.href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-md text-white/30 cursor-not-allowed select-none"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-white/30 cursor-not-allowed select-none"
               >
                 <Icon size={18} strokeWidth={1.75} />
                 <span className="text-sm font-medium flex-1">{item.label}</span>
@@ -81,120 +85,82 @@ export function Sidebar() {
 
           return (
             <Link key={item.href} href={item.href}>
-              <motion.div
-                whileHover={{ scale: 1.02, x: 4 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+              <div
                 className={[
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-300 relative overflow-hidden group",
-                  isActive ? "text-white" : "text-white/60",
+                  "relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-150",
+                  isActive
+                    ? "text-white"
+                    : "text-white/55 hover:text-white/85 hover:bg-white/5",
                 ].join(" ")}
               >
-                {/* Animated gradient background for active state */}
+                {/* Active background */}
                 {isActive && (
                   <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/10 to-transparent rounded-lg"
-                    initial={false}
+                    layoutId="sidebar-active-bg"
+                    className="absolute inset-0 rounded-lg bg-white/10"
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
                   />
                 )}
 
-                {/* Hover glow effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  initial={false}
-                />
-
-                {/* Sliding accent bar on hover */}
-                <motion.div
-                  className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-white/60 via-white/40 to-white/60 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  initial={false}
-                />
+                {/* Left accent bar */}
+                {isActive && (
+                  <motion.span
+                    layoutId="sidebar-accent"
+                    className="absolute left-0 top-2 bottom-2 w-[3px] bg-white rounded-r-full"
+                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                  />
+                )}
 
                 <Icon
                   size={18}
-                  strokeWidth={isActive ? 2.5 : 1.75}
-                  className={[
-                    "relative z-10 transition-all duration-300",
-                    isActive
-                      ? "text-white scale-110"
-                      : "group-hover:scale-110 group-hover:text-white/90",
-                  ].join(" ")}
+                  strokeWidth={isActive ? 2 : 1.75}
+                  className="relative z-10 shrink-0"
                 />
-                <span className="relative z-10 text-sm font-medium flex-1 transition-all duration-300 group-hover:tracking-wide">
+                <span className="relative z-10 text-sm font-medium flex-1">
                   {item.label}
                 </span>
                 {isActive && (
-                  <motion.div
-                    initial={{ scale: 0, rotate: -90 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    <ChevronRight
-                      size={14}
-                      className="relative z-10 text-white/70"
-                    />
-                  </motion.div>
+                  <ChevronRight size={14} className="relative z-10 text-white/50" />
                 )}
-              </motion.div>
+              </div>
             </Link>
           );
         })}
       </nav>
 
-      {/* Divider */}
-      <div className="relative z-10 px-6 py-2 shrink-0">
-        <div className="h-px bg-white/10" />
-      </div>
+      {/* Profile + Sign out */}
+      <div className="relative z-10 px-3 pb-5 shrink-0">
+        <div className="h-px bg-white/10 mb-3" />
 
-      {/* User profile */}
-      <div className="relative z-10 px-3 pb-3 shrink-0">
         <Link href="/dashboard/profile">
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/10 hover:bg-white/15 transition-colors duration-150 cursor-pointer group border border-white/5"
-          >
-            <div className="w-11 h-11 rounded-full shrink-0 ring-2 ring-white/10 overflow-hidden">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors duration-150 cursor-pointer group mb-1">
+            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 ring-1 ring-white/20">
               {me?.avatar_url ? (
                 <CldImage
                   src={me.avatar_url}
-                  width={44}
-                  height={44}
+                  width={32}
+                  height={32}
                   alt={me.name ?? "Avatar"}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-white/25 to-white/10 group-hover:from-white/30 group-hover:to-white/15 transition-colors duration-150 flex items-center justify-center">
-                  <span className="text-base font-bold text-white">
+                <div className="w-full h-full bg-white/20 flex items-center justify-center">
+                  <span className="text-xs font-semibold text-white">
                     {me?.name?.[0]?.toUpperCase() ?? "U"}
                   </span>
                 </div>
               )}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
-                {me?.name ?? "User"}
-              </p>
-              <p className="text-xs text-white/50 truncate font-medium">
-                My Profile
-              </p>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-white truncate">{me?.name ?? "Account"}</p>
+              <p className="text-[11px] text-white/50 truncate">{me?.email ?? ""}</p>
             </div>
-            <ChevronRight
-              size={16}
-              className="text-white/40 group-hover:text-white/70 transition-colors duration-150"
-            />
-          </motion.div>
+          </div>
         </Link>
-      </div>
 
-      {/* Sign out */}
-      <div className="relative z-10 px-3 pb-5 shrink-0">
         <button
           onClick={() => signOut()}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-white/50 hover:bg-white/10 hover:text-white/90 transition-colors duration-150"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-white/50 hover:bg-white/5 hover:text-white/80 transition-colors duration-150"
         >
           <LogOut size={17} strokeWidth={1.75} />
           <span className="text-sm font-medium">Sign out</span>
