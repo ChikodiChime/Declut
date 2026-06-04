@@ -187,7 +187,7 @@ export function BrowseCard({ listing }: BrowseCardProps) {
     >
       {/* ── Image + carousel ── */}
       <div
-        className="relative aspect-3/4 overflow-hidden rounded-t-2xl"
+        className="relative aspect-4/3 overflow-hidden rounded-t-2xl"
         style={{ background: type.bg }}
       >
         {images.length === 0 ? (
@@ -436,15 +436,6 @@ export function BrowseCard({ listing }: BrowseCardProps) {
         </div>
       </div>
 
-      {/* Accent strip */}
-      <div
-        className="rounded-b-2xl"
-        style={{
-          height: 3,
-          flexShrink: 0,
-          background: type.color,
-        }}
-      />
     </Link>
   );
 }

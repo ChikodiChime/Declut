@@ -1290,7 +1290,7 @@ function SearchContent() {
                     style={{ background: "white", borderColor: "#ebe5dc" }}
                   >
                     <div
-                      className="aspect-3/4"
+                      className="aspect-4/3"
                       style={{ background: "#f0ece5" }}
                     />
                     <div className="flex flex-col gap-2 p-3.5">
