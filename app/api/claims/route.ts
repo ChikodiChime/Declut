@@ -88,7 +88,8 @@ export async function POST(req: Request) {
     .update({ status: 'claimed' })
     .eq('id', listing_id)
 
-  const seller = listing.seller as { name: string | null; email: string } | null
+  const sellerRaw = listing.seller
+  const seller = (Array.isArray(sellerRaw) ? sellerRaw[0] : sellerRaw) as { name: string | null; email: string } | null
   if (seller?.email) {
     supabaseAdmin
       .from('users')

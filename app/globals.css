@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F1ECE6;
+  --background: #f4f4f5;
   --foreground: #16130f;
 }
 
@@ -121,4 +121,23 @@ input[type="number"] {
 
 button{
   cursor: pointer
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.6s ease-in-out infinite;
 }

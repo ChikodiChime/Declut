@@ -16,7 +16,7 @@ import {
   MapPin,
 } from "lucide-react";
 import Link from "next/link";
-import { BrowseCard } from "@/components/listings";
+import { BrowseCard, BrowseCardSkeleton } from "@/components/listings";
 import {
   usePublicListings,
   useBusinessSellers,
@@ -1131,7 +1131,7 @@ function SearchContent() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: "#f4f4f5" }}>
+    <main className="min-h-screen">
       {/* ── Hero ── */}
       <div
         className="relative overflow-hidden"
@@ -1240,7 +1240,7 @@ function SearchContent() {
           {/* Mobile top bar — filter button only */}
           <div
             className="lg:hidden flex items-center gap-3 px-4 py-3 border-b"
-            style={{ borderColor: "#e8e4dc", background: "#f4f4f5" }}
+            style={{ borderColor: "#e8e4dc" }}
           >
             <button
               type="button"
@@ -1282,28 +1282,9 @@ function SearchContent() {
             )}
 
             {isLoading && (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="animate-pulse overflow-hidden rounded-xl border"
-                    style={{ background: "white", borderColor: "#ebe5dc" }}
-                  >
-                    <div
-                      className="aspect-4/3"
-                      style={{ background: "#f0ece5" }}
-                    />
-                    <div className="flex flex-col gap-2 p-3.5">
-                      <div
-                        className="h-4 w-3/4 rounded"
-                        style={{ background: "#f0ece5" }}
-                      />
-                      <div
-                        className="h-3 w-1/2 rounded"
-                        style={{ background: "#f0ece5" }}
-                      />
-                    </div>
-                  </div>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <BrowseCardSkeleton key={i} index={i} />
                 ))}
               </div>
             )}

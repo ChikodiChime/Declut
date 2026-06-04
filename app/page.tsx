@@ -21,7 +21,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { BrowseCard } from "@/components/listings";
+import { BrowseCard, BrowseCardSkeleton } from "@/components/listings";
 import { ListingImage } from "@/components/ui";
 import { usePublicListings } from "@/lib/hooks/useListings";
 import type { Listing } from "@/types";
@@ -155,6 +155,52 @@ function FreeItemCard({ listing }: { listing: Listing }) {
   );
 }
 
+// ─── Horizontal card skeletons ────────────────────────────────────────────────
+
+function FreeItemCardSkeleton({ index = 0 }: { index?: number }) {
+  return (
+    <div
+      className="relative overflow-hidden flex items-center gap-4 rounded-2xl bg-white px-5 py-4"
+      style={{ border: "1px solid #e8f5ee" }}
+    >
+      <div className="skeleton-shimmer" style={{ animationDelay: `${(index % 4) * 0.12}s` }} />
+      <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#d1fae5" }} />
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="h-3.5 w-4/5 rounded" style={{ background: "#d1fae5" }} />
+        <div className="h-3 w-3/5 rounded" style={{ background: "#d1fae5" }} />
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <div className="h-4 w-14 rounded-full" style={{ background: "#d1fae5" }} />
+          <div className="h-1 w-1 rounded-full" style={{ background: "#a7f3d0" }} />
+          <div className="h-3 w-16 rounded" style={{ background: "#d1fae5" }} />
+        </div>
+        <div className="mt-1 h-7 w-28 rounded-full" style={{ background: "#a7f3d0" }} />
+      </div>
+    </div>
+  );
+}
+
+function DonationItemCardSkeleton({ index = 0 }: { index?: number }) {
+  return (
+    <div
+      className="relative overflow-hidden flex items-center gap-4 rounded-2xl bg-white px-5 py-4"
+      style={{ border: "1px solid #fde8a0" }}
+    >
+      <div className="skeleton-shimmer" style={{ animationDelay: `${(index % 4) * 0.12}s` }} />
+      <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#fde68a" }} />
+      <div className="flex flex-1 flex-col gap-2">
+        <div className="h-3.5 w-4/5 rounded" style={{ background: "#fde68a" }} />
+        <div className="h-3 w-3/5 rounded" style={{ background: "#fde68a" }} />
+        <div className="flex items-center gap-1.5 mt-0.5">
+          <div className="h-4 w-14 rounded-full" style={{ background: "#fde68a" }} />
+          <div className="h-1 w-1 rounded-full" style={{ background: "#fbbf24" }} />
+          <div className="h-3 w-16 rounded" style={{ background: "#fde68a" }} />
+        </div>
+        <div className="mt-1 h-5 w-28 rounded-full" style={{ background: "#fde68a" }} />
+      </div>
+    </div>
+  );
+}
+
 // ─── Free items section ───────────────────────────────────────────────────────
 
 function FreeItemsSection() {
@@ -176,8 +222,8 @@ function FreeItemsSection() {
           <div>
             <div className="flex items-center gap-3 mb-1.5">
               <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: "rgba(16,185,129,0.12)" }}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white"
+                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)" }}
               >
                 <Gift size={17} strokeWidth={2} style={{ color: "#059669" }} />
               </div>
@@ -221,29 +267,8 @@ function FreeItemsSection() {
         <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 px-4">
           {isLoading
             ? Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="w-[280px] lg:w-[320px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
-                  style={{ border: "1px solid #e8f5ee" }}
-                >
-                  <div
-                    className="h-[72px] w-[72px] shrink-0 rounded-xl"
-                    style={{ background: "#d1fae5" }}
-                  />
-                  <div className="flex flex-1 flex-col gap-2">
-                    <div
-                      className="h-3.5 w-3/4 rounded"
-                      style={{ background: "#d1fae5" }}
-                    />
-                    <div
-                      className="h-3 w-1/2 rounded"
-                      style={{ background: "#d1fae5" }}
-                    />
-                  </div>
-                  <div
-                    className="h-7 w-14 shrink-0 rounded-full"
-                    style={{ background: "#d1fae5" }}
-                  />
+                <div key={i} className="w-[280px] lg:w-[320px] shrink-0">
+                  <FreeItemCardSkeleton index={i} />
                 </div>
               ))
             : listings.map((listing) => (
@@ -363,8 +388,8 @@ function DonationPileSection() {
           <div>
             <div className="flex items-center gap-3 mb-1.5">
               <div
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: "rgba(245,158,11,0.12)" }}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white"
+                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)" }}
               >
                 <Heart size={17} strokeWidth={2} style={{ color: "#b45309" }} />
               </div>
@@ -420,29 +445,8 @@ function DonationPileSection() {
         <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1 px-4">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="w-[280px] lg:w-[320px] shrink-0 flex animate-pulse items-center gap-4 rounded-2xl bg-white px-4 py-3.5"
-                  style={{ border: "1px solid #fde8a0" }}
-                >
-                  <div
-                    className="h-20 w-20 shrink-0 rounded-xl"
-                    style={{ background: "#fde68a" }}
-                  />
-                  <div className="flex flex-1 flex-col gap-2">
-                    <div
-                      className="h-3.5 w-3/4 rounded"
-                      style={{ background: "#fde68a" }}
-                    />
-                    <div
-                      className="h-3 w-1/2 rounded"
-                      style={{ background: "#fde68a" }}
-                    />
-                    <div
-                      className="h-5 w-1/3 rounded-full mt-1"
-                      style={{ background: "#fde68a" }}
-                    />
-                  </div>
+                <div key={i} className="w-[280px] lg:w-[320px] shrink-0">
+                  <DonationItemCardSkeleton index={i} />
                 </div>
               ))
             : listings.map((listing) => (
@@ -566,8 +570,8 @@ function CategorySection({ category }: { category: string }) {
             const { Icon } = cfg;
             return (
               <div
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
-                style={{ background: "#f0ece6" }}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white"
+                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)" }}
               >
                 <Icon size={15} strokeWidth={2} style={{ color: "#44403c" }} />
               </div>
@@ -609,27 +613,9 @@ function CategorySection({ category }: { category: string }) {
           ? Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0 animate-pulse overflow-hidden rounded-2xl border"
-                style={{ background: "white", borderColor: "#ebe5dc" }}
+                className="w-[200px] sm:w-[230px] lg:w-[265px] shrink-0"
               >
-                <div
-                  className="aspect-4/3 rounded-t-2xl"
-                  style={{ background: "#f0ece5" }}
-                />
-                <div className="flex flex-col gap-2 p-3.5">
-                  <div
-                    className="h-3.5 w-3/4 rounded"
-                    style={{ background: "#f0ece5" }}
-                  />
-                  <div
-                    className="h-3 w-1/2 rounded"
-                    style={{ background: "#f0ece5" }}
-                  />
-                  <div
-                    className="h-7 w-full rounded-xl mt-1"
-                    style={{ background: "#f0ece5" }}
-                  />
-                </div>
+                <BrowseCardSkeleton index={i} />
               </div>
             ))
           : listings.map((listing) => (
