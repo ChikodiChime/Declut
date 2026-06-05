@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CldImage } from "next-cloudinary";
-import { Search, Bell, User, LogOut, Package, ShoppingCart, Tag } from "lucide-react";
+import { Search, Bell, User, LogOut, Package, Tag } from "lucide-react";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 import { useNotifications, useMarkRead, useMarkAllRead } from "@/lib/hooks/useNotifications";
 
@@ -16,11 +16,6 @@ interface SearchListing {
   status: string
 }
 
-interface SearchOrder {
-  id: string
-  status: string
-}
-
 interface SearchClaim {
   id: string
   status: string
@@ -29,7 +24,6 @@ interface SearchClaim {
 
 interface SearchResults {
   listings: SearchListing[]
-  orders: SearchOrder[]
   claims: SearchClaim[]
 }
 
@@ -83,7 +77,7 @@ function SearchBox() {
 
   const hasResults =
     results &&
-    (results.listings.length > 0 || results.orders.length > 0 || results.claims.length > 0)
+    (results.listings.length > 0 || results.claims.length > 0)
 
   // Ctrl+K / ⌘K global shortcut
   useEffect(() => {
@@ -165,20 +159,6 @@ function SearchBox() {
                       title={l.title}
                       detail={l.status}
                       onClick={() => handleSelect(`/dashboard/listings/${l.id}`)}
-                    />
-                  ))}
-                </Section>
-              )}
-
-              {results!.orders.length > 0 && (
-                <Section label="Orders">
-                  {results!.orders.map((o) => (
-                    <ResultRow
-                      key={o.id}
-                      icon={<ShoppingCart size={14} className="text-text-subtle" />}
-                      title={`Order #${o.id.slice(0, 8)}`}
-                      detail={o.status}
-                      onClick={() => handleSelect(`/dashboard/orders/${o.id}`)}
                     />
                   ))}
                 </Section>

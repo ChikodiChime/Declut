@@ -133,18 +133,16 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       : Promise.resolve(),
   ])
 
-  // Notify buyer that their orders are confirmed/paid
+  // Notify buyer — one notification per payment, not per order
   const buyerIdForNotif = paymentIntent.metadata?.buyer_id
   if (buyerIdForNotif && buyerIdForNotif !== 'anonymous') {
-    for (const order of orders) {
-      await createNotification({
-        user_id: buyerIdForNotif,
-        type: 'order_update',
-        title: 'Payment confirmed',
-        body: 'Your order has been placed and payment received.',
-        link: `/dashboard/orders/${order.id}`,
-      })
-    }
+    await createNotification({
+      user_id: buyerIdForNotif,
+      type: 'order_update',
+      title: 'Payment confirmed',
+      body: `Your payment was received. ${orders.length > 1 ? `${orders.length} orders are` : 'Your order is'} now being prepared.`,
+      link: `/dashboard/orders`,
+    })
   }
 
   // Stripe Connect transfer: one per seller order
