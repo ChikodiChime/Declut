@@ -14,15 +14,11 @@ interface SearchListing {
   id: string
   title: string
   status: string
-  listing_type: string
-  images: string[]
 }
 
 interface SearchOrder {
   id: string
   status: string
-  total_price: number
-  created_at: string
 }
 
 interface SearchClaim {
@@ -49,20 +45,27 @@ function useSearch(query: string) {
       return
     }
 
+    const controller = new AbortController()
+
     const timeout = setTimeout(async () => {
       setIsLoading(true)
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+          signal: controller.signal,
+        })
         const json = await res.json()
         setResults(json.data)
-      } catch {
-        setResults(null)
+      } catch (e) {
+        if ((e as Error).name !== 'AbortError') setResults(null)
       } finally {
         setIsLoading(false)
       }
     }, 300)
 
-    return () => clearTimeout(timeout)
+    return () => {
+      clearTimeout(timeout)
+      controller.abort()
+    }
   }, [query])
 
   return { results, isLoading }
@@ -325,7 +328,7 @@ function NotificationBell() {
                     </p>
                     <p className="text-xs text-text-subtle mt-0.5 line-clamp-2">{n.body}</p>
                     <p className="text-[10px] text-text-subtle mt-1">
-                      {new Date(n.created_at).toLocaleDateString("en-NG", {
+                      {new Date(n.created_at).toLocaleString("en-NG", {
                         month: "short",
                         day: "numeric",
                         hour: "2-digit",
@@ -365,6 +368,7 @@ function AvatarMenu() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
+        aria-label="Account menu"
         className="group flex items-center gap-3 rounded-full px-2 py-1.5 hover:bg-surface transition-colors"
       >
         <div className="w-8 h-8 rounded-full overflow-hidden shrink-0 ring-1 ring-border">
