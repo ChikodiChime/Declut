@@ -8,13 +8,15 @@ export async function PATCH(_req: Request, { params }: { params: Promise<{ id: s
 
   const { id } = await params
 
-  const { error } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from('notifications')
     .update({ read: true })
     .eq('id', id)
     .eq('user_id', authUser.id)
+    .select('id')
 
   if (error) return err('Failed to mark notification read', 'DB_ERROR', 500)
+  if (!data || data.length === 0) return err('Notification not found', 'NOT_FOUND', 404)
 
   return ok({ ok: true })
 }
