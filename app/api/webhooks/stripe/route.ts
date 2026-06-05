@@ -180,7 +180,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         user_id: order.seller_id,
         type: 'payout_update',
         title: 'Payout sent',
-        body: `Your payout for order has been transferred to your Stripe account.`,
+        body: `Your payout for order #${order.id.slice(0, 8)} has been transferred to your Stripe account.`,
         link: `/dashboard/billing`,
       })
     } catch (transferError) {
