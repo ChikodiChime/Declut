@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
 import { sendClaimRequestEmail } from '@/lib/email'
+import { createNotification } from '@/lib/notifications'
 
 export async function POST(req: Request) {
   const authUser = await getAuthUser()
@@ -87,6 +88,15 @@ export async function POST(req: Request) {
     .from('listings')
     .update({ status: 'claimed' })
     .eq('id', listing_id)
+
+  // Notify seller of the new claim
+  await createNotification({
+    user_id: listing.seller_id,
+    type: 'claim_request',
+    title: 'New claim request',
+    body: `Someone requested your item "${listing.title as string}".`,
+    link: `/dashboard/listings`,
+  })
 
   const sellerRaw = listing.seller
   const seller = (Array.isArray(sellerRaw) ? sellerRaw[0] : sellerRaw) as { name: string | null; email: string } | null

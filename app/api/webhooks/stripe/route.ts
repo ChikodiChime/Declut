@@ -2,6 +2,7 @@ import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail } from '@/lib/email'
 import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
+import { createNotification } from '@/lib/notifications'
 import type Stripe from 'stripe'
 
 export async function POST(req: Request) {
@@ -19,8 +20,24 @@ export async function POST(req: Request) {
     await handleAccountUpdated(event.data.object as Stripe.Account)
   }
 
+  if (event.type === 'account.application.deauthorized') {
+    await handleAccountDeauthorized(event.account ?? null)
+  }
+
   if (event.type === 'payment_intent.succeeded') {
     await handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent)
+  }
+
+  if (event.type === 'payment_intent.payment_failed') {
+    await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent)
+  }
+
+  if (event.type === 'charge.refunded') {
+    await handleChargeRefunded(event.data.object as Stripe.Charge)
+  }
+
+  if (event.type === 'charge.dispute.created') {
+    await handleDisputeCreated(event.data.object as Stripe.Dispute)
   }
 
   return Response.json({ received: true })
@@ -32,6 +49,53 @@ async function handleAccountUpdated(account: Stripe.Account) {
     .from('users')
     .update({ stripe_onboarding_complete: true })
     .eq('stripe_account_id', account.id)
+}
+
+async function handleAccountDeauthorized(stripeAccountId: string | null) {
+  if (!stripeAccountId) return
+  await supabaseAdmin
+    .from('users')
+    .update({ stripe_onboarding_complete: false, stripe_account_id: null })
+    .eq('stripe_account_id', stripeAccountId)
+  // TODO(owner): also set the seller's active listings to unavailable so buyers can't checkout
+}
+
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  const orderIds = (paymentIntent.metadata.order_ids ?? '').split(',').filter(Boolean)
+  if (orderIds.length === 0) return
+
+  const failureMessage = paymentIntent.last_payment_error?.message ?? 'Payment failed'
+  console.error(`PaymentIntent ${paymentIntent.id} failed: ${failureMessage} — orders: ${orderIds.join(', ')}`)
+
+  // Orders stay pending so the buyer can retry with a different payment method.
+  // TODO(owner): send a "payment failed" email to the buyer using paymentIntent.metadata.buyer_email
+}
+
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  // The cancel route already marks orders cancelled and listings available synchronously.
+  // This handler is for reconciliation — confirm the refund landed.
+  if (!charge.payment_intent) return
+  const { data: orders } = await supabaseAdmin
+    .from('orders')
+    .select('id, status')
+    .eq('stripe_payment_intent_id', charge.payment_intent as string)
+
+  if (!orders || orders.length === 0) return
+
+  const uncancelled = orders.filter((o) => o.status !== 'cancelled')
+  if (uncancelled.length > 0) {
+    // Refund arrived but order wasn't cancelled via the API — mark it now
+    await supabaseAdmin
+      .from('orders')
+      .update({ status: 'cancelled' })
+      .in('id', uncancelled.map((o) => o.id))
+  }
+}
+
+async function handleDisputeCreated(dispute: Stripe.Dispute) {
+  if (!dispute.payment_intent) return
+  console.error(`Dispute opened on PaymentIntent ${dispute.payment_intent} — amount: ${dispute.amount}, reason: ${dispute.reason}`)
+  // TODO(owner): flag the affected orders in the DB and notify admins
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
@@ -69,6 +133,20 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       : Promise.resolve(),
   ])
 
+  // Notify buyer that their orders are confirmed/paid
+  const buyerIdForNotif = paymentIntent.metadata?.buyer_id
+  if (buyerIdForNotif && buyerIdForNotif !== 'anonymous') {
+    for (const order of orders) {
+      await createNotification({
+        user_id: buyerIdForNotif,
+        type: 'order_update',
+        title: 'Payment confirmed',
+        body: 'Your order has been placed and payment received.',
+        link: `/dashboard/orders/${order.id}`,
+      })
+    }
+  }
+
   // Stripe Connect transfer: one per seller order
   for (const order of orders) {
     const { data: seller } = await supabaseAdmin
@@ -98,6 +176,13 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
         .from('orders')
         .update({ stripe_transfer_id: transfer.id })
         .eq('id', order.id)
+      await createNotification({
+        user_id: order.seller_id,
+        type: 'payout_update',
+        title: 'Payout sent',
+        body: `Your payout for order has been transferred to your Stripe account.`,
+        link: `/dashboard/billing`,
+      })
     } catch (transferError) {
       // NOTE: transfer failed — order is paid but seller payout pending manual resolution
       console.error(`Transfer failed for order ${order.id}:`, transferError)
