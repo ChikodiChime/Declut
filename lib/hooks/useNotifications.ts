@@ -1,5 +1,6 @@
 // lib/hooks/useNotifications.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 interface Notification {
   id: string
@@ -14,6 +15,13 @@ interface Notification {
 interface NotificationsResponse {
   notifications: Notification[]
   unreadCount: number
+}
+
+async function apiRequest(method: string, path: string) {
+  const res = await fetch(path, { method })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error?.message ?? 'Something went wrong')
+  return json
 }
 
 async function fetchNotifications(): Promise<NotificationsResponse> {
@@ -34,19 +42,17 @@ export function useNotifications() {
 export function useMarkRead() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (id: string) => {
-      await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' })
-    },
+    mutationFn: (id: string) => apiRequest('PATCH', `/api/notifications/${id}/read`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: (err: Error) => toast.error(err.message),
   })
 }
 
 export function useMarkAllRead() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      await fetch('/api/notifications/read-all', { method: 'PATCH' })
-    },
+    mutationFn: () => apiRequest('PATCH', '/api/notifications/read-all'),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+    onError: (err: Error) => toast.error(err.message),
   })
 }
