@@ -12,6 +12,7 @@ export async function GET(req: Request) {
   if (q.length < 2) return ok({ listings: [], orders: [], claims: [] })
 
   const pattern = `%${q}%`
+  const qLower = q.toLowerCase()
 
   const [listingsRes, ordersRes, claimsRes] = await Promise.all([
     supabaseAdmin
@@ -25,22 +26,35 @@ export async function GET(req: Request) {
       .from('orders')
       .select('id, status, total_price, created_at')
       .or(`buyer_id.eq.${authUser.id},seller_id.eq.${authUser.id}`)
-      .ilike('id', pattern)
+      .order('created_at', { ascending: false })
       .limit(5),
 
     supabaseAdmin
       .from('claims')
       .select('id, status, listing:listings(id, title)')
       .eq('buyer_id', authUser.id)
-      .limit(5),
+      .limit(50),
   ])
 
-  // Filter claims client-side since we can't ilike on a joined column
-  const allClaims = claimsRes.data ?? []
-  const filteredClaims = allClaims.filter((c) => {
-    const listing = Array.isArray(c.listing) ? c.listing[0] : c.listing
-    return listing?.title?.toLowerCase().includes(q.toLowerCase())
-  })
+  if (listingsRes.error) {
+    console.error('Search listings error:', listingsRes.error)
+    return err('Search failed', 'DB_ERROR', 500)
+  }
+  if (ordersRes.error) {
+    console.error('Search orders error:', ordersRes.error)
+    return err('Search failed', 'DB_ERROR', 500)
+  }
+  if (claimsRes.error) {
+    console.error('Search claims error:', claimsRes.error)
+    return err('Search failed', 'DB_ERROR', 500)
+  }
+
+  const filteredClaims = (claimsRes.data ?? [])
+    .filter((c) => {
+      const listing = Array.isArray(c.listing) ? c.listing[0] : c.listing
+      return listing?.title?.toLowerCase().includes(qLower)
+    })
+    .slice(0, 5)
 
   return ok({
     listings: listingsRes.data ?? [],
