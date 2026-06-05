@@ -438,8 +438,10 @@ export function TopBar() {
   return (
     <header className="hidden lg:flex items-center gap-4 h-14 px-6 lg:px-8 bg-card border-b border-border shrink-0 sticky top-0 z-20">
       <SearchBox />
-      <NotificationBell />
-      <AvatarMenu />
+      <div className="ml-auto flex items-center gap-2">
+        <NotificationBell />
+        <AvatarMenu />
+      </div>
     </header>
   )
 }
