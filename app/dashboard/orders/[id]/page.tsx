@@ -85,10 +85,12 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl">
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 w-24 rounded" style={{ background: '#f0ece5' }} />
-          <div className="h-40 rounded-2xl" style={{ background: '#f0ece5' }} />
+      <div className="max-w-2xl space-y-4">
+        <div className="relative overflow-hidden h-6 w-24 rounded" style={{ background: '#ede9e3' }}>
+          <div className="skeleton-shimmer" />
+        </div>
+        <div className="relative overflow-hidden h-40 rounded-2xl" style={{ background: '#ede9e3' }}>
+          <div className="skeleton-shimmer" style={{ animationDelay: '0.1s' }} />
         </div>
       </div>
     )

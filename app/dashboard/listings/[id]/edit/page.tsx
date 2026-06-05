@@ -21,11 +21,12 @@ export default function EditListingPage({
   if (isLoading) {
     return (
       <div className="max-w-lg mx-auto">
-        <div className="bg-card rounded-2xl shadow-card px-6 py-8 animate-pulse">
-          <div className="h-6 bg-border rounded w-1/3 mb-6" />
+        <div className="relative overflow-hidden bg-card rounded-2xl shadow-card px-6 py-8">
+          <div className="skeleton-shimmer" />
+          <div className="h-6 rounded w-1/3 mb-6" style={{ background: '#ede9e3' }} />
           <div className="space-y-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-12 bg-border rounded-lg" />
+              <div key={i} className="h-12 rounded-lg" style={{ background: '#ede9e3' }} />
             ))}
           </div>
         </div>

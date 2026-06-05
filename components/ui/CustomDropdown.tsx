@@ -21,6 +21,7 @@ export interface CustomDropdownProps {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  size?: "md" | "sm";
 }
 
 const CustomDropdown = ({
@@ -33,7 +34,9 @@ const CustomDropdown = ({
   placeholder = "Select an option",
   disabled = false,
   className = "",
+  size = "md",
 }: CustomDropdownProps) => {
+  const isCompact = size === "sm";
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const generatedId = useId();
@@ -74,9 +77,11 @@ const CustomDropdown = ({
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           className={[
-            "flex w-full items-center px-4 py-3 text-left bg-card border rounded-md shadow-sm",
-            "transition duration-200 ease-in-out focus:outline-none focus:ring-2 cursor-pointer",
-            disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-50",
+            "flex w-full items-center text-left bg-card border transition duration-200 ease-in-out focus:outline-none cursor-pointer",
+            isCompact
+              ? "px-3 py-1.5 rounded-md text-sm gap-0 focus:ring-2"
+              : "px-4 py-3 rounded-md shadow-sm text-sm gap-0 focus:ring-2",
+            disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-surface",
             error
               ? "border-error focus:border-error focus:ring-error/20"
               : isOpen
@@ -96,9 +101,9 @@ const CustomDropdown = ({
           <motion.span
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.2 }}
-            className="ml-2 shrink-0 text-text-muted"
+            className="shrink-0 text-text-muted"
           >
-            <ChevronDown size={18} strokeWidth={2} />
+            <ChevronDown size={isCompact ? 13 : 18} strokeWidth={isCompact ? 1.75 : 2} />
           </motion.span>
         </button>
 
@@ -124,13 +129,14 @@ const CustomDropdown = ({
                         role="option"
                         aria-selected={isSelected}
                         className={[
-                          "flex w-full items-center gap-2.5 px-4 py-2.5 text-left focus:outline-none transition-colors",
+                          "flex w-full items-center gap-2 text-left focus:outline-none transition-colors",
+                          isCompact ? "px-3 py-2 text-sm" : "px-4 py-2.5 text-sm gap-2.5",
                           option.disabled
                             ? "text-text-muted cursor-not-allowed opacity-50"
                             : "cursor-pointer",
                           isSelected
                             ? "bg-primary/8 text-primary font-medium"
-                            : "text-text hover:bg-gray-50",
+                            : "text-text hover:bg-surface",
                         ]
                           .filter(Boolean)
                           .join(" ")}

@@ -2,6 +2,7 @@
 'use client'
 
 import { Suspense, useState, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -11,11 +12,11 @@ import {
   TrendingUp,
   Wallet,
   Calendar,
+  DollarSign,
   ArrowUpRight,
   CheckCircle2,
   Clock,
   AlertCircle,
-  ChevronRight,
   Zap,
 } from 'lucide-react'
 import {
@@ -23,6 +24,7 @@ import {
   type EarningsOrder,
   type EarningsSummary,
 } from '@/lib/hooks/useSellerEarnings'
+import { StatCard } from '@/components/dashboard/StatCard'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -72,70 +74,17 @@ function TransferBadge({ status }: { status: EarningsOrder['transfer_status'] })
   )
 }
 
-// ─── Stat cards ───────────────────────────────────────────────────────────────
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  sub,
-  accent,
-  delay = 0,
-}: {
-  icon: typeof TrendingUp
-  label: string
-  value: string
-  sub?: string
-  accent?: boolean
-  delay?: number
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay }}
-      className={`relative rounded-2xl border p-5 overflow-hidden ${
-        accent
-          ? 'border-primary/20 bg-primary/[0.03]'
-          : 'border-border bg-card'
-      }`}
-      style={{ boxShadow: 'var(--shadow-card)' }}
-    >
-      {accent && (
-        <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at top left, #4f46e5 0%, transparent 70%)',
-          }}
-        />
-      )}
-      <div className="relative flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold tracking-widest uppercase text-text-subtle">{label}</span>
-          <div className={`rounded-lg p-1.5 ${accent ? 'bg-primary/10' : 'bg-surface'}`}>
-            <Icon size={13} strokeWidth={2.5} className={accent ? 'text-primary' : 'text-text-subtle'} />
-          </div>
-        </div>
-        <p className="text-2xl font-bold text-text tracking-tight">{value}</p>
-        {sub && (
-          <p className="text-[11px] text-text-subtle leading-snug">{sub}</p>
-        )}
-      </div>
-    </motion.div>
-  )
-}
-
 // ─── Transaction row ──────────────────────────────────────────────────────────
 
 function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3, delay: 0.05 * index }}
-      className="group flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 hover:border-border-strong hover:shadow-sm transition-all duration-150"
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, delay: 0.04 * index }}
+      className="group flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5 hover:border-border-strong transition-colors duration-150"
+      style={{ boxShadow: 'var(--shadow-sm)' }}
     >
-      {/* Thumbnail */}
       <div className="relative w-11 h-11 rounded-xl overflow-hidden shrink-0 bg-surface border border-border flex items-center justify-center">
         {order.listing_image ? (
           <CldImage
@@ -150,13 +99,11 @@ function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
         )}
       </div>
 
-      {/* Title + date */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-text truncate leading-tight">{order.listing_title}</p>
         <p className="text-[11px] text-text-subtle mt-0.5">{formatDate(order.created_at)}</p>
       </div>
 
-      {/* Price breakdown */}
       <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0 text-right">
         <p className="text-[11px] text-text-subtle">
           {formatNairaWhole(order.item_price)}
@@ -166,7 +113,6 @@ function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
         <p className="text-sm font-bold text-text">{formatNairaWhole(order.net)}</p>
       </div>
 
-      {/* Status */}
       <div className="shrink-0">
         <TransferBadge status={order.transfer_status} />
       </div>
@@ -177,16 +123,33 @@ function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
 function RowSkeleton({ index }: { index: number }) {
   return (
     <div
-      className="animate-pulse flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5"
-      style={{ animationDelay: `${index * 80}ms` }}
+      className="relative overflow-hidden flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5"
     >
-      <div className="w-11 h-11 rounded-xl shrink-0 bg-border/60" />
+      <div className="skeleton-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
+      <div className="w-11 h-11 rounded-xl shrink-0" style={{ background: '#ede9e3' }} />
       <div className="flex-1 flex flex-col gap-2">
-        <div className="h-3 w-2/5 rounded-full bg-border/60" />
-        <div className="h-2 w-1/4 rounded-full bg-border/60" />
+        <div className="h-3 w-2/5 rounded" style={{ background: '#ede9e3' }} />
+        <div className="h-2.5 w-1/4 rounded" style={{ background: '#e8e4dc' }} />
       </div>
-      <div className="hidden sm:block w-20 h-4 rounded-full bg-border/60" />
-      <div className="w-16 h-5 rounded-full bg-border/60" />
+      <div className="hidden sm:block h-3 w-24 rounded" style={{ background: '#ede9e3' }} />
+      <div className="h-5 w-16 rounded-full" style={{ background: '#ede9e3' }} />
+    </div>
+  )
+}
+
+// ─── Stat card skeletons ──────────────────────────────────────────────────────
+
+function StatCardSkeleton({ index }: { index: number }) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-2xl bg-card p-6"
+      style={{ boxShadow: 'var(--shadow-card)' }}
+    >
+      <div className="skeleton-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
+      <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: '#ede9e3' }} />
+      <div className="w-12 h-12 rounded-xl mb-4" style={{ background: '#ede9e3' }} />
+      <div className="h-8 w-20 rounded mb-2" style={{ background: '#ede9e3' }} />
+      <div className="h-3.5 w-28 rounded" style={{ background: '#e8e4dc' }} />
     </div>
   )
 }
@@ -207,62 +170,15 @@ function EarningsSection() {
 
   const nextPayout = summary.next_payout_date
     ? formatDate(summary.next_payout_date)
-    : 'No pending payout'
+    : '—'
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.4, delay: 0.1 }}
-      className="space-y-6"
+      transition={{ duration: 0.3 }}
+      className="space-y-8"
     >
-      {/* Earnings hero */}
-      <div
-        className="relative rounded-2xl border border-primary/15 overflow-hidden p-6 sm:p-8"
-        style={{
-          background: 'linear-gradient(135deg, rgba(79,70,229,0.06) 0%, rgba(245,158,11,0.03) 50%, rgba(250,250,248,0) 100%)',
-          boxShadow: 'var(--shadow-elevated)',
-        }}
-      >
-        {/* Decorative mesh */}
-        <div
-          className="absolute top-0 right-0 w-64 h-64 opacity-[0.07] pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle at center, #4f46e5 0%, transparent 65%)',
-          }}
-        />
-        <div className="relative flex flex-col sm:flex-row sm:items-end gap-4">
-          <div className="flex-1">
-            <p className="text-xs font-semibold tracking-widest uppercase text-text-subtle mb-2">
-              Total net earnings
-            </p>
-            <p className="text-4xl sm:text-5xl font-bold text-text tracking-tighter leading-none">
-              {isLoading ? (
-                <span className="inline-block w-40 h-10 rounded-lg bg-border/60 animate-pulse" />
-              ) : (
-                formatNairaWhole(summary.total_net)
-              )}
-            </p>
-            {!isLoading && (
-              <p className="text-xs text-text-subtle mt-2">
-                After {formatNairaWhole(summary.total_fee)} platform fee deducted
-              </p>
-            )}
-          </div>
-
-          <a
-            href="https://dashboard.stripe.com/express"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 self-start sm:self-auto rounded-xl border border-border bg-card px-4 py-2.5 text-xs font-semibold text-text hover:border-border-strong hover:shadow-sm transition-all"
-          >
-            <Zap size={11} strokeWidth={2.5} className="text-amber-500" />
-            Stripe dashboard
-            <ArrowUpRight size={11} strokeWidth={2.5} className="text-text-subtle" />
-          </a>
-        </div>
-      </div>
-
       {isError && (
         <div className="rounded-xl border border-error/20 bg-error-bg px-4 py-3 text-sm text-error flex items-center gap-2">
           <AlertCircle size={14} strokeWidth={2} />
@@ -271,32 +187,43 @@ function EarningsSection() {
       )}
 
       {/* Stat cards */}
-      {!isError && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {isLoading ? (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[0, 1, 2, 3].map((i) => <StatCardSkeleton key={i} index={i} />)}
+        </div>
+      ) : !isError && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            icon={TrendingUp}
             label="Available balance"
-            value={isLoading ? '—' : formatNaira(summary.stripe_available)}
-            sub={
-              !isLoading && summary.stripe_pending > 0
-                ? `${formatNaira(summary.stripe_pending)} pending clearance`
-                : !isLoading ? 'No pending balance' : undefined
-            }
-            accent
-            delay={0.15}
+            value={formatNaira(summary.stripe_available)}
+            icon={TrendingUp}
+            color="text-green-600"
+            bgColor="bg-green-500/10"
+            lineColor="bg-green-500"
           />
           <StatCard
-            icon={Wallet}
             label="Total gross"
-            value={isLoading ? '—' : formatNairaWhole(summary.total_gross)}
-            sub={isLoading ? undefined : 'Before platform fee'}
-            delay={0.2}
+            value={formatNairaWhole(summary.total_gross)}
+            icon={DollarSign}
+            color="text-blue-600"
+            bgColor="bg-blue-500/10"
+            lineColor="bg-blue-500"
           />
           <StatCard
-            icon={Calendar}
+            label="Total net"
+            value={formatNairaWhole(summary.total_net)}
+            icon={Wallet}
+            color="text-primary"
+            bgColor="bg-primary/10"
+            lineColor="bg-primary"
+          />
+          <StatCard
             label="Next payout"
-            value={isLoading ? '—' : nextPayout}
-            delay={0.25}
+            value={nextPayout}
+            icon={Calendar}
+            color="text-amber-600"
+            bgColor="bg-amber-500/10"
+            lineColor="bg-amber-500"
           />
         </div>
       )}
@@ -312,6 +239,16 @@ function EarningsSection() {
               </p>
             )}
           </div>
+          <a
+            href="https://dashboard.stripe.com/express"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-muted hover:text-text transition-colors"
+          >
+            <Zap size={11} strokeWidth={2.5} className="text-amber-500" />
+            Stripe dashboard
+            <ArrowUpRight size={11} strokeWidth={2} className="opacity-50" />
+          </a>
         </div>
 
         {isLoading && (
@@ -327,7 +264,7 @@ function EarningsSection() {
             </div>
             <p className="text-sm font-semibold text-text mb-1.5">No completed sales yet</p>
             <p className="text-xs text-text-subtle max-w-xs mx-auto leading-relaxed">
-              Earnings appear here after a buyer confirms delivery. Start listing items to make your first sale.
+              Earnings appear here after a buyer confirms delivery.
             </p>
           </div>
         )}
@@ -344,148 +281,64 @@ function EarningsSection() {
   )
 }
 
-// ─── Connect status card ──────────────────────────────────────────────────────
+// ─── Not connected state ──────────────────────────────────────────────────────
 
-type StripeStatus = 'connected' | 'pending' | 'not_connected'
-
-function ConnectCard({
-  status,
-  connecting,
-  error,
-  onConnect,
-}: {
-  status: StripeStatus
+function NotConnectedState({ onConnect, connecting, error }: {
+  onConnect: () => void
   connecting: boolean
   error: string
-  onConnect: () => void
 }) {
-  if (status === 'connected') {
-    return (
-      <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-        <CheckCircle2 size={16} strokeWidth={2} className="text-emerald-600 shrink-0" />
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-emerald-800 leading-tight">Stripe account connected</p>
-          <p className="text-xs text-emerald-700/70 mt-0.5">
-            Payouts are processed automatically via Stripe Express.
-          </p>
-        </div>
-        <a
-          href="https://dashboard.stripe.com/express"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition-colors"
-        >
-          Manage
-          <ChevronRight size={11} strokeWidth={2.5} />
-        </a>
-      </div>
-    )
-  }
-
-  if (status === 'pending') {
-    return (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <div className="flex items-start gap-3 mb-4">
-          <div className="mt-0.5 rounded-lg bg-amber-100 p-1.5">
-            <Clock size={14} strokeWidth={2} className="text-amber-600" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-amber-900">Onboarding incomplete</p>
-            <p className="text-xs text-amber-700/80 mt-1 leading-relaxed">
-              You started Stripe onboarding but did not finish. Complete it to start receiving payouts.
-            </p>
-          </div>
-        </div>
-        <button
-          onClick={onConnect}
-          disabled={connecting}
-          className="w-full sm:w-auto rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-60 transition-colors"
-        >
-          {connecting ? 'Opening Stripe…' : 'Complete onboarding →'}
-        </button>
-        {error && <p className="mt-3 text-xs text-error">{error}</p>}
-      </div>
-    )
-  }
-
-  // not_connected
-  const benefits = [
-    { icon: Wallet, label: 'Direct to bank', sub: 'Funds sent straight to your account' },
-    { icon: Calendar, label: 'Auto payouts', sub: 'Weekly or monthly, automatically' },
-    { icon: TrendingUp, label: '10% fee only', sub: 'Deducted per completed sale' },
-  ]
-
   return (
-    <div
-      className="rounded-2xl border border-border bg-card overflow-hidden"
-      style={{ boxShadow: 'var(--shadow-elevated)' }}
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col items-center text-center py-16"
     >
-      {/* Hero band */}
-      <div className="relative bg-primary px-8 pt-10 pb-16 overflow-hidden">
+      <div className="relative mb-6 w-56 h-56">
         <div
           aria-hidden
-          className="absolute inset-0 pointer-events-none"
+          className="absolute"
           style={{
-            backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cpath d='M36 0H0V36' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3C/svg%3E\")",
-            backgroundSize: '36px 36px',
+            inset: '-12px',
+            background: '#ffffff',
+            borderRadius: '62% 38% 46% 54% / 60% 44% 56% 40%',
+            boxShadow: '0 8px 40px rgba(55,48,163,0.08)',
           }}
         />
-        <div aria-hidden className="absolute -right-10 -top-10 w-52 h-52 rounded-full border-[28px] border-white/5 pointer-events-none" />
-        <div aria-hidden className="absolute right-32 -bottom-8 w-32 h-32 rounded-full border-[16px] border-white/5 pointer-events-none" />
-
-        <div className="relative">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white/10 mb-5">
-            <Wallet size={22} strokeWidth={1.5} className="text-white" />
-          </div>
-          <h3 className="text-xl font-bold text-white leading-tight tracking-tight mb-2">
-            Start getting paid
-          </h3>
-          <p className="text-sm text-white/65 leading-relaxed max-w-sm">
-            Connect a Stripe account to receive payouts directly to your bank after every sale.
-          </p>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/empty-listings.svg" alt="" aria-hidden className="relative w-full h-full select-none" draggable={false} />
       </div>
-
-      {/* Benefits row — overlaps the hero band */}
-      <div className="relative z-10 px-8 -mt-8">
-        <div className="grid grid-cols-3 gap-3">
-          {benefits.map(({ icon: Icon, label, sub }) => (
-            <div key={label} className="rounded-xl border border-border bg-card px-3.5 py-3 shadow-sm">
-              <div className="w-7 h-7 rounded-lg bg-primary/8 flex items-center justify-center mb-2">
-                <Icon size={13} strokeWidth={2} className="text-primary" />
-              </div>
-              <p className="text-xs font-semibold text-text leading-tight">{label}</p>
-              <p className="text-[10.5px] text-text-subtle mt-0.5 leading-snug">{sub}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA */}
-      <div className="px-8 py-6">
+      <h2 className="text-xl font-bold text-text mb-2">Set up payouts</h2>
+      <p className="text-sm text-text-muted max-w-xs leading-relaxed mb-8">
+        Connect a Stripe account to receive money directly to your bank after every sale. Takes about 2 minutes.
+      </p>
+      <div className="flex flex-col items-center gap-3">
         <button
           onClick={onConnect}
           disabled={connecting}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
+          className="inline-flex items-center gap-2 h-10 px-6 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 disabled:opacity-60 transition-all duration-150"
         >
           {connecting ? 'Opening Stripe…' : 'Connect with Stripe'}
           {!connecting && <ArrowUpRight size={14} strokeWidth={2.5} />}
         </button>
-        {error && <p className="mt-3 text-xs text-error">{error}</p>}
+        {error && <p className="text-xs text-error">{error}</p>}
+        <p className="text-[11px] text-text-subtle">10% platform fee · Automatic weekly payouts</p>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
+
+type StripeStatus = 'connected' | 'pending' | 'not_connected'
 
 function BillingContent() {
   const searchParams = useSearchParams()
   const statusParam = searchParams.get('status')
 
   const [user, setUser] = useState<{ stripe_onboarding_complete: boolean } | null>(null)
+  const [userLoading, setUserLoading] = useState(true)
   const [connecting, setConnecting] = useState(false)
   const [error, setError] = useState('')
 
@@ -493,7 +346,17 @@ function BillingContent() {
     fetch('/api/users/me')
       .then((r) => r.json())
       .then((res) => setUser(res.data))
+      .finally(() => setUserLoading(false))
   }, [])
+
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (statusParam === 'connected') {
+      queryClient.invalidateQueries({ queryKey: ['me'] })
+    }
+  }, [statusParam, queryClient])
+
+  const hasUrlStatus = statusParam === 'connected' || statusParam === 'pending'
 
   const stripeStatus: StripeStatus =
     statusParam === 'connected' || user?.stripe_onboarding_complete
@@ -516,8 +379,8 @@ function BillingContent() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* New-listing redirect notice */}
+    <div className="space-y-8">
+      {/* Redirect notice */}
       {searchParams.get('from') === 'new-listing' && (
         <motion.div
           initial={{ opacity: 0, y: -6 }}
@@ -535,43 +398,67 @@ function BillingContent() {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-start justify-between gap-4"
       >
-        <h1 className="text-2xl font-bold text-text tracking-tight">Payouts</h1>
-        <p className="text-sm text-text-muted mt-1">
-          Manage your Stripe account and track earnings from completed sales.
-        </p>
+        <div>
+          <h1 className="text-3xl font-bold text-text">Payouts</h1>
+          <p className="text-text-muted mt-1">Track your earnings and manage your Stripe account.</p>
+        </div>
+
+        {/* Connection status badge */}
+        {userLoading && !hasUrlStatus ? (
+          <div className="relative overflow-hidden h-9 w-44 rounded-xl border border-border bg-card shrink-0">
+            <div className="skeleton-shimmer" />
+          </div>
+        ) : stripeStatus === 'connected' ? (
+          <a
+            href="https://dashboard.stripe.com/express"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 inline-flex items-center gap-2 h-9 px-3.5 rounded-xl border border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors"
+          >
+            <CheckCircle2 size={13} strokeWidth={2.5} className="text-emerald-500" />
+            Stripe connected
+            <ArrowUpRight size={11} strokeWidth={2.5} className="opacity-60" />
+          </a>
+        ) : stripeStatus === 'pending' ? (
+          <button
+            onClick={handleConnect}
+            disabled={connecting}
+            className="shrink-0 inline-flex items-center gap-2 h-9 px-3.5 rounded-xl border border-amber-200 bg-amber-50 text-xs font-semibold text-amber-700 hover:bg-amber-100 disabled:opacity-60 transition-colors"
+          >
+            <Clock size={13} strokeWidth={2.5} className="text-amber-500" />
+            {connecting ? 'Opening…' : 'Finish onboarding'}
+          </button>
+        ) : null}
       </motion.div>
 
-      {/* Connect status */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.08 }}
-      >
-        <ConnectCard
-          status={stripeStatus}
+      {/* Body */}
+      {userLoading && !hasUrlStatus ? null : stripeStatus === 'connected' ? (
+        <EarningsSection />
+      ) : (
+        <NotConnectedState
+          onConnect={handleConnect}
           connecting={connecting}
           error={error}
-          onConnect={handleConnect}
         />
-      </motion.div>
+      )}
 
-      {/* Earnings — only when connected */}
-      {stripeStatus === 'connected' && <EarningsSection />}
-
-      {/* Footer note */}
-      <p className="text-[11px] text-text-subtle pb-4">
-        The platform deducts a 10% fee from each sale.{' '}
-        <Link
-          href="https://stripe.com/pricing"
-          className="underline underline-offset-2 text-primary hover:text-primary-hover transition-colors"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View Stripe pricing
-        </Link>
-      </p>
+      {/* Footer */}
+      {stripeStatus === 'connected' && (
+        <p className="text-[11px] text-text-subtle pb-4">
+          The platform deducts a 10% fee from each sale.{' '}
+          <Link
+            href="https://stripe.com/pricing"
+            className="underline underline-offset-2 text-primary hover:text-primary-hover transition-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Stripe pricing
+          </Link>
+        </p>
+      )}
     </div>
   )
 }

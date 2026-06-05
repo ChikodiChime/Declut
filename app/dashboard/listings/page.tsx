@@ -14,10 +14,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  ArrowRight,
+  SlidersHorizontal,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui";
-import { ListingCard } from "@/components/listings";
+import { ListingRow } from "@/components/listings/ListingCard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useMyListings } from "@/lib/hooks/useListings";
 
@@ -79,6 +81,44 @@ export default function DashboardListingsPage() {
           Create New Listing
         </Link>
       </div>
+      {/* Stats skeleton */}
+      {isLoading && (
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="relative overflow-hidden w-72 shrink-0 rounded-2xl bg-card p-6"
+              style={{ boxShadow: "var(--shadow-card)" }}
+            >
+              <div
+                className="skeleton-shimmer"
+                style={{ animationDelay: `${i * 0.1}s` }}
+              />
+              {/* Top line */}
+              <div
+                className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl"
+                style={{ background: "#ede9e3" }}
+              />
+              {/* Icon tile */}
+              <div
+                className="w-12 h-12 rounded-xl mb-4"
+                style={{ background: "#ede9e3" }}
+              />
+              {/* Number */}
+              <div
+                className="h-8 w-16 rounded mb-2"
+                style={{ background: "#ede9e3" }}
+              />
+              {/* Label */}
+              <div
+                className="h-3.5 w-24 rounded"
+                style={{ background: "#e8e4dc" }}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Stats Cards */}
       {!isLoading && listings.length > 0 && (
         <div>
@@ -173,7 +213,7 @@ export default function DashboardListingsPage() {
       {/* Filter Bar */}
       {!isLoading && listings.length > 0 && (
         <motion.div
-          className="flex flex-col sm:flex-row gap-3"
+          className="flex flex-col sm:flex-row gap-3 max-w-[60%]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
@@ -347,17 +387,56 @@ export default function DashboardListingsPage() {
       )}
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="bg-card rounded-2xl overflow-hidden animate-pulse border border-border/50"
+              className="relative overflow-hidden bg-card rounded-xl border border-border flex items-center gap-4 px-4 py-3"
             >
-              <div className="aspect-[4/3] bg-border/60" />
-              <div className="p-4 space-y-3">
-                <div className="h-4 bg-border/60 rounded w-3/4" />
-                <div className="h-3 bg-border/60 rounded w-1/2" />
-                <div className="h-8 bg-border/60 rounded mt-2" />
+              <div
+                className="skeleton-shimmer"
+                style={{ animationDelay: `${(i % 4) * 0.12}s` }}
+              />
+              {/* Thumbnail */}
+              <div
+                className="w-14 h-14 rounded-lg shrink-0"
+                style={{ background: "#ede9e3" }}
+              />
+              {/* Text */}
+              <div className="flex-1 flex flex-col gap-2">
+                <div
+                  className="h-3.5 rounded w-2/5"
+                  style={{ background: "#ede9e3" }}
+                />
+                <div
+                  className="h-2.5 rounded w-1/3"
+                  style={{ background: "#ede9e3" }}
+                />
+                <div
+                  className="h-2 rounded w-1/5"
+                  style={{ background: "#e8e4dc" }}
+                />
+              </div>
+              {/* Status */}
+              <div
+                className="h-7 w-28 rounded-md shrink-0"
+                style={{ background: "#ede9e3" }}
+              />
+              {/* Price */}
+              <div
+                className="h-3.5 w-16 rounded shrink-0"
+                style={{ background: "#ede9e3" }}
+              />
+              {/* Actions */}
+              <div className="flex gap-1.5 shrink-0">
+                <div
+                  className="w-8 h-8 rounded-md"
+                  style={{ background: "#ede9e3" }}
+                />
+                <div
+                  className="w-8 h-8 rounded-md"
+                  style={{ background: "#ede9e3" }}
+                />
               </div>
             </div>
           ))}
@@ -375,57 +454,132 @@ export default function DashboardListingsPage() {
           </p>
         </motion.div>
       )}
-      {/* Empty State */}
-      {!isLoading && !error && filteredListings.length === 0 && (
+      {/* Empty State — no listings at all */}
+      {!isLoading && !error && listings.length === 0 && (
         <motion.div
-          className="flex flex-col items-center py-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
+          className="flex flex-col items-center text-center py-16 lg:py-24"
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.3 }}
         >
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 ring-1 ring-primary/10 flex items-center justify-center mb-6">
-            <Package size={36} strokeWidth={1.5} className="text-primary" />
+          <div className="relative mb-6 w-64 h-64 lg:w-80 lg:h-80">
+            {/* Blob sits behind the image via DOM order */}
+            <div
+              aria-hidden
+              className="absolute"
+              style={{
+                inset: "-12px",
+                background: "#ffffff",
+                borderRadius: "62% 38% 46% 54% / 60% 44% 56% 40%",
+                boxShadow: "0 8px 40px rgba(55,48,163,0.08)",
+              }}
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/empty-listings.svg"
+              alt=""
+              aria-hidden
+              className="relative w-full h-full select-none"
+              draggable={false}
+            />
           </div>
-          <h3 className="text-xl font-semibold text-text mb-2">
+          <h2
+            className="font-display text-xl font-bold mb-2"
+            style={{ color: "var(--color-text)" }}
+          >
             No listings yet
-          </h3>
-          <p className="text-text-muted mb-8 max-w-sm mx-auto leading-relaxed">
-            Start selling by creating your first listing. It&apos;s quick and
-            easy to get started.
+          </h2>
+          <p
+            className="text-sm mb-8 max-w-xs"
+            style={{ color: "var(--color-text-muted)" }}
+          >
+            Post something you no longer need and start decluttering.
           </p>
           <Link
             href="/dashboard/listings/new"
-            className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 transition-all duration-150"
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl text-sm font-semibold text-white transition-all duration-150 active:scale-95"
+            style={{ background: "var(--color-primary)" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background =
+                "var(--color-primary-hover)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background =
+                "var(--color-primary)";
+            }}
           >
-            <Plus size={14} strokeWidth={2.5} />
-            Create New Listing
+            <Plus size={15} strokeWidth={2.5} />
+            Create your first listing
           </Link>
         </motion.div>
       )}
-      {/* Listings Grid */}
+
+      {/* Empty State — has listings but filter returned nothing */}
+      {!isLoading &&
+        !error &&
+        listings.length > 0 &&
+        filteredListings.length === 0 && (
+          <motion.div
+            className="flex flex-col items-center py-16 text-center"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-2xl mb-4"
+              style={{
+                background: "rgba(55,48,163,0.07)",
+                border: "1px solid rgba(55,48,163,0.12)",
+              }}
+            >
+              <SlidersHorizontal
+                size={20}
+                strokeWidth={1.75}
+                style={{ color: "#3730a3" }}
+              />
+            </div>
+            <p className="text-sm font-semibold text-[#16130f] mb-1">
+              No listings match your filters
+            </p>
+            <p className="text-xs text-[#a8a09a] mb-5">
+              Try a different search or clear the filters
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery("");
+                setStatusFilter("all");
+              }}
+              className="inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-medium transition-colors hover:bg-[#f5f1eb]"
+              style={{ borderColor: "#e8e4dc", color: "#78726c" }}
+            >
+              <X size={11} strokeWidth={2.5} /> Clear filters
+            </button>
+          </motion.div>
+        )}
+      {/* Listings */}
       {!isLoading && filteredListings.length > 0 && (
         <motion.div
-          className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+          className="flex flex-col gap-2"
           initial="hidden"
           animate="visible"
           variants={{
             hidden: {},
-            visible: { transition: { staggerChildren: 0.06 } },
+            visible: { transition: { staggerChildren: 0.04 } },
           }}
         >
           {filteredListings.map((listing) => (
             <motion.div
               key={listing.id}
               variants={{
-                hidden: { opacity: 0, y: 16 },
+                hidden: { opacity: 0, y: 10 },
                 visible: {
                   opacity: 1,
                   y: 0,
-                  transition: { duration: 0.35, ease: "easeOut" },
+                  transition: { duration: 0.25, ease: "easeOut" },
                 },
               }}
             >
-              <ListingCard listing={listing} basePath="/dashboard/listings" />
+              <ListingRow listing={listing} basePath="/dashboard/listings" />
             </motion.div>
           ))}
         </motion.div>

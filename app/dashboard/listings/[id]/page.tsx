@@ -47,12 +47,13 @@ export default function ListingDetailsPage({
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="bg-card rounded-2xl shadow-card overflow-hidden animate-pulse">
-          <div className="aspect-4/3 md:aspect-2/1 bg-border" />
+        <div className="relative overflow-hidden bg-card rounded-2xl shadow-card">
+          <div className="skeleton-shimmer" />
+          <div className="aspect-4/3 md:aspect-2/1" style={{ background: '#ede9e3' }} />
           <div className="p-6 space-y-3">
-            <div className="h-6 bg-border rounded w-2/3" />
-            <div className="h-4 bg-border rounded w-1/3" />
-            <div className="h-20 bg-border rounded w-full" />
+            <div className="h-6 rounded w-2/3" style={{ background: '#ede9e3' }} />
+            <div className="h-4 rounded w-1/3" style={{ background: '#e8e4dc' }} />
+            <div className="h-20 rounded w-full" style={{ background: '#e8e4dc' }} />
           </div>
         </div>
       </div>

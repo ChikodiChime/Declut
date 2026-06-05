@@ -23,6 +23,25 @@ const TYPE_LABELS: Record<string, string> = {
   donate: "Donate",
 };
 
+const CONDITION_LABELS: Record<string, string> = {
+  new: "New",
+  like_new: "Like New",
+  good: "Good",
+  fair: "Fair",
+  poor: "Poor",
+};
+
+function relativeDate(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diff / 86_400_000);
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days < 30) return `${days}d ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months}mo ago`;
+  return `${Math.floor(months / 12)}y ago`;
+}
+
 const STATUS_STYLES: Record<string, string> = {
   available: "bg-success/10 text-success",
   sold: "bg-accent/10 text-accent",
@@ -33,6 +52,138 @@ const STATUS_STYLES: Record<string, string> = {
 interface ListingCardProps {
   listing: Listing;
   basePath?: string;
+}
+
+export function ListingRow({ listing, basePath = "/dashboard/listings" }: ListingCardProps) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const router = useRouter();
+  const { mutate: deleteListing, isPending: isDeleting } = useDeleteListing();
+  const { mutate: updateListing, isPending: isUpdating } = useUpdateListing(listing.id);
+
+  const listingHref = `${basePath}/${listing.id}`;
+  const editHref = `${basePath}/${listing.id}/edit`;
+
+  function stopPropagation(e: React.MouseEvent | React.KeyboardEvent) {
+    e.stopPropagation();
+  }
+
+  return (
+    <motion.div
+      layout
+      className="group bg-card rounded-xl border border-border flex items-center gap-4 px-4 py-3 cursor-pointer hover:border-border-strong transition-colors duration-200"
+      style={{ boxShadow: "var(--shadow-sm)" }}
+      whileHover={{ boxShadow: "0 8px 24px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05)" }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      role="link"
+      tabIndex={0}
+      onClick={() => router.push(listingHref)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(listingHref); }
+      }}
+    >
+      {/* Thumbnail */}
+      <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface border border-border">
+        {listing.images[0] ? (
+          <ListingImage
+            src={listing.images[0]}
+            fill
+            sizes="56px"
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+            alt={listing.title}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-text-subtle">
+            <Package size={18} strokeWidth={1.5} />
+          </div>
+        )}
+      </div>
+
+      {/* Title + meta */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-text truncate">{listing.title}</p>
+        <p className="text-xs text-text-subtle mt-0.5 truncate">
+          {[listing.area, TYPE_LABELS[listing.listing_type], CONDITION_LABELS[listing.condition]].filter(Boolean).join(" · ")}
+        </p>
+        <p className="text-[11px] text-text-subtle/60 mt-0.5">{relativeDate(listing.created_at)}</p>
+      </div>
+
+      {/* Status dropdown */}
+      <div
+        className="shrink-0 w-32"
+        onClick={stopPropagation}
+        onKeyDown={stopPropagation}
+      >
+        <CustomDropdown
+          size="sm"
+          options={STATUS_OPTIONS}
+          value={listing.status}
+          onChange={(value) => updateListing({ status: value as ListingStatus })}
+          disabled={isUpdating}
+        />
+      </div>
+
+      {/* Price */}
+      <div className="shrink-0 w-24 text-right">
+        {listing.listing_type === "for_sale" && listing.price != null ? (
+          <span className="text-sm font-bold text-primary">₦{listing.price.toLocaleString()}</span>
+        ) : (
+          <span className="text-xs text-text-subtle capitalize">{listing.listing_type === "free" ? "Free" : "Donate"}</span>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div
+        className="flex items-center gap-1.5 shrink-0"
+        onClick={stopPropagation}
+        onKeyDown={stopPropagation}
+      >
+        <Link href={editHref}>
+          <div className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-150">
+            <Pencil size={14} strokeWidth={1.75} />
+          </div>
+        </Link>
+
+        <AnimatePresence mode="wait">
+          {confirmDelete ? (
+            <motion.div
+              key="confirm"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.12 }}
+              className="flex gap-1"
+            >
+              <button
+                onClick={() => deleteListing(listing.id)}
+                disabled={isDeleting}
+                className="rounded-md border border-error/40 bg-error/5 text-error text-[11px] font-semibold px-2.5 py-2 hover:bg-error/10 transition-colors disabled:opacity-60"
+              >
+                {isDeleting ? "…" : "Yes"}
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="rounded-md border border-border px-2.5 py-2 text-[11px] text-text-muted hover:bg-surface transition-colors"
+              >
+                ✕
+              </button>
+            </motion.div>
+          ) : (
+            <motion.button
+              key="delete"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.12 }}
+              onClick={() => setConfirmDelete(true)}
+              className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-error hover:text-white hover:border-error transition-all duration-150"
+            >
+              <Trash2 size={14} strokeWidth={1.75} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
 }
 
 export function ListingCard({ listing, basePath = "/dashboard/listings" }: ListingCardProps) {
