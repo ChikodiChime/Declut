@@ -285,26 +285,18 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         {/* Footer */}
         {!loading && items.length > 0 && (
           <div
-            className="px-5 py-4 flex items-center gap-3 shrink-0"
+            className="px-5 py-4 flex flex-col gap-3 shrink-0"
             style={{ borderTop: "1px solid #f0ece5" }}
           >
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-text-muted">Total</span>
+              <span className="font-display text-xl font-bold" style={{ color: "#16130f" }}>
+                ₦{items.reduce((sum, i) => sum + i.listing.price, 0).toLocaleString()}
+              </span>
+            </div>
             <button
               onClick={() => handleNavigate("/cart")}
-              className="flex-1 h-11 rounded-full text-[14px] font-medium transition-colors"
-              style={{ border: "1px solid #e8e4dc", color: "#16130f" }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLElement).style.background = "#f8f5f0")
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLElement).style.background =
-                  "transparent")
-              }
-            >
-              View cart
-            </button>
-            <button
-              onClick={() => handleNavigate("/cart")}
-              className="flex-1 h-11 rounded-full text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
+              className="w-full h-11 rounded-full text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
               style={{ background: "#4f46e5" }}
             >
               Checkout
