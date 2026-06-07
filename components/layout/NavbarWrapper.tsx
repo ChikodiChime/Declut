@@ -17,6 +17,7 @@ import {
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 import { useCart } from "@/lib/hooks/useCart";
 import { NavbarSearch } from "@/components/layout/NavbarSearch";
+import { CartDrawer } from "@/components/layout/CartDrawer";
 
 const HIDDEN_PREFIXES = [
   "/dashboard",
@@ -282,6 +283,7 @@ function NavbarContent({
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (mobileOpen) document.body.style.overflow = "hidden";
@@ -463,7 +465,10 @@ function NavbarContent({
               )}
             </button>
 
-            <CartButton transparent={transparent} />
+            <CartButton
+              transparent={transparent}
+              onOpen={() => setCartDrawerOpen(true)}
+            />
 
             {/* Hamburger — mobile only */}
             <button
@@ -763,11 +768,21 @@ function NavbarContent({
           </div>
         )}
       </div>
+      <CartDrawer
+        open={cartDrawerOpen}
+        onClose={() => setCartDrawerOpen(false)}
+      />
     </>
   );
 }
 
-function CartButton({ transparent }: { transparent: boolean }) {
+function CartButton({
+  transparent,
+  onOpen,
+}: {
+  transparent: boolean;
+  onOpen: () => void;
+}) {
   const { count, loading } = useCart();
   const [hover, setHover] = useState(false);
 
@@ -782,8 +797,8 @@ function CartButton({ transparent }: { transparent: boolean }) {
   const iconColor = transparent ? "rgba(255,255,255,0.92)" : "#16130f";
 
   return (
-    <Link
-      href="/cart"
+    <button
+      onClick={onOpen}
       aria-label={`Cart (${count} items)`}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -807,6 +822,6 @@ function CartButton({ transparent }: { transparent: boolean }) {
           {count > 99 ? "99+" : count}
         </span>
       )}
-    </Link>
+    </button>
   );
 }
