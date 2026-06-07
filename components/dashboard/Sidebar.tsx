@@ -40,6 +40,8 @@ interface SidebarProps {
   navItems?: NavItem[];
   logoHref?: string;
   sectionLabel?: string;
+  profileHref?: string;
+  layoutIdPrefix?: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -63,10 +65,12 @@ function DesktopNavItems({
   pathname,
   navItems,
   logoHref,
+  layoutIdPrefix,
 }: {
   pathname: string;
   navItems: NavItem[];
   logoHref: string;
+  layoutIdPrefix: string;
 }) {
   const { mutate: signOut } = useSignOut();
 
@@ -110,7 +114,7 @@ function DesktopNavItems({
                 )}
                 {active && (
                   <motion.div
-                    layoutId="sidebar-active-bg"
+                    layoutId={`${layoutIdPrefix}-active-bg`}
                     className="absolute inset-y-0 left-0 bg-white rounded-l-lg"
                     style={{ right: -12 }}
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
@@ -118,7 +122,7 @@ function DesktopNavItems({
                 )}
                 {active && (
                   <motion.span
-                    layoutId="sidebar-accent"
+                    layoutId={`${layoutIdPrefix}-accent`}
                     className="absolute top-2 bottom-2 w-[3px] bg-white rounded-r-full"
                     style={{ left: -12 }}
                     transition={{ type: "spring", stiffness: 400, damping: 35 }}
@@ -150,7 +154,7 @@ function DesktopNavItems({
   );
 }
 
-function DrawerProfile({ onNavigate }: { onNavigate: () => void }) {
+function DrawerProfile({ onNavigate, profileHref }: { onNavigate: () => void; profileHref: string }) {
   const { data: me } = useMe();
   const { mutate: signOut } = useSignOut();
 
@@ -187,7 +191,7 @@ function DrawerProfile({ onNavigate }: { onNavigate: () => void }) {
 
       <div className="mt-3 flex gap-2">
         <Link
-          href="/dashboard/profile"
+          href={profileHref}
           onClick={onNavigate}
           className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors text-white/80 hover:text-white"
         >
@@ -266,6 +270,8 @@ export function Sidebar({
   navItems = NAV_ITEMS,
   logoHref = "/dashboard",
   sectionLabel,
+  profileHref = "/dashboard/profile",
+  layoutIdPrefix = "sidebar",
 }: SidebarProps = {}) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -293,7 +299,7 @@ export function Sidebar({
             </span>
           </div>
         )}
-        <DesktopNavItems pathname={pathname} navItems={navItems} logoHref={logoHref} />
+        <DesktopNavItems pathname={pathname} navItems={navItems} logoHref={logoHref} layoutIdPrefix={layoutIdPrefix} />
       </aside>
 
       {/* Mobile top bar */}
@@ -362,7 +368,7 @@ export function Sidebar({
               />
 
               {/* Profile section */}
-              <DrawerProfile onNavigate={() => setMobileOpen(false)} />
+              <DrawerProfile onNavigate={() => setMobileOpen(false)} profileHref={profileHref} />
             </motion.div>
           </>
         )}

@@ -18,6 +18,7 @@ export function AdminSidebar() {
       navItems={ADMIN_NAV_ITEMS}
       logoHref="/admin/dashboard"
       sectionLabel="Admin"
+      layoutIdPrefix="admin-sidebar"
     />
   )
 }
