@@ -21,10 +21,14 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const queryClient = useQueryClient();
   const [items, setItems] = useState<CartItemWithListing[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setError(false);
+      return;
+    }
     setLoading(true);
 
     async function load() {
@@ -45,7 +49,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           }
         }
       } catch {
-        setItems([]);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -76,15 +80,25 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   }, [open]);
 
   async function removeItem(item: CartItemWithListing) {
-    if (user) {
-      await fetch(`/api/cart/${item.id}`, { method: "DELETE" });
-    } else {
-      removeFromSessionCart(item.listing_id);
-    }
+    const previousItems = items;
+    const previousIds = queryClient.getQueryData<string[]>(CART_QUERY_KEY) ?? [];
+
     setItems((prev) => prev.filter((i) => i.id !== item.id));
     queryClient.setQueryData<string[]>(CART_QUERY_KEY, (prev = []) =>
       prev.filter((id) => id !== item.listing_id),
     );
+
+    try {
+      if (user) {
+        const res = await fetch(`/api/cart/${item.id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("remove failed");
+      } else {
+        removeFromSessionCart(item.listing_id);
+      }
+    } catch {
+      setItems(previousItems);
+      queryClient.setQueryData<string[]>(CART_QUERY_KEY, previousIds);
+    }
   }
 
   function handleNavigate(path: string) {
@@ -173,6 +187,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   </div>
                 </div>
               ))}
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full text-center py-16">
+              <p className="text-[15px] font-medium" style={{ color: "#16130f" }}>
+                Couldn&apos;t load your cart
+              </p>
+              <p className="text-sm mt-1" style={{ color: "#a8a09a" }}>
+                Check your connection and try again
+              </p>
             </div>
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-16">
