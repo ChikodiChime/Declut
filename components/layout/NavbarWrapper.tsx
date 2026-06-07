@@ -286,12 +286,11 @@ function NavbarContent({
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
 
   useEffect(() => {
-    if (mobileOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    document.body.style.overflow = (mobileOpen || cartDrawerOpen) ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, cartDrawerOpen]);
 
   return (
     <>
