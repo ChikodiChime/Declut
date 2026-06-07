@@ -109,11 +109,11 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         aria-hidden
         className="fixed inset-0 z-50"
         style={{
-          background: "rgba(22,19,15,0.5)",
-          backdropFilter: "blur(2px)",
+          background: "rgba(22,19,15,0.6)",
+          backdropFilter: "blur(3px)",
           opacity: open ? 1 : 0,
           pointerEvents: open ? "auto" : "none",
-          transition: "opacity 250ms ease",
+          transition: "opacity 280ms ease",
         }}
         onClick={onClose}
       />
@@ -123,31 +123,27 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Cart"
-        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col w-full max-w-sm"
+        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col w-full max-w-[380px]"
         style={{
-          background: "#ffffff",
+          background: "#faf9f7",
           transform: open ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-          boxShadow: "-4px 0 32px rgba(22,19,15,0.12)",
+          transition: "transform 320ms cubic-bezier(0.32, 0.72, 0, 1)",
+          boxShadow: "-8px 0 48px rgba(22,19,15,0.18), -1px 0 0 rgba(22,19,15,0.06)",
         }}
       >
-        {/* Header */}
+        {/* Header — dark for contrast */}
         <div
-          className="flex items-center justify-between px-5 py-4 shrink-0"
-          style={{ borderBottom: "1px solid #f0ece5" }}
+          className="flex items-center justify-between px-6 py-5 shrink-0"
+          style={{ background: "#16130f" }}
         >
-          <div className="flex items-center gap-2">
-            <ShoppingCart size={16} strokeWidth={2} style={{ color: "#56524d" }} />
-            <span
-              className="text-[15px] font-semibold"
-              style={{ color: "#16130f" }}
-            >
-              Cart
+          <div className="flex items-center gap-2.5">
+            <span className="font-display text-[19px] font-bold" style={{ color: "#ffffff" }}>
+              Your Cart
             </span>
             {items.length > 0 && (
               <span
-                className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full"
-                style={{ background: "#f0ece5", color: "#78726c" }}
+                className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-bold"
+                style={{ background: "#3730a3", color: "#c7d2fe" }}
               >
                 {items.length}
               </span>
@@ -157,103 +153,127 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close cart"
-            className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
-            style={{ color: "#56524d" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = "#f0ece5")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = "transparent")
-            }
+            className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)";
+              (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.9)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+              (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)";
+            }}
           >
             <X size={16} strokeWidth={2} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="flex-1 overflow-y-auto px-4 py-5">
           {loading ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="flex items-center gap-3 animate-pulse">
-                  <div className="w-12 h-12 rounded-xl bg-border shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-3 bg-border rounded w-3/4" />
-                    <div className="h-3 bg-border rounded w-1/3" />
+                <div
+                  key={i}
+                  className="flex items-center gap-3 rounded-2xl p-3 animate-pulse"
+                  style={{ background: "#ffffff" }}
+                >
+                  <div className="w-[72px] h-[72px] rounded-xl bg-border shrink-0" />
+                  <div className="flex-1 space-y-2.5">
+                    <div className="h-3 bg-border rounded-full w-4/5" />
+                    <div className="h-3 bg-border rounded-full w-2/5" />
                   </div>
                 </div>
               ))}
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <p className="text-[15px] font-medium" style={{ color: "#16130f" }}>
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+                style={{ background: "#fef2f2" }}
+              >
+                <X size={18} strokeWidth={2.5} style={{ color: "#ef4444" }} />
+              </div>
+              <p className="text-[15px] font-semibold" style={{ color: "#16130f" }}>
                 Couldn&apos;t load your cart
               </p>
-              <p className="text-sm mt-1" style={{ color: "#a8a09a" }}>
+              <p className="text-sm mt-1.5" style={{ color: "#a8a09a" }}>
                 Check your connection and try again
               </p>
             </div>
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <ShoppingCart
-                size={32}
-                strokeWidth={1.2}
-                style={{ color: "#d1cdc7" }}
-                className="mb-3"
-              />
-              <p
-                className="text-[15px] font-medium"
-                style={{ color: "#16130f" }}
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5"
+                style={{ background: "#f0ece5" }}
               >
-                Your cart is empty
+                <ShoppingCart size={24} strokeWidth={1.5} style={{ color: "#78726c" }} />
+              </div>
+              <p className="font-display text-[18px] font-bold mb-1.5" style={{ color: "#16130f" }}>
+                Nothing here yet
               </p>
-              <p className="text-sm mt-1 mb-6" style={{ color: "#a8a09a" }}>
+              <p className="text-sm mb-7" style={{ color: "#a8a09a" }}>
                 Browse listings and add items to get started
               </p>
               <button
                 onClick={() => handleNavigate("/")}
-                className="text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
-                style={{ border: "1px solid #e8e4dc", color: "#16130f" }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLElement).style.background = "#f8f5f0")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLElement).style.background =
-                    "transparent")
-                }
+                className="text-[13px] font-semibold px-6 py-2.5 rounded-full transition-all duration-200"
+                style={{
+                  background: "#16130f",
+                  color: "#ffffff",
+                  boxShadow: "0 2px 8px rgba(22,19,15,0.2)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 14px rgba(22,19,15,0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                  (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(22,19,15,0.2)";
+                }}
               >
                 Browse listings
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-3 rounded-xl p-2.5"
-                  style={{ border: "1px solid #f0ece5" }}
+                  className="flex items-center gap-3 rounded-2xl p-3"
+                  style={{
+                    background: "#ffffff",
+                    boxShadow: "0 1px 3px rgba(22,19,15,0.06), 0 1px 2px rgba(22,19,15,0.04)",
+                  }}
                 >
-                  <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 bg-border">
-                    {item.listing.images?.[0] && (
+                  <div className="relative w-[72px] h-[72px] rounded-xl overflow-hidden shrink-0">
+                    {item.listing.images?.[0] ? (
                       <ListingImage
                         src={item.listing.images[0]}
                         alt={item.listing.title}
                         fill
-                        sizes="48px"
+                        sizes="72px"
                         className="object-cover"
                       />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center"
+                        style={{ background: "#f0ece5" }}
+                      >
+                        <ShoppingCart size={18} strokeWidth={1.5} style={{ color: "#a8a09a" }} />
+                      </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p
-                      className="text-[13px] font-medium truncate"
+                      className="text-[13px] font-semibold leading-snug line-clamp-2"
                       style={{ color: "#16130f" }}
                     >
                       {item.listing.title}
                     </p>
                     <p
-                      className="text-[13px] font-bold mt-0.5"
-                      style={{ color: "#4f46e5" }}
+                      className="font-display text-[16px] font-bold mt-1"
+                      style={{ color: "#3730a3" }}
                     >
                       ₦{item.listing.price.toLocaleString()}
                     </p>
@@ -261,20 +281,18 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <button
                     onClick={() => removeItem(item)}
                     aria-label={`Remove ${item.listing.title}`}
-                    className="shrink-0 flex items-center justify-center w-7 h-7 rounded-lg transition-colors"
-                    style={{ color: "#a8a09a" }}
+                    className="shrink-0 flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-150 self-start mt-0.5"
+                    style={{ color: "#c4bdb6" }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background =
-                        "#fff0f0";
-                      (e.currentTarget as HTMLElement).style.color = "#e53e3e";
+                      (e.currentTarget as HTMLElement).style.background = "#fef2f2";
+                      (e.currentTarget as HTMLElement).style.color = "#ef4444";
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background =
-                        "transparent";
-                      (e.currentTarget as HTMLElement).style.color = "#a8a09a";
+                      (e.currentTarget as HTMLElement).style.background = "transparent";
+                      (e.currentTarget as HTMLElement).style.color = "#c4bdb6";
                     }}
                   >
-                    <X size={13} strokeWidth={2} />
+                    <X size={13} strokeWidth={2.5} />
                   </button>
                 </div>
               ))}
@@ -285,19 +303,37 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         {/* Footer */}
         {!loading && items.length > 0 && (
           <div
-            className="px-5 py-4 flex flex-col gap-3 shrink-0"
-            style={{ borderTop: "1px solid #f0ece5" }}
+            className="px-5 pb-6 pt-4 shrink-0"
+            style={{
+              background: "#ffffff",
+              boxShadow: "0 -1px 0 #e8e4dc, 0 -8px 24px rgba(22,19,15,0.04)",
+            }}
           >
-            <div className="flex items-baseline justify-between">
-              <span className="text-sm text-text-muted">Total</span>
-              <span className="font-display text-xl font-bold" style={{ color: "#16130f" }}>
+            <div className="flex items-baseline justify-between mb-4">
+              <span className="text-[13px] font-medium" style={{ color: "#78726c" }}>
+                Total · {items.length} {items.length === 1 ? "item" : "items"}
+              </span>
+              <span className="font-display text-[22px] font-bold" style={{ color: "#16130f" }}>
                 ₦{items.reduce((sum, i) => sum + i.listing.price, 0).toLocaleString()}
               </span>
             </div>
             <button
               onClick={() => handleNavigate("/cart")}
-              className="w-full h-11 rounded-full text-[14px] font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: "#4f46e5" }}
+              className="w-full h-12 rounded-2xl text-[14px] font-bold text-white transition-all duration-200"
+              style={{
+                background: "#3730a3",
+                boxShadow: "0 2px 8px rgba(55,48,163,0.35)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "#312e81";
+                (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 5px 16px rgba(55,48,163,0.45)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = "#3730a3";
+                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 8px rgba(55,48,163,0.35)";
+              }}
             >
               Checkout
             </button>
