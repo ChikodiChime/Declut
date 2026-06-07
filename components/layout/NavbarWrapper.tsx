@@ -292,6 +292,14 @@ function NavbarContent({
     };
   }, [mobileOpen, cartDrawerOpen]);
 
+  useEffect(() => {
+    function handleOpenCartDrawer() {
+      setCartDrawerOpen(true);
+    }
+    window.addEventListener("cart-drawer-open", handleOpenCartDrawer);
+    return () => window.removeEventListener("cart-drawer-open", handleOpenCartDrawer);
+  }, []);
+
   return (
     <>
       <header

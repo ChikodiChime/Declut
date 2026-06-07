@@ -70,7 +70,7 @@ interface BrowseCardProps {
 
 export function BrowseCard({ listing }: BrowseCardProps) {
   const router = useRouter();
-  const { isInCart, addToCartOptimistic } = useCart();
+  const { isInCart, addToCartOptimistic, removeFromCartOptimistic } = useCart();
   const [cartState, setCartState] = useState<ActionState>("idle");
   const [claimState, setClaimState] = useState<ActionState>("idle");
   const [imgIdx, setImgIdx] = useState(0);
@@ -114,14 +114,22 @@ export function BrowseCard({ listing }: BrowseCardProps) {
     if (res.status === 401) {
       addToSessionCart(listing.id);
       window.dispatchEvent(new Event("cart-updated"));
+      setCartState("done");
+      toast.success(`${listing.title} added to cart`, {
+        action: { label: "View cart", onClick: () => window.dispatchEvent(new Event("cart-drawer-open")) },
+      });
+      setTimeout(() => setCartState("idle"), 2000);
     } else if (res.ok) {
       window.dispatchEvent(new Event("cart-updated"));
+      setCartState("done");
+      toast.success(`${listing.title} added to cart`, {
+        action: { label: "View cart", onClick: () => window.dispatchEvent(new Event("cart-drawer-open")) },
+      });
+      setTimeout(() => setCartState("idle"), 2000);
+    } else {
+      removeFromCartOptimistic(listing.id);
+      setCartState("idle");
     }
-    setCartState("done");
-    toast.success(`${listing.title} added to cart`, {
-      action: { label: "View cart", onClick: () => router.push("/cart") },
-    });
-    setTimeout(() => setCartState("idle"), 2000);
   }
 
   async function handleClaim(e: React.MouseEvent) {

@@ -25,16 +25,16 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (!open) {
-      setError(false);
-      return;
-    }
+    if (!open) return;
+    const controller = new AbortController();
     setLoading(true);
+    setError(false);
 
     async function load() {
       try {
         if (user) {
-          const res = await fetch("/api/cart");
+          const res = await fetch("/api/cart", { signal: controller.signal });
+          if (!res.ok) throw new Error("fetch failed");
           const data = await res.json();
           setItems(data.data ?? []);
         } else {
@@ -43,12 +43,14 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             setItems([]);
           } else {
             const listingIds = sessionCart.map((i) => i.listing_id).join(",");
-            const res = await fetch(`/api/cart?listing_ids=${listingIds}`);
+            const res = await fetch(`/api/cart?listing_ids=${listingIds}`, { signal: controller.signal });
+            if (!res.ok) throw new Error("fetch failed");
             const data = await res.json();
             setItems(data.data ?? []);
           }
         }
-      } catch {
+      } catch (err) {
+        if ((err as Error).name === "AbortError") return;
         setError(true);
       } finally {
         setLoading(false);
@@ -56,6 +58,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     }
 
     load();
+    return () => controller.abort();
   }, [open, user?.id]);
 
   useEffect(() => {
