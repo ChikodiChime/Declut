@@ -21,33 +21,38 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const queryClient = useQueryClient();
   const [items, setItems] = useState<CartItemWithListing[]>([]);
   const [loading, setLoading] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
     setLoading(true);
 
     async function load() {
-      if (user) {
-        const res = await fetch("/api/cart");
-        const data = await res.json();
-        setItems(data.data ?? []);
-      } else {
-        const sessionCart = getSessionCart();
-        if (sessionCart.length === 0) {
-          setItems([]);
-        } else {
-          const listingIds = sessionCart.map((i) => i.listing_id).join(",");
-          const res = await fetch(`/api/cart?listing_ids=${listingIds}`);
+      try {
+        if (user) {
+          const res = await fetch("/api/cart");
           const data = await res.json();
           setItems(data.data ?? []);
+        } else {
+          const sessionCart = getSessionCart();
+          if (sessionCart.length === 0) {
+            setItems([]);
+          } else {
+            const listingIds = sessionCart.map((i) => i.listing_id).join(",");
+            const res = await fetch(`/api/cart?listing_ids=${listingIds}`);
+            const data = await res.json();
+            setItems(data.data ?? []);
+          }
         }
+      } catch {
+        setItems([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
     load();
-  }, [open, user]);
+  }, [open, user?.id]);
 
   useEffect(() => {
     if (!open) return;
@@ -57,6 +62,10 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
+
+  useEffect(() => {
+    if (open) closeButtonRef.current?.focus();
+  }, [open]);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -70,7 +79,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     if (user) {
       await fetch(`/api/cart/${item.id}`, { method: "DELETE" });
     } else {
-      removeFromSessionCart(item.id);
+      removeFromSessionCart(item.listing_id);
     }
     setItems((prev) => prev.filter((i) => i.id !== item.id));
     queryClient.setQueryData<string[]>(CART_QUERY_KEY, (prev = []) =>
@@ -101,7 +110,6 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
 
       {/* Panel */}
       <div
-        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Cart"
@@ -136,6 +144,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             )}
           </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
             aria-label="Close cart"
             className="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
