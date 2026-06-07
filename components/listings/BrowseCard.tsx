@@ -118,6 +118,9 @@ export function BrowseCard({ listing }: BrowseCardProps) {
       window.dispatchEvent(new Event("cart-updated"));
     }
     setCartState("done");
+    toast.success(`${listing.title} added to cart`, {
+      action: { label: "View cart", onClick: () => router.push("/cart") },
+    });
     setTimeout(() => setCartState("idle"), 2000);
   }
 
