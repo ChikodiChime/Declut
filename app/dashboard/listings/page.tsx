@@ -64,7 +64,7 @@ export default function DashboardListingsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-row items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-text">My Listings</h1>
           <p className="text-text-muted mt-1">
@@ -73,9 +73,18 @@ export default function DashboardListingsPage() {
               : `${listings.length} total listing${listings.length !== 1 ? "s" : ""}`}
           </p>
         </div>
+        {/* Mobile: icon only */}
         <Link
           href="/dashboard/listings/new"
-          className="inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 transition-all duration-150"
+          aria-label="Create new listing"
+          className="sm:hidden flex items-center justify-center w-9 h-9 rounded-xl bg-primary text-white hover:bg-primary-hover active:scale-95 transition-all duration-150"
+        >
+          <Plus size={17} strokeWidth={2.5} />
+        </Link>
+        {/* Desktop: full button */}
+        <Link
+          href="/dashboard/listings/new"
+          className="hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 transition-all duration-150"
         >
           <Plus size={15} strokeWidth={2.5} />
           Create New Listing
@@ -213,7 +222,7 @@ export default function DashboardListingsPage() {
       {/* Filter Bar */}
       {!isLoading && listings.length > 0 && (
         <motion.div
-          className="flex flex-col sm:flex-row gap-3 max-w-[60%]"
+          className="flex flex-col sm:flex-row gap-3 w-full sm:max-w-[60%]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}

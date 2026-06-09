@@ -91,10 +91,11 @@ function NotificationSkeleton() {
 
 // ─── NotificationBell ─────────────────────────────────────────────────────────
 
-function NotificationBell() {
+export function NotificationBell({ triggerClassName }: { triggerClassName?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({});
   const { data, isLoading } = useNotifications();
   const { mutate: markRead } = useMarkRead();
   const { mutate: markAllRead } = useMarkAllRead();
@@ -111,6 +112,16 @@ function NotificationBell() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  function handleToggle() {
+    if (!open && ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const panelWidth = Math.min(340, window.innerWidth - 16);
+      const left = Math.max(8, rect.right - panelWidth);
+      setPanelStyle({ position: "fixed", top: rect.bottom + 8, left, width: panelWidth });
+    }
+    setOpen((v) => !v);
+  }
+
   function handleNotificationClick(id: string, link: string) {
     markRead(id);
     setOpen(false);
@@ -120,8 +131,8 @@ function NotificationBell() {
   return (
     <div ref={ref} className="relative">
       <button
-        onClick={() => setOpen((v) => !v)}
-        className="relative flex items-center justify-center transition-colors text-text-subtle hover:text-text hover:bg-surface"
+        onClick={handleToggle}
+        className={`relative flex items-center justify-center transition-colors ${triggerClassName ?? "text-text-subtle hover:text-text hover:bg-surface"}`}
         aria-label="Notifications"
         style={{ width: 36, height: 36, borderRadius: TRIGGER_RADIUS }}
       >
@@ -150,13 +161,12 @@ function NotificationBell() {
         {open && (
           <motion.div
             {...DROPDOWN_ANIM}
-            className="absolute right-0 top-full mt-2 z-50 overflow-hidden bg-card"
+            className="z-50 overflow-hidden bg-card"
             style={{
-              width: 340,
+              ...panelStyle,
               borderRadius: 16,
               border: "1px solid var(--color-border)",
-              boxShadow:
-                "0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)",
             }}
           >
             {/* Header */}

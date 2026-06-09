@@ -67,10 +67,71 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
     e.stopPropagation();
   }
 
+  const price =
+    listing.listing_type === "for_sale" && listing.price != null ? (
+      <span className="text-sm font-bold text-primary">₦{listing.price.toLocaleString()}</span>
+    ) : (
+      <span className="text-xs text-text-subtle capitalize">
+        {listing.listing_type === "free" ? "Free" : "Donate"}
+      </span>
+    );
+
+  const actions = (
+    <div
+      className="flex items-center gap-1.5 shrink-0"
+      onClick={stopPropagation}
+      onKeyDown={stopPropagation}
+    >
+      <Link href={editHref}>
+        <div className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-150">
+          <Pencil size={14} strokeWidth={1.75} />
+        </div>
+      </Link>
+      <AnimatePresence mode="wait">
+        {confirmDelete ? (
+          <motion.div
+            key="confirm"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.12 }}
+            className="flex gap-1"
+          >
+            <button
+              onClick={() => deleteListing(listing.id)}
+              disabled={isDeleting}
+              className="rounded-md border border-error/40 bg-error/5 text-error text-[11px] font-semibold px-2.5 py-2 hover:bg-error/10 transition-colors disabled:opacity-60"
+            >
+              {isDeleting ? "…" : "Yes"}
+            </button>
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="rounded-md border border-border px-2.5 py-2 text-[11px] text-text-muted hover:bg-surface transition-colors"
+            >
+              ✕
+            </button>
+          </motion.div>
+        ) : (
+          <motion.button
+            key="delete"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.12 }}
+            onClick={() => setConfirmDelete(true)}
+            className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-error hover:text-white hover:border-error transition-all duration-150"
+          >
+            <Trash2 size={14} strokeWidth={1.75} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
   return (
     <motion.div
       layout
-      className="group bg-card rounded-xl border border-border flex items-center gap-4 px-4 py-3 cursor-pointer hover:border-border-strong transition-colors duration-200"
+      className="group bg-card rounded-xl border border-border flex items-start sm:items-center gap-3 sm:gap-4 px-4 py-3 cursor-pointer hover:border-border-strong transition-colors duration-200"
       style={{ boxShadow: "var(--shadow-sm)" }}
       whileHover={{ boxShadow: "0 8px 24px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05)" }}
       transition={{ duration: 0.18, ease: "easeOut" }}
@@ -82,7 +143,7 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
       }}
     >
       {/* Thumbnail */}
-      <div className="relative w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-surface border border-border">
+      <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-lg overflow-hidden shrink-0 bg-surface border border-border mt-0.5 sm:mt-0">
         {listing.images[0] ? (
           <ListingImage
             src={listing.images[0]}
@@ -98,18 +159,42 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
         )}
       </div>
 
-      {/* Title + meta */}
+      {/* Title + meta + mobile second row */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-text truncate">{listing.title}</p>
-        <p className="text-xs text-text-subtle mt-0.5 truncate">
-          {[listing.area, TYPE_LABELS[listing.listing_type], CONDITION_LABELS[listing.condition]].filter(Boolean).join(" · ")}
-        </p>
-        <p className="text-[11px] text-text-subtle/60 mt-0.5">{relativeDate(listing.created_at)}</p>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-text truncate">{listing.title}</p>
+            <p className="text-xs text-text-subtle mt-0.5 truncate">
+              {[listing.area, TYPE_LABELS[listing.listing_type], CONDITION_LABELS[listing.condition]].filter(Boolean).join(" · ")}
+            </p>
+            <p className="text-[11px] text-text-subtle/60 mt-0.5">{relativeDate(listing.created_at)}</p>
+          </div>
+          {/* Actions sit top-right on mobile */}
+          <div className="sm:hidden">{actions}</div>
+        </div>
+
+        {/* Mobile: status + price on second line */}
+        <div
+          className="flex items-center gap-3 mt-2 sm:hidden"
+          onClick={stopPropagation}
+          onKeyDown={stopPropagation}
+        >
+          <div className="flex-1">
+            <CustomDropdown
+              size="sm"
+              options={STATUS_OPTIONS}
+              value={listing.status}
+              onChange={(value) => updateListing({ status: value as ListingStatus })}
+              disabled={isUpdating}
+            />
+          </div>
+          <div className="shrink-0">{price}</div>
+        </div>
       </div>
 
-      {/* Status dropdown */}
+      {/* Desktop: status dropdown */}
       <div
-        className="shrink-0 w-32"
+        className="hidden sm:block shrink-0 w-32"
         onClick={stopPropagation}
         onKeyDown={stopPropagation}
       >
@@ -122,66 +207,11 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
         />
       </div>
 
-      {/* Price */}
-      <div className="shrink-0 w-24 text-right">
-        {listing.listing_type === "for_sale" && listing.price != null ? (
-          <span className="text-sm font-bold text-primary">₦{listing.price.toLocaleString()}</span>
-        ) : (
-          <span className="text-xs text-text-subtle capitalize">{listing.listing_type === "free" ? "Free" : "Donate"}</span>
-        )}
-      </div>
+      {/* Desktop: price */}
+      <div className="hidden sm:block shrink-0 w-24 text-right">{price}</div>
 
-      {/* Actions */}
-      <div
-        className="flex items-center gap-1.5 shrink-0"
-        onClick={stopPropagation}
-        onKeyDown={stopPropagation}
-      >
-        <Link href={editHref}>
-          <div className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-150">
-            <Pencil size={14} strokeWidth={1.75} />
-          </div>
-        </Link>
-
-        <AnimatePresence mode="wait">
-          {confirmDelete ? (
-            <motion.div
-              key="confirm"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.12 }}
-              className="flex gap-1"
-            >
-              <button
-                onClick={() => deleteListing(listing.id)}
-                disabled={isDeleting}
-                className="rounded-md border border-error/40 bg-error/5 text-error text-[11px] font-semibold px-2.5 py-2 hover:bg-error/10 transition-colors disabled:opacity-60"
-              >
-                {isDeleting ? "…" : "Yes"}
-              </button>
-              <button
-                onClick={() => setConfirmDelete(false)}
-                className="rounded-md border border-border px-2.5 py-2 text-[11px] text-text-muted hover:bg-surface transition-colors"
-              >
-                ✕
-              </button>
-            </motion.div>
-          ) : (
-            <motion.button
-              key="delete"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.12 }}
-              onClick={() => setConfirmDelete(true)}
-              className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-error hover:text-white hover:border-error transition-all duration-150"
-            >
-              <Trash2 size={14} strokeWidth={1.75} />
-            </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Desktop: actions */}
+      <div className="hidden sm:flex">{actions}</div>
     </motion.div>
   );
 }

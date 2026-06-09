@@ -39,13 +39,13 @@ async function cancelOrder(id: string) {
 }
 
 const STATUS_STYLE: Record<string, string> = {
-  pending:   'bg-amber-50 text-amber-700',
-  paid:      'bg-blue-50 text-blue-700',
-  confirmed: 'bg-blue-50 text-blue-700',
-  shipped:   'bg-violet-50 text-violet-700',
-  delivered: 'bg-teal-50 text-teal-700',
-  completed: 'bg-green-50 text-green-700',
-  cancelled: 'bg-red-50 text-red-600',
+  pending:   'bg-amber-100 text-amber-700',
+  paid:      'bg-blue-100 text-blue-700',
+  confirmed: 'bg-blue-100 text-blue-700',
+  shipped:   'bg-violet-100 text-violet-700',
+  delivered: 'bg-teal-100 text-teal-700',
+  completed: 'bg-green-100 text-green-700',
+  cancelled: 'bg-red-100 text-red-600',
 }
 
 const STATUS_DOT: Record<string, string> = {
@@ -71,14 +71,14 @@ function getInitials(name: string | null, email: string) {
 function TableSkeleton() {
   return (
     <>
-      {Array.from({ length: 6 }).map((_, i) => (
+      {Array.from({ length: 8 }).map((_, i) => (
         <tr key={i} className="border-b border-border animate-pulse">
-          <td className="px-6 py-4"><div className="h-4 rounded-md bg-border w-20" /><div className="h-3 rounded-md bg-border mt-1.5 w-14" /></td>
-          <td className="px-6 py-4"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-border shrink-0" /><div className="h-4 rounded-md bg-border w-28" /></div></td>
-          <td className="px-6 py-4"><div className="h-4 rounded-md bg-border w-24" /></td>
-          <td className="px-6 py-4"><div className="h-5 rounded-full bg-border w-20" /></td>
-          <td className="px-6 py-4"><div className="h-5 rounded-full bg-border w-14" /></td>
-          <td className="px-6 py-4"><div className="h-7 rounded-lg bg-border w-24 ml-auto" /></td>
+          <td className="px-6 py-[18px]"><div className="h-4 rounded bg-border w-20" /><div className="h-3 rounded bg-border mt-1.5 w-14" /></td>
+          <td className="px-6 py-[18px]"><div className="flex items-center gap-2.5"><div className="w-9 h-9 rounded-full bg-border shrink-0" /><div className="space-y-1.5"><div className="h-4 rounded bg-border w-28" /><div className="h-3 rounded bg-border w-20" /></div></div></td>
+          <td className="px-6 py-[18px]"><div className="h-4 rounded bg-border w-24" /></td>
+          <td className="px-6 py-[18px]"><div className="h-5 rounded-full bg-border w-20" /></td>
+          <td className="px-6 py-[18px]"><div className="h-5 rounded-full bg-border w-16" /></td>
+          <td className="px-6 py-[18px]"><div className="h-7 rounded-lg bg-border w-24 ml-auto" /></td>
         </tr>
       ))}
     </>
@@ -113,77 +113,87 @@ export default function AdminOrdersPage() {
   })
 
   return (
-    <div className="max-w-5xl">
+    <div>
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
-          <ShoppingBag size={18} strokeWidth={1.75} className="text-amber-600" />
+        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+          <ShoppingBag size={19} strokeWidth={1.75} className="text-amber-600" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-text leading-tight">Orders</h1>
-          {total > 0 && <p className="text-xs text-text-muted">{total.toLocaleString('en-NG')} total orders</p>}
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-text">Orders</h1>
+            {total > 0 && (
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600">
+                {total.toLocaleString('en-NG')}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-text-muted mt-0.5">Oversee & force-cancel orders</p>
         </div>
       </div>
 
-      <div className="bg-card rounded-2xl shadow-card border border-border overflow-hidden">
+      <div className="rounded-2xl overflow-hidden shadow-elevated">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-surface border-b border-border">
-                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Order</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Buyer</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Amount</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Status</th>
-                <th className="text-left px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-text-muted">Via</th>
-                <th className="px-6 py-3" />
+              <tr style={{ background: 'linear-gradient(135deg, #2e2b85 0%, #3730a3 100%)' }}>
+                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.55)' }}>Order</th>
+                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.55)' }}>Buyer</th>
+                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.55)' }}>Amount</th>
+                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.55)' }}>Status</th>
+                <th className="text-left px-6 py-4 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.55)' }}>Via</th>
+                <th className="px-6 py-4" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="bg-card divide-y divide-border">
               {isLoading ? (
                 <TableSkeleton />
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
-                    <ShoppingBag size={32} strokeWidth={1.25} className="mx-auto mb-3 text-border" />
-                    <p className="text-sm text-text-muted">No orders yet.</p>
+                  <td colSpan={6} className="px-6 py-20 text-center bg-card">
+                    <div className="w-12 h-12 rounded-2xl bg-border/60 flex items-center justify-center mx-auto mb-3">
+                      <ShoppingBag size={22} strokeWidth={1.25} className="text-text-subtle" />
+                    </div>
+                    <p className="text-sm font-medium text-text-muted">No orders yet</p>
                   </td>
                 </tr>
               ) : (
                 orders.map((o) => (
-                  <tr key={o.id} className="hover:bg-surface/60 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-mono text-xs font-medium text-text bg-surface inline-block px-1.5 py-0.5 rounded">
+                  <tr
+                    key={o.id}
+                    className="transition-all hover:bg-primary/[0.035] hover:[box-shadow:inset_4px_0_0_#3730a3]"
+                  >
+                    <td className="px-6 py-[18px]">
+                      <p className="font-mono text-xs font-semibold text-text bg-surface border border-border inline-block px-1.5 py-0.5 rounded">
                         {o.id.slice(0, 8)}
                       </p>
-                      <p className="text-xs text-text-muted mt-1">
+                      <p className="text-xs text-text-muted mt-1.5">
                         {new Date(o.created_at).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-[18px]">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-[11px] font-semibold text-slate-600">
+                        <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center shrink-0 text-[11px] font-bold text-slate-600">
                           {o.buyer ? getInitials(o.buyer.name, o.buyer.email) : '?'}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium text-text truncate">{o.buyer?.name ?? '—'}</p>
+                          <p className="font-semibold text-text truncate">{o.buyer?.name ?? '—'}</p>
                           <p className="text-xs text-text-muted truncate">{o.buyer?.email ?? ''}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-semibold text-text whitespace-nowrap">
+                    <td className="px-6 py-[18px] font-semibold text-text whitespace-nowrap">
                       ₦{o.total_price.toLocaleString('en-NG')}
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[o.status] ?? 'bg-border text-text-muted'}`}>
+                    <td className="px-6 py-[18px]">
+                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${STATUS_STYLE[o.status] ?? 'bg-border text-text-muted'}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[o.status] ?? 'bg-text-subtle'}`} />
                         {o.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-[18px]">
                       <span className={[
-                        'inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full',
-                        o.delivery_type === 'delivery'
-                          ? 'bg-primary/8 text-primary'
-                          : 'bg-green-50 text-green-700',
+                        'inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full',
+                        o.delivery_type === 'delivery' ? 'bg-primary/10 text-primary' : 'bg-green-100 text-green-700',
                       ].join(' ')}>
                         {o.delivery_type === 'delivery'
                           ? <><Truck size={10} strokeWidth={2} /> Delivery</>
@@ -191,11 +201,11 @@ export default function AdminOrdersPage() {
                         }
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-[18px] text-right">
                       {['pending', 'paid'].includes(o.status) && (
                         <button
                           onClick={() => setCancelTarget(o)}
-                          className="text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
+                          className="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 transition-colors"
                         >
                           Force cancel
                         </button>
@@ -207,7 +217,9 @@ export default function AdminOrdersPage() {
             </tbody>
           </table>
         </div>
-        <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPage={setPage} />
+        <div className="bg-card border-t border-border">
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPage={setPage} />
+        </div>
       </div>
 
       <Modal open={!!cancelTarget} onClose={() => setCancelTarget(null)} title="Force cancel order">
@@ -228,10 +240,7 @@ export default function AdminOrdersPage() {
             </div>
           </div>
           <div className="flex gap-2 justify-end">
-            <button
-              onClick={() => setCancelTarget(null)}
-              className="px-4 py-2 rounded-xl border border-border text-sm font-medium text-text-muted hover:bg-surface transition-colors"
-            >
+            <button onClick={() => setCancelTarget(null)} className="px-4 py-2 rounded-xl border border-border text-sm font-medium text-text-muted hover:bg-surface transition-colors">
               Keep order
             </button>
             <button

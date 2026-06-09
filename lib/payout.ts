@@ -32,7 +32,7 @@ export async function executePayout(orderId: string): Promise<void> {
   // Mark delivered first — buyer UX shouldn't wait on the financial operation
   await supabaseAdmin
     .from('orders')
-    .update({ status: 'delivered' })
+    .update({ status: 'delivered', delivered_at: new Date().toISOString() })
     .eq('id', orderId)
 
   const { data: seller } = await supabaseAdmin

@@ -36,6 +36,9 @@ export type BuyerOrderDetail = {
   buyer_name: string | null
   buyer_address: string | null
   created_at: string
+  confirmed_at: string | null
+  shipped_at: string | null
+  delivered_at: string | null
   delivery_code: string | null
   seller: {
     id: string

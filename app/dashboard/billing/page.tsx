@@ -1,7 +1,7 @@
 // app/dashboard/billing/page.tsx
 'use client'
 
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
-  Zap,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import {
   useSellerEarnings,
@@ -102,6 +103,8 @@ function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-text truncate leading-tight">{order.listing_title}</p>
         <p className="text-[11px] text-text-subtle mt-0.5">{formatDate(order.created_at)}</p>
+        {/* Net earnings visible on mobile */}
+        <p className="sm:hidden text-xs font-bold text-text mt-1">{formatNairaWhole(order.net)}</p>
       </div>
 
       <div className="hidden sm:flex flex-col items-end gap-0.5 shrink-0 text-right">
@@ -158,6 +161,22 @@ function StatCardSkeleton({ index }: { index: number }) {
 
 function EarningsSection() {
   const { data, isLoading, isError } = useSellerEarnings()
+  const sliderRef = useRef<HTMLDivElement>(null)
+  const [hasOverflow, setHasOverflow] = useState(false)
+
+  useEffect(() => {
+    const el = sliderRef.current
+    if (!el) return
+    const check = () => setHasOverflow(el.scrollWidth > el.clientWidth)
+    check()
+    const ro = new ResizeObserver(check)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [data])
+
+  function scrollSlider(dir: 'left' | 'right') {
+    sliderRef.current?.scrollBy({ left: dir === 'right' ? 240 : -240, behavior: 'smooth' })
+  }
 
   const summary: EarningsSummary = data?.summary ?? {
     total_gross: 0,
@@ -186,69 +205,61 @@ function EarningsSection() {
         </div>
       )}
 
-      {/* Stat cards */}
-      {isLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[0, 1, 2, 3].map((i) => <StatCardSkeleton key={i} index={i} />)}
+      {/* Stat cards slider */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-text-subtle">Overview</p>
+          {hasOverflow && (
+            <div className="flex gap-1">
+              <button
+                onClick={() => scrollSlider('left')}
+                className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors"
+              >
+                <ChevronLeft size={14} strokeWidth={2} />
+              </button>
+              <button
+                onClick={() => scrollSlider('right')}
+                className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors"
+              >
+                <ChevronRight size={14} strokeWidth={2} />
+              </button>
+            </div>
+          )}
         </div>
-      ) : !isError && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            label="Available balance"
-            value={formatNaira(summary.stripe_available)}
-            icon={TrendingUp}
-            color="text-green-600"
-            bgColor="bg-green-500/10"
-            lineColor="bg-green-500"
-          />
-          <StatCard
-            label="Total gross"
-            value={formatNairaWhole(summary.total_gross)}
-            icon={DollarSign}
-            color="text-blue-600"
-            bgColor="bg-blue-500/10"
-            lineColor="bg-blue-500"
-          />
-          <StatCard
-            label="Total net"
-            value={formatNairaWhole(summary.total_net)}
-            icon={Wallet}
-            color="text-primary"
-            bgColor="bg-primary/10"
-            lineColor="bg-primary"
-          />
-          <StatCard
-            label="Next payout"
-            value={nextPayout}
-            icon={Calendar}
-            color="text-amber-600"
-            bgColor="bg-amber-500/10"
-            lineColor="bg-amber-500"
-          />
-        </div>
-      )}
+
+        {isLoading ? (
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="shrink-0 pb-1" style={{ width: 'calc((100% - 48px) / 4)', minWidth: 200 }}>
+                <StatCardSkeleton index={i} />
+              </div>
+            ))}
+          </div>
+        ) : !isError && (
+          <div ref={sliderRef} className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
+            {([
+              { label: 'Available balance', value: formatNaira(summary.stripe_available), icon: TrendingUp, color: 'text-green-600', bgColor: 'bg-green-500/10', lineColor: 'bg-green-500' },
+              { label: 'Total gross', value: formatNairaWhole(summary.total_gross), icon: DollarSign, color: 'text-blue-600', bgColor: 'bg-blue-500/10', lineColor: 'bg-blue-500' },
+              { label: 'Total net', value: formatNairaWhole(summary.total_net), icon: Wallet, color: 'text-primary', bgColor: 'bg-primary/10', lineColor: 'bg-primary' },
+              { label: 'Next payout', value: nextPayout, icon: Calendar, color: 'text-amber-600', bgColor: 'bg-amber-500/10', lineColor: 'bg-amber-500' },
+            ] as const).map((card) => (
+              <div key={card.label} className="shrink-0 snap-start" style={{ width: 'calc((100% - 48px) / 4)', minWidth: 200 }}>
+                <StatCard {...card} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Transactions */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-sm font-semibold text-text">Transactions</h3>
-            {!isLoading && data && data.orders.length > 0 && (
-              <p className="text-[11px] text-text-subtle mt-0.5">
-                {data.orders.length} completed sale{data.orders.length !== 1 ? 's' : ''}
-              </p>
-            )}
-          </div>
-          <a
-            href="https://dashboard.stripe.com/express"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-muted hover:text-text transition-colors"
-          >
-            <Zap size={11} strokeWidth={2.5} className="text-amber-500" />
-            Stripe dashboard
-            <ArrowUpRight size={11} strokeWidth={2} className="opacity-50" />
-          </a>
+        <div>
+          <h3 className="text-sm font-semibold text-text">Transactions</h3>
+          {!isLoading && data && data.orders.length > 0 && (
+            <p className="text-[11px] text-text-subtle mt-0.5">
+              {data.orders.length} completed sale{data.orders.length !== 1 ? 's' : ''}
+            </p>
+          )}
         </div>
 
         {isLoading && (
@@ -399,11 +410,11 @@ function BillingContent() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="flex items-start justify-between gap-4"
+        className="flex flex-col sm:flex-row sm:items-start justify-between gap-3"
       >
         <div>
-          <h1 className="text-3xl font-bold text-text">Payouts</h1>
-          <p className="text-text-muted mt-1">Track your earnings and manage your Stripe account.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text">Payouts</h1>
+          <p className="text-text-muted mt-1 text-sm">Track your earnings and manage your Stripe account.</p>
         </div>
 
         {/* Connection status badge */}
@@ -419,7 +430,7 @@ function BillingContent() {
             className="shrink-0 inline-flex items-center gap-2 h-9 px-3.5 rounded-xl border border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors"
           >
             <CheckCircle2 size={13} strokeWidth={2.5} className="text-emerald-500" />
-            Stripe connected
+            Stripe dashboard
             <ArrowUpRight size={11} strokeWidth={2.5} className="opacity-60" />
           </a>
         ) : stripeStatus === 'pending' ? (
