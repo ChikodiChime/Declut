@@ -30,7 +30,7 @@ export function ListingStructuredData({ listing }: ListingStructuredDataProps) {
       }`,
       seller: {
         "@type": "Person",
-        name: listing.seller?.full_name || "Declutter User",
+        name: listing.seller?.name || "Declutter User",
       },
     },
     category: listing.category,

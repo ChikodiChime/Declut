@@ -45,7 +45,6 @@ export default function PlacesAddressInput({
   useEffect(() => {
     const query = inputValue.trim();
     if (!query || query.length < 3 || !placesLib || !userTypingRef.current) {
-      setPredictions([]);
       return;
     }
 
@@ -88,7 +87,6 @@ export default function PlacesAddressInput({
         const place = prediction.toPlace();
         await place.fetchFields({
           fields: ["formattedAddress", "addressComponents"],
-          sessionToken: token,
         });
 
         const components = place.addressComponents ?? [];
@@ -166,7 +164,12 @@ export default function PlacesAddressInput({
           onChange={(e) => {
             userTypingRef.current = true;
             setInputValue(e.target.value);
-            if (!e.target.value) onClear?.();
+            if (!e.target.value) {
+              setPredictions([]);
+              onClear?.();
+            } else if (e.target.value.trim().length < 3) {
+              setPredictions([]);
+            }
           }}
           placeholder={placeholder}
           autoComplete="off"
