@@ -8,20 +8,36 @@ export async function generateMetadata({
   const { id } = await params;
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-    const response = await fetch(`${baseUrl}/api/listings/${id}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : "http://localhost:3000";
+    
+    const apiUrl = `${baseUrl}/api/listings/${id}`;
+    console.log("Fetching metadata from:", apiUrl);
+    
+    const response = await fetch(apiUrl, {
       cache: "no-store",
+      next: { revalidate: 0 },
     });
 
     if (!response.ok) {
+      console.error("Failed to fetch listing metadata:", response.status);
       return {
-        title: "Listing Not Found | Declutter",
+        title: "Listing Not Found",
         description: "This listing could not be found on Declutter Marketplace.",
       };
     }
 
     const data = await response.json();
     const listing = data.listing;
+
+    if (!listing) {
+      console.error("No listing data in response");
+      return {
+        title: "Listing Not Found",
+        description: "This listing could not be found on Declutter Marketplace.",
+      };
+    }
 
     const typeLabel =
       listing.listing_type === "for_sale"
@@ -42,11 +58,10 @@ export async function generateMetadata({
       listing.description ||
       `${typeLabel} listing in ${listing.area}. ${listing.condition} condition. Browse more on Declutter Marketplace.`;
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://declutter.ng";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : "http://localhost:3000";
     const url = `${siteUrl}/listings/${id}`;
-    const imageUrl = listing.images?.[0]
-      ? `${siteUrl}${listing.images[0]}`
-      : `${siteUrl}/listings/${id}/opengraph-image`;
 
     return {
       title,
@@ -58,7 +73,7 @@ export async function generateMetadata({
         siteName: "Declutter Marketplace",
         images: [
           {
-            url: imageUrl,
+            url: `${siteUrl}/listings/${id}/opengraph-image`,
             width: 1200,
             height: 630,
             alt: listing.title,
@@ -71,7 +86,7 @@ export async function generateMetadata({
         card: "summary_large_image",
         title,
         description,
-        images: [imageUrl],
+        images: [`${siteUrl}/listings/${id}/opengraph-image`],
         creator: "@declutter_ng",
       },
       alternates: {

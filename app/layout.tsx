@@ -25,11 +25,26 @@ const dmSerifDisplay = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
-  title: "declut",
-  description: "Nigeria's marketplace for things that deserve a second home",
+  title: {
+    default: "Declutter Marketplace",
+    template: "%s | Declutter",
+  },
+  description: "Buy, sell, and donate secondhand items in Nigeria.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
+  },
+  openGraph: {
+    title: "Declutter Marketplace",
+    description: "Buy, sell, and donate secondhand items in Nigeria.",
+    siteName: "Declutter Marketplace",
+    locale: "en_NG",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Declutter Marketplace",
+    description: "Buy, sell, and donate secondhand items in Nigeria.",
   },
 };
 

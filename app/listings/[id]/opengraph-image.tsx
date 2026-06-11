@@ -12,8 +12,12 @@ export default async function Image({ params }: { params: { id: string } }) {
   const { id } = params;
 
   try {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : "http://localhost:3000";
+    
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/listings/${id}`,
+      `${baseUrl}/api/listings/${id}`,
       { cache: "no-store" }
     );
 
