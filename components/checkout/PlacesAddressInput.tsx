@@ -10,10 +10,7 @@ export type PlaceResult = {
   state: string | null;
 };
 
-type Prediction = {
-  description: string;
-  place_id: string;
-};
+type PlacePrediction = google.maps.places.PlacePrediction;
 
 type Props = {
   defaultValue?: string;
@@ -35,118 +32,90 @@ export default function PlacesAddressInput({
   onClear,
 }: Props) {
   const [inputValue, setInputValue] = useState(defaultValue);
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [predictions, setPredictions] = useState<PlacePrediction[]>([]);
   const [showStateFallback, setShowStateFallback] = useState(false);
   const [pendingResult, setPendingResult] = useState<PlaceResult | null>(null);
   const [stateOverride, setStateOverride] = useState("");
 
   const placesLib = useMapsLibrary("places");
-  const autocompleteRef = useRef<google.maps.places.AutocompleteService | null>(null);
-  const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
-  const attrRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  // Tracks whether the current inputValue change came from the user typing (not a programmatic set)
   const userTypingRef = useRef(false);
 
   useEffect(() => {
-    if (!placesLib || !attrRef.current) return;
-    autocompleteRef.current ??= new placesLib.AutocompleteService();
-    placesServiceRef.current ??= new placesLib.PlacesService(attrRef.current);
-  }, [placesLib]);
-
-  useEffect(() => {
     const query = inputValue.trim();
-    if (!query || query.length < 3 || !autocompleteRef.current || !userTypingRef.current) {
+    if (!query || query.length < 3 || !placesLib || !userTypingRef.current) {
       setPredictions([]);
       return;
     }
-    const svc = autocompleteRef.current;
-    // Create a session token on the first keystroke of a new search to group
-    // all autocomplete requests + one getDetails call into a single billed session.
-    if (!sessionTokenRef.current && placesLib) {
+
+    if (!sessionTokenRef.current) {
       sessionTokenRef.current = new placesLib.AutocompleteSessionToken();
     }
-    const token = sessionTokenRef.current ?? undefined;
-    const timer = window.setTimeout(() => {
-      if (!svc) return;
-      svc.getPlacePredictions(
-        {
-          input: query,
-          types: ["address"],
-          componentRestrictions: { country: "ng" },
-          sessionToken: token,
-        },
-        (results, status) => {
-          if (status !== "OK" || !results) {
-            setPredictions([]);
-            return;
-          }
-          setPredictions(
-            results
-              .slice(0, 5)
-              .map((r) => ({ description: r.description, place_id: r.place_id }))
-          );
-        }
-      );
+
+    const timer = window.setTimeout(async () => {
+      try {
+        const { suggestions } =
+          await placesLib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+            input: query,
+            includedRegionCodes: ["ng"],
+            sessionToken: sessionTokenRef.current!,
+          });
+        setPredictions(
+          suggestions
+            .slice(0, 5)
+            .map((s) => s.placePrediction)
+            .filter((p): p is PlacePrediction => p !== null),
+        );
+      } catch {
+        setPredictions([]);
+      }
     }, 300);
+
     return () => window.clearTimeout(timer);
   }, [inputValue, placesLib]);
 
   const handleSelect = useCallback(
-    (prediction: Prediction) => {
-      if (!placesServiceRef.current) return;
-      // Mark as programmatic so the autocomplete effect doesn't re-fetch
+    async (prediction: PlacePrediction) => {
       userTypingRef.current = false;
-      setInputValue(prediction.description);
+      setInputValue(prediction.text.toString());
       setPredictions([]);
 
       const token = sessionTokenRef.current ?? undefined;
-      // After getDetails, the session is complete — clear the token so the
-      // next search gets a fresh one (and a fresh billing session).
       sessionTokenRef.current = null;
 
-      placesServiceRef.current.getDetails(
-        {
-          placeId: prediction.place_id,
-          fields: ["formatted_address", "address_components"],
+      try {
+        const place = prediction.toPlace();
+        await place.fetchFields({
+          fields: ["formattedAddress", "addressComponents"],
           sessionToken: token,
-        },
-        (place, status) => {
-          if (status !== "OK" || !place) {
-            // Keep the selected description visible; don't blank the input
-            setPredictions([]);
-            // Surface a generic error — the user can try again
-            setPendingResult(null);
-            setShowStateFallback(false);
-            return;
-          }
+        });
 
-          const components = place.address_components ?? [];
-          const city =
-            components.find((c) => c.types.includes("locality"))?.long_name ??
-            null;
-          const state =
-            components.find((c) =>
-              c.types.includes("administrative_area_level_1")
-            )?.long_name ?? null;
+        const components = place.addressComponents ?? [];
+        const city =
+          components.find((c) => c.types.includes("locality"))?.longText ?? null;
+        const state =
+          components.find((c) =>
+            c.types.includes("administrative_area_level_1"),
+          )?.longText ?? null;
 
-          const result: PlaceResult = {
-            formatted_address: place.formatted_address ?? prediction.description,
-            city,
-            state,
-          };
+        const result: PlaceResult = {
+          formatted_address: place.formattedAddress ?? prediction.text.toString(),
+          city,
+          state,
+        };
 
-          if (!state) {
-            setPendingResult(result);
-            setShowStateFallback(true);
-          } else {
-            onSelect(result);
-          }
+        if (!state) {
+          setPendingResult(result);
+          setShowStateFallback(true);
+        } else {
+          onSelect(result);
         }
-      );
+      } catch {
+        setPredictions([]);
+      }
     },
-    [onSelect]
+    [onSelect],
   );
 
   const confirmStateOverride = useCallback(() => {
@@ -208,13 +177,13 @@ export default function PlacesAddressInput({
           <div className="absolute left-0 right-0 top-full mt-1 z-20 rounded-xl border border-border bg-card shadow-card overflow-hidden">
             {predictions.map((p) => (
               <button
-                key={p.place_id}
+                key={p.placeId}
                 type="button"
                 className="w-full px-4 py-2.5 text-left text-sm text-text hover:bg-surface transition-colors"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleSelect(p)}
               >
-                {p.description}
+                {p.text.toString()}
               </button>
             ))}
           </div>
@@ -246,9 +215,6 @@ export default function PlacesAddressInput({
       )}
 
       {error && <p className="text-sm text-error">{error}</p>}
-
-      {/* Required by PlacesService for attribution rendering */}
-      <div ref={attrRef} className="hidden" />
     </div>
   );
 }

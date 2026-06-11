@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import { Input, Button, CustomDropdown, CategoryPicker } from "@/components/ui";
@@ -18,12 +19,25 @@ interface StepDetailsProps {
   onBack: () => void;
 }
 
-const CONDITION_OPTIONS: { value: Condition; label: string }[] = [
-  { value: "new",      label: "New — never used"      },
-  { value: "like_new", label: "Like New — barely used" },
-  { value: "good",     label: "Good — minor signs of use" },
-  { value: "fair",     label: "Fair — visible wear"    },
-  { value: "poor",     label: "Poor — heavy wear"      },
+function ConditionDots({ level }: { level: number }) {
+  return (
+    <span className="flex gap-[3px] shrink-0">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className={`w-2 h-2 rounded-full ${i < level ? "bg-primary" : "bg-border"}`}
+        />
+      ))}
+    </span>
+  );
+}
+
+const CONDITION_OPTIONS: { value: Condition; label: string; icon: React.ReactNode }[] = [
+  { value: "new",      label: "New — never used",         icon: <ConditionDots level={5} /> },
+  { value: "like_new", label: "Like New — barely used",   icon: <ConditionDots level={4} /> },
+  { value: "good",     label: "Good — minor signs of use",icon: <ConditionDots level={3} /> },
+  { value: "fair",     label: "Fair — visible wear",      icon: <ConditionDots level={2} /> },
+  { value: "poor",     label: "Poor — heavy wear",        icon: <ConditionDots level={1} /> },
 ];
 
 export function StepDetails({ defaultValues, onNext, onBack }: StepDetailsProps) {
@@ -35,7 +49,7 @@ export function StepDetails({ defaultValues, onNext, onBack }: StepDetailsProps)
   } = useForm<StepDetailsData>({ defaultValues });
 
   return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-5">
+    <form onSubmit={handleSubmit(onNext)} className="space-y-4">
       <div>
         <h2 className="text-xl font-bold text-text">Item details</h2>
         <p className="text-sm text-text-muted mt-1">Tell buyers about what you&apos;re listing.</p>
@@ -58,7 +72,7 @@ export function StepDetails({ defaultValues, onNext, onBack }: StepDetailsProps)
         <textarea
           rows={3}
           placeholder="Describe the item — condition details, reason for selling, etc."
-          className="block w-full px-4 py-3 text-text placeholder-text-muted bg-card border border-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 transition duration-200 resize-none"
+          className="block w-full px-4 py-3 text-sm text-text placeholder-text-muted bg-card border border-border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-primary focus:ring-primary/20 transition duration-200 resize-none"
           {...register("description", {
             maxLength: { value: 1000, message: "Max 1000 characters" },
           })}
@@ -93,11 +107,12 @@ export function StepDetails({ defaultValues, onNext, onBack }: StepDetailsProps)
             onChange={field.onChange}
             placeholder="Select condition"
             error={errors.condition?.message}
+            placement="top"
           />
         )}
       />
 
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3">
         <Button type="button" variant="outline" className="flex-1" onClick={onBack}>
           Back
         </Button>

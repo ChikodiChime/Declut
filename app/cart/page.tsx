@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { X, ChevronLeft, MapPin } from "lucide-react";
+import { X, ChevronLeft, MapPin, ShoppingBag } from "lucide-react";
 import { ListingImage } from "@/components/ui";
 import DeliveryTypeSelector from "@/components/checkout/DeliveryTypeSelector";
 import PlacesAddressInput from "@/components/checkout/PlacesAddressInput";
@@ -14,16 +14,16 @@ import { useMe } from "@/lib/hooks/useAuth";
 
 function CartSkeleton() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10">
-      <div className="space-y-3">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10">
+      <div className="space-y-4">
         {[0, 1, 2].map((i) => (
           <div
             key={i}
-            className="h-24 rounded-2xl border border-border bg-card animate-pulse"
+            className="h-32 rounded-2xl border border-border bg-card animate-pulse shadow-sm"
           />
         ))}
       </div>
-      <div className="rounded-2xl border border-border bg-card h-64 animate-pulse" />
+      <div className="rounded-2xl border border-border bg-card h-80 animate-pulse shadow-md" />
     </div>
   );
 }
@@ -56,10 +56,15 @@ function SummaryPanel({
     : { type: "button" as const, onClick: onCheckout };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start">
-      <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-5">
-        Order summary
-      </p>
+    <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div className="flex items-center gap-2 mb-6">
+        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+          <ShoppingBag size={16} className="text-primary" />
+        </div>
+        <p className="text-xs font-semibold text-text-muted uppercase tracking-widest">
+          Order summary
+        </p>
+      </div>
 
       <div className="space-y-4">
         {groups.map((group) => (
@@ -93,19 +98,21 @@ function SummaryPanel({
         <p className="text-xs text-text-muted mt-2">{deliveryFeeHint}</p>
       )}
 
-      <div className="border-t border-border my-5" />
+      <div className="border-t border-border my-6" />
 
-      <div className="flex items-baseline justify-between mb-6">
-        <span className="text-sm font-medium text-text-muted">Total</span>
-        <span className="font-display text-2xl font-bold text-text">
-          ₦{grandTotal.toLocaleString()}
-        </span>
+      <div className="bg-gradient-to-br from-surface to-card rounded-xl p-4 mb-6">
+        <div className="flex items-baseline justify-between">
+          <span className="text-sm font-medium text-text-muted">Total</span>
+          <span className="font-display text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            ₦{grandTotal.toLocaleString()}
+          </span>
+        </div>
       </div>
 
       <button
         {...buttonProps}
         disabled={checkingOut}
-        className="w-full rounded-xl bg-foreground text-white py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+        className="w-full rounded-xl bg-gradient-to-r from-foreground to-foreground/90 text-white py-4 text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
       >
         {checkingOut ? "Preparing…" : ctaLabel}
       </button>
@@ -273,16 +280,19 @@ export default function CartPage() {
           <h1 className="font-display text-3xl font-bold text-text mb-10">
             Your cart
           </h1>
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <h2 className="font-display text-2xl text-text mb-2">
-              Nothing here yet
+          <div className="flex flex-col items-center justify-center py-32 text-center">
+            <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center mb-6">
+              <ShoppingBag size={40} className="text-primary/60" />
+            </div>
+            <h2 className="font-display text-3xl text-text mb-3">
+              Your cart is empty
             </h2>
-            <p className="text-text-muted text-sm mb-8">
-              Browse listings and add items to your cart.
+            <p className="text-text-muted text-base mb-10 max-w-sm">
+              Discover amazing secondhand items and start adding them to your cart.
             </p>
             <Link
               href="/"
-              className="rounded-xl border border-border px-6 py-2.5 text-sm font-medium hover:bg-card transition-colors"
+              className="rounded-xl bg-gradient-to-r from-foreground to-foreground/90 text-white px-8 py-3.5 text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
               Browse listings
             </Link>
@@ -309,7 +319,7 @@ export default function CartPage() {
           <h1 className="font-display text-3xl font-bold text-text mb-10">
             Your cart
           </h1>
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
             <div>
               <button
                 onClick={() => setShowBuyerForm(false)}
@@ -400,16 +410,18 @@ export default function CartPage() {
               </form>
             </div>
 
-            <SummaryPanel
-              groups={anonGroups}
-              grandTotal={anonDisplayTotal}
-              checkingOut={checkingOut}
-              error={error}
-              ctaLabel="Continue to payment"
-              formId="buyer-form"
-              showDeliveryFee={deliveryType !== "delivery" || hasAnonAddress}
-              deliveryFeeHint={deliveryType === "delivery" && !hasAnonAddress ? "Delivery fee calculated after entering address" : undefined}
-            />
+            <div className="lg:sticky lg:top-20">
+              <SummaryPanel
+                groups={anonGroups}
+                grandTotal={anonDisplayTotal}
+                checkingOut={checkingOut}
+                error={error}
+                ctaLabel="Continue to payment"
+                formId="buyer-form"
+                showDeliveryFee={deliveryType !== "delivery" || hasAnonAddress}
+                deliveryFeeHint={deliveryType === "delivery" && !hasAnonAddress ? "Delivery fee calculated after entering address" : undefined}
+              />
+            </div>
           </div>
         </div>
       </main>
@@ -439,7 +451,7 @@ export default function CartPage() {
           <h1 className="font-display text-3xl font-bold text-text mb-10">
             Your cart
           </h1>
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
             <div>
               <button
                 onClick={() => {
@@ -497,10 +509,15 @@ export default function CartPage() {
               )}
             </div>
 
-            <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start">
-              <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-5">
-                Order summary
-              </p>
+            <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                  <ShoppingBag size={16} className="text-primary" />
+                </div>
+                <p className="text-xs font-semibold text-text-muted uppercase tracking-widest">
+                  Order summary
+                </p>
+              </div>
               <div className="space-y-4">
                 {deliveryGroups.map((group) => (
                   <div key={group.seller_id} className="space-y-1.5">
@@ -535,19 +552,21 @@ export default function CartPage() {
                   Delivery fee calculated after entering address
                 </p>
               )}
-              <div className="border-t border-border my-5" />
-              <div className="flex items-baseline justify-between mb-6">
-                <span className="text-sm font-medium text-text-muted">
-                  Total
-                </span>
-                <span className="font-display text-2xl font-bold text-text">
-                  ₦{deliveryDisplayTotal.toLocaleString()}
-                </span>
+              <div className="border-t border-border my-6" />
+              <div className="bg-gradient-to-br from-surface to-card rounded-xl p-4 mb-6">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-sm font-medium text-text-muted">
+                    Total
+                  </span>
+                  <span className="font-display text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                    ₦{deliveryDisplayTotal.toLocaleString()}
+                  </span>
+                </div>
               </div>
               <button
                 onClick={handleDeliveryAddressConfirm}
                 disabled={checkingOut}
-                className="w-full rounded-xl bg-foreground text-white py-3.5 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="w-full rounded-xl bg-gradient-to-r from-foreground to-foreground/90 text-white py-4 text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
               >
                 {checkingOut
                   ? "Preparing…"
@@ -570,47 +589,47 @@ export default function CartPage() {
   return (
     <main className="min-h-screen bg-surface">
       <div className="max-w-5xl mx-auto px-6 py-16">
-        <div className="flex items-baseline gap-3 mb-10">
-          <h1 className="font-display text-3xl font-bold text-text">
+        <div className="flex items-baseline gap-3 mb-12">
+          <h1 className="font-display text-4xl font-bold bg-gradient-to-r from-text to-text/80 bg-clip-text text-transparent">
             Your cart
           </h1>
-          <span className="text-sm text-text-muted">
+          <span className="text-base text-text-muted font-medium">
             {items.length} {items.length === 1 ? "item" : "items"}
           </span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10 items-start">
           {/* Left: item list + delivery selector */}
           <div>
-            <div className="space-y-3 mb-8">
+            <div className="space-y-4 mb-10">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
+                  className="group flex items-center gap-5 rounded-2xl border border-border bg-card p-5 hover:shadow-md hover:border-border-strong transition-all duration-200"
                 >
-                  <div className="relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-border">
+                  <div className="relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl bg-border ring-1 ring-border group-hover:ring-2 group-hover:ring-primary/20 transition-all duration-200">
                     {item.listing.images?.[0] && (
                       <ListingImage
                         src={item.listing.images[0]}
                         alt={item.listing.title}
                         fill
-                        sizes="72px"
-                        className="object-cover"
+                        sizes="96px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-200"
                       />
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[15px] text-text truncate">
+                    <p className="font-semibold text-base text-text truncate group-hover:text-primary transition-colors">
                       {item.listing.title}
                     </p>
                     {item.listing.area && (
-                      <p className="flex items-center gap-1 text-xs text-text-subtle mt-0.5">
-                        <MapPin size={11} />
+                      <p className="flex items-center gap-1.5 text-xs text-text-muted mt-1.5">
+                        <MapPin size={12} />
                         {item.listing.area}
                       </p>
                     )}
-                    <p className="font-display text-xl text-text mt-1">
+                    <p className="font-display text-2xl font-bold text-text mt-2">
                       ₦{item.listing.price.toLocaleString()}
                     </p>
                   </div>
@@ -618,9 +637,9 @@ export default function CartPage() {
                   <button
                     onClick={() => removeItem(item.id)}
                     aria-label={`Remove ${item.listing.title}`}
-                    className="shrink-0 p-1.5 rounded-lg text-text-subtle hover:text-error hover:bg-error-bg transition-all"
+                    className="shrink-0 p-2 rounded-lg text-text-subtle hover:text-error hover:bg-error/10 hover:scale-110 active:scale-95 transition-all duration-200"
                   >
-                    <X size={15} />
+                    <X size={18} />
                   </button>
                 </div>
               ))}
@@ -633,16 +652,18 @@ export default function CartPage() {
           </div>
 
           {/* Right: sticky summary panel */}
-          <SummaryPanel
-            groups={groups}
-            grandTotal={deliveryType === "pickup" ? grandTotal : itemsSubtotal}
-            checkingOut={checkingOut}
-            error={error}
-            ctaLabel="Proceed to checkout"
-            onCheckout={handleCheckout}
-            showDeliveryFee={false}
-            deliveryFeeHint={deliveryType === "delivery" ? "Delivery fee calculated after entering address" : undefined}
-          />
+          <div className="lg:sticky lg:top-20">
+            <SummaryPanel
+              groups={groups}
+              grandTotal={deliveryType === "pickup" ? grandTotal : itemsSubtotal}
+              checkingOut={checkingOut}
+              error={error}
+              ctaLabel="Proceed to checkout"
+              onCheckout={handleCheckout}
+              showDeliveryFee={false}
+              deliveryFeeHint={deliveryType === "delivery" ? "Delivery fee calculated after entering address" : undefined}
+            />
+          </div>
         </div>
       </div>
     </main>

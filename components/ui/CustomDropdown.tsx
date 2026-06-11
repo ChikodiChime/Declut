@@ -22,6 +22,7 @@ export interface CustomDropdownProps {
   disabled?: boolean;
   className?: string;
   size?: "md" | "sm";
+  placement?: "top" | "bottom";
 }
 
 const CustomDropdown = ({
@@ -35,6 +36,7 @@ const CustomDropdown = ({
   disabled = false,
   className = "",
   size = "md",
+  placement = "bottom",
 }: CustomDropdownProps) => {
   const isCompact = size === "sm";
   const [isOpen, setIsOpen] = useState(false);
@@ -115,7 +117,7 @@ const CustomDropdown = ({
               exit={{ opacity: 0, y: -6, scaleY: 0.95 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               style={{ transformOrigin: "top" }}
-              className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-elevated max-h-60 overflow-auto"
+              className={`absolute z-10 w-full bg-card border border-border rounded-md shadow-elevated max-h-60 overflow-auto ${placement === "top" ? "bottom-full mb-1" : "mt-1"}`}
             >
               <ul className="py-1" role="listbox">
                 {options.map((option) => {

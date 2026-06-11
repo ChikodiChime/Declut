@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ListingImage } from "@/components/ui";
-import { BrowseCard } from "@/components/listings";
+import { BrowseCard, ListingStructuredData } from "@/components/listings";
 import {
   ArrowLeft,
   MapPin,
@@ -20,6 +20,7 @@ import {
   Bike,
   Car,
   Truck,
+  Share2,
 } from "lucide-react";
 import { DELIVERY_RATES, DEFAULT_SIZE_CATEGORY } from "@/lib/constants";
 import { useListing, usePublicListings } from "@/lib/hooks/useListings";
@@ -539,7 +540,33 @@ export default function ListingDetailPage() {
   const { data, isLoading, error } = useListing(id);
   const { isInCart, addToCartOptimistic } = useCart();
   const [addingToCart, setAddingToCart] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
   const inCart = isInCart(id);
+
+  const handleShare = async () => {
+    if (!data?.listing) return;
+
+    const shareUrl = `${window.location.origin}/listings/${id}`;
+    const shareData = {
+      title: data.listing.title,
+      text: `Check out this listing: ${data.listing.title}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare?.(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+      }
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        console.error("Share failed:", err);
+      }
+    }
+  };
 
   async function handleAddToCart() {
     if (inCart || addingToCart) return;
@@ -594,6 +621,7 @@ export default function ListingDetailPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f4f5]">
+      <ListingStructuredData listing={listing} />
       {/* ── Hero ── */}
       <div
         className="relative overflow-hidden"
@@ -620,34 +648,55 @@ export default function ListingDetailPage() {
 
         <div className="relative max-w-6xl mx-auto px-4 lg:px-10 pt-7 pb-12">
           {/* Back + breadcrumb row */}
-          <div
-            className="flex items-center gap-2 text-[12px] mb-8"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
+          <div className="flex items-center justify-between mb-8">
+            <div
+              className="flex items-center gap-2 text-[12px]"
+              style={{ color: "rgba(255,255,255,0.45)" }}
+            >
+              <button
+                onClick={() => router.back()}
+                className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-white"
+                style={{ color: "inherit" }}
+              >
+                <ArrowLeft size={12} strokeWidth={2} />
+                Back
+              </button>
+              <span>·</span>
+              <Link
+                href="/"
+                className="transition-colors hover:text-white"
+                style={{ color: "inherit" }}
+              >
+                Home
+              </Link>
+              <span>›</span>
+              <Link
+                href={`/search?category=${encodeURIComponent(listing.category)}&listing_type=${listing.listing_type}`}
+                className="transition-colors hover:text-white"
+                style={{ color: "inherit" }}
+              >
+                {listing.category}
+              </Link>
+            </div>
+            
             <button
-              onClick={() => router.back()}
-              className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-white"
-              style={{ color: "inherit" }}
+              onClick={handleShare}
+              className="relative p-2 rounded-lg transition-all duration-200 hover:bg-white/10"
+              style={{ color: "rgba(255,255,255,0.8)" }}
+              title="Share listing"
             >
-              <ArrowLeft size={12} strokeWidth={2} />
-              Back
+              <Share2 size={16} strokeWidth={2} />
+              {shareSuccess && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-white text-[#16130f] text-xs font-medium whitespace-nowrap shadow-lg"
+                >
+                  Link copied!
+                </motion.div>
+              )}
             </button>
-            <span>·</span>
-            <Link
-              href="/"
-              className="transition-colors hover:text-white"
-              style={{ color: "inherit" }}
-            >
-              Home
-            </Link>
-            <span>›</span>
-            <Link
-              href={`/search?category=${encodeURIComponent(listing.category)}&listing_type=${listing.listing_type}`}
-              className="transition-colors hover:text-white"
-              style={{ color: "inherit" }}
-            >
-              {listing.category}
-            </Link>
           </div>
 
           {/* Type badge */}

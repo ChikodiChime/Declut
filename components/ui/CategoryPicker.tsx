@@ -57,7 +57,7 @@ export function CategoryPicker({ value, onChange, error }: CategoryPickerProps) 
               ].join(" ")}
             >
               <Icon
-                size={20}
+                size={32}
                 strokeWidth={isSelected ? 2 : 1.75}
                 className={isSelected ? "text-primary" : "text-text-muted"}
               />

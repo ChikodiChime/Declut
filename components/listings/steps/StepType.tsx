@@ -56,22 +56,19 @@ export function StepType({ defaultValues, onNext }: StepTypeProps) {
         <p className="text-sm text-text-muted mt-1">You can&apos;t change this after publishing.</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {OPTIONS.map((opt) => {
           const Icon = opt.icon;
           const isSelected = selected === opt.value;
 
           return (
-            <motion.label
+            <label
               key={opt.value}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              transition={{ duration: 0.15 }}
               className={[
-                "flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all duration-150",
+                "flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer transition-all duration-150",
                 isSelected
                   ? `${opt.activeBorder} ${opt.activeBg} shadow-sm`
-                  : "border-border bg-card hover:border-border-strong",
+                  : "border-border bg-card hover:border-border-strong hover:bg-surface",
               ].join(" ")}
             >
               <input
@@ -80,20 +77,20 @@ export function StepType({ defaultValues, onNext }: StepTypeProps) {
                 className="sr-only"
                 {...register("listing_type", { required: "Please select a listing type" })}
               />
-              <div className={`w-11 h-11 rounded-xl ${opt.bg} flex items-center justify-center shrink-0`}>
-                <Icon size={22} className={opt.color} strokeWidth={1.75} />
+              <div className={`w-9 h-9 rounded-lg ${opt.bg} flex items-center justify-center shrink-0`}>
+                <Icon size={17} className={opt.color} strokeWidth={1.75} />
               </div>
-              <div className="flex-1">
-                <p className="font-semibold text-text">{opt.label}</p>
-                <p className="text-sm text-text-muted">{opt.description}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-text">{opt.label}</p>
+                <p className="text-xs text-text-muted mt-0.5">{opt.description}</p>
               </div>
               <div className={[
-                "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-150",
-                isSelected ? `border-current bg-current ${opt.color}` : "border-border",
+                "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-150",
+                isSelected ? `${opt.activeBorder} bg-current ${opt.color}` : "border-border",
               ].join(" ")}>
-                {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
               </div>
-            </motion.label>
+            </label>
           );
         })}
       </div>
