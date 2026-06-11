@@ -34,6 +34,12 @@ export async function GET(req: NextRequest) {
       .update({ stripe_onboarding_complete: true })
       .eq('id', payload.sub)
 
+    await supabaseAdmin
+      .from('listings')
+      .update({ status: 'available' })
+      .eq('seller_id', payload.sub)
+      .eq('status', 'draft')
+
     return NextResponse.redirect(new URL('/dashboard/billing?status=connected', req.url))
   }
 

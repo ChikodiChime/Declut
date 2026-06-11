@@ -77,7 +77,7 @@ export function useListing(id: string) {
   })
 }
 
-export function useCreateListing() {
+export function useCreateListing(onSuccess?: () => void) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -85,8 +85,12 @@ export function useCreateListing() {
     mutationFn: (data: ListingFormData) => apiRequest('POST', '/api/listings', data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['listings', 'dashboard'] })
-      toast.success('Listing published!')
-      router.push('/dashboard/listings')
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        toast.success('Listing published!')
+        router.push('/dashboard/listings')
+      }
     },
     onError: (err: Error) => toast.error(err.message),
   })

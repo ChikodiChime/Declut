@@ -43,6 +43,7 @@ function relativeDate(iso: string): string {
 }
 
 const STATUS_STYLES: Record<string, string> = {
+  draft: "bg-amber-100 text-amber-700",
   available: "bg-success/10 text-success",
   sold: "bg-accent/10 text-accent",
   claimed: "bg-primary/10 text-primary",
@@ -52,9 +53,18 @@ const STATUS_STYLES: Record<string, string> = {
 interface ListingCardProps {
   listing: Listing;
   basePath?: string;
+  onEdit?: (listing: Listing) => void;
 }
 
-export function ListingRow({ listing, basePath = "/dashboard/listings" }: ListingCardProps) {
+function DraftStatusCell() {
+  return (
+    <span className="px-2 py-0.5 rounded-md text-[10.5px] font-semibold bg-amber-100 text-amber-700">
+      Draft
+    </span>
+  );
+}
+
+export function ListingRow({ listing, basePath = "/dashboard/listings", onEdit }: ListingCardProps) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const router = useRouter();
   const { mutate: deleteListing, isPending: isDeleting } = useDeleteListing();
@@ -82,11 +92,21 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
       onClick={stopPropagation}
       onKeyDown={stopPropagation}
     >
-      <Link href={editHref}>
-        <div className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-150">
+      {onEdit ? (
+        <button
+          type="button"
+          onClick={() => onEdit(listing)}
+          className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-150"
+        >
           <Pencil size={14} strokeWidth={1.75} />
-        </div>
-      </Link>
+        </button>
+      ) : (
+        <Link href={editHref}>
+          <div className="rounded-md border border-primary/20 bg-primary/8 p-2 text-primary hover:bg-primary hover:text-white hover:border-primary transition-all duration-150">
+            <Pencil size={14} strokeWidth={1.75} />
+          </div>
+        </Link>
+      )}
       <AnimatePresence mode="wait">
         {confirmDelete ? (
           <motion.div
@@ -180,13 +200,17 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
           onKeyDown={stopPropagation}
         >
           <div className="flex-1">
-            <CustomDropdown
-              size="sm"
-              options={STATUS_OPTIONS}
-              value={listing.status}
-              onChange={(value) => updateListing({ status: value as ListingStatus })}
-              disabled={isUpdating}
-            />
+            {listing.status === "draft" ? (
+              <DraftStatusCell />
+            ) : (
+              <CustomDropdown
+                size="sm"
+                options={STATUS_OPTIONS}
+                value={listing.status}
+                onChange={(value) => updateListing({ status: value as ListingStatus })}
+                disabled={isUpdating}
+              />
+            )}
           </div>
           <div className="shrink-0">{price}</div>
         </div>
@@ -198,13 +222,17 @@ export function ListingRow({ listing, basePath = "/dashboard/listings" }: Listin
         onClick={stopPropagation}
         onKeyDown={stopPropagation}
       >
-        <CustomDropdown
-          size="sm"
-          options={STATUS_OPTIONS}
-          value={listing.status}
-          onChange={(value) => updateListing({ status: value as ListingStatus })}
-          disabled={isUpdating}
-        />
+        {listing.status === "draft" ? (
+          <DraftStatusCell />
+        ) : (
+          <CustomDropdown
+            size="sm"
+            options={STATUS_OPTIONS}
+            value={listing.status}
+            onChange={(value) => updateListing({ status: value as ListingStatus })}
+            disabled={isUpdating}
+          />
+        )}
       </div>
 
       {/* Desktop: price */}

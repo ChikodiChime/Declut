@@ -81,13 +81,7 @@ export async function POST(req: Request) {
     .eq('id', authUser.id)
     .single()
 
-  if (!seller?.stripe_onboarding_complete) {
-    return err(
-      'Connect your Stripe account before listing items',
-      'STRIPE_NOT_CONNECTED',
-      403
-    )
-  }
+  const stripeConnected = seller?.stripe_onboarding_complete ?? false
 
   let body: unknown
   try {
@@ -103,7 +97,11 @@ export async function POST(req: Request) {
 
   const { data: listing, error } = await supabaseAdmin
     .from('listings')
-    .insert({ ...validated.data, seller_id: authUser.id })
+    .insert({
+      ...validated.data,
+      seller_id: authUser.id,
+      status: stripeConnected ? 'available' : 'draft',
+    })
     .select('*')
     .single()
 

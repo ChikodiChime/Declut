@@ -7,6 +7,7 @@ import {
   TrendingUp,
   DollarSign,
   Clock,
+  FileText,
   Search,
   Filter,
   X,
@@ -15,20 +16,87 @@ import {
   ChevronRight,
   Plus,
   ArrowRight,
+  ArrowUpRight,
   SlidersHorizontal,
+  Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui";
 import { ListingRow } from "@/components/listings/ListingCard";
+import { EditListingDrawer } from "@/components/listings";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { useMyListings } from "@/lib/hooks/useListings";
+import { useMe } from "@/lib/hooks/useAuth";
+import type { Listing } from "@/types";
+
+function StripeBanner() {
+  const [connecting, setConnecting] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const [connectError, setConnectError] = useState("");
+
+  async function handleConnect() {
+    setConnecting(true);
+    setConnectError("");
+    const res = await fetch("/api/stripe/connect", { method: "POST" });
+    const data = await res.json();
+    setConnecting(false);
+    if (!res.ok) {
+      setConnectError(data.error?.message ?? "Failed to start Stripe onboarding");
+      return;
+    }
+    window.location.href = data.data.url;
+  }
+
+  if (dismissed) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"
+    >
+      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-100">
+        <Wallet size={14} strokeWidth={2} className="text-amber-700" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-amber-900 leading-snug">
+          Your listings are saved — go live when you&apos;re ready
+        </p>
+        <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+          Connect your Stripe account and all your draft listings will be
+          published instantly. Buyers can start finding your items right away.
+        </p>
+        {connectError && (
+          <p className="mt-1.5 text-xs font-medium text-red-600">{connectError}</p>
+        )}
+        <button
+          onClick={handleConnect}
+          disabled={connecting}
+          className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800 disabled:opacity-60 transition-colors"
+        >
+          {connecting ? "Opening Stripe…" : "Set up payouts"}
+          {!connecting && <ArrowUpRight size={11} strokeWidth={2.5} />}
+        </button>
+      </div>
+      <button
+        onClick={() => setDismissed(true)}
+        className="mt-0.5 shrink-0 rounded-md p-1 text-amber-500 hover:bg-amber-100 hover:text-amber-700 transition-colors"
+        aria-label="Dismiss"
+      >
+        <X size={13} strokeWidth={2.5} />
+      </button>
+    </motion.div>
+  );
+}
 
 export default function DashboardListingsPage() {
+  const { data: userData } = useMe();
   const { data, isLoading, error } = useMyListings();
   const listings = data?.listings ?? [];
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<
-    "all" | "available" | "sold" | "claimed" | "donated"
+    "all" | "draft" | "available" | "sold" | "claimed" | "donated"
   >("all");
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -40,6 +108,7 @@ export default function DashboardListingsPage() {
     });
   }
 
+  const draftListings = listings.filter((l) => l.status === "draft").length;
   const availableListings = listings.filter(
     (l) => l.status === "available",
   ).length;
@@ -90,6 +159,9 @@ export default function DashboardListingsPage() {
           Create New Listing
         </Link>
       </div>
+
+      {!userData?.stripe_onboarding_complete && <StripeBanner />}
+
       {/* Stats skeleton */}
       {isLoading && (
         <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
@@ -158,6 +230,15 @@ export default function DashboardListingsPage() {
                 bgColor: "bg-primary/10",
                 lineColor: "bg-primary",
                 filter: "all",
+              },
+              {
+                label: "Drafts",
+                value: draftListings,
+                icon: FileText,
+                color: "text-amber-600",
+                bgColor: "bg-amber-500/10",
+                lineColor: "bg-amber-500",
+                filter: "draft",
               },
               {
                 label: "Available",
@@ -304,6 +385,26 @@ export default function DashboardListingsPage() {
                     >
                       <span>All Listings</span>
                       {statusFilter === "all" && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      )}
+                    </button>
+                    <div className="h-px bg-border/30 mx-4" />
+                    <button
+                      onClick={() => {
+                        setStatusFilter("draft");
+                        setShowFilterDropdown(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left text-sm flex items-center justify-between transition-all ${
+                        statusFilter === "draft"
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "text-text hover:bg-border/30"
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-amber-500" />
+                        Drafts
+                      </span>
+                      {statusFilter === "draft" && (
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                       )}
                     </button>
@@ -588,11 +689,20 @@ export default function DashboardListingsPage() {
                 },
               }}
             >
-              <ListingRow listing={listing} basePath="/dashboard/listings" />
+              <ListingRow
+                  listing={listing}
+                  basePath="/dashboard/listings"
+                  onEdit={setEditingListing}
+                />
             </motion.div>
           ))}
         </motion.div>
       )}
+      <EditListingDrawer
+        key={editingListing?.id}
+        listing={editingListing}
+        onClose={() => setEditingListing(null)}
+      />
     </div>
   );
 }

@@ -85,6 +85,19 @@ export function StepPricing({
 
   const [pickupError, setPickupError] = useState("");
 
+  const [priceDisplay, setPriceDisplay] = useState(
+    defaultValues?.price != null
+      ? defaultValues.price.toLocaleString("en-NG")
+      : "",
+  );
+
+  function handlePriceChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    const numeric = raw === "" ? null : parseInt(raw, 10);
+    setValue("price", numeric, { shouldValidate: true });
+    setPriceDisplay(raw === "" ? "" : parseInt(raw, 10).toLocaleString("en-NG"));
+  }
+
   function handlePickupSelect(result: PlaceResult) {
     setValue("pickup_address", result.formatted_address, { shouldValidate: true });
     const area = result.city
@@ -114,19 +127,26 @@ export function StepPricing({
       </div>
 
       {listingType === "for_sale" && (
-        <Input
-          label="Price (₦)"
-          type="number"
-          min="1"
-          placeholder="e.g. 15000"
-          error={errors.price?.message}
-          leadingIcon={<Banknote size={16} className="text-text-muted" />}
-          {...register("price", {
-            required: "Price is required for For Sale listings",
-            valueAsNumber: true,
-            min: { value: 1, message: "Price must be greater than 0" },
-          })}
-        />
+        <>
+          <input
+            type="hidden"
+            {...register("price", {
+              required: "Price is required for For Sale listings",
+              min: { value: 1, message: "Price must be greater than 0" },
+              setValueAs: (v) => (v === "" || v === null ? null : Number(v)),
+            })}
+          />
+          <Input
+            label="Price (₦)"
+            type="text"
+            inputMode="numeric"
+            placeholder="e.g. 15,000"
+            value={priceDisplay}
+            onChange={handlePriceChange}
+            error={errors.price?.message}
+            leadingIcon={<Banknote size={16} className="text-text-muted" />}
+          />
+        </>
       )}
 
       <div className="space-y-2">

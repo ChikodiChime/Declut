@@ -55,7 +55,7 @@ export async function generateMetadata({
         siteName: "Declutter Marketplace",
         images: [
           {
-            url: `${siteUrl}/listings/${id}/opengraph-image`,
+            url: `${siteUrl}/listings/${id}/opengraph-image.png?v=2`,
             width: 1200,
             height: 630,
             alt: listing.title,
@@ -68,7 +68,7 @@ export async function generateMetadata({
         card: "summary_large_image",
         title,
         description,
-        images: [`${siteUrl}/listings/${id}/opengraph-image`],
+        images: [`${siteUrl}/listings/${id}/opengraph-image.png?v=2`],
         creator: "@declutter_ng",
       },
       alternates: {

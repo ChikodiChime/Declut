@@ -59,6 +59,22 @@ export async function PATCH(
     return err(validated.error, 'VALIDATION_ERROR', 400)
   }
 
+  if (validated.data.status === 'available') {
+    const { data: seller } = await supabaseAdmin
+      .from('users')
+      .select('stripe_onboarding_complete')
+      .eq('id', authUser.id)
+      .single()
+
+    if (!seller?.stripe_onboarding_complete) {
+      return err(
+        'Connect your Stripe account to publish this listing',
+        'STRIPE_NOT_CONNECTED',
+        403
+      )
+    }
+  }
+
   const { data: listing, error } = await supabaseAdmin
     .from('listings')
     .update(validated.data)

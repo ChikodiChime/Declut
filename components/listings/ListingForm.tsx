@@ -1,9 +1,8 @@
 "use client";
 
-import { useReducer, useEffect, useState } from "react";
+import { useReducer } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ShoppingBag, FileText, Tag, Camera, Check } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui";
 import { StepType } from "./steps/StepType";
 import { StepDetails } from "./steps/StepDetails";
@@ -66,21 +65,11 @@ export function ListingForm({
   isPending,
   onCancel,
 }: ListingFormProps) {
-  const [user, setUser] = useState<{
-    stripe_onboarding_complete: boolean;
-  } | null>(null);
   const [state, dispatch] = useReducer(formReducer, {
     step: 1,
     direction: 1,
     data: initialValues ?? {},
   });
-
-  useEffect(() => {
-    fetch("/api/users/me")
-      .then((r) => r.json())
-      .then((res) => setUser(res.data ?? null))
-      .catch(() => null);
-  }, []);
 
   function next(payload: Partial<ListingFormData>) {
     dispatch({ type: "NEXT", payload });
@@ -110,15 +99,7 @@ export function ListingForm({
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="w-full"
     >
-      {user && !user.stripe_onboarding_complete && (
-        <div className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-amber-700">
-          You need to{" "}
-          <Link href="/dashboard/billing" className="font-medium underline">
-            connect your Stripe account
-          </Link>{" "}
-          before you can list items.
-        </div>
-      )}
+
       <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[270px_minmax(0,1fr)]">
         <aside className="bg-card rounded-2xl border border-border shadow-card p-4 sm:p-5 h-fit">
           <div className="flex items-center justify-between mb-1">
