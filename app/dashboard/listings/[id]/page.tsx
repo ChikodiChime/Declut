@@ -15,7 +15,7 @@ import {
   Calendar,
   Layers,
   Share2,
-  Info,
+  Check,
 } from "lucide-react";
 import { useListing } from "@/lib/hooks/useListings";
 
@@ -53,32 +53,30 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
   if (total === 0) {
     return (
       <div
-        className="rounded-2xl flex items-center justify-center bg-surface border border-border/50 shadow-sm"
+        className="rounded-2xl flex items-center justify-center bg-surface border border-border"
         style={{ aspectRatio: "16/10" }}
       >
-        <div className="flex flex-col items-center gap-4 text-text-subtle">
-          <div className="w-20 h-20 rounded-full bg-surface border-2 border-border flex items-center justify-center">
-            <Package size={32} strokeWidth={1.5} />
-          </div>
-          <span className="text-sm font-medium">No photos available</span>
+        <div className="flex flex-col items-center gap-3 text-text-subtle">
+          <Package size={36} strokeWidth={1.25} />
+          <span className="text-xs font-semibold tracking-widest uppercase">No photos</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       <div
-        className="relative rounded-2xl overflow-hidden bg-surface border border-border/50 shadow-lg group"
+        className="relative rounded-2xl overflow-hidden bg-surface border border-border group"
         style={{ aspectRatio: "16/10" }}
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={active}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="absolute inset-0"
           >
             <ListingImage
@@ -96,21 +94,21 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
           <>
             <button
               onClick={() => setActive((i) => (i - 1 + total) % total)}
-              className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100"
-              style={{ background: "rgba(0,0,0,0.6)", color: "white" }}
+              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-150 opacity-0 group-hover:opacity-100 hover:scale-105"
+              style={{ background: "rgba(0,0,0,0.5)", color: "white" }}
             >
-              <ChevronLeft size={20} strokeWidth={2.5} />
+              <ChevronLeft size={18} strokeWidth={2.5} />
             </button>
             <button
               onClick={() => setActive((i) => (i + 1) % total)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100"
-              style={{ background: "rgba(0,0,0,0.6)", color: "white" }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-full transition-all duration-150 opacity-0 group-hover:opacity-100 hover:scale-105"
+              style={{ background: "rgba(0,0,0,0.5)", color: "white" }}
             >
-              <ChevronRight size={20} strokeWidth={2.5} />
+              <ChevronRight size={18} strokeWidth={2.5} />
             </button>
             <div
-              className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md"
-              style={{ background: "rgba(0,0,0,0.5)", color: "white" }}
+              className="absolute bottom-3 right-3 px-2 py-0.5 rounded-full text-[11px] font-semibold"
+              style={{ background: "rgba(0,0,0,0.45)", color: "rgba(255,255,255,0.9)" }}
             >
               {active + 1} / {total}
             </div>
@@ -119,19 +117,19 @@ function ImageGallery({ images, title }: { images: string[]; title: string }) {
       </div>
 
       {total > 1 && (
-        <div className="flex gap-2.5 overflow-x-auto no-scrollbar px-1">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {images.map((img, i) => (
             <button
               key={i}
               onClick={() => setActive(i)}
-              className="relative shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-105"
+              className="relative shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-150"
               style={{
-                width: 80, height: 80,
+                width: 72, height: 72,
                 borderColor: i === active ? "var(--color-primary, #4f46e5)" : "transparent",
-                opacity: i === active ? 1 : 0.6,
+                opacity: i === active ? 1 : 0.5,
               }}
             >
-              <ListingImage src={img} fill sizes="80px" className="object-cover" alt="" />
+              <ListingImage src={img} fill sizes="72px" className="object-cover" alt="" />
             </button>
           ))}
         </div>
@@ -147,29 +145,24 @@ export default function ListingDetailsPage({
 }) {
   const { id } = use(params);
   const { data, isLoading } = useListing(id);
-  const [shareSuccess, setShareSuccess] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     if (!data?.listing) return;
-
-    const shareUrl = `${window.location.origin}/listings/${id}`;
-    const shareData = {
-      title: data.listing.title,
-      text: `Check out this listing: ${data.listing.title}`,
-      url: shareUrl,
-    };
-
+    const url = `${window.location.origin}/listings/${id}`;
     try {
-      if (navigator.share && navigator.canShare?.(shareData)) {
-        await navigator.share(shareData);
+      if (navigator.share && navigator.canShare?.({ url })) {
+        await navigator.share({ title: data.listing.title, url });
       } else {
-        await navigator.clipboard.writeText(shareUrl);
-        setShareSuccess(true);
-        setTimeout(() => setShareSuccess(false), 2000);
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
-    } catch (err) {
-      if ((err as Error).name !== "AbortError") {
-        console.error("Share failed:", err);
+    } catch (e) {
+      if ((e as Error).name !== "AbortError") {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
     }
   };
@@ -178,17 +171,17 @@ export default function ListingDetailsPage({
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="h-4 w-32 rounded-full animate-pulse bg-border" />
-          <div className="h-10 w-32 rounded-xl animate-pulse bg-border" />
+          <div className="h-4 w-28 rounded-full animate-pulse bg-border" />
+          <div className="h-9 w-28 rounded-lg animate-pulse bg-border" />
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
-          <div className="space-y-6">
-            <div className="aspect-16/10 rounded-2xl animate-pulse bg-border" />
-            <div className="h-32 rounded-2xl animate-pulse bg-border" />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
           <div className="space-y-4">
-            <div className="h-48 rounded-2xl animate-pulse bg-border" />
-            <div className="h-32 rounded-2xl animate-pulse bg-border" />
+            <div className="rounded-2xl animate-pulse bg-border" style={{ aspectRatio: "16/10" }} />
+            <div className="h-28 rounded-2xl animate-pulse bg-border" />
+          </div>
+          <div className="space-y-3">
+            <div className="h-52 rounded-2xl animate-pulse bg-border" />
+            <div className="h-9 rounded-lg animate-pulse bg-border" />
           </div>
         </div>
       </div>
@@ -197,26 +190,20 @@ export default function ListingDetailsPage({
 
   if (!data?.listing) {
     return (
-      <div className="max-w-md mx-auto text-center py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
+      <div className="max-w-sm mx-auto text-center py-24 space-y-5">
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto bg-surface border border-border">
+          <Package size={28} strokeWidth={1.25} className="text-text-subtle" />
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-text mb-1">Listing not found</h2>
+          <p className="text-sm text-text-muted">This listing may have been removed.</p>
+        </div>
+        <Link
+          href="/dashboard/listings"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
         >
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto bg-surface border border-border shadow-lg">
-            <Package size={32} strokeWidth={1.5} className="text-text-subtle" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-text mb-2">Listing not found</h2>
-            <p className="text-sm text-text-muted">This listing may have been removed or doesn&apos;t exist.</p>
-          </div>
-          <Link 
-            href="/dashboard/listings" 
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary/90 transition-all duration-200 hover:scale-105"
-          >
-            <ArrowLeft size={14} /> Back to listings
-          </Link>
-        </motion.div>
+          <ArrowLeft size={13} /> Back to listings
+        </Link>
       </div>
     );
   }
@@ -227,170 +214,148 @@ export default function ListingDetailsPage({
   const conditionLevel = CONDITION_LEVEL[listing.condition] ?? 3;
 
   return (
-    <div className="space-y-6 pb-12">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
-      >
+    <div className="space-y-6 pb-8">
+
+      {/* Top bar */}
+      <div className="flex items-center justify-between">
         <Link
           href="/dashboard/listings"
-          className="inline-flex items-center gap-2 text-sm font-medium text-text-muted hover:text-text transition-colors group"
+          className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors group"
         >
-          <ArrowLeft size={14} strokeWidth={2} className="group-hover:-translate-x-0.5 transition-transform" /> 
+          <ArrowLeft size={13} strokeWidth={2} className="group-hover:-translate-x-0.5 transition-transform" />
           Back to listings
         </Link>
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={handleShare}
-            className="relative p-2.5 rounded-xl bg-surface border border-border hover:bg-border/50 transition-colors"
-            title="Share listing"
+            className="relative h-9 w-9 flex items-center justify-center rounded-lg bg-card border border-border hover:bg-surface transition-colors"
+            title="Copy link"
           >
-            <Share2 size={16} strokeWidth={2} className="text-text-subtle" />
-            {shareSuccess && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-primary text-white text-xs font-medium whitespace-nowrap"
-              >
-                Link copied!
-              </motion.div>
-            )}
+            <AnimatePresence mode="wait">
+              {copied ? (
+                <motion.span key="check" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}>
+                  <Check size={14} strokeWidth={2.5} className="text-emerald-500" />
+                </motion.span>
+              ) : (
+                <motion.span key="share" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}>
+                  <Share2 size={14} strokeWidth={2} className="text-text-muted" />
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
           <Link
             href={`/dashboard/listings/${listing.id}/edit`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-all duration-200 hover:scale-105 shadow-sm"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
           >
-            <Pencil size={14} strokeWidth={2} /> Edit
+            <Pencil size={13} strokeWidth={2} /> Edit listing
           </Link>
         </div>
-      </motion.div>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start">
+      {/* Main grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 items-start">
+
+        {/* Left */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          className="space-y-4"
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="space-y-6"
+          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         >
           <ImageGallery images={listing.images ?? []} title={listing.title} />
 
-          <div className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-border/50">
-              <div className="flex items-center gap-2 mb-4">
-                <Info size={18} strokeWidth={2} className="text-primary" />
-                <h2 className="text-lg font-bold text-text">About this item</h2>
-              </div>
-              {listing.description ? (
-                <p className="text-sm leading-relaxed text-text-muted whitespace-pre-wrap">{listing.description}</p>
-              ) : (
-                <p className="text-sm text-text-subtle italic">No description provided</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-px bg-border/30">
-              <div className="bg-card p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <MapPin size={16} strokeWidth={2} className="text-text-subtle" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-text-subtle">Location</span>
-                </div>
-                <p className="text-sm font-semibold text-text">{listing.area}</p>
-              </div>
-              <div className="bg-card p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Layers size={16} strokeWidth={2} className="text-text-subtle" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-text-subtle">Category</span>
-                </div>
-                <p className="text-sm font-semibold text-text">{listing.category}</p>
-              </div>
-              <div className="bg-card p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Calendar size={16} strokeWidth={2} className="text-text-subtle" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-text-subtle">Posted</span>
-                </div>
-                <p className="text-sm font-semibold text-text">{formatDate(listing.created_at)}</p>
-              </div>
-              <div className="bg-card p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <Tag size={16} strokeWidth={2} className="text-text-subtle" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-text-subtle">Condition</span>
-                </div>
-                <p className="text-sm font-semibold text-text">
-                  {CONDITION_LABELS[listing.condition] ?? listing.condition}
-                </p>
-              </div>
-            </div>
+          <div className="bg-card rounded-2xl border border-border p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-text-subtle mb-3">Description</p>
+            {listing.description ? (
+              <p className="text-sm leading-relaxed text-text-muted whitespace-pre-wrap">{listing.description}</p>
+            ) : (
+              <p className="text-sm text-text-subtle italic">No description provided.</p>
+            )}
           </div>
         </motion.div>
 
+        {/* Right */}
         <motion.div
-          className="flex flex-col gap-4 lg:sticky lg:top-6"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col gap-3 lg:sticky lg:top-6"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-            <div className="h-2" style={{ backgroundColor: typeConfig.color }} />
-            
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-2">
-                <span
-                  className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
-                  style={{ background: typeConfig.bg, color: typeConfig.color }}
-                >
-                  {typeConfig.label}
-                </span>
-                <span
-                  className="px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider"
-                  style={{ background: statusConfig.bg, color: statusConfig.color }}
-                >
-                  {statusConfig.label}
-                </span>
-              </div>
+          {/* Price + title card */}
+          <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+            <div className="flex items-center gap-1.5">
+              <span
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest"
+                style={{ background: typeConfig.bg, color: typeConfig.color }}
+              >
+                {typeConfig.label}
+              </span>
+              <span
+                className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest"
+                style={{ background: statusConfig.bg, color: statusConfig.color }}
+              >
+                {statusConfig.label}
+              </span>
+            </div>
 
-              <div>
-                <h1 className="text-xl font-bold text-text leading-tight mb-3">{listing.title}</h1>
-                {listing.listing_type === "for_sale" && listing.price != null && (
-                  <p className="text-3xl font-bold text-text">
-                    ₦{listing.price.toLocaleString()}
-                  </p>
-                )}
-                {listing.listing_type === "free" && (
-                  <p className="text-3xl font-bold text-emerald-600">
-                    Free
-                  </p>
-                )}
-              </div>
+            <div>
+              <p className="text-sm font-medium text-text-muted leading-snug mb-1">{listing.title}</p>
+              {listing.listing_type === "for_sale" && listing.price != null && (
+                <p className="text-3xl font-bold text-text tracking-tight">₦{listing.price.toLocaleString()}</p>
+              )}
+              {listing.listing_type === "free" && (
+                <p className="text-3xl font-bold text-emerald-600 tracking-tight">Free</p>
+              )}
+            </div>
 
-              <div className="pt-4 border-t border-border/50">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-text-subtle">Condition</span>
-                  <span className="text-sm font-bold text-text">
-                    {CONDITION_LABELS[listing.condition] ?? listing.condition}
-                  </span>
-                </div>
-                <div className="flex gap-1.5">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-2 flex-1 rounded-full transition-all duration-300 ${
-                        i < conditionLevel 
-                          ? "bg-primary shadow-sm" 
-                          : "bg-border"
-                      }`}
-                    />
-                  ))}
-                </div>
+            <div className="pt-1 border-t border-border">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs text-text-subtle font-medium">Condition</span>
+                <span className="text-xs font-semibold text-text">{CONDITION_LABELS[listing.condition] ?? listing.condition}</span>
+              </div>
+              <div className="flex gap-1.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-full h-1.5 rounded-full ${i < conditionLevel ? "bg-primary" : "bg-border"}`}
+                  />
+                ))}
               </div>
             </div>
           </div>
 
+          {/* Metadata card */}
+          <div className="bg-card rounded-2xl border border-border overflow-hidden">
+            {[
+              { icon: MapPin,   label: "Location", value: listing.area },
+              { icon: Layers,   label: "Category", value: listing.category },
+              { icon: Calendar, label: "Posted",   value: formatDate(listing.created_at) },
+              { icon: Tag,      label: "Type",     value: typeConfig.label, color: typeConfig.color },
+            ].map(({ icon: Icon, label, value, color }, idx, arr) => (
+              <div
+                key={label}
+                className={`flex items-center justify-between px-5 py-3.5 ${idx < arr.length - 1 ? "border-b border-border" : ""}`}
+              >
+                <div className="flex items-center gap-2.5 text-text-subtle">
+                  <Icon size={13} strokeWidth={2} />
+                  <span className="text-xs font-semibold uppercase tracking-widest">{label}</span>
+                </div>
+                <span
+                  className="text-sm font-medium text-text"
+                  style={color ? { color } : undefined}
+                >
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Edit CTA */}
           <Link
             href={`/dashboard/listings/${listing.id}/edit`}
-            className="w-full h-12 rounded-xl font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95 bg-primary text-white flex items-center justify-center gap-2 shadow-lg"
+            className="w-full h-11 rounded-xl font-semibold text-sm transition-all duration-150 hover:bg-primary/90 active:scale-[0.98] bg-primary text-white flex items-center justify-center gap-2"
           >
-            <Pencil size={16} strokeWidth={2} />
+            <Pencil size={14} strokeWidth={2} />
             Edit listing
           </Link>
         </motion.div>

@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { supabase } from "@/lib/supabase";
 
 export const runtime = "edge";
 export const alt = "Listing on Declutter";
@@ -12,21 +13,15 @@ export default async function Image({ params }: { params: { id: string } }) {
   const { id } = params;
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : "http://localhost:3000";
-    
-    const response = await fetch(
-      `${baseUrl}/api/listings/${id}`,
-      { cache: "no-store" }
-    );
+    const { data: listing, error } = await supabase
+      .from("listings")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    if (!response.ok) {
+    if (error || !listing) {
       throw new Error("Failed to fetch listing");
     }
-
-    const data = await response.json();
-    const listing = data.listing;
 
     const typeColors: Record<string, string> = {
       for_sale: "#4f46e5",

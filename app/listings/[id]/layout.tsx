@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { supabase } from "@/lib/supabase";
 
 export async function generateMetadata({
   params,
@@ -8,31 +9,14 @@ export async function generateMetadata({
   const { id } = await params;
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : "http://localhost:3000";
-    
-    const apiUrl = `${baseUrl}/api/listings/${id}`;
-    console.log("Fetching metadata from:", apiUrl);
-    
-    const response = await fetch(apiUrl, {
-      cache: "no-store",
-      next: { revalidate: 0 },
-    });
+    const { data: listing, error } = await supabase
+      .from("listings")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-    if (!response.ok) {
-      console.error("Failed to fetch listing metadata:", response.status);
-      return {
-        title: "Listing Not Found",
-        description: "This listing could not be found on Declutter Marketplace.",
-      };
-    }
-
-    const data = await response.json();
-    const listing = data.listing;
-
-    if (!listing) {
-      console.error("No listing data in response");
+    if (error || !listing) {
+      console.error("Failed to fetch listing metadata:", error);
       return {
         title: "Listing Not Found",
         description: "This listing could not be found on Declutter Marketplace.",
@@ -58,9 +42,7 @@ export async function generateMetadata({
       listing.description ||
       `${typeLabel} listing in ${listing.area}. ${listing.condition} condition. Browse more on Declutter Marketplace.`;
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : "http://localhost:3000";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://declut-beta.netlify.app";
     const url = `${siteUrl}/listings/${id}`;
 
     return {
