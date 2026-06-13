@@ -1,14 +1,13 @@
 // app/api/seller/earnings/route.ts
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
-import { stripe } from '@/lib/stripe'
 import { ok, err } from '@/lib/api-response'
 import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 import type { TransferStatus, EarningsOrder, EarningsSummary } from '@/lib/types/earnings'
 
-function deriveTransferStatus(stripe_transfer_id: string | null): TransferStatus {
-  if (!stripe_transfer_id) return 'pending'
-  if (stripe_transfer_id === 'pending') return 'processing'
+function deriveTransferStatus(paystack_transfer_id: string | null): TransferStatus {
+  if (!paystack_transfer_id) return 'pending'
+  if (paystack_transfer_id === 'pending') return 'processing'
   return 'transferred'
 }
 
@@ -20,7 +19,7 @@ export async function GET() {
   const { data: orders, error: ordersError } = await supabaseAdmin
     .from('orders')
     .select(
-      'id, item_price, stripe_transfer_id, created_at, order_items(listing:listings(title, images))'
+      'id, item_price, paystack_transfer_id, created_at, order_items(listing:listings(title, images))'
     )
     .eq('seller_id', authUser.id)
     .eq('status', 'delivered')
@@ -44,55 +43,14 @@ export async function GET() {
       item_price: o.item_price,
       fee,
       net,
-      transfer_status: deriveTransferStatus(o.stripe_transfer_id as string | null),
+      transfer_status: deriveTransferStatus(o.paystack_transfer_id as string | null),
     }
   })
 
-  const total_gross = earningsOrders.reduce((s, o) => s + o.item_price, 0)
-  const total_fee = earningsOrders.reduce((s, o) => s + o.fee, 0)
-  const total_net = earningsOrders.reduce((s, o) => s + o.net, 0)
-
-  const { data: user, error: userError } = await supabaseAdmin
-    .from('users')
-    .select('stripe_account_id, stripe_onboarding_complete')
-    .eq('id', authUser.id)
-    .single()
-
-  if (userError) {
-    console.error('Fetch user stripe fields error:', userError)
-  }
-
-  let stripe_available = 0
-  let stripe_pending = 0
-  let next_payout_date: string | null = null
-
-  if (user?.stripe_account_id && user.stripe_onboarding_complete) {
-    try {
-      const [balance, payouts] = await Promise.all([
-        stripe.balance.retrieve({}, { stripeAccount: user.stripe_account_id }),
-        stripe.payouts.list(
-          { limit: 1, status: 'pending' },
-          { stripeAccount: user.stripe_account_id }
-        ),
-      ])
-      stripe_available = balance.available.find((b) => b.currency === 'ngn')?.amount ?? 0
-      stripe_pending = balance.pending.find((b) => b.currency === 'ngn')?.amount ?? 0
-      if (payouts.data[0]?.arrival_date) {
-        next_payout_date = new Date(payouts.data[0].arrival_date * 1000).toISOString()
-      }
-    } catch (e) {
-      console.error('Stripe balance/payout fetch error:', e)
-      // Stripe fields stay at zero defaults — don't fail the whole request
-    }
-  }
-
   const summary: EarningsSummary = {
-    total_gross,
-    total_fee,
-    total_net,
-    stripe_available,
-    stripe_pending,
-    next_payout_date,
+    total_gross: earningsOrders.reduce((s, o) => s + o.item_price, 0),
+    total_fee: earningsOrders.reduce((s, o) => s + o.fee, 0),
+    total_net: earningsOrders.reduce((s, o) => s + o.net, 0),
   }
 
   return ok({ summary, orders: earningsOrders })
