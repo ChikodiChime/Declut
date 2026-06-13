@@ -40,7 +40,12 @@ export async function executePayout(orderId: string): Promise<void> {
     .single()
 
   if (!seller?.paystack_recipient_code || !seller.paystack_onboarding_complete) {
-    console.error(`executePayout: seller ${order.seller_id} has not completed Paystack onboarding — manual payout required`)
+    console.error(`executePayout: seller ${order.seller_id} has not completed Paystack onboarding — clearing sentinel so payout can be retried`)
+    await supabaseAdmin
+      .from('orders')
+      .update({ paystack_transfer_id: null })
+      .eq('id', orderId)
+      .eq('paystack_transfer_id', 'pending')
     return
   }
 
