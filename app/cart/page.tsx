@@ -195,8 +195,8 @@ export default function CartPage() {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-    sessionStorage.setItem("checkout_secret", data.data.client_secret);
-    router.push("/checkout");
+    sessionStorage.setItem("checkout_reference", data.data.reference);
+    window.location.href = data.data.authorization_url;
   }
 
   async function handleCheckout() {
@@ -238,8 +238,8 @@ export default function CartPage() {
       setError(data.error?.message ?? "Checkout failed, please try again");
       return;
     }
-    sessionStorage.setItem("checkout_secret", data.data.client_secret);
-    router.push("/checkout");
+    sessionStorage.setItem("checkout_reference", data.data.reference);
+    window.location.href = data.data.authorization_url;
   }
 
   async function handleDeliveryAddressConfirm() {
