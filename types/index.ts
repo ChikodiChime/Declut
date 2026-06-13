@@ -12,8 +12,12 @@ export interface User {
   name: string | null
   password_hash: string
   account_type: AccountType
-  stripe_account_id: string | null
-  stripe_onboarding_complete: boolean
+  paystack_recipient_code: string | null
+  paystack_bank_code: string | null
+  paystack_bank_name: string | null
+  paystack_account_number: string | null
+  paystack_account_name: string | null
+  paystack_onboarding_complete: boolean
   avatar_url: string | null
   phone: string | null
   address: string | null
@@ -54,7 +58,7 @@ export interface Order {
   delivery_fee: number
   total_price: number
   platform_fee: number
-  stripe_payment_intent_id: string | null
+  paystack_reference: string | null
   pickup_address: string | null
   auto_cancel_at: string | null
   created_at: string
