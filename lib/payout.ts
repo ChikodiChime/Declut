@@ -45,7 +45,7 @@ export async function executePayout(orderId: string): Promise<void> {
   }
 
   const sellerAmountKobo = Math.round(
-    order.item_price * (1 - PLATFORM_FEE_PERCENT / 100) * 100
+    order.item_price * (1 - PLATFORM_FEE_PERCENT) * 100
   )
 
   try {

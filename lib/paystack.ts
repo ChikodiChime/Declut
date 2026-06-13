@@ -1,5 +1,5 @@
 // lib/paystack.ts
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 
 const BASE = 'https://api.paystack.co'
 
@@ -87,7 +87,7 @@ export function refundTransaction(params: {
 }
 
 export function listBanks(): Promise<PaystackBank[]> {
-  return request('GET', '/bank?country=nigeria&per_page=100&use_cursor=false')
+  return request('GET', '/bank?country=nigeria&per_page=250&use_cursor=false')
 }
 
 export function resolveAccount(
@@ -101,5 +101,8 @@ export function verifyWebhookSignature(rawBody: string, signature: string): bool
   const hash = createHmac('sha512', process.env.PAYSTACK_WEBHOOK_SECRET!)
     .update(rawBody)
     .digest('hex')
-  return hash === signature
+  const hashBuf = Buffer.from(hash, 'hex')
+  const sigBuf = Buffer.from(signature, 'hex')
+  if (hashBuf.length !== sigBuf.length) return false
+  return timingSafeEqual(hashBuf, sigBuf)
 }

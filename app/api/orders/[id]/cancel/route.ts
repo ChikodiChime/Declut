@@ -39,10 +39,25 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     .update({ status: 'cancelled' })
     .eq('id', id)
 
-  await supabaseAdmin
-    .from('listings')
-    .update({ status: 'available' })
-    .eq('id', order.listing_id)
+  // Restore listing(s) to available
+  const { data: orderItems } = await supabaseAdmin
+    .from('order_items')
+    .select('listing_id')
+    .eq('order_id', id)
+
+  const listingIds = (orderItems ?? []).map((i) => i.listing_id).filter(Boolean)
+
+  if (listingIds.length > 0) {
+    await supabaseAdmin
+      .from('listings')
+      .update({ status: 'available' })
+      .in('id', listingIds)
+  } else if (order.listing_id) {
+    await supabaseAdmin
+      .from('listings')
+      .update({ status: 'available' })
+      .eq('id', order.listing_id)
+  }
 
   return ok({ ok: true })
 }

@@ -47,6 +47,9 @@ export async function POST(req: Request) {
 
   const listingIds = (orderItems ?? []).map((i) => i.listing_id)
 
+  const buyerEmail = transaction.metadata?.buyer_email
+  const buyerId = transaction.metadata?.buyer_id
+
   if (!alreadySettled) {
     await Promise.all([
       supabaseAdmin.from('orders').update({ status: 'paid' }).in('id', orderIds).eq('status', 'pending'),
@@ -57,39 +60,36 @@ export async function POST(req: Request) {
         ? supabaseAdmin.from('cart_items').delete().in('listing_id', listingIds)
         : Promise.resolve(),
     ])
-  }
 
-  const buyerEmail = transaction.metadata?.buyer_email
-  const buyerId = transaction.metadata?.buyer_id
-
-  if (buyerEmail) {
-    let buyerName = 'Customer'
-    if (buyerId && buyerId !== 'anonymous') {
-      const { data: buyer } = await supabaseAdmin
-        .from('users')
-        .select('name')
-        .eq('id', buyerId)
-        .single()
-      if (buyer?.name) buyerName = buyer.name
-    }
-
-    const deliveryType = (orders[0].delivery_type ?? 'delivery') as 'delivery' | 'pickup'
-    const grandTotal = orders.reduce((sum, o) => sum + (o.total_price ?? 0), 0)
-    const groups = orders.map((o) => {
-      const items = (orderItems ?? [])
-        .filter((i) => i.order_id === o.id)
-        .map((i) => ({ id: i.listing_id, listing_id: i.listing_id, listing: i.listing as never }))
-      return {
-        seller_id: o.seller_id,
-        items,
-        subtotal: o.item_price ?? 0,
-        delivery_fee: o.delivery_fee ?? 0,
-        total: o.total_price ?? 0,
+    if (buyerEmail) {
+      let buyerName = 'Customer'
+      if (buyerId && buyerId !== 'anonymous') {
+        const { data: buyer } = await supabaseAdmin
+          .from('users')
+          .select('name')
+          .eq('id', buyerId)
+          .single()
+        if (buyer?.name) buyerName = buyer.name
       }
-    })
 
-    sendOrderConfirmationEmail({ to: buyerEmail, buyerName, orderIds, groups, grandTotal, deliveryType })
-      .catch((e) => console.error('Confirmation email failed:', e))
+      const deliveryType = (orders[0].delivery_type ?? 'delivery') as 'delivery' | 'pickup'
+      const grandTotal = orders.reduce((sum, o) => sum + (o.total_price ?? 0), 0)
+      const groups = orders.map((o) => {
+        const items = (orderItems ?? [])
+          .filter((i) => i.order_id === o.id)
+          .map((i) => ({ id: i.listing_id, listing_id: i.listing_id, listing: i.listing as never }))
+        return {
+          seller_id: o.seller_id,
+          items,
+          subtotal: o.item_price ?? 0,
+          delivery_fee: o.delivery_fee ?? 0,
+          total: o.total_price ?? 0,
+        }
+      })
+
+      sendOrderConfirmationEmail({ to: buyerEmail, buyerName, orderIds, groups, grandTotal, deliveryType })
+        .catch((e) => console.error('Confirmation email failed:', e))
+    }
   }
 
   return ok({ settled: !alreadySettled })
