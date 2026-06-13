@@ -1,7 +1,7 @@
 import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ok, err } from '@/lib/api-response'
-import { stripe } from '@/lib/stripe'
+import { refundTransaction } from '@/lib/paystack'
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const authUser = await getAuthUser()
@@ -11,7 +11,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, buyer_id, listing_id, stripe_payment_intent_id, status')
+    .select('id, buyer_id, listing_id, paystack_reference, total_price, status')
     .eq('id', id)
     .single()
 
@@ -22,19 +22,22 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (order.status === 'shipped') return err('Orders in transit cannot be cancelled', 'INVALID_STATE', 409)
   if (order.status === 'delivered') return err('Delivered orders cannot be cancelled', 'INVALID_STATE', 409)
 
-  if (order.stripe_payment_intent_id) {
+  if (order.paystack_reference) {
     try {
-      await stripe.refunds.create({ payment_intent: order.stripe_payment_intent_id })
-    } catch (stripeError) {
-      console.error('Stripe refund error:', stripeError)
-      return err('Refund failed, please contact support', 'STRIPE_ERROR', 500)
+      await refundTransaction({
+        transaction: order.paystack_reference,
+        amount: Math.round((order.total_price ?? 0) * 100),
+      })
+    } catch (paystackError) {
+      console.error('Paystack refund error:', paystackError)
+      return err('Refund failed, please contact support', 'PAYSTACK_ERROR', 500)
     }
   }
 
   await supabaseAdmin
     .from('orders')
     .update({ status: 'cancelled' })
-    .eq('stripe_payment_intent_id', order.stripe_payment_intent_id)
+    .eq('id', id)
 
   await supabaseAdmin
     .from('listings')

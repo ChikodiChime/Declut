@@ -1,7 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { ok, err } from '@/lib/api-response'
-import { stripe } from '@/lib/stripe'
+import { refundTransaction } from '@/lib/paystack'
 
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const user = await getAuthUser()
@@ -13,7 +13,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
 
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, listing_id, stripe_payment_intent_id, status')
+    .select('id, listing_id, paystack_reference, total_price, status')
     .eq('id', id)
     .single()
 
@@ -22,12 +22,15 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     return err('Only pending or paid orders can be force-cancelled', 'INVALID_STATE', 409)
   }
 
-  if (order.stripe_payment_intent_id) {
+  if (order.paystack_reference) {
     try {
-      await stripe.refunds.create({ payment_intent: order.stripe_payment_intent_id })
-    } catch (stripeError) {
-      console.error('Admin force-cancel refund error:', stripeError)
-      return err('Refund failed', 'STRIPE_ERROR', 500)
+      await refundTransaction({
+        transaction: order.paystack_reference,
+        amount: Math.round((order.total_price ?? 0) * 100),
+      })
+    } catch (paystackError) {
+      console.error('Admin force-cancel refund error:', paystackError)
+      return err('Refund failed', 'PAYSTACK_ERROR', 500)
     }
   }
 
