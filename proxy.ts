@@ -5,8 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase'
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Auth endpoints and Stripe webhook are public — no token required
-  if (pathname.startsWith('/api/auth/') || pathname === '/api/webhooks/stripe') {
+  // Auth endpoints and Paystack webhook are public — no token required
+  if (pathname.startsWith('/api/auth/') || pathname === '/api/webhooks/paystack') {
     return NextResponse.next()
   }
 
@@ -178,7 +178,7 @@ export const config = {
     '/api/buyer/:path*',
     '/api/seller/:path*',
     '/api/dispatch/:path*',
-    '/api/stripe/:path*',
+    '/api/paystack/:path*',
     '/api/admin/:path*',
     '/api/cron/:path*',
     '/api/webhooks/:path*',
