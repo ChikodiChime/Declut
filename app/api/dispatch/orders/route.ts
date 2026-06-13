@@ -13,7 +13,8 @@ export async function GET() {
     .from('orders')
     .select(`
       id, status, delivery_type, total_price, delivery_fee, buyer_address, created_at,
-      listing:listings(id, title, images, area)
+      listing:listings(id, title, images, area),
+      order_items(listing:listings(id, title, images, area))
     `)
     .eq('status', 'confirmed')
     .eq('delivery_type', 'delivery')
@@ -25,8 +26,9 @@ export async function GET() {
     return err('Failed to fetch orders', 'SERVER_ERROR', 500)
   }
 
-  const mapped = (orders ?? []).map(({ buyer_address, ...order }) => ({
+  const mapped = (orders ?? []).map(({ buyer_address, order_items, listing, ...order }) => ({
     ...order,
+    listing: listing ?? order_items?.[0]?.listing ?? { id: '', title: 'Order', images: [], area: null },
     buyer_area: deriveBuyerArea(buyer_address),
   }))
 
