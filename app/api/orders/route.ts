@@ -1,7 +1,7 @@
 import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ok, err } from '@/lib/api-response'
-import { stripe } from '@/lib/stripe'
+import { initializeTransaction } from '@/lib/paystack'
 import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 import {
   validateCartItems,
@@ -111,34 +111,39 @@ export async function POST(req: Request) {
 
   await supabaseAdmin.from('order_items').insert(orderItemInserts)
 
-  let paymentIntent
+  const reference = `declut-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const origin = new URL(req.url).origin
+
+  let paystackData: { authorization_url: string; reference: string }
   try {
-    paymentIntent = await stripe.paymentIntents.create({
+    paystackData = await initializeTransaction({
+      email: authUser?.email ?? buyer_info?.email ?? '',
       amount: Math.round(grandTotal * 100),
-      currency: 'ngn',
+      reference,
       metadata: {
+        order_ids: orders.map((o) => o.id).join(','),
         buyer_id: authUser?.id ?? 'anonymous',
         buyer_email: authUser?.email ?? buyer_info?.email ?? '',
-        order_ids: orders.map((o) => o.id).join(','),
       },
-      receipt_email: authUser?.email ?? buyer_info?.email ?? undefined,
+      callback_url: `${origin}/checkout/success`,
     })
-  } catch (stripeError) {
+  } catch (paystackError) {
     await supabaseAdmin
       .from('orders')
       .delete()
       .in('id', orders.map((o) => o.id))
-    console.error('Stripe PaymentIntent error:', stripeError)
-    return err('Payment setup failed, please try again', 'STRIPE_ERROR', 500)
+    console.error('Paystack initialize error:', paystackError)
+    return err('Payment setup failed, please try again', 'PAYSTACK_ERROR', 500)
   }
 
   await supabaseAdmin
     .from('orders')
-    .update({ stripe_payment_intent_id: paymentIntent.id })
+    .update({ paystack_reference: paystackData.reference })
     .in('id', orders.map((o) => o.id))
 
   return ok({
-    client_secret: paymentIntent.client_secret,
+    authorization_url: paystackData.authorization_url,
+    reference: paystackData.reference,
     order_ids: orders.map((o) => o.id),
     total: grandTotal,
   })
