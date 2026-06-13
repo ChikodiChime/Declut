@@ -1,4 +1,3 @@
-// app/dashboard/billing/page.tsx
 'use client'
 
 import { Suspense, useState, useEffect, useRef } from 'react'
@@ -11,14 +10,12 @@ import {
   Package,
   TrendingUp,
   Wallet,
-  Calendar,
   DollarSign,
-  ArrowUpRight,
   CheckCircle2,
-  Clock,
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from 'lucide-react'
 import {
   useSellerEarnings,
@@ -28,10 +25,6 @@ import {
 import { StatCard } from '@/components/dashboard/StatCard'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function formatNaira(kobo: number) {
-  return `₦${(kobo / 100).toLocaleString('en-NG', { minimumFractionDigits: 0 })}`
-}
 
 function formatNairaWhole(naira: number) {
   return `₦${naira.toLocaleString('en-NG', { minimumFractionDigits: 0 })}`
@@ -103,7 +96,6 @@ function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-text truncate leading-tight">{order.listing_title}</p>
         <p className="text-[11px] text-text-subtle mt-0.5">{formatDate(order.created_at)}</p>
-        {/* Net earnings visible on mobile */}
         <p className="sm:hidden text-xs font-bold text-text mt-1">{formatNairaWhole(order.net)}</p>
       </div>
 
@@ -125,9 +117,7 @@ function OrderRow({ order, index }: { order: EarningsOrder; index: number }) {
 
 function RowSkeleton({ index }: { index: number }) {
   return (
-    <div
-      className="relative overflow-hidden flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5"
-    >
+    <div className="relative overflow-hidden flex items-center gap-4 rounded-xl border border-border bg-card px-4 py-3.5">
       <div className="skeleton-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
       <div className="w-11 h-11 rounded-xl shrink-0" style={{ background: '#ede9e3' }} />
       <div className="flex-1 flex flex-col gap-2">
@@ -140,14 +130,9 @@ function RowSkeleton({ index }: { index: number }) {
   )
 }
 
-// ─── Stat card skeletons ──────────────────────────────────────────────────────
-
 function StatCardSkeleton({ index }: { index: number }) {
   return (
-    <div
-      className="relative overflow-hidden rounded-2xl bg-card p-6"
-      style={{ boxShadow: 'var(--shadow-card)' }}
-    >
+    <div className="relative overflow-hidden rounded-2xl bg-card p-6" style={{ boxShadow: 'var(--shadow-card)' }}>
       <div className="skeleton-shimmer" style={{ animationDelay: `${index * 0.1}s` }} />
       <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: '#ede9e3' }} />
       <div className="w-12 h-12 rounded-xl mb-4" style={{ background: '#ede9e3' }} />
@@ -182,14 +167,7 @@ function EarningsSection() {
     total_gross: 0,
     total_fee: 0,
     total_net: 0,
-    stripe_available: 0,
-    stripe_pending: 0,
-    next_payout_date: null,
   }
-
-  const nextPayout = summary.next_payout_date
-    ? formatDate(summary.next_payout_date)
-    : '—'
 
   return (
     <motion.div
@@ -205,22 +183,15 @@ function EarningsSection() {
         </div>
       )}
 
-      {/* Stat cards slider */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-text-subtle">Overview</p>
           {hasOverflow && (
             <div className="flex gap-1">
-              <button
-                onClick={() => scrollSlider('left')}
-                className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors"
-              >
+              <button onClick={() => scrollSlider('left')} className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors">
                 <ChevronLeft size={14} strokeWidth={2} />
               </button>
-              <button
-                onClick={() => scrollSlider('right')}
-                className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors"
-              >
+              <button onClick={() => scrollSlider('right')} className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-text-muted hover:text-text hover:border-border-strong transition-colors">
                 <ChevronRight size={14} strokeWidth={2} />
               </button>
             </div>
@@ -229,8 +200,8 @@ function EarningsSection() {
 
         {isLoading ? (
           <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
-            {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="shrink-0 pb-1" style={{ width: 'calc((100% - 48px) / 4)', minWidth: 200 }}>
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="shrink-0 pb-1" style={{ width: 'calc((100% - 32px) / 3)', minWidth: 200 }}>
                 <StatCardSkeleton index={i} />
               </div>
             ))}
@@ -238,12 +209,11 @@ function EarningsSection() {
         ) : !isError && (
           <div ref={sliderRef} className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-1">
             {([
-              { label: 'Available balance', value: formatNaira(summary.stripe_available), icon: TrendingUp, color: 'text-green-600', bgColor: 'bg-green-500/10', lineColor: 'bg-green-500' },
               { label: 'Total gross', value: formatNairaWhole(summary.total_gross), icon: DollarSign, color: 'text-blue-600', bgColor: 'bg-blue-500/10', lineColor: 'bg-blue-500' },
               { label: 'Total net', value: formatNairaWhole(summary.total_net), icon: Wallet, color: 'text-primary', bgColor: 'bg-primary/10', lineColor: 'bg-primary' },
-              { label: 'Next payout', value: nextPayout, icon: Calendar, color: 'text-amber-600', bgColor: 'bg-amber-500/10', lineColor: 'bg-amber-500' },
+              { label: 'Platform fee', value: formatNairaWhole(summary.total_fee), icon: TrendingUp, color: 'text-amber-600', bgColor: 'bg-amber-500/10', lineColor: 'bg-amber-500' },
             ] as const).map((card) => (
-              <div key={card.label} className="shrink-0 snap-start" style={{ width: 'calc((100% - 48px) / 4)', minWidth: 200 }}>
+              <div key={card.label} className="shrink-0 snap-start" style={{ width: 'calc((100% - 32px) / 3)', minWidth: 200 }}>
                 <StatCard {...card} />
               </div>
             ))}
@@ -251,7 +221,6 @@ function EarningsSection() {
         )}
       </div>
 
-      {/* Transactions */}
       <div className="space-y-3">
         <div>
           <h3 className="text-sm font-semibold text-text">Transactions</h3>
@@ -292,66 +261,140 @@ function EarningsSection() {
   )
 }
 
-// ─── Not connected state ──────────────────────────────────────────────────────
+// ─── Bank account form ────────────────────────────────────────────────────────
 
-function NotConnectedState({ onConnect, connecting, error }: {
-  onConnect: () => void
-  connecting: boolean
-  error: string
-}) {
+type Bank = { name: string; code: string }
+
+function BankAccountForm({ onSuccess }: { onSuccess: () => void }) {
+  const [banks, setBanks] = useState<Bank[]>([])
+  const [bankCode, setBankCode] = useState('')
+  const [bankName, setBankName] = useState('')
+  const [accountNumber, setAccountNumber] = useState('')
+  const [accountName, setAccountName] = useState('')
+  const [resolving, setResolving] = useState(false)
+  const [resolveError, setResolveError] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  useEffect(() => {
+    fetch('/api/paystack/banks')
+      .then((r) => r.json())
+      .then((res) => setBanks(res.data ?? []))
+      .catch(() => {})
+  }, [])
+
+  async function handleAccountNumberBlur() {
+    if (!bankCode || accountNumber.length < 10) return
+    setResolving(true)
+    setResolveError('')
+    setAccountName('')
+    const res = await fetch(`/api/paystack/resolve-account?account_number=${accountNumber}&bank_code=${bankCode}`)
+    const data = await res.json()
+    setResolving(false)
+    if (!res.ok) {
+      setResolveError(data.error?.message ?? 'Could not verify account number')
+      return
+    }
+    setAccountName(data.data.account_name)
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!accountName) {
+      setSubmitError('Please verify your account number first')
+      return
+    }
+    setSubmitting(true)
+    setSubmitError('')
+    const res = await fetch('/api/paystack/recipient', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bank_code: bankCode, bank_name: bankName, account_number: accountNumber, account_name: accountName }),
+    })
+    const data = await res.json()
+    setSubmitting(false)
+    if (!res.ok) {
+      setSubmitError(data.error?.message ?? 'Failed to save payout account')
+      return
+    }
+    onSuccess()
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col items-center text-center py-16"
-    >
-      <div className="relative mb-6 w-56 h-56">
-        <div
-          aria-hidden
-          className="absolute"
-          style={{
-            inset: '-12px',
-            background: '#ffffff',
-            borderRadius: '62% 38% 46% 54% / 60% 44% 56% 40%',
-            boxShadow: '0 8px 40px rgba(55,48,163,0.08)',
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+      <div>
+        <label className="block text-xs font-semibold text-text-muted uppercase tracking-widest mb-1.5">Bank</label>
+        <select
+          value={bankCode}
+          onChange={(e) => {
+            const selected = banks.find((b) => b.code === e.target.value)
+            setBankCode(e.target.value)
+            setBankName(selected?.name ?? '')
+            setAccountName('')
           }}
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/empty-listings.svg" alt="" aria-hidden className="relative w-full h-full select-none" draggable={false} />
-      </div>
-      <h2 className="text-xl font-bold text-text mb-2">Set up payouts</h2>
-      <p className="text-sm text-text-muted max-w-xs leading-relaxed mb-8">
-        Connect a Stripe account to receive money directly to your bank after every sale. Takes about 2 minutes.
-      </p>
-      <div className="flex flex-col items-center gap-3">
-        <button
-          onClick={onConnect}
-          disabled={connecting}
-          className="inline-flex items-center gap-2 h-10 px-6 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-hover active:scale-95 disabled:opacity-60 transition-all duration-150"
+          required
+          className="w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/30"
         >
-          {connecting ? 'Opening Stripe…' : 'Connect with Stripe'}
-          {!connecting && <ArrowUpRight size={14} strokeWidth={2.5} />}
-        </button>
-        {error && <p className="text-xs text-error">{error}</p>}
-        <p className="text-[11px] text-text-subtle">10% platform fee · Automatic weekly payouts</p>
+          <option value="">Select your bank</option>
+          {banks.map((b) => (
+            <option key={b.code} value={b.code}>{b.name}</option>
+          ))}
+        </select>
       </div>
-    </motion.div>
+
+      <div>
+        <label className="block text-xs font-semibold text-text-muted uppercase tracking-widest mb-1.5">Account Number</label>
+        <input
+          type="text"
+          inputMode="numeric"
+          maxLength={10}
+          value={accountNumber}
+          onChange={(e) => { setAccountNumber(e.target.value); setAccountName(''); setResolveError('') }}
+          onBlur={handleAccountNumberBlur}
+          required
+          placeholder="0123456789"
+          className="w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary/30"
+        />
+        {resolving && (
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-text-muted">
+            <Loader2 size={11} className="animate-spin" /> Verifying…
+          </p>
+        )}
+        {resolveError && <p className="mt-1.5 text-xs text-error">{resolveError}</p>}
+        {accountName && (
+          <p className="mt-1.5 flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
+            <CheckCircle2 size={11} /> {accountName}
+          </p>
+        )}
+      </div>
+
+      {submitError && <p className="text-xs text-error">{submitError}</p>}
+
+      <button
+        type="submit"
+        disabled={submitting || !accountName}
+        className="w-full rounded-xl bg-primary text-white py-2.5 text-sm font-semibold hover:bg-primary-hover disabled:opacity-50 transition-colors"
+      >
+        {submitting ? 'Saving…' : 'Save payout account'}
+      </button>
+    </form>
   )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type StripeStatus = 'connected' | 'pending' | 'not_connected'
-
 function BillingContent() {
   const searchParams = useSearchParams()
-  const statusParam = searchParams.get('status')
+  const queryClient = useQueryClient()
 
-  const [user, setUser] = useState<{ stripe_onboarding_complete: boolean } | null>(null)
+  const [user, setUser] = useState<{
+    paystack_onboarding_complete: boolean
+    paystack_bank_name: string | null
+    paystack_account_name: string | null
+    paystack_account_number: string | null
+  } | null>(null)
   const [userLoading, setUserLoading] = useState(true)
-  const [connecting, setConnecting] = useState(false)
-  const [error, setError] = useState('')
+  const [showEditForm, setShowEditForm] = useState(false)
 
   useEffect(() => {
     fetch('/api/users/me')
@@ -360,38 +403,18 @@ function BillingContent() {
       .finally(() => setUserLoading(false))
   }, [])
 
-  const queryClient = useQueryClient()
-  useEffect(() => {
-    if (statusParam === 'connected') {
-      queryClient.invalidateQueries({ queryKey: ['me'] })
-    }
-  }, [statusParam, queryClient])
-
-  const hasUrlStatus = statusParam === 'connected' || statusParam === 'pending'
-
-  const stripeStatus: StripeStatus =
-    statusParam === 'connected' || user?.stripe_onboarding_complete
-      ? 'connected'
-      : statusParam === 'pending'
-      ? 'pending'
-      : 'not_connected'
-
-  async function handleConnect() {
-    setConnecting(true)
-    setError('')
-    const res = await fetch('/api/stripe/connect', { method: 'POST' })
-    const data = await res.json()
-    setConnecting(false)
-    if (!res.ok) {
-      setError(data.error?.message ?? 'Failed to start Stripe onboarding')
-      return
-    }
-    window.location.href = data.data.url
+  function handleBankSaved() {
+    queryClient.invalidateQueries({ queryKey: ['me'] })
+    fetch('/api/users/me')
+      .then((r) => r.json())
+      .then((res) => setUser(res.data))
+    setShowEditForm(false)
   }
+
+  const isConnected = user?.paystack_onboarding_complete ?? false
 
   return (
     <div className="space-y-8">
-      {/* Redirect notice */}
       {searchParams.get('from') === 'new-listing' && (
         <motion.div
           initial={{ opacity: 0, y: -6 }}
@@ -400,12 +423,11 @@ function BillingContent() {
         >
           <AlertCircle size={14} strokeWidth={2} className="text-amber-600 mt-0.5 shrink-0" />
           <p className="text-sm text-amber-800">
-            You need to connect your payout account before creating a listing.
+            Add your bank account to receive payouts before publishing your listing.
           </p>
         </motion.div>
       )}
 
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -414,60 +436,51 @@ function BillingContent() {
       >
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-text">Payouts</h1>
-          <p className="text-text-muted mt-1 text-sm">Track your earnings and manage your Stripe account.</p>
+          <p className="text-text-muted mt-1 text-sm">
+            {isConnected
+              ? 'Track your earnings and manage your payout account.'
+              : 'Add your bank account to receive earnings from your sales.'}
+          </p>
         </div>
 
-        {/* Connection status badge */}
-        {userLoading && !hasUrlStatus ? (
-          <div className="relative overflow-hidden h-9 w-44 rounded-xl border border-border bg-card shrink-0">
-            <div className="skeleton-shimmer" />
-          </div>
-        ) : stripeStatus === 'connected' ? (
-          <a
-            href="https://dashboard.stripe.com/express"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-2 h-9 px-3.5 rounded-xl border border-emerald-200 bg-emerald-50 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors"
-          >
+        {!userLoading && isConnected && !showEditForm && (
+          <div className="shrink-0 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2">
             <CheckCircle2 size={13} strokeWidth={2.5} className="text-emerald-500" />
-            Stripe dashboard
-            <ArrowUpRight size={11} strokeWidth={2.5} className="opacity-60" />
-          </a>
-        ) : stripeStatus === 'pending' ? (
-          <button
-            onClick={handleConnect}
-            disabled={connecting}
-            className="shrink-0 inline-flex items-center gap-2 h-9 px-3.5 rounded-xl border border-amber-200 bg-amber-50 text-xs font-semibold text-amber-700 hover:bg-amber-100 disabled:opacity-60 transition-colors"
-          >
-            <Clock size={13} strokeWidth={2.5} className="text-amber-500" />
-            {connecting ? 'Opening…' : 'Finish onboarding'}
-          </button>
-        ) : null}
+            <span className="text-xs font-semibold text-emerald-700">
+              {user?.paystack_bank_name} ···{user?.paystack_account_number?.slice(-4)}
+            </span>
+            <button
+              onClick={() => setShowEditForm(true)}
+              className="ml-1 text-[11px] text-emerald-600 underline underline-offset-2 hover:text-emerald-800"
+            >
+              Change
+            </button>
+          </div>
+        )}
       </motion.div>
 
-      {/* Body */}
-      {userLoading && !hasUrlStatus ? null : stripeStatus === 'connected' ? (
-        <EarningsSection />
-      ) : (
-        <NotConnectedState
-          onConnect={handleConnect}
-          connecting={connecting}
-          error={error}
-        />
-      )}
+      {userLoading ? null : !isConnected || showEditForm ? (
+        <div className="rounded-2xl border border-border bg-card p-6">
+          <h2 className="text-sm font-semibold text-text mb-1">
+            {showEditForm ? 'Update payout account' : 'Add payout account'}
+          </h2>
+          <p className="text-xs text-text-muted mb-5">
+            Enter your Nigerian bank account. We&apos;ll send your earnings here after each sale is delivered.
+          </p>
+          <BankAccountForm onSuccess={handleBankSaved} />
+          {showEditForm && (
+            <button onClick={() => setShowEditForm(false)} className="mt-3 text-xs text-text-muted underline underline-offset-2">
+              Cancel
+            </button>
+          )}
+        </div>
+      ) : null}
 
-      {/* Footer */}
-      {stripeStatus === 'connected' && (
+      {isConnected && !showEditForm && <EarningsSection />}
+
+      {isConnected && !showEditForm && (
         <p className="text-[11px] text-text-subtle pb-4">
-          The platform deducts a 10% fee from each sale.{' '}
-          <Link
-            href="https://stripe.com/pricing"
-            className="underline underline-offset-2 text-primary hover:text-primary-hover transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Stripe pricing
-          </Link>
+          The platform deducts a 10% fee from each sale.
         </p>
       )}
     </div>
