@@ -133,7 +133,7 @@ export async function POST(req: Request) {
       .from('orders')
       .delete()
       .in('id', orders.map((o) => o.id))
-    console.error('Paystack initialize error:', paystackError)
+    console.error('Paystack initialize error:', JSON.stringify(paystackError, Object.getOwnPropertyNames(paystackError)))
     return err('Payment setup failed, please try again', 'PAYSTACK_ERROR', 500)
   }
 
