@@ -96,6 +96,7 @@ export async function POST(req: Request) {
     .select('id, seller_id, total_price')
 
   if (ordersError || !orders) {
+    console.error('Orders insert error:', JSON.stringify(ordersError))
     return err('Failed to create orders', 'DB_ERROR', 500)
   }
 
