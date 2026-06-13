@@ -77,11 +77,11 @@ export async function POST(req: Request) {
 
   const { data: seller } = await supabaseAdmin
     .from('users')
-    .select('stripe_onboarding_complete')
+    .select('paystack_onboarding_complete')
     .eq('id', authUser.id)
     .single()
 
-  const stripeConnected = seller?.stripe_onboarding_complete ?? false
+  const paystackConnected = seller?.paystack_onboarding_complete ?? false
 
   let body: unknown
   try {
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
     .insert({
       ...validated.data,
       seller_id: authUser.id,
-      status: stripeConnected ? 'available' : 'draft',
+      status: paystackConnected ? 'available' : 'draft',
     })
     .select('*')
     .single()

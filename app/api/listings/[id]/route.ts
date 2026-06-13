@@ -62,14 +62,14 @@ export async function PATCH(
   if (validated.data.status === 'available') {
     const { data: seller } = await supabaseAdmin
       .from('users')
-      .select('stripe_onboarding_complete')
+      .select('paystack_onboarding_complete')
       .eq('id', authUser.id)
       .single()
 
-    if (!seller?.stripe_onboarding_complete) {
+    if (!seller?.paystack_onboarding_complete) {
       return err(
-        'Connect your Stripe account to publish this listing',
-        'STRIPE_NOT_CONNECTED',
+        'Connect your Paystack account to publish this listing',
+        'PAYSTACK_NOT_CONNECTED',
         403
       )
     }
