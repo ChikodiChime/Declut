@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   const { data: user, error } = await supabaseAdmin
     .from('users')
     .insert({ email, name, password_hash, account_type, otp_code, otp_expires_at, otp_resend_after })
-    .select('id, email, name, account_type, stripe_onboarding_complete, avatar_url, created_at, email_verified, otp_resend_after')
+    .select('id, email, name, account_type, paystack_onboarding_complete, avatar_url, created_at, email_verified, otp_resend_after')
     .single()
 
   if (error || !user) {

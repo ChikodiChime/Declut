@@ -3,15 +3,19 @@ import { formatUserResponse } from '@/app/api/users/me/utils'
 import type { User } from '@/types'
 
 describe('formatUserResponse', () => {
-  it('strips password_hash and stripe_account_id from the response', () => {
+  it('strips password_hash and paystack_recipient_code from the response', () => {
     const user: User = {
       id: 'abc-123',
       email: 'test@test.com',
       name: 'Test User',
       password_hash: '$2b$12$hashedpassword',
       account_type: 'individual',
-      stripe_account_id: 'acct_secret_123',
-      stripe_onboarding_complete: false,
+      paystack_recipient_code: 'RCP_secret_123',
+      paystack_bank_code: null,
+      paystack_bank_name: null,
+      paystack_account_number: null,
+      paystack_account_name: null,
+      paystack_onboarding_complete: false,
       avatar_url: null,
       phone: null,
       address: null,
@@ -26,7 +30,7 @@ describe('formatUserResponse', () => {
     const result = formatUserResponse(user)
 
     expect(result).not.toHaveProperty('password_hash')
-    expect(result).not.toHaveProperty('stripe_account_id')
+    expect(result).not.toHaveProperty('paystack_recipient_code')
     expect(result.id).toBe('abc-123')
   })
 })

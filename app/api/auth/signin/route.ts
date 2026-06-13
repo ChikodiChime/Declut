@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
   const token = await signToken({ sub: user.id, email: user.email, account_type: user.account_type })
 
-  const { password_hash, stripe_account_id, otp_code, otp_expires_at, ...safeUser } = user
+  const { password_hash, paystack_recipient_code, otp_code, otp_expires_at, ...safeUser } = user
 
   const response = ok({ user: safeUser, emailVerified: user.email_verified })
   response.headers.set(

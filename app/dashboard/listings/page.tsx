@@ -15,7 +15,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  ArrowRight,
   ArrowUpRight,
   SlidersHorizontal,
   Wallet,
@@ -29,23 +28,8 @@ import { useMyListings } from "@/lib/hooks/useListings";
 import { useMe } from "@/lib/hooks/useAuth";
 import type { Listing } from "@/types";
 
-function StripeBanner() {
-  const [connecting, setConnecting] = useState(false);
+function PayoutsBanner() {
   const [dismissed, setDismissed] = useState(false);
-  const [connectError, setConnectError] = useState("");
-
-  async function handleConnect() {
-    setConnecting(true);
-    setConnectError("");
-    const res = await fetch("/api/stripe/connect", { method: "POST" });
-    const data = await res.json();
-    setConnecting(false);
-    if (!res.ok) {
-      setConnectError(data.error?.message ?? "Failed to start Stripe onboarding");
-      return;
-    }
-    window.location.href = data.data.url;
-  }
 
   if (dismissed) return null;
 
@@ -63,20 +47,16 @@ function StripeBanner() {
           Your listings are saved — go live when you&apos;re ready
         </p>
         <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
-          Connect your Stripe account and all your draft listings will be
+          Add your bank account and all your draft listings will be
           published instantly. Buyers can start finding your items right away.
         </p>
-        {connectError && (
-          <p className="mt-1.5 text-xs font-medium text-red-600">{connectError}</p>
-        )}
-        <button
-          onClick={handleConnect}
-          disabled={connecting}
-          className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800 disabled:opacity-60 transition-colors"
+        <Link
+          href="/dashboard/billing"
+          className="mt-2.5 inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-800 transition-colors"
         >
-          {connecting ? "Opening Stripe…" : "Set up payouts"}
-          {!connecting && <ArrowUpRight size={11} strokeWidth={2.5} />}
-        </button>
+          Add bank account
+          <ArrowUpRight size={11} strokeWidth={2.5} />
+        </Link>
       </div>
       <button
         onClick={() => setDismissed(true)}
@@ -160,7 +140,7 @@ export default function DashboardListingsPage() {
         </Link>
       </div>
 
-      {!userData?.stripe_onboarding_complete && <StripeBanner />}
+      {!userData?.paystack_onboarding_complete && <PayoutsBanner />}
 
       {/* Stats skeleton */}
       {isLoading && (

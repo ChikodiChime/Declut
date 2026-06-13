@@ -430,7 +430,7 @@ function SellerOrderRow({ order }: { order: BuyerOrder }) {
 }
 
 type CheckoutGroup = {
-  paymentIntentId: string | null;
+  paystackReference: string | null;
   orders: BuyerOrder[];
   createdAt: string;
 };
@@ -438,12 +438,12 @@ type CheckoutGroup = {
 function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
   const map = new Map<string, BuyerOrder[]>();
   for (const order of orders) {
-    const key = order.stripe_payment_intent_id ?? order.id;
+    const key = order.paystack_reference ?? order.id;
     if (!map.has(key)) map.set(key, []);
     map.get(key)!.push(order);
   }
   return Array.from(map.entries()).map(([, group]) => ({
-    paymentIntentId: group[0].stripe_payment_intent_id,
+    paystackReference: group[0].paystack_reference,
     orders: group,
     createdAt: group[0].created_at,
   }));
@@ -519,7 +519,7 @@ function PurchasesPanel() {
     <div className="flex flex-col gap-3">
       {groups.map((group) => (
         <CheckoutGroupCard
-          key={group.paymentIntentId ?? group.orders[0].id}
+          key={group.paystackReference ?? group.orders[0].id}
           group={group}
         />
       ))}

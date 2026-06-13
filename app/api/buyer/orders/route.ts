@@ -15,7 +15,7 @@ export async function GET() {
     .from('orders')
     .select(`
       id, status, delivery_type, item_price, delivery_fee, total_price,
-      created_at, stripe_payment_intent_id, buyer_id,
+      created_at, paystack_reference, buyer_id,
       seller:users!orders_seller_id_fkey(id, name),
       order_items(id, item_price, listing:listings(id, title, images))
     `)

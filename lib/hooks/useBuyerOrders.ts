@@ -21,7 +21,7 @@ export type BuyerOrder = {
   delivery_fee: number
   total_price: number
   created_at: string
-  stripe_payment_intent_id: string | null
+  paystack_reference: string | null
   seller: { id: string; name: string | null } | null
   order_items: OrderItem[]
 }

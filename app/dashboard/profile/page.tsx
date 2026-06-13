@@ -497,7 +497,7 @@ function SecurityCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
 
   useEffect(() => { return () => { if (timerRef.current) clearTimeout(timerRef.current) } }, [])
 
-  const stripeConnected = me?.stripe_onboarding_complete
+  const paystackConnected = me?.paystack_onboarding_complete
 
   function startEdit() { setCurrent(''); setNext(''); setConfirm(''); setErrors({}); setSuccess(false); setEditing(true) }
   function cancel() { setEditing(false); setErrors({}) }
@@ -549,9 +549,9 @@ function SecurityCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
           <div className="flex items-center justify-between px-5 py-3.5 gap-4">
             <span className="text-sm text-text-muted shrink-0">Payouts</span>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-text">{stripeConnected ? 'Stripe connected' : 'Not connected'}</span>
+              <span className="text-sm text-text">{paystackConnected ? 'Bank account connected' : 'Not connected'}</span>
               <Link href="/dashboard/billing" className="text-xs font-semibold text-primary hover:text-primary-hover transition-colors shrink-0">
-                {stripeConnected ? 'Manage' : 'Set up'}
+                {paystackConnected ? 'Manage' : 'Set up'}
               </Link>
             </div>
           </div>

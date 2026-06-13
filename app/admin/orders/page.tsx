@@ -234,7 +234,7 @@ export default function AdminOrdersPage() {
               </p>
               <p className="text-sm text-text-muted">
                 {cancelTarget?.status === 'paid'
-                  ? 'This order has been paid. A full refund will be issued to the buyer via Stripe.'
+                  ? 'This order has been paid. A full refund will be issued to the buyer via Paystack.'
                   : 'This order will be cancelled and the listing will become available again.'}
               </p>
             </div>

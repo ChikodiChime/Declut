@@ -64,15 +64,15 @@ function OnboardingChecklist({
       done: !!me?.avatar_url,
     },
     {
-      id: "stripe",
+      id: "paystack",
       icon: CreditCard,
       number: "02",
       title: "Connect payouts",
-      desc: "Set up Stripe to receive payments from your sales.",
+      desc: "Add your bank account to receive payments from your sales.",
       href: "/dashboard/billing",
       color: "text-amber-600",
       bgColor: "bg-amber-500/10",
-      done: !!(me as { stripe_onboarding_complete?: boolean })?.stripe_onboarding_complete,
+      done: !!(me as { paystack_onboarding_complete?: boolean })?.paystack_onboarding_complete,
     },
     {
       id: "listing",
