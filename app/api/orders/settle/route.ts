@@ -1,28 +1,28 @@
-import { stripe } from '@/lib/stripe'
 import { supabaseAdmin } from '@/lib/supabase'
 import { sendOrderConfirmationEmail } from '@/lib/email'
 import { ok, err } from '@/lib/api-response'
+import { verifyTransaction } from '@/lib/paystack'
 
 export async function POST(req: Request) {
   const body = await req.json()
-  const { payment_intent_id } = body
+  const { reference } = body
 
-  if (!payment_intent_id || typeof payment_intent_id !== 'string') {
-    return err('payment_intent_id is required', 'VALIDATION_ERROR', 400)
+  if (!reference || typeof reference !== 'string') {
+    return err('reference is required', 'VALIDATION_ERROR', 400)
   }
 
-  let pi
+  let transaction
   try {
-    pi = await stripe.paymentIntents.retrieve(payment_intent_id)
+    transaction = await verifyTransaction(reference)
   } catch {
-    return err('Failed to retrieve payment intent', 'STRIPE_ERROR', 500)
+    return err('Failed to verify payment', 'PAYSTACK_ERROR', 500)
   }
 
-  if (pi.status !== 'succeeded') {
+  if (transaction.status !== 'success') {
     return err('Payment not confirmed', 'PAYMENT_INCOMPLETE', 402)
   }
 
-  const orderIdsRaw = pi.metadata?.order_ids
+  const orderIdsRaw = transaction.metadata?.order_ids
   if (!orderIdsRaw) {
     return err('No orders associated with this payment', 'NOT_FOUND', 404)
   }
@@ -59,9 +59,8 @@ export async function POST(req: Request) {
     ])
   }
 
-  // Always send confirmation email — covers the case where the webhook fired but email failed
-  const buyerEmail = pi.metadata?.buyer_email
-  const buyerId = pi.metadata?.buyer_id
+  const buyerEmail = transaction.metadata?.buyer_email
+  const buyerId = transaction.metadata?.buyer_id
 
   if (buyerEmail) {
     let buyerName = 'Customer'
