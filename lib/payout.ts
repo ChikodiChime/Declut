@@ -1,13 +1,12 @@
 // lib/payout.ts
-import { stripe } from '@/lib/stripe'
+import { initiateTransfer } from '@/lib/paystack'
 import { supabaseAdmin } from '@/lib/supabase'
-
-const PLATFORM_FEE_PERCENT = 10
+import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 
 export async function executePayout(orderId: string): Promise<void> {
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, seller_id, item_price, stripe_payment_intent_id, stripe_transfer_id')
+    .select('id, seller_id, item_price, paystack_transfer_id')
     .eq('id', orderId)
     .single()
 
@@ -16,20 +15,19 @@ export async function executePayout(orderId: string): Promise<void> {
     return
   }
 
-  if (order.stripe_transfer_id) return // already paid out (idempotent check)
+  if (order.paystack_transfer_id) return // already paid out (idempotent check)
 
   // Atomically claim the payout slot — prevents concurrent double-payout
   const { data: locked } = await supabaseAdmin
     .from('orders')
-    .update({ stripe_transfer_id: 'pending' })
+    .update({ paystack_transfer_id: 'pending' })
     .eq('id', orderId)
-    .is('stripe_transfer_id', null)
+    .is('paystack_transfer_id', null)
     .select('id')
     .single()
 
   if (!locked) return // another caller claimed it first
 
-  // Mark delivered first — buyer UX shouldn't wait on the financial operation
   await supabaseAdmin
     .from('orders')
     .update({ status: 'delivered', delivered_at: new Date().toISOString() })
@@ -37,12 +35,12 @@ export async function executePayout(orderId: string): Promise<void> {
 
   const { data: seller } = await supabaseAdmin
     .from('users')
-    .select('stripe_account_id, stripe_onboarding_complete')
+    .select('paystack_recipient_code, paystack_onboarding_complete')
     .eq('id', order.seller_id)
     .single()
 
-  if (!seller?.stripe_account_id || !seller.stripe_onboarding_complete) {
-    console.error(`executePayout: seller ${order.seller_id} has not completed Stripe onboarding — manual payout required`)
+  if (!seller?.paystack_recipient_code || !seller.paystack_onboarding_complete) {
+    console.error(`executePayout: seller ${order.seller_id} has not completed Paystack onboarding — manual payout required`)
     return
   }
 
@@ -51,26 +49,23 @@ export async function executePayout(orderId: string): Promise<void> {
   )
 
   try {
-    const transfer = await stripe.transfers.create({
+    const transfer = await initiateTransfer({
+      source: 'balance',
       amount: sellerAmountKobo,
-      currency: 'ngn',
-      destination: seller.stripe_account_id,
-      transfer_group: orderId,
-      metadata: { order_id: orderId },
+      recipient: seller.paystack_recipient_code,
+      reason: `Payout for order #${orderId.slice(0, 8)}`,
     })
 
     await supabaseAdmin
       .from('orders')
-      .update({ stripe_transfer_id: transfer.id })
+      .update({ paystack_transfer_id: transfer.transfer_code })
       .eq('id', orderId)
   } catch (error) {
-    console.error(`executePayout: Stripe transfer failed for order ${orderId}:`, error)
-    // Clear sentinel so the next retry can attempt the transfer
+    console.error(`executePayout: Paystack transfer failed for order ${orderId}:`, error)
     await supabaseAdmin
       .from('orders')
-      .update({ stripe_transfer_id: null })
+      .update({ paystack_transfer_id: null })
       .eq('id', orderId)
-      .eq('stripe_transfer_id', 'pending')
-    // Status already set to delivered. Manual payout resolution needed.
+      .eq('paystack_transfer_id', 'pending')
   }
 }
