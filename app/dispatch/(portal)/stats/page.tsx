@@ -9,8 +9,6 @@ import {
 } from '@/lib/hooks/useDispatch'
 import { DispatchHeader } from '@/app/dispatch/(portal)/DispatchHeader'
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function groupByMonth(deliveries: CompletedDelivery[]) {
   const groups: Record<string, CompletedDelivery[]> = {}
   for (const d of deliveries) {
@@ -30,8 +28,6 @@ function monthLabel(yearMonth: string): string {
   })
 }
 
-// ─── Skeleton ────────────────────────────────────────────────────────────────
-
 function HistorySkeleton() {
   return (
     <div className="animate-pulse rounded-2xl border border-border bg-card p-4 flex gap-3">
@@ -44,8 +40,6 @@ function HistorySkeleton() {
     </div>
   )
 }
-
-// ─── Completed delivery card ──────────────────────────────────────────────────
 
 function CompletedCard({ order }: { order: CompletedDelivery }) {
   return (
@@ -90,8 +84,6 @@ function CompletedCard({ order }: { order: CompletedDelivery }) {
     </motion.div>
   )
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function StatsPage() {
   const { data: completed, isLoading } = useCompletedDeliveries()

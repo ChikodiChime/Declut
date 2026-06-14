@@ -18,8 +18,6 @@ import {
 import { Button } from '@/components/ui'
 import { DispatchHeader } from '@/app/dispatch/(portal)/DispatchHeader'
 
-// ─── Skeleton ────────────────────────────────────────────────────────────────
-
 function OrderSkeleton() {
   return (
     <div className="animate-pulse rounded-2xl border border-border bg-card p-4">
@@ -35,7 +33,7 @@ function OrderSkeleton() {
   )
 }
 
-// ─── Active delivery hero card ────────────────────────────────────────────────
+
 
 function ActiveHeroCard({ order }: { order: DispatchOrder }) {
   const [code, setCode] = useState('')
@@ -156,7 +154,7 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
   )
 }
 
-// ─── Available order card ─────────────────────────────────────────────────────
+
 
 function AvailableOrderCard({ order }: { order: DispatchOrder }) {
   const { mutate: claim, isPending } = useClaimOrder()
@@ -211,7 +209,7 @@ function AvailableOrderCard({ order }: { order: DispatchOrder }) {
   )
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+
 
 export default function DispatchPortalPage() {
   const { data: available, isLoading: loadingAvailable } = useAvailableOrders()
