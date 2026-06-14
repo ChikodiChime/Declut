@@ -143,6 +143,7 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
             />
           </div>
           <button
+            type="button"
             onClick={() => verify({ id: order.id, code })}
             disabled={isPending || code.length !== 4}
             className="shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold text-white bg-success hover:bg-success/90 transition-opacity disabled:opacity-50"
@@ -228,7 +229,7 @@ export default function DispatchPortalPage() {
         {loadingMine && <OrderSkeleton />}
         {!loadingMine && activeCount > 0 && (
           <div className="flex flex-col gap-3">
-            {mine!.map((order) => <ActiveHeroCard key={order.id} order={order} />)}
+            {mine?.map((order) => <ActiveHeroCard key={order.id} order={order} />)}
           </div>
         )}
         {!loadingMine && activeCount === 0 && (
