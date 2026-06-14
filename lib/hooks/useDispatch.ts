@@ -19,6 +19,7 @@ export type DispatchOrder = {
     title: string
     images: string[]
     area?: string
+    pickup_address?: string
   }
 }
 

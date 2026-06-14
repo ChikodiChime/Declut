@@ -85,7 +85,7 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
             <Package size={12} strokeWidth={2} className="shrink-0 mt-0.5 text-text-subtle" />
             <div>
               <p className="font-semibold text-text mb-0.5">Collect from</p>
-              <p className="text-text-muted">{order.listing.area ?? 'Lagos'}</p>
+              <p className="text-text-muted">{order.listing.pickup_address ?? order.listing.area ?? 'Address unavailable'}</p>
             </div>
           </div>
           <div className="h-px bg-border" />

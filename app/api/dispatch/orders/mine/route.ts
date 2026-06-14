@@ -12,8 +12,8 @@ export async function GET() {
     .from('orders')
     .select(`
       id, status, delivery_type, total_price, delivery_fee, buyer_name, buyer_phone, buyer_address, created_at,
-      listing:listings(id, title, images, area),
-      order_items(listing:listings(id, title, images, area))
+      listing:listings(id, title, images, area, pickup_address),
+      order_items(listing:listings(id, title, images, area, pickup_address))
     `)
     .eq('dispatcher_id', authUser.id)
     .eq('status', 'shipped')
