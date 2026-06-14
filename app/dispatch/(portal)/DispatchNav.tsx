@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Truck, User } from 'lucide-react'
+import { Truck, BarChart2, User } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/dispatch', label: 'Orders', icon: Truck },
+  { href: '/dispatch', label: 'Deliveries', icon: Truck },
+  { href: '/dispatch/stats', label: 'Stats', icon: BarChart2 },
   { href: '/dispatch/profile', label: 'Profile', icon: User },
 ]
 
