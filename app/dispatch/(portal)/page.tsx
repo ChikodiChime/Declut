@@ -19,7 +19,6 @@ import {
   type DispatchOrder,
   type CompletedDelivery,
 } from '@/lib/hooks/useDispatch'
-import { useRouter } from 'next/navigation'
 import { StatCard } from '@/components/dashboard/StatCard'
 import { Button } from '@/components/ui'
 import { DispatchHeader } from '@/app/dispatch/(portal)/DispatchHeader'
