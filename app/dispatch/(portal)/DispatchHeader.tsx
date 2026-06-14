@@ -2,12 +2,10 @@
 
 import { Truck, LogOut } from 'lucide-react'
 import { useMe, useSignOut } from '@/lib/hooks/useAuth'
-import { useRouter } from 'next/navigation'
 
 export function DispatchHeader() {
   const { data: user } = useMe()
-  const { mutate: signOut } = useSignOut()
-  const router = useRouter()
+  const { mutate: signOut } = useSignOut('/dispatch/login')
   const firstName = user?.name?.split(' ')[0] || 'Hi'
 
   const hour = new Date().getHours()
@@ -25,7 +23,7 @@ export function DispatchHeader() {
             Dispatcher
           </span>
           <button
-            onClick={() => signOut(undefined, { onSuccess: () => router.push('/dispatch/login') })}
+            onClick={() => signOut()}
             className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-subtle hover:text-text hover:bg-card transition-colors"
           >
             <LogOut size={13} strokeWidth={2} />

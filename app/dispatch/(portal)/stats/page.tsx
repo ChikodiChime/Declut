@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { ListingImage } from '@/components/ui'
 import { Package, ArrowRight, CheckCircle2 } from 'lucide-react'
@@ -22,7 +23,8 @@ function groupByMonth(deliveries: CompletedDelivery[]) {
 }
 
 function monthLabel(yearMonth: string): string {
-  return new Date(yearMonth + '-01').toLocaleDateString('en-NG', {
+  const [y, m] = yearMonth.split('-')
+  return new Date(+y, +m - 1).toLocaleDateString('en-NG', {
     month: 'long',
     year: 'numeric',
   })
@@ -89,21 +91,16 @@ export default function StatsPage() {
   const { data: completed, isLoading } = useCompletedDeliveries()
 
   const now = new Date()
+  const nowKey = now.toISOString().slice(0, 7) // "YYYY-MM" in UTC
   const allCompleted = completed ?? []
 
-  const thisMonth = allCompleted.filter((d) => {
-    const date = new Date(d.created_at)
-    return (
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear()
-    )
-  })
+  const thisMonth = allCompleted.filter((d) => d.created_at.slice(0, 7) === nowKey)
 
   const monthlyEarnings = thisMonth.reduce((sum, d) => sum + d.delivery_fee, 0)
   const avgPerJob = thisMonth.length > 0 ? Math.round(monthlyEarnings / thisMonth.length) : 0
   const allTimeEarnings = allCompleted.reduce((sum, d) => sum + d.delivery_fee, 0)
 
-  const monthGroups = groupByMonth(allCompleted)
+  const monthGroups = useMemo(() => groupByMonth(allCompleted), [allCompleted])
 
   return (
     <main className="min-h-screen bg-surface">

@@ -76,7 +76,7 @@ export function useSignIn() {
   })
 }
 
-export function useSignOut() {
+export function useSignOut(redirectTo = '/auth/login') {
   const router = useRouter()
   const queryClient = useQueryClient()
 
@@ -84,7 +84,7 @@ export function useSignOut() {
     mutationFn: () => apiPost('/api/auth/signout', {}),
     onSuccess: () => {
       queryClient.clear()
-      router.push('/auth/login')
+      router.push(redirectTo)
       router.refresh()
     },
   })
