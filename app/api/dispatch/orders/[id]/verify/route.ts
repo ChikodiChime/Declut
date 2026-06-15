@@ -29,7 +29,7 @@ export async function POST(
 
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, status, delivery_type, dispatcher_id, code_attempts')
+    .select('id, status, delivery_type, dispatcher_id, code_attempts, delivery_fee, dispatcher_credited_at')
     .eq('id', id)
     .single()
 
@@ -46,6 +46,17 @@ export async function POST(
   }
 
   await executePayout(id)
+
+  if (!order.dispatcher_credited_at && order.delivery_fee > 0) {
+    await supabaseAdmin.rpc('credit_wallet', {
+      p_user_id: order.dispatcher_id,
+      p_amount: order.delivery_fee,
+    })
+    await supabaseAdmin
+      .from('orders')
+      .update({ dispatcher_credited_at: new Date().toISOString() })
+      .eq('id', id)
+  }
 
   return ok({ delivered: true })
 }
