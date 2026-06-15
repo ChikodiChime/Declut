@@ -43,7 +43,7 @@ function DeliveryDetailsDrawer({ order, onClose }: { order: DispatchOrder; onClo
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
         onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/40"
+        className="fixed inset-0 z-[55] bg-black/40"
       />
       <motion.div
         key="sheet"
@@ -51,7 +51,7 @@ function DeliveryDetailsDrawer({ order, onClose }: { order: DispatchOrder; onClo
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl max-w-xl mx-auto"
+        className="fixed bottom-0 left-0 right-0 z-[56] bg-card rounded-t-2xl max-w-xl mx-auto"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="flex justify-center pt-3 pb-2">
@@ -80,7 +80,7 @@ function DeliveryDetailsDrawer({ order, onClose }: { order: DispatchOrder; onClo
             <div>
               <p className="text-[11px] font-bold uppercase tracking-widest text-text-subtle mb-1">Deliver to</p>
               <p className="text-sm text-text leading-relaxed">
-                {order.buyer_address ?? 'Address unavailable'}
+                {order.buyer_address ?? order.buyer_area ?? 'Address unavailable'}
               </p>
             </div>
           </div>
@@ -216,55 +216,73 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
 }
 
 function AvailableOrderCard({ order }: { order: DispatchOrder }) {
+  const [isOpen, setIsOpen] = useState(false)
   const { mutate: claim, isPending } = useClaimOrder()
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="rounded-2xl border border-border bg-card p-4"
-    >
-      <div className="flex gap-3 items-center mb-4">
-        <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-surface">
-          {order.listing.images?.[0] ? (
-            <ListingImage
-              src={order.listing.images[0]}
-              fill
-              sizes="56px"
-              className="object-cover"
-              alt={order.listing.title}
-            />
-          ) : (
-            <Package size={16} strokeWidth={1.5} className="text-text-subtle" />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-text truncate">{order.listing.title}</p>
-          <div className="flex items-center gap-1 mt-1 text-xs text-text-muted">
-            <span className="truncate max-w-[80px]">{order.listing.area ?? 'Unknown'}</span>
-            <ArrowRight size={10} strokeWidth={2} className="shrink-0" />
-            <span className="truncate max-w-[80px]">{order.buyer_area ?? 'Unknown'}</span>
-          </div>
-        </div>
-        <div className="shrink-0 text-right">
-          <p className="text-2xl font-extrabold text-primary leading-none">
-            ₦{order.delivery_fee.toLocaleString()}
-          </p>
-          <p className="text-[10px] mt-1 text-text-subtle font-medium">delivery fee</p>
-        </div>
-      </div>
-
-      <Button
-        size="sm"
-        loading={isPending}
-        disabled={isPending}
-        onClick={() => claim(order.id)}
-        className="w-full"
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+        className="rounded-2xl border border-border bg-card overflow-hidden"
       >
-        Claim delivery
-      </Button>
-    </motion.div>
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="w-full text-left p-4 pb-3"
+        >
+          <div className="flex gap-3 items-center mb-3">
+            <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-surface">
+              {order.listing.images?.[0] ? (
+                <ListingImage
+                  src={order.listing.images[0]}
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                  alt={order.listing.title}
+                />
+              ) : (
+                <Package size={16} strokeWidth={1.5} className="text-text-subtle" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-text truncate">{order.listing.title}</p>
+            </div>
+            <div className="shrink-0 text-right">
+              <p className="text-2xl font-extrabold text-primary leading-none">
+                ₦{order.delivery_fee.toLocaleString()}
+              </p>
+              <p className="text-[10px] mt-1 text-text-subtle font-medium">delivery fee</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-xl bg-surface border border-border px-3 py-2">
+            <Package size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
+            <span className="text-xs text-text-muted truncate">{order.listing.area ?? 'Pickup'}</span>
+            <ArrowRight size={10} strokeWidth={2} className="shrink-0 text-text-subtle" />
+            <span className="text-xs text-text-muted truncate flex-1">{order.buyer_area ?? 'Dropoff'}</span>
+            <ChevronRight size={13} strokeWidth={2} className="shrink-0 text-text-subtle ml-1" />
+          </div>
+        </button>
+
+        <div className="px-4 pb-4">
+          <Button
+            size="sm"
+            loading={isPending}
+            disabled={isPending}
+            onClick={() => claim(order.id)}
+            className="w-full"
+          >
+            Claim delivery
+          </Button>
+        </div>
+      </motion.div>
+
+      <AnimatePresence>
+        {isOpen && <DeliveryDetailsDrawer order={order} onClose={() => setIsOpen(false)} />}
+      </AnimatePresence>
+    </>
   )
 }
 
