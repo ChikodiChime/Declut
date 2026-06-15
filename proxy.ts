@@ -127,6 +127,7 @@ export async function proxy(request: NextRequest) {
     isDispatcher &&
     !pathname.startsWith('/dispatch') &&
     !pathname.startsWith('/api/dispatch') &&
+    !pathname.startsWith('/api/paystack') &&
     !pathname.startsWith('/api/users/me') &&
     !pathname.startsWith('/api/buyer') &&
     !pathname.startsWith('/api/cart') &&
@@ -180,6 +181,8 @@ export const config = {
     '/api/dispatch/:path*',
     '/api/paystack/:path*',
     '/api/admin/:path*',
+    '/api/withdrawals/:path*',
+    '/api/notifications/:path*',
     '/api/cron/:path*',
     '/api/webhooks/:path*',
     '/listings/:path*',
