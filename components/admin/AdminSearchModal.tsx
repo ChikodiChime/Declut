@@ -209,7 +209,7 @@ export function AdminSearchModal({ open, onClose }: { open: boolean; onClose: ()
             className="relative w-full mx-4 bg-card overflow-hidden"
             style={{ maxWidth: 560, borderRadius: 18, border: '1px solid var(--color-border)', boxShadow: '0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08)' }}
             initial={{ opacity: 0, scale: 0.96, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 6 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as number[] }}
+            exit={{ opacity: 0, scale: 0.97, y: 6 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             onMouseDown={(e) => e.stopPropagation()}
           >
             {/* Input row */}
