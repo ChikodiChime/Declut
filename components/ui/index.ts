@@ -4,6 +4,7 @@ export { CustomDropdown } from './CustomDropdown';
 export { Button } from './Button';
 export { CategoryPicker } from './CategoryPicker';
 export { Modal } from './Modal';
+export { AddressPickerModal } from './AddressPickerModal';
 
 export type { InputProps } from './Input';
 export type { CustomDropdownProps, DropdownOption } from './CustomDropdown';
