@@ -35,7 +35,7 @@ function OrderSkeleton() {
 
 function DeliveryDetailsDrawer({ order, onClose }: { order: DispatchOrder; onClose: () => void }) {
   return (
-    <AnimatePresence>
+    <>
       <motion.div
         key="backdrop"
         initial={{ opacity: 0 }}
@@ -114,7 +114,7 @@ function DeliveryDetailsDrawer({ order, onClose }: { order: DispatchOrder; onClo
           )}
         </div>
       </motion.div>
-    </AnimatePresence>
+    </>
   )
 }
 
@@ -133,7 +133,6 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
       >
         <div className="h-1 bg-primary w-full" />
 
-        {/* Tappable card body — opens drawer */}
         <button
           type="button"
           onClick={() => setIsOpen(true)}
@@ -171,7 +170,6 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
             </div>
           </div>
 
-          {/* Compact location summary row */}
           <div className="flex items-center gap-2 rounded-xl bg-surface border border-border px-3 py-2">
             <Package size={11} strokeWidth={2} className="shrink-0 text-text-subtle" />
             <span className="text-xs text-text-muted truncate">{order.listing.area ?? 'Pickup'}</span>
@@ -181,7 +179,6 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
           </div>
         </button>
 
-        {/* Code input — separate from tap target */}
         <div className="px-4 pb-4">
           <p className="text-xs text-text-subtle mb-3 mt-1">
             Ask the buyer for their 4-digit confirmation code when you arrive.
@@ -211,12 +208,12 @@ function ActiveHeroCard({ order }: { order: DispatchOrder }) {
         </div>
       </motion.div>
 
-      {isOpen && <DeliveryDetailsDrawer order={order} onClose={() => setIsOpen(false)} />}
+      <AnimatePresence>
+        {isOpen && <DeliveryDetailsDrawer order={order} onClose={() => setIsOpen(false)} />}
+      </AnimatePresence>
     </>
   )
 }
-
-
 
 function AvailableOrderCard({ order }: { order: DispatchOrder }) {
   const { mutate: claim, isPending } = useClaimOrder()
@@ -270,8 +267,6 @@ function AvailableOrderCard({ order }: { order: DispatchOrder }) {
     </motion.div>
   )
 }
-
-
 
 export default function DispatchPortalPage() {
   const { data: available, isLoading: loadingAvailable } = useAvailableOrders()
