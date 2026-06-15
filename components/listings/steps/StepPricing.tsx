@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   ArrowRight,
@@ -9,9 +9,10 @@ import {
   Car,
   Truck,
   Package,
+  MapPin,
 } from "lucide-react";
-import { Input, Button } from "@/components/ui";
-import PlacesAddressInput, { type PlaceResult } from "@/components/checkout/PlacesAddressInput";
+import { Input, Button, AddressPickerModal } from "@/components/ui";
+import { useAddresses } from "@/lib/hooks/useAddresses";
 import type { ListingType, SizeCategory } from "@/types";
 
 interface StepPricingData {
@@ -79,11 +80,24 @@ export function StepPricing({
     register,
     handleSubmit,
     setValue,
+    watch,
     control,
     formState: { errors },
   } = useForm<StepPricingData>({ defaultValues });
 
   const [pickupError, setPickupError] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const watchedPickupAddress = watch('pickup_address');
+  const { data: addresses = [] } = useAddresses();
+
+  useEffect(() => {
+    if (defaultValues?.pickup_address) return;
+    const defaultAddr = addresses.find((a) => a.is_default) ?? addresses[0] ?? null;
+    if (!defaultAddr) return;
+    setValue('pickup_address', defaultAddr.address, { shouldValidate: false });
+    setValue('area', defaultAddr.address_state ?? '');
+  }, [addresses]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [priceDisplay, setPriceDisplay] = useState(
     defaultValues?.price != null
@@ -96,15 +110,6 @@ export function StepPricing({
     const numeric = raw === "" ? null : parseInt(raw, 10);
     setValue("price", numeric, { shouldValidate: true });
     setPriceDisplay(raw === "" ? "" : parseInt(raw, 10).toLocaleString("en-NG"));
-  }
-
-  function handlePickupSelect(result: PlaceResult) {
-    setValue("pickup_address", result.formatted_address, { shouldValidate: true });
-    const area = result.city
-      ? `${result.city}, ${result.state ?? ""}`.trim().replace(/,\s*$/, "")
-      : result.state ?? "";
-    setValue("area", area);
-    setPickupError("");
   }
 
   function onSubmit(data: StepPricingData) {
@@ -208,21 +213,46 @@ export function StepPricing({
         )}
       </div>
 
-      {/* Hidden fields — set programmatically from PlacesAddressInput */}
+      {/* Hidden fields — set programmatically */}
       <input type="hidden" {...register("pickup_address")} />
       <input type="hidden" {...register("area")} />
 
-      <PlacesAddressInput
-        label="Pickup address"
-        placeholder="Search for your pickup address"
-        defaultValue={defaultValues?.pickup_address ?? ""}
-        onSelect={handlePickupSelect}
-        onClear={() => {
-          setValue("pickup_address", "");
-          setValue("area", "");
+      {/* Pickup address */}
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-text">
+          Pickup address <span className="text-error">*</span>
+        </label>
+        <div
+          className={[
+            'flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors',
+            watchedPickupAddress ? 'border-border bg-card' : 'border-border bg-surface',
+          ].join(' ')}
+        >
+          <MapPin size={15} className="shrink-0 text-text-muted" strokeWidth={2} />
+          <span className={`flex-1 text-sm truncate ${watchedPickupAddress ? 'text-text' : 'text-text-subtle'}`}>
+            {watchedPickupAddress || 'No address selected'}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="shrink-0 text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
+          >
+            {watchedPickupAddress ? 'Change' : 'Choose'}
+          </button>
+        </div>
+        {pickupError && <p className="text-sm text-error">{pickupError}</p>}
+      </div>
+
+      <AddressPickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        title="Choose pickup address"
+        currentAddress={watchedPickupAddress || null}
+        onConfirm={(address, state) => {
+          setValue('pickup_address', address, { shouldValidate: true });
+          setValue('area', state ?? '');
+          setPickupError('');
         }}
-        error={pickupError}
-        required
       />
 
       <div className="flex gap-3 pt-2">
