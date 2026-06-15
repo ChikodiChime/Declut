@@ -1,5 +1,5 @@
 // lib/types/earnings.ts
-export type TransferStatus = 'transferred' | 'processing' | 'pending'
+export type TransferStatus = 'transferred' | 'processing' | 'in_wallet' | 'pending'
 
 export type EarningsOrder = {
   id: string

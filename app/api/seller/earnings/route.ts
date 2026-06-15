@@ -8,6 +8,7 @@ import type { TransferStatus, EarningsOrder, EarningsSummary } from '@/lib/types
 function deriveTransferStatus(paystack_transfer_id: string | null): TransferStatus {
   if (!paystack_transfer_id) return 'pending'
   if (paystack_transfer_id === 'pending') return 'processing'
+  if (paystack_transfer_id === 'credited') return 'in_wallet'
   return 'transferred'
 }
 

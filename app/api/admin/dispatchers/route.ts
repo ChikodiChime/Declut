@@ -13,7 +13,7 @@ export async function GET() {
 
   const { data, error } = await supabaseAdmin
     .from('users')
-    .select('id, name, email, created_at')
+    .select('id, name, email, phone, suspended, created_at')
     .eq('account_type', 'dispatcher')
     .order('created_at', { ascending: false })
 

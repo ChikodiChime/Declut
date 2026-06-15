@@ -11,12 +11,24 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url)
-  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+  const page   = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+  const q      = searchParams.get('q')?.trim() ?? ''
+  const type   = searchParams.get('type') ?? ''
+  const status = searchParams.get('status') ?? ''
   const offset = (page - 1) * PAGE_SIZE
 
-  const { data, count, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from('users')
     .select('id, name, email, account_type, suspended, created_at', { count: 'exact' })
+
+  if (q) query = query.or(`name.ilike.%${q}%,email.ilike.%${q}%`)
+  if (type && ['individual', 'business', 'dispatcher', 'admin'].includes(type)) {
+    query = query.eq('account_type', type)
+  }
+  if (status === 'active')    query = query.eq('suspended', false)
+  if (status === 'suspended') query = query.eq('suspended', true)
+
+  const { data, count, error } = await query
     .order('created_at', { ascending: false })
     .range(offset, offset + PAGE_SIZE - 1)
 

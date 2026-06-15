@@ -60,10 +60,9 @@ function OrderProgressHero({
 }) {
   const resolved    = STATUS_ALIAS[status] ?? status
   const isCancelled = resolved === 'cancelled'
-  const isDelivered = resolved === 'delivered'
 
-  const bg    = isCancelled ? '#dc2626' : isDelivered ? '#059669' : '#3730a3'
-  const bgEnd = isCancelled ? '#ef4444' : isDelivered ? '#10b981' : '#4338ca'
+  const bg    = isCancelled ? '#dc2626' : '#3730a3'
+  const bgEnd = isCancelled ? '#ef4444' : '#4338ca'
 
   const steps        = deliveryType === 'delivery' ? DELIVERY_STEPS : PICKUP_STEPS
   const currentIndex = (steps as unknown as string[]).indexOf(resolved)

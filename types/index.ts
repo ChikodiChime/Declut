@@ -18,6 +18,7 @@ export interface User {
   paystack_account_number: string | null
   paystack_account_name: string | null
   paystack_onboarding_complete: boolean
+  wallet_balance: number
   avatar_url: string | null
   phone: string | null
   address: string | null

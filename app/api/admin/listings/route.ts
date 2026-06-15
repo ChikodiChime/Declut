@@ -11,13 +11,22 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url)
-  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+  const page   = Math.max(1, parseInt(searchParams.get('page') ?? '1'))
+  const q      = searchParams.get('q')?.trim() ?? ''
+  const type   = searchParams.get('type') ?? ''
+  const status = searchParams.get('status') ?? ''
   const offset = (page - 1) * PAGE_SIZE
 
-  const { data, count, error } = await supabaseAdmin
+  let query = supabaseAdmin
     .from('listings')
     .select('id, title, listing_type, status, area, created_at, users!seller_id(name, email)', { count: 'exact' })
     .neq('status', 'removed')
+
+  if (q)      query = query.ilike('title', `%${q}%`)
+  if (type   && ['for_sale', 'free', 'donate'].includes(type))              query = query.eq('listing_type', type)
+  if (status && ['available', 'sold', 'claimed', 'donated'].includes(status)) query = query.eq('status', status)
+
+  const { data, count, error } = await query
     .order('created_at', { ascending: false })
     .range(offset, offset + PAGE_SIZE - 1)
 

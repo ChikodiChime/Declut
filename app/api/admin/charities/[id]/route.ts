@@ -10,19 +10,22 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { id } = await params
 
-  let body: { name?: unknown; description?: unknown }
+  let body: { name?: unknown; description?: unknown; active?: unknown }
   try {
     body = await req.json()
   } catch {
     return err('Invalid request body', 'BAD_REQUEST', 400)
   }
 
-  const updates: { name?: string; description?: string } = {}
+  const updates: { name?: string; description?: string; active?: boolean } = {}
   if (typeof body.name === 'string' && body.name.trim().length >= 2) {
     updates.name = body.name.trim()
   }
   if (typeof body.description === 'string') {
     updates.description = body.description.trim()
+  }
+  if (typeof body.active === 'boolean') {
+    updates.active = body.active
   }
 
   if (Object.keys(updates).length === 0) {

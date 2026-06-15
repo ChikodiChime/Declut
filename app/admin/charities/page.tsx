@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Heart, Plus, Pencil, Trash2 } from 'lucide-react'
+import { Modal } from '@/components/ui'
+import { toast } from 'sonner'
 
 interface Charity {
   id: string
@@ -40,6 +42,17 @@ async function updateCharity(id: string, body: { name: string; description: stri
   return json.data.charity
 }
 
+async function toggleCharityActive(id: string, active: boolean): Promise<Charity> {
+  const res = await fetch(`/api/admin/charities/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active }),
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error?.message ?? 'Failed to update charity')
+  return json.data.charity
+}
+
 async function deleteCharity(id: string) {
   const res = await fetch(`/api/admin/charities/${id}`, { method: 'DELETE' })
   const json = await res.json()
@@ -48,6 +61,7 @@ async function deleteCharity(id: string) {
 
 const EMPTY_FORM = { name: '', description: '' }
 
+
 export default function AdminCharitiesPage() {
   const queryClient = useQueryClient()
   const { data: charities = [], isLoading } = useQuery({ queryKey: ['admin', 'charities'], queryFn: fetchCharities })
@@ -55,25 +69,66 @@ export default function AdminCharitiesPage() {
 
   const [form, setForm] = useState(EMPTY_FORM)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [showForm, setShowForm] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const createMutation = useMutation({
     mutationFn: createCharity,
-    onSuccess: () => { invalidate(); setForm(EMPTY_FORM); setShowForm(false); setFormError(null) },
+    onSuccess: () => { invalidate(); closeModal() },
     onError: (e: Error) => setFormError(e.message),
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, body }: { id: string; body: { name: string; description: string } }) => updateCharity(id, body),
-    onSuccess: () => { invalidate(); setEditingId(null); setForm(EMPTY_FORM); setShowForm(false); setFormError(null) },
+    onSuccess: () => { invalidate(); closeModal() },
     onError: (e: Error) => setFormError(e.message),
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteCharity,
-    onSuccess: invalidate,
+    onSuccess: () => { invalidate(); setDeletingId(null) },
   })
+
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) => toggleCharityActive(id, active),
+    onMutate: async ({ id, active }) => {
+      await queryClient.cancelQueries({ queryKey: ['admin', 'charities'] })
+      const previous = queryClient.getQueryData<Charity[]>(['admin', 'charities'])
+      queryClient.setQueryData<Charity[]>(['admin', 'charities'], (old) =>
+        old?.map((c) => (c.id === id ? { ...c, active } : c)) ?? []
+      )
+      return { previous }
+    },
+    onError: (_err, _vars, ctx) => {
+      queryClient.setQueryData(['admin', 'charities'], ctx?.previous)
+    },
+    onSuccess: (updated) => {
+      toast.success(updated.active ? 'Charity activated' : 'Charity deactivated')
+    },
+    onSettled: () => invalidate(),
+  })
+
+  function openCreate() {
+    setEditingId(null)
+    setForm(EMPTY_FORM)
+    setFormError(null)
+    setModalOpen(true)
+  }
+
+  function openEdit(c: Charity) {
+    setEditingId(c.id)
+    setForm({ name: c.name, description: c.description ?? '' })
+    setFormError(null)
+    setModalOpen(true)
+  }
+
+  function closeModal() {
+    setModalOpen(false)
+    setEditingId(null)
+    setForm(EMPTY_FORM)
+    setFormError(null)
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -83,20 +138,6 @@ export default function AdminCharitiesPage() {
     } else {
       createMutation.mutate(form)
     }
-  }
-
-  function startEdit(c: Charity) {
-    setEditingId(c.id)
-    setForm({ name: c.name, description: c.description ?? '' })
-    setShowForm(true)
-    setFormError(null)
-  }
-
-  function cancelForm() {
-    setShowForm(false)
-    setEditingId(null)
-    setForm(EMPTY_FORM)
-    setFormError(null)
   }
 
   const isPending = createMutation.isPending || updateMutation.isPending
@@ -117,64 +158,19 @@ export default function AdminCharitiesPage() {
                 </span>
               )}
             </div>
-            <p className="text-xs text-text-muted mt-0.5">CRUD donation recipients</p>
+            <p className="text-xs text-text-muted mt-0.5">Manage donation recipients</p>
           </div>
         </div>
-        {!showForm && (
-          <button
-            onClick={() => { setShowForm(true); setEditingId(null); setForm(EMPTY_FORM) }}
-            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover transition-colors"
-          >
-            <Plus size={14} strokeWidth={2.5} />
-            Add charity
-          </button>
-        )}
+        <button
+          onClick={openCreate}
+          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover transition-colors"
+        >
+          <Plus size={14} strokeWidth={2.5} />
+          Add charity
+        </button>
       </div>
 
-      {showForm && (
-        <div className="bg-card rounded-2xl border border-border shadow-card px-8 py-7 mb-6">
-          <h2 className="text-base font-semibold text-text mb-5">
-            {editingId ? 'Edit charity' : 'New charity'}
-          </h2>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div>
-              <label className="block text-xs font-medium mb-1.5 text-text-muted">Name</label>
-              <input
-                type="text"
-                value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="Charity name"
-                required
-                className="w-full rounded-xl border border-border bg-surface text-text px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium mb-1.5 text-text-muted">Description (optional)</label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                placeholder="Brief description of the charity"
-                rows={3}
-                className="w-full rounded-xl border border-border bg-surface text-text px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all resize-none"
-              />
-            </div>
-            {formError && <p className="text-xs text-red-600 font-medium">{formError}</p>}
-            <div className="flex gap-3 pt-1">
-              <button type="submit" disabled={isPending}
-                className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover disabled:opacity-60 transition-colors">
-                {isPending ? 'Saving…' : editingId ? 'Save changes' : 'Add charity'}
-              </button>
-              <button type="button" onClick={cancelForm}
-                className="rounded-xl px-5 py-2.5 text-sm font-medium border border-border text-text-muted hover:bg-surface transition-colors">
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
       <div className="rounded-2xl overflow-hidden shadow-elevated">
-        {/* Dark header */}
         <div
           className="px-6 py-4"
           style={{ background: 'linear-gradient(135deg, #2e2b85 0%, #3730a3 100%)' }}
@@ -194,6 +190,7 @@ export default function AdminCharitiesPage() {
                     <div className="h-3 bg-border rounded w-72" />
                   </div>
                   <div className="flex gap-2 shrink-0">
+                    <div className="w-9 h-5 bg-border rounded-full" />
                     <div className="w-7 h-7 bg-border rounded-lg" />
                     <div className="w-7 h-7 bg-border rounded-lg" />
                   </div>
@@ -213,35 +210,115 @@ export default function AdminCharitiesPage() {
               {charities.map((c) => (
                 <li
                   key={c.id}
-                  className="flex items-start gap-4 px-6 py-4 transition-all hover:bg-primary/[0.035] hover:[box-shadow:inset_4px_0_0_#3730a3] group"
+                  className={`flex items-center gap-4 px-6 py-4 transition-colors hover:bg-primary/[0.035] ${!c.active ? 'opacity-60' : ''}`}
                 >
-                  <div className="flex-1 min-w-0 pt-0.5">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-text">{c.name}</p>
                     {c.description && (
                       <p className="text-xs text-text-muted mt-0.5 leading-relaxed">{c.description}</p>
                     )}
                   </div>
-                  <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => startEdit(c)}
-                      className="p-1.5 rounded-lg hover:bg-primary/10 text-text-subtle hover:text-primary transition-colors"
-                    >
-                      <Pencil size={14} strokeWidth={1.75} />
-                    </button>
-                    <button
-                      onClick={() => { if (confirm(`Delete "${c.name}"?`)) deleteMutation.mutate(c.id) }}
-                      disabled={deleteMutation.isPending}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-text-subtle hover:text-red-600 transition-colors disabled:opacity-50"
-                    >
-                      <Trash2 size={14} strokeWidth={1.75} />
-                    </button>
-                  </div>
+
+                  {deletingId === c.id ? (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-xs text-text-muted">Delete?</span>
+                      <button
+                        onClick={() => deleteMutation.mutate(c.id)}
+                        disabled={deleteMutation.isPending}
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 transition-colors"
+                      >
+                        {deleteMutation.isPending ? 'Deleting…' : 'Yes, delete'}
+                      </button>
+                      <button
+                        onClick={() => setDeletingId(null)}
+                        className="rounded-lg px-3 py-1.5 text-xs font-medium border border-border text-text-muted hover:bg-surface transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => openEdit(c)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-text-muted hover:bg-surface hover:text-text transition-colors"
+                      >
+                        <Pencil size={11} strokeWidth={2} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => toggleMutation.mutate({ id: c.id, active: !c.active })}
+                        disabled={toggleMutation.isPending}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 ${
+                          c.active
+                            ? 'bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100'
+                            : 'bg-green-50 border border-green-200 text-green-700 hover:bg-green-100'
+                        }`}
+                      >
+                        {c.active ? 'Deactivate' : 'Activate'}
+                      </button>
+                      <button
+                        onClick={() => setDeletingId(c.id)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors"
+                      >
+                        <Trash2 size={11} strokeWidth={2} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
           )}
         </div>
       </div>
+
+      <Modal
+        open={modalOpen}
+        onClose={closeModal}
+        title={editingId ? 'Edit charity' : 'Add charity'}
+      >
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-medium mb-1.5 text-text-muted">Name</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Charity name"
+              required
+              autoFocus
+              className="w-full rounded-xl border border-border bg-surface text-text px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1.5 text-text-muted">Description <span className="font-normal">(optional)</span></label>
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Brief description of the charity"
+              rows={3}
+              className="w-full rounded-xl border border-border bg-surface text-text px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 transition-all resize-none"
+            />
+          </div>
+          {formError && <p className="text-xs text-red-600 font-medium">{formError}</p>}
+          <div className="flex gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white bg-primary hover:bg-primary-hover disabled:opacity-60 transition-colors"
+            >
+              {isPending ? 'Saving…' : editingId ? 'Save changes' : 'Add charity'}
+            </button>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="rounded-xl px-5 py-2.5 text-sm font-medium border border-border text-text-muted hover:bg-surface transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }

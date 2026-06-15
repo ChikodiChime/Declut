@@ -1,5 +1,4 @@
 // lib/payout.ts
-import { initiateTransfer } from '@/lib/paystack'
 import { supabaseAdmin } from '@/lib/supabase'
 import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
 
@@ -15,9 +14,9 @@ export async function executePayout(orderId: string): Promise<void> {
     return
   }
 
-  if (order.paystack_transfer_id) return // already paid out (idempotent check)
+  if (order.paystack_transfer_id) return // already credited (idempotent)
 
-  // Atomically claim the payout slot — prevents concurrent double-payout
+  // Atomically claim the payout slot — prevents concurrent double-credit
   const { data: locked } = await supabaseAdmin
     .from('orders')
     .update({ paystack_transfer_id: 'pending' })
@@ -39,8 +38,8 @@ export async function executePayout(orderId: string): Promise<void> {
     .eq('id', order.seller_id)
     .single()
 
-  if (!seller?.paystack_recipient_code || !seller.paystack_onboarding_complete) {
-    console.error(`executePayout: seller ${order.seller_id} has not completed Paystack onboarding — clearing sentinel so payout can be retried`)
+  if (!seller?.paystack_onboarding_complete) {
+    console.error(`executePayout: seller ${order.seller_id} has not completed bank onboarding — clearing sentinel`)
     await supabaseAdmin
       .from('orders')
       .update({ paystack_transfer_id: null })
@@ -49,24 +48,20 @@ export async function executePayout(orderId: string): Promise<void> {
     return
   }
 
-  const sellerAmountKobo = Math.round(
-    order.item_price * (1 - PLATFORM_FEE_PERCENT) * 100
-  )
+  const sellerAmountNaira = Math.round(order.item_price * (1 - PLATFORM_FEE_PERCENT))
 
   try {
-    const transfer = await initiateTransfer({
-      source: 'balance',
-      amount: sellerAmountKobo,
-      recipient: seller.paystack_recipient_code,
-      reason: `Payout for order #${orderId.slice(0, 8)}`,
+    await supabaseAdmin.rpc('credit_wallet', {
+      p_user_id: order.seller_id,
+      p_amount: sellerAmountNaira,
     })
 
     await supabaseAdmin
       .from('orders')
-      .update({ paystack_transfer_id: transfer.transfer_code })
+      .update({ paystack_transfer_id: 'credited' })
       .eq('id', orderId)
   } catch (error) {
-    console.error(`executePayout: Paystack transfer failed for order ${orderId}:`, error)
+    console.error(`executePayout: wallet credit failed for order ${orderId}:`, error)
     await supabaseAdmin
       .from('orders')
       .update({ paystack_transfer_id: null })

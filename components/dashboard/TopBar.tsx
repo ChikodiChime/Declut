@@ -382,7 +382,7 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
 
 // ─── AvatarMenu ───────────────────────────────────────────────────────────────
 
-function AvatarMenu() {
+export function AvatarMenu() {
   const { data: me } = useMe();
   const { mutate: signOut } = useSignOut();
   const [open, setOpen] = useState(false);
