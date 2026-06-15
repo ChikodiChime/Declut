@@ -21,13 +21,21 @@ export interface User {
   wallet_balance: number
   avatar_url: string | null
   phone: string | null
-  address: string | null
-  address_state: string | null
   created_at: string
   email_verified: boolean
   otp_code: string | null
   otp_expires_at: string | null
   otp_resend_after: string | null
+}
+
+export interface UserAddress {
+  id: string
+  user_id: string
+  label: string
+  address: string
+  address_state: string | null
+  is_default: boolean
+  created_at: string
 }
 
 export interface Listing {
