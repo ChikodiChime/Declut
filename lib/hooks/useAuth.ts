@@ -137,7 +137,7 @@ export function useMe() {
 export function useUpdateProfile() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (input: { name?: string; avatar_url?: string; phone?: string; address?: string; address_state?: string | null }) => {
+    mutationFn: async (input: { name?: string; avatar_url?: string; phone?: string }) => {
       const res = await fetch('/api/users/me', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
