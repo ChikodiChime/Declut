@@ -14,11 +14,10 @@ create table if not exists user_addresses (
 -- 2. RLS
 alter table user_addresses enable row level security;
 
-create policy "users can manage their own addresses"
+create policy "user_addresses: service role only"
   on user_addresses
   for all
-  using (user_id = auth.uid())
-  with check (user_id = auth.uid());
+  using (false);
 
 -- 3. Migrate existing profile addresses
 insert into user_addresses (user_id, label, address, address_state, is_default)
