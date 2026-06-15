@@ -6,7 +6,7 @@ import { Truck, BarChart2, User } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/dispatch', label: 'Deliveries', icon: Truck },
-  { href: '/dispatch/stats', label: 'Stats', icon: BarChart2 },
+  { href: '/dispatch/stats', label: 'Earnings', icon: BarChart2 },
   { href: '/dispatch/profile', label: 'Profile', icon: User },
 ]
 

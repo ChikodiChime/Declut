@@ -87,7 +87,7 @@ function CompletedCard({ order }: { order: CompletedDelivery }) {
   )
 }
 
-export default function StatsPage() {
+export default function EarningsPage() {
   const { data: completed, isLoading } = useCompletedDeliveries()
 
   const now = new Date()
