@@ -35,11 +35,13 @@ export async function POST(req: Request) {
       })
       .eq('id', authUser.id)
 
-    await supabaseAdmin
-      .from('listings')
-      .update({ status: 'available' })
-      .eq('seller_id', authUser.id)
-      .eq('status', 'draft')
+    if (authUser.account_type !== 'dispatcher') {
+      await supabaseAdmin
+        .from('listings')
+        .update({ status: 'available' })
+        .eq('seller_id', authUser.id)
+        .eq('status', 'draft')
+    }
 
     return ok({ recipient_code: recipient.recipient_code })
   } catch (error) {
