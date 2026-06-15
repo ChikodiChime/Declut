@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -496,7 +496,7 @@ function ListingDrawer({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function AdminListingsPage() {
+function AdminListingsContent() {
   const queryClient  = useQueryClient()
   const searchParams = useSearchParams()
   const [page, setPage]       = useState(1)
@@ -729,5 +729,13 @@ export default function AdminListingsPage() {
         </div>
       </Modal>
     </div>
+  )
+}
+
+export default function AdminListingsPage() {
+  return (
+    <Suspense>
+      <AdminListingsContent />
+    </Suspense>
   )
 }

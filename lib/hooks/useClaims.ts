@@ -77,8 +77,8 @@ export function useSellerClaims() {
 export function useClaimListing() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (listing_id: string) =>
-      apiRequest('POST', '/api/claims', { listing_id }),
+    mutationFn: ({ listing_id, pickup_address }: { listing_id: string; pickup_address?: string }) =>
+      apiRequest('POST', '/api/claims', { listing_id, pickup_address }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['claims', 'mine'] })
       toast.success('Item claimed! Waiting for seller to accept.')

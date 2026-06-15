@@ -15,10 +15,14 @@ export async function POST(req: Request) {
     return err('Invalid request body', 'BAD_REQUEST', 400)
   }
 
-  const { listing_id } = body as Record<string, unknown>
+  const { listing_id, pickup_address } = body as Record<string, unknown>
   if (!listing_id || typeof listing_id !== 'string') {
     return err('listing_id is required', 'VALIDATION_ERROR', 400)
   }
+  if (pickup_address !== undefined && (typeof pickup_address !== 'string' || pickup_address.trim().length > 300)) {
+    return err('Invalid pickup_address', 'VALIDATION_ERROR', 400)
+  }
+  const pickupAddr = typeof pickup_address === 'string' ? pickup_address.trim() || null : null
 
   const { data: listing, error: listingError } = await supabaseAdmin
     .from('listings')
@@ -60,7 +64,7 @@ export async function POST(req: Request) {
   if (existingClaim) {
     const { data: reactivated, error: reactivateError } = await supabaseAdmin
       .from('claims')
-      .update({ status: 'pending', claimed_at: new Date().toISOString(), accepted_at: null, completed_at: null, pickup_address: null })
+      .update({ status: 'pending', claimed_at: new Date().toISOString(), accepted_at: null, completed_at: null, pickup_address: pickupAddr })
       .eq('id', existingClaim.id)
       .select('*')
       .single()
@@ -73,7 +77,7 @@ export async function POST(req: Request) {
   } else {
     const { data: inserted, error: claimError } = await supabaseAdmin
       .from('claims')
-      .insert({ listing_id, buyer_id: authUser.id })
+      .insert({ listing_id, buyer_id: authUser.id, pickup_address: pickupAddr })
       .select('*')
       .single()
 

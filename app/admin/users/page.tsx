@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -437,7 +437,7 @@ function UserDrawer({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function AdminUsersPage() {
+function AdminUsersContent() {
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
   const [page, setPage]             = useState(1)
@@ -654,5 +654,13 @@ export default function AdminUsersPage() {
         suspendPending={mutation.isPending}
       />
     </div>
+  )
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense>
+      <AdminUsersContent />
+    </Suspense>
   )
 }

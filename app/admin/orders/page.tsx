@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -492,7 +492,7 @@ function OrderDrawer({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function AdminOrdersPage() {
+function AdminOrdersContent() {
   const queryClient  = useQueryClient()
   const searchParams = useSearchParams()
   const [page, setPage]       = useState(1)
@@ -716,5 +716,13 @@ export default function AdminOrdersPage() {
         isCancelling={cancelMutation.isPending}
       />
     </div>
+  )
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <Suspense>
+      <AdminOrdersContent />
+    </Suspense>
   )
 }

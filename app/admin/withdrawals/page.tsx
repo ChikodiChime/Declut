@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -473,7 +473,7 @@ const WITHDRAWAL_STATUS_FILTERS = [
 
 type WStatusFilter = typeof WITHDRAWAL_STATUS_FILTERS[number]['value']
 
-export default function AdminWithdrawalsPage() {
+function AdminWithdrawalsContent() {
   const queryClient  = useQueryClient()
   const searchParams = useSearchParams()
   const [search, setSearch]             = useState(() => searchParams.get('q') ?? '')
@@ -730,5 +730,13 @@ export default function AdminWithdrawalsPage() {
         isPending={processMutation.isPending || rejectMutation.isPending}
       />
     </div>
+  )
+}
+
+export default function AdminWithdrawalsPage() {
+  return (
+    <Suspense>
+      <AdminWithdrawalsContent />
+    </Suspense>
   )
 }

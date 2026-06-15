@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ListingImage } from "@/components/ui";
+import { ListingImage, AddressPickerModal } from "@/components/ui";
+import { useAddresses } from "@/lib/hooks/useAddresses";
 import { BrowseCard, ListingStructuredData } from "@/components/listings";
 import {
   ArrowLeft,
@@ -212,6 +213,9 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   });
   const { mutate: claim, isPending: claiming } = useClaimListing();
   const { mutate: updateClaim, isPending: updating } = useUpdateClaim();
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const { data: addresses = [] } = useAddresses();
+  const defaultAddr = addresses.find((a) => a.is_default) ?? addresses[0] ?? null;
 
   if (listing.listing_type === "donate") {
     return (
@@ -369,27 +373,40 @@ function ClaimCTA({ listing }: { listing: ListingWithSeller }) {
   }
 
   return (
-    <button
-      onClick={() => claim(listing.id)}
-      disabled={claiming}
-      className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-60 text-white flex items-center justify-center gap-2"
-      style={{ background: "#10b981" }}
-      onMouseEnter={(e) => {
-        if (!claiming) e.currentTarget.style.background = "#059669";
-      }}
-      onMouseLeave={(e) => {
-        if (!claiming) e.currentTarget.style.background = "#10b981";
-      }}
-    >
-      {claiming ? (
-        <>
-          <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-          Claiming…
-        </>
-      ) : (
-        "Claim for Free"
-      )}
-    </button>
+    <>
+      <button
+        onClick={() => setPickerOpen(true)}
+        disabled={claiming}
+        className="w-full h-14 rounded-2xl font-semibold text-[15px] tracking-tight transition-all duration-200 active:scale-[0.98] disabled:opacity-60 text-white flex items-center justify-center gap-2"
+        style={{ background: "#10b981" }}
+        onMouseEnter={(e) => {
+          if (!claiming) e.currentTarget.style.background = "#059669";
+        }}
+        onMouseLeave={(e) => {
+          if (!claiming) e.currentTarget.style.background = "#10b981";
+        }}
+      >
+        {claiming ? (
+          <>
+            <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+            Claiming…
+          </>
+        ) : (
+          "Claim for Free"
+        )}
+      </button>
+
+      <AddressPickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        title="Choose pickup address"
+        currentAddress={defaultAddr?.address ?? null}
+        onConfirm={(address) => {
+          setPickerOpen(false);
+          claim({ listing_id: listing.id, pickup_address: address });
+        }}
+      />
+    </>
   );
 }
 
