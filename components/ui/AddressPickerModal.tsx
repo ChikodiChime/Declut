@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, MapPin, Plus, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
+import { Check, Plus, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
 import { Modal } from './Modal'
 import PlacesAddressInput, { type PlaceResult } from '@/components/checkout/PlacesAddressInput'
 import { useAddresses, useCreateAddress } from '@/lib/hooks/useAddresses'
