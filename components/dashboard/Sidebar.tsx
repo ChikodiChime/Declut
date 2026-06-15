@@ -14,6 +14,7 @@ import {
   X,
   Search,
   User,
+  BookMarked,
 } from "lucide-react";
 
 function PanelIcon({ size = 20 }: { size?: number }) {
@@ -49,6 +50,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard/listings", label: "My Listings", icon: Package },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
   { href: "/dashboard/billing", label: "Payouts", icon: CreditCard },
+  { href: "/dashboard/address-book", label: "Address Book", icon: BookMarked },
   { href: "/", label: "Browse Listings", icon: Store },
 ];
 

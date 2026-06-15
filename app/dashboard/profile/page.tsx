@@ -18,7 +18,6 @@ import {
 import { useMe, useUpdateProfile, useChangePassword, useSendVerification } from '@/lib/hooks/useAuth'
 import { useUploadImage } from '@/lib/hooks/useListings'
 import { Modal } from '@/components/ui'
-import PlacesAddressInput from "@/components/checkout/PlacesAddressInput"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -430,13 +429,11 @@ function ContactCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
   const [editing, setEditing] = useState(false)
   const [phone, setPhone] = useState('')
   const [phoneError, setPhoneError] = useState('')
-  const [selectedAddress, setSelectedAddress] = useState<{ address: string; state: string | null } | null>(null)
   const [saveError, setSaveError] = useState('')
   const { mutate, isPending } = useUpdateProfile()
 
   function startEdit() {
     setPhone(me?.phone ?? '')
-    setSelectedAddress(me?.address ? { address: me.address, state: null } : null)
     setPhoneError('')
     setSaveError('')
     setEditing(true)
@@ -450,13 +447,13 @@ function ContactCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
     setPhoneError('')
     setSaveError('')
     mutate(
-      { phone: trimmedPhone || undefined, address: selectedAddress?.address || undefined, address_state: selectedAddress?.state || undefined },
+      { phone: trimmedPhone || undefined },
       { onSuccess: () => setEditing(false), onError: e => setSaveError(e.message) }
     )
   }
 
   return (
-    <InfoCard title="Contact" subtitle="Phone number and delivery address" editing={editing} onEdit={startEdit} onCancel={cancel} onSave={save} saving={isPending} delay={0.1}>
+    <InfoCard title="Contact" subtitle="Phone number and delivery addresses" editing={editing} onEdit={startEdit} onCancel={cancel} onSave={save} saving={isPending} delay={0.1}>
       {editing ? (
         <div className="px-5 py-4 space-y-4">
           <div>
@@ -464,19 +461,17 @@ function ContactCard({ me }: { me: ReturnType<typeof useMe>['data'] }) {
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} autoFocus maxLength={30} placeholder="+234 800 000 0000" className={INPUT_CLS} />
             {phoneError && <p className="mt-1.5 text-xs text-error">{phoneError}</p>}
           </div>
-          <PlacesAddressInput
-            label="Delivery address"
-            defaultValue={me?.address ?? ''}
-            placeholder="Search for your delivery address"
-            onSelect={result => setSelectedAddress({ address: result.formatted_address, state: result.state })}
-            onClear={() => setSelectedAddress(null)}
-            error={saveError}
-          />
+          {saveError && <p className="text-xs text-error">{saveError}</p>}
         </div>
       ) : (
         <>
           <InfoRow label="Phone" value={me?.phone ?? <span className="text-text-subtle">—</span>} />
-          <InfoRow label="Delivery address" value={me?.address ?? <span className="text-text-subtle">—</span>} />
+          <div className="flex items-center justify-between px-5 py-3.5 gap-4">
+            <span className="text-sm text-text-muted shrink-0">Delivery addresses</span>
+            <Link href="/dashboard/address-book" className="text-sm font-semibold text-primary hover:text-primary-hover transition-colors">
+              Manage addresses →
+            </Link>
+          </div>
         </>
       )}
     </InfoCard>
