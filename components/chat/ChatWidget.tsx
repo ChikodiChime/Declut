@@ -60,16 +60,16 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
   return (
     <div className={containerClass}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="font-semibold text-sm">Declutter Assistant</span>
+          <div className="w-2 h-2 rounded-full bg-success" />
+          <span className="font-semibold text-sm text-text">Declutter Assistant</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {!fullPage && (
             <Link
               href="/chat"
-              className="p-1.5 rounded-md hover:bg-accent text-muted-foreground"
+              className="p-1.5 rounded-lg hover:bg-background text-text-muted hover:text-text transition-colors"
               title="Open full page"
             >
               <Maximize2 size={15} />
@@ -78,7 +78,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-md hover:bg-accent text-muted-foreground"
+              className="p-1.5 rounded-lg hover:bg-background text-text-muted hover:text-text transition-colors"
             >
               <X size={15} />
             </button>
@@ -87,10 +87,10 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-background">
         {messages.length === 0 && (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground text-center pt-4">
+          <div className="space-y-4 pt-2">
+            <p className="text-sm text-text-muted text-center">
               Ask me anything about listings, orders, or your account.
             </p>
             <div className="flex flex-wrap gap-2 justify-center">
@@ -98,7 +98,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
                 <button
                   key={prompt}
                   onClick={() => selectSuggestedPrompt(prompt)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-border hover:bg-accent transition-colors text-left"
+                  className="text-xs px-3 py-1.5 rounded-full border border-border bg-card text-text hover:bg-border transition-colors text-left"
                 >
                   {prompt}
                 </button>
@@ -112,21 +112,20 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
             const textContent = getTextFromParts(message.parts)
             return (
               <div key={message.id} className="flex justify-end">
-                <div className="bg-primary text-primary-foreground text-sm rounded-2xl rounded-tr-sm px-4 py-2 max-w-[80%] whitespace-pre-wrap">
+                <div className="bg-primary text-white text-sm rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[80%] whitespace-pre-wrap leading-relaxed">
                   {textContent}
                 </div>
               </div>
             )
           }
 
-          // Assistant message — extract text and tool result listings
           const textContent = getTextFromParts(message.parts)
           const listings = extractListingsFromParts(message.parts)
 
           return (
             <div key={message.id} className="flex flex-col gap-2">
               {textContent && (
-                <div className="bg-muted text-sm rounded-2xl rounded-tl-sm px-4 py-2 max-w-[90%] whitespace-pre-wrap">
+                <div className="bg-card text-text text-sm rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[90%] whitespace-pre-wrap leading-relaxed border border-border shadow-sm">
                   {textContent}
                 </div>
               )}
@@ -148,14 +147,14 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
         })}
 
         {isLoading && (
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <div className="flex items-center gap-2 text-text-muted text-sm">
             <Loader2 size={14} className="animate-spin" />
             <span>Thinking…</span>
           </div>
         )}
 
         {error && (
-          <div className="flex items-center gap-2 text-destructive text-sm bg-destructive/10 rounded-xl px-3 py-2">
+          <div className="flex items-center gap-2 text-error text-sm bg-error-bg rounded-xl px-3 py-2">
             <AlertCircle size={14} />
             <span>Something went wrong. Please try again.</span>
           </div>
@@ -165,7 +164,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
       </div>
 
       {/* Input */}
-      <div className="shrink-0 border-t border-border px-4 py-3">
+      <div className="shrink-0 border-t border-border bg-card px-4 py-3">
         <form onSubmit={handleFormSubmit} className="flex items-end gap-2">
           <textarea
             value={input}
@@ -173,14 +172,14 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
             onKeyDown={handleKeyDown}
             placeholder="Ask about listings, orders…"
             rows={1}
-            className="flex-1 resize-none rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 max-h-32 overflow-y-auto"
+            className="flex-1 resize-none rounded-xl border border-border bg-background text-text placeholder:text-text-subtle px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 max-h-32 overflow-y-auto transition-colors"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="p-2 rounded-xl bg-primary text-primary-foreground disabled:opacity-40 hover:opacity-90 transition-opacity shrink-0"
+            className="p-2.5 rounded-xl bg-primary text-white disabled:opacity-40 hover:bg-primary-hover transition-colors shrink-0"
           >
-            <Send size={16} />
+            <Send size={15} />
           </button>
         </form>
       </div>
@@ -188,7 +187,6 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
   )
 }
 
-// Extract plain text from UIMessage parts
 function getTextFromParts(parts: Array<{ type: string; text?: string }>): string {
   return parts
     .filter((p) => p.type === 'text' && typeof p.text === 'string')
@@ -196,7 +194,6 @@ function getTextFromParts(parts: Array<{ type: string; text?: string }>): string
     .join('')
 }
 
-// Extract ChatListing objects from dynamic tool result parts in an assistant message
 function extractListingsFromParts(
   parts: Array<{ type: string; state?: string; toolName?: string; output?: unknown }>
 ): ChatListing[] {
