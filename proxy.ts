@@ -49,6 +49,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/api/cart') ||
     pathname === '/api/orders' ||
     pathname === '/api/orders/settle' ||
+    pathname === '/api/chat' ||
     pathname === '/cart' ||
     pathname.startsWith('/checkout')
 
@@ -181,10 +182,12 @@ export const config = {
     '/api/dispatch/:path*',
     '/api/paystack/:path*',
     '/api/admin/:path*',
+    '/api/user/:path*',
     '/api/withdrawals/:path*',
     '/api/notifications/:path*',
     '/api/cron/:path*',
     '/api/webhooks/:path*',
+    '/api/chat',
     '/listings/:path*',
     '/dashboard/:path*',
     '/cart/:path*',
