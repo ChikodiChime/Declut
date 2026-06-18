@@ -44,13 +44,14 @@ ${identity}
 export async function POST(request: Request) {
   const authUser = await getAuthUser()
   const { messages } = await request.json()
+  const cappedMessages = Array.isArray(messages) ? messages.slice(-20) : []
   const cookieHeader = request.headers.get('cookie') ?? ''
   const origin = new URL(request.url).origin
 
   const result = streamText({
     model: google('gemini-2.0-flash'),
     system: buildSystemPrompt(authUser),
-    messages,
+    messages: cappedMessages,
     stopWhen: stepCountIs(5),
     tools: {
       search_listings: {
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
             .enum(['newest', 'price_asc', 'price_desc'])
             .optional()
             .describe('Sort order'),
-          limit: z.number().optional().describe('Max results to return (default 6, max 12)'),
+          limit: z.number().min(1).optional().describe('Max results to return (default 6, max 12)'),
         }),
         execute: async ({
           q,
@@ -129,8 +130,9 @@ export async function POST(request: Request) {
               'id, title, price, listing_type, condition, category, area, images, status, description, created_at'
             )
             .eq('id', listing_id)
+            .eq('status', 'available')
             .single()
-          if (error || !data) return { success: false, error: 'Listing not found' }
+          if (error || !data) return { success: false, error: 'Listing not found or no longer available' }
           return { success: true, listing: data }
         },
       },
@@ -150,8 +152,13 @@ export async function POST(request: Request) {
             headers: { 'Content-Type': 'application/json', cookie: cookieHeader },
             body: JSON.stringify({ listing_id }),
           })
-          const data = await res.json() as { message?: string }
-          if (!res.ok) return { success: false, error: data.message ?? 'Failed to add to cart' }
+          if (!res.ok) {
+            const text = await res.text().catch(() => '')
+            let message = 'Failed to add to cart'
+            try { message = (JSON.parse(text) as { message?: string }).message ?? message } catch { /* non-JSON */ }
+            return { success: false, error: message }
+          }
+          await res.json()
           return { success: true }
         },
       },
@@ -170,9 +177,14 @@ export async function POST(request: Request) {
             headers: { 'Content-Type': 'application/json', cookie: cookieHeader },
             body: JSON.stringify({ listing_id }),
           })
-          const data = await res.json() as { message?: string; data?: unknown }
-          if (!res.ok) return { success: false, error: data.message ?? 'Failed to initiate claim' }
-          return { success: true, claim: data.data }
+          if (!res.ok) {
+            const text = await res.text().catch(() => '')
+            let message = 'Failed to initiate claim'
+            try { message = (JSON.parse(text) as { message?: string }).message ?? message } catch { /* non-JSON */ }
+            return { success: false, error: message }
+          }
+          const data = await res.json() as { data?: unknown; message?: string }
+          return { success: true, claim: (data as { data?: unknown }).data }
         },
       },
 

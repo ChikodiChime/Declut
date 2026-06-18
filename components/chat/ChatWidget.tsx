@@ -49,6 +49,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
   }
 
   function selectSuggestedPrompt(prompt: string) {
+    if (isLoading) return
     sendMessage({ text: prompt })
   }
 

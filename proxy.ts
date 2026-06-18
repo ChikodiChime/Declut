@@ -29,6 +29,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Public: browse community requests and view a single request
+  if (request.method === 'GET' && pathname === '/api/requests') {
+    return NextResponse.next()
+  }
+  if (request.method === 'GET' && new RegExp(`^/api/requests/${UUID}$`).test(pathname)) {
+    return NextResponse.next()
+  }
+
   // Public pages: /listings and /listings/<uuid>
   if (pathname === '/listings') {
     return NextResponse.next()
@@ -56,7 +64,13 @@ export async function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value
 
   if (!token) {
-    if (isCartOrCheckout) return NextResponse.next()
+    if (isCartOrCheckout) {
+      const safeHeaders = new Headers(request.headers)
+      safeHeaders.delete('x-user-id')
+      safeHeaders.delete('x-user-email')
+      safeHeaders.delete('x-user-account-type')
+      return NextResponse.next({ request: { headers: safeHeaders } })
+    }
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -73,7 +87,13 @@ export async function proxy(request: NextRequest) {
     payload = await verifyToken(token)
   } catch {
     // Invalid token: treat cart/checkout as anonymous rather than blocking
-    if (isCartOrCheckout) return NextResponse.next()
+    if (isCartOrCheckout) {
+      const safeHeaders = new Headers(request.headers)
+      safeHeaders.delete('x-user-id')
+      safeHeaders.delete('x-user-email')
+      safeHeaders.delete('x-user-account-type')
+      return NextResponse.next({ request: { headers: safeHeaders } })
+    }
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -133,10 +153,12 @@ export async function proxy(request: NextRequest) {
     !pathname.startsWith('/api/buyer') &&
     !pathname.startsWith('/api/cart') &&
     !pathname.startsWith('/api/orders') &&
+    !pathname.startsWith('/api/requests') &&
     !pathname.startsWith('/cart') &&
     !pathname.startsWith('/checkout') &&
     !pathname.startsWith('/listings') &&
     !pathname.startsWith('/api/listings') &&
+    !pathname.startsWith('/requests') &&
     pathname !== '/dashboard/orders' &&
     !pathname.startsWith('/dashboard/orders/')
 
@@ -185,10 +207,12 @@ export const config = {
     '/api/user/:path*',
     '/api/withdrawals/:path*',
     '/api/notifications/:path*',
+    '/api/requests/:path*',
     '/api/cron/:path*',
     '/api/webhooks/:path*',
     '/api/chat',
     '/listings/:path*',
+    '/requests/new',
     '/dashboard/:path*',
     '/cart/:path*',
     '/checkout/:path*',

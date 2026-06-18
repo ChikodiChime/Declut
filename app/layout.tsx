@@ -64,9 +64,9 @@ export default function RootLayout({
           <NavbarWrapper />
           {children}
           <FooterWrapper />
+          <ChatBubble />
         </Providers>
         <Toaster richColors position="top-right" />
-        <ChatBubble />
       </body>
     </html>
   );
