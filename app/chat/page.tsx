@@ -1,14 +1,37 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { ArrowLeft, Sparkles } from 'lucide-react'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 
 export const metadata: Metadata = {
-  title: 'Chat with AI',
+  title: 'AI Assistant — Declutter',
+  description: 'Browse listings, claim free items, and manage your account through chat.',
 }
 
 export default function ChatPage() {
   return (
-    <div className="fixed inset-0 z-40 bg-background flex flex-col">
-      <ChatWidget fullPage />
+    <div className="fixed inset-0 z-40 flex flex-col bg-background">
+      <header className="relative shrink-0 flex items-center justify-center h-14 border-b border-border bg-card/90 backdrop-blur-sm">
+        <Link
+          href="/"
+          className="absolute left-4 flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
+        >
+          <ArrowLeft size={15} />
+          <span>Back</span>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+            <Sparkles size={14} className="text-white" />
+          </div>
+          <span className="font-semibold text-sm text-text tracking-tight">Declutter AI</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-success" />
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-hidden">
+        <ChatWidget fullPage />
+      </div>
     </div>
   )
 }

@@ -2,13 +2,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Plus, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
+import { Check, Plus, X, Loader2 } from 'lucide-react'
 import { Modal } from './Modal'
 import PlacesAddressInput, { type PlaceResult } from '@/components/checkout/PlacesAddressInput'
 import { useAddresses, useCreateAddress } from '@/lib/hooks/useAddresses'
 import type { UserAddress } from '@/types'
 
 const MAX_ADDRESSES = 10
+
+const INPUT_CLS =
+  'w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors'
 
 type Props = {
   open: boolean
@@ -32,14 +35,14 @@ function AddressCard({
       type="button"
       onClick={onSelect}
       className={[
-        'w-full text-left rounded-xl border-2 px-4 py-3 transition-all duration-150',
+        'w-full text-left rounded-xl border-2 px-4 py-3.5 transition-all duration-150 active:scale-[0.99]',
         selected
-          ? 'border-primary bg-primary/5'
-          : 'border-border bg-card hover:border-border-strong',
+          ? 'border-primary bg-gradient-to-br from-primary/[0.08] to-primary/[0.02] shadow-sm'
+          : 'border-border bg-card hover:border-border-strong hover:shadow-sm',
       ].join(' ')}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-0.5">
             <span className={`text-sm font-semibold ${selected ? 'text-primary' : 'text-text'}`}>
               {addr.label}
@@ -55,13 +58,95 @@ function AddressCard({
             <p className="text-[11px] text-text-subtle mt-0.5">{addr.address_state}</p>
           )}
         </div>
-        {selected && (
-          <div className="shrink-0 mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary">
-            <Check size={11} strokeWidth={3} className="text-white" />
-          </div>
-        )}
+        <div
+          className={[
+            'shrink-0 mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-150',
+            selected ? 'border-primary bg-primary' : 'border-border',
+          ].join(' ')}
+        >
+          {selected && <Check size={10} strokeWidth={3.5} className="text-white" />}
+        </div>
       </div>
     </button>
+  )
+}
+
+function NewAddressForm({
+  onResult,
+  onCancel,
+  showCancel,
+  addresses,
+  newResult,
+  saveToBook,
+  setSaveToBook,
+  newLabel,
+  setNewLabel,
+  labelError,
+  setLabelError,
+}: {
+  onResult: (r: PlaceResult | null) => void
+  onCancel: () => void
+  showCancel: boolean
+  addresses: UserAddress[]
+  newResult: PlaceResult | null
+  saveToBook: boolean
+  setSaveToBook: (v: boolean) => void
+  newLabel: string
+  setNewLabel: (v: string) => void
+  labelError: string
+  setLabelError: (v: string) => void
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
+      {showCancel && (
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-xs font-semibold text-text-muted uppercase tracking-wide">New address</p>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex items-center gap-1 text-xs text-text-subtle hover:text-text transition-colors"
+          >
+            <X size={12} strokeWidth={2} />
+            Cancel
+          </button>
+        </div>
+      )}
+
+      <PlacesAddressInput
+        placeholder="Search for an address"
+        onSelect={(r) => onResult(r)}
+        onClear={() => onResult(null)}
+      />
+
+      {newResult && addresses.length < MAX_ADDRESSES && (
+        <label className="flex items-center gap-2.5 cursor-pointer pt-0.5">
+          <input
+            type="checkbox"
+            checked={saveToBook}
+            onChange={(e) => setSaveToBook(e.target.checked)}
+            className="rounded border-border text-primary accent-primary"
+          />
+          <span className="text-sm text-text">Save to address book</span>
+        </label>
+      )}
+
+      {newResult && saveToBook && (
+        <div>
+          <label className="block text-xs font-medium text-text-muted mb-1.5">
+            Label <span className="text-error">*</span>
+          </label>
+          <input
+            type="text"
+            value={newLabel}
+            onChange={(e) => { setNewLabel(e.target.value); setLabelError('') }}
+            maxLength={30}
+            placeholder="e.g. Home, Office"
+            className={INPUT_CLS}
+          />
+          {labelError && <p className="mt-1 text-xs text-error">{labelError}</p>}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -78,9 +163,6 @@ export function AddressPickerModal({ open, onClose, title, currentAddress, onCon
   const [saveToBook, setSaveToBook] = useState(addresses.length < MAX_ADDRESSES)
   const [newLabel, setNewLabel] = useState('Home')
   const [labelError, setLabelError] = useState('')
-
-  const INPUT_CLS =
-    'w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-text placeholder:text-text-subtle focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors'
 
   function handleConfirm() {
     if (selectedId) {
@@ -114,79 +196,57 @@ export function AddressPickerModal({ open, onClose, title, currentAddress, onCon
     <Modal open={open} onClose={onClose} title={title}>
       <div className="space-y-4">
         {isLoading ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="flex items-center justify-center py-10">
             <Loader2 size={20} className="animate-spin text-text-subtle" />
           </div>
         ) : (
           <>
+            {/* New address — always visible, expands on click */}
+            {showNew ? (
+              <NewAddressForm
+                onResult={(r) => { setNewResult(r); setSelectedId(null) }}
+                onCancel={() => { setShowNew(false); setNewResult(null) }}
+                showCancel={addresses.length > 0}
+                addresses={addresses}
+                newResult={newResult}
+                saveToBook={saveToBook}
+                setSaveToBook={setSaveToBook}
+                newLabel={newLabel}
+                setNewLabel={setNewLabel}
+                labelError={labelError}
+                setLabelError={setLabelError}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setShowNew(true); setSelectedId(null) }}
+                className="w-full flex items-center gap-3 rounded-xl border border-dashed border-border px-4 py-3.5 text-sm text-text-muted hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all duration-150"
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-surface border border-border">
+                  <Plus size={14} strokeWidth={2.5} />
+                </span>
+                <span className="font-medium">Use a different address</span>
+              </button>
+            )}
+
+            {/* Saved addresses */}
             {addresses.length > 0 && (
               <div className="space-y-2">
+                <p className="text-[11px] font-semibold text-text-subtle uppercase tracking-wider px-0.5">
+                  Saved addresses
+                </p>
                 {addresses.map((addr) => (
                   <AddressCard
                     key={addr.id}
                     addr={addr}
                     selected={selectedId === addr.id}
-                    onSelect={() => { setSelectedId(addr.id); setNewResult(null) }}
+                    onSelect={() => { setSelectedId(addr.id); setNewResult(null); setShowNew(false) }}
                   />
                 ))}
               </div>
             )}
 
-            {/* Use a different address */}
-            <div className="rounded-xl border border-border overflow-hidden">
-              <button
-                type="button"
-                onClick={() => { setShowNew((v) => !v); setSelectedId(null) }}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-text hover:bg-surface transition-colors"
-              >
-                <span className="flex items-center gap-2">
-                  <Plus size={14} strokeWidth={2.5} />
-                  {addresses.length === 0 ? 'Enter an address' : 'Use a different address'}
-                </span>
-                {showNew ? <ChevronUp size={14} className="text-text-muted" /> : <ChevronDown size={14} className="text-text-muted" />}
-              </button>
-
-              {showNew && (
-                <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
-                  <PlacesAddressInput
-                    placeholder="Search for an address"
-                    onSelect={(r) => { setNewResult(r); setSelectedId(null) }}
-                    onClear={() => setNewResult(null)}
-                  />
-
-                  {newResult && addresses.length < MAX_ADDRESSES && (
-                    <label className="flex items-center gap-2.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={saveToBook}
-                        onChange={(e) => setSaveToBook(e.target.checked)}
-                        className="rounded border-border text-primary"
-                      />
-                      <span className="text-sm text-text">Save to address book</span>
-                    </label>
-                  )}
-
-                  {newResult && saveToBook && (
-                    <div>
-                      <label className="block text-xs font-medium text-text-muted mb-1.5">
-                        Label <span className="text-error">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={newLabel}
-                        onChange={(e) => { setNewLabel(e.target.value); setLabelError('') }}
-                        maxLength={30}
-                        placeholder="e.g. Home, Office"
-                        className={INPUT_CLS}
-                      />
-                      {labelError && <p className="mt-1 text-xs text-error">{labelError}</p>}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Confirm button */}
+            {/* Confirm */}
             <button
               type="button"
               onClick={handleConfirm}
@@ -194,7 +254,7 @@ export function AddressPickerModal({ open, onClose, title, currentAddress, onCon
               className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center justify-center gap-2"
             >
               {saving && <Loader2 size={13} strokeWidth={2.5} className="animate-spin" />}
-              {saving ? 'Saving…' : 'Confirm'}
+              {saving ? 'Saving…' : 'Confirm address'}
             </button>
           </>
         )}

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ListingForm } from "@/components/listings";
 import { useCreateListing } from "@/lib/hooks/useListings";
@@ -106,9 +107,14 @@ function PayoutPromptModal({ open, onClose }: { open: boolean; onClose: () => vo
   );
 }
 
-export default function NewListingPage() {
+function NewListingContent() {
+  const searchParams = useSearchParams();
   const { data: user, isLoading } = useMe();
   const [showModal, setShowModal] = useState(false);
+  const initialRequestId = searchParams.get("request_id");
+  const [requestIds, setRequestIds] = useState<string[]>(
+    initialRequestId ? [initialRequestId] : []
+  );
 
   const { mutateAsync: createListing, isPending } = useCreateListing(
     user?.paystack_onboarding_complete
@@ -117,7 +123,7 @@ export default function NewListingPage() {
   );
 
   async function handleSubmit(data: ListingFormData) {
-    await createListing(data);
+    await createListing({ ...data, request_ids: requestIds.length > 0 ? requestIds : undefined });
   }
 
   if (isLoading) return null;
@@ -135,9 +141,22 @@ export default function NewListingPage() {
 
       {!user?.paystack_onboarding_complete && <PayoutBanner />}
 
-      <ListingForm onSubmit={handleSubmit} isPending={isPending} />
+      <ListingForm
+        onSubmit={handleSubmit}
+        isPending={isPending}
+        requestIds={requestIds}
+        onRequestChange={setRequestIds}
+      />
 
       <PayoutPromptModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
+  );
+}
+
+export default function NewListingPage() {
+  return (
+    <Suspense>
+      <NewListingContent />
+    </Suspense>
   );
 }

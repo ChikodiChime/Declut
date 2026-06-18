@@ -1323,6 +1323,30 @@ function SearchContent() {
                     Clear filters
                   </button>
                 )}
+                <div
+                  className="mt-8 flex flex-col items-center gap-2 rounded-2xl border px-6 py-5"
+                  style={{ borderColor: "#e8e4dc", background: "#faf8f4" }}
+                >
+                  <p className="text-xs font-semibold" style={{ color: "#16130f" }}>
+                    Can&apos;t find what you&apos;re looking for?
+                  </p>
+                  <p className="text-xs" style={{ color: "#a8a09a" }}>
+                    Post a community request — sellers will be notified to list it.
+                  </p>
+                  <Link
+                    href={q ? `/requests/new?title=${encodeURIComponent(q)}` : "/requests/new"}
+                    className="mt-1 inline-flex items-center gap-1.5 h-8 px-4 rounded-full text-xs font-semibold text-white transition-colors"
+                    style={{ background: "#4f46e5" }}
+                    onMouseEnter={(e) =>
+                      ((e.currentTarget as HTMLElement).style.background = "#4338ca")
+                    }
+                    onMouseLeave={(e) =>
+                      ((e.currentTarget as HTMLElement).style.background = "#4f46e5")
+                    }
+                  >
+                    Request this item
+                  </Link>
+                </div>
               </div>
             )}
 

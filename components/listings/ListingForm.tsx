@@ -15,6 +15,8 @@ export interface ListingFormProps {
   onSubmit: (data: ListingFormData) => Promise<void>;
   isPending: boolean;
   onCancel?: () => void;
+  requestIds?: string[];
+  onRequestChange?: (ids: string[]) => void;
 }
 
 interface FormState {
@@ -64,6 +66,8 @@ export function ListingForm({
   onSubmit,
   isPending,
   onCancel,
+  requestIds,
+  onRequestChange,
 }: ListingFormProps) {
   const [state, dispatch] = useReducer(formReducer, {
     step: 1,
@@ -200,6 +204,8 @@ export function ListingForm({
                     }}
                     onNext={(data) => next(data)}
                     onBack={back}
+                    requestIds={requestIds}
+                    onRequestChange={onRequestChange}
                   />
                 )}
                 {state.step === 3 && (

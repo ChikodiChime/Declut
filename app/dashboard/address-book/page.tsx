@@ -33,14 +33,33 @@ function AddressForm({
   const [selectedResult, setSelectedResult] = useState<PlaceResult | null>(null)
   const [addressError, setAddressError] = useState('')
 
+  const { data: addresses = [] } = useAddresses()
   const { mutate: create, isPending: creating } = useCreateAddress()
   const { mutate: update, isPending: updating } = useUpdateAddress()
   const isPending = creating || updating
 
   function save() {
     let valid = true
-    if (!label.trim()) { setLabelError('Label is required'); valid = false }
-    if (!existing && !selectedResult) { setAddressError('Please search for and select an address'); valid = false }
+    const trimmedLabel = label.trim()
+    const others = addresses.filter((a) => a.id !== existing?.id)
+
+    if (!trimmedLabel) {
+      setLabelError('Label is required')
+      valid = false
+    } else if (others.some((a) => a.label.toLowerCase() === trimmedLabel.toLowerCase())) {
+      setLabelError('You already have an address with this label')
+      valid = false
+    }
+
+    const newAddress = selectedResult?.formatted_address
+    if (!existing && !selectedResult) {
+      setAddressError('Please search for and select an address')
+      valid = false
+    } else if (newAddress && others.some((a) => a.address === newAddress)) {
+      setAddressError('This address is already in your address book')
+      valid = false
+    }
+
     if (!valid) return
 
     if (existing) {
@@ -116,7 +135,7 @@ function AddressForm({
 
 // ─── Address card ─────────────────────────────────────────────────────────────
 
-function AddressCard({ addr }: { addr: UserAddress }) {
+function AddressCard({ addr, featured = false }: { addr: UserAddress; featured?: boolean }) {
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const { mutate: update, isPending: settingDefault } = useUpdateAddress()
@@ -128,20 +147,23 @@ function AddressCard({ addr }: { addr: UserAddress }) {
         layout
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-border bg-card p-5"
+        className={
+          featured
+            ? 'rounded-2xl border border-primary/30 bg-primary/5 p-5'
+            : 'rounded-2xl border border-border bg-card p-5'
+        }
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
+        {featured && (
+          <div className="flex items-center gap-1.5 mb-3">
+            <Star size={11} strokeWidth={2.5} className="text-primary fill-primary" />
+            <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">Default address</span>
+          </div>
+        )}
+
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="text-sm font-bold text-text">{addr.label}</p>
-              {addr.is_default && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                  <Star size={8} strokeWidth={2.5} />
-                  Default
-                </span>
-              )}
-            </div>
+            <p className="text-sm font-bold text-text mb-0.5">{addr.label}</p>
             <p className="text-sm text-text-muted leading-snug">{addr.address}</p>
             {addr.address_state && (
               <p className="text-xs text-text-subtle mt-0.5">{addr.address_state}</p>
@@ -263,10 +285,15 @@ export default function AddressBookPage() {
           </button>
         </motion.div>
       ) : (
-        <div className="space-y-3 max-w-lg">
-          {addresses.map((addr) => (
-            <AddressCard key={addr.id} addr={addr} />
+        <div className="space-y-4">
+          {addresses.filter((a) => a.is_default).map((addr) => (
+            <AddressCard key={addr.id} addr={addr} featured />
           ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {addresses.filter((a) => !a.is_default).map((addr) => (
+              <AddressCard key={addr.id} addr={addr} />
+            ))}
+          </div>
           {atLimit && (
             <p className="text-xs text-text-subtle text-center pt-1">
               10-address limit reached. Delete an address to add a new one.

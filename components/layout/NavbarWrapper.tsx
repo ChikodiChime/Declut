@@ -347,9 +347,9 @@ function NavbarContent({
             />
           </Link>
 
-          {/* Browse link — fades out when search appears */}
+          {/* Browse + Requests links — fade out when search appears */}
           <div
-            className="hidden md:flex items-center ml-2"
+            className="hidden md:flex items-center gap-1 ml-2"
             style={{
               opacity: showSearch ? 0 : 1,
               pointerEvents: showSearch ? "none" : "auto",
@@ -373,6 +373,24 @@ function NavbarContent({
               }}
             >
               Browse
+            </Link>
+            <Link
+              href="/requests"
+              className="text-[15px] font-medium px-3.5 py-2 rounded-full transition-all duration-200"
+              style={{ color: linkColor }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.color = linkHover;
+                (e.currentTarget as HTMLElement).style.background = transparent
+                  ? "rgba(255,255,255,0.10)"
+                  : "rgba(22,19,15,0.05)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.color = linkColor;
+                (e.currentTarget as HTMLElement).style.background =
+                  "transparent";
+              }}
+            >
+              Requests
             </Link>
           </div>
 
@@ -690,6 +708,14 @@ function NavbarContent({
             style={{ color: "#16130f" }}
           >
             Browse
+          </Link>
+          <Link
+            href="/requests"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
+            style={{ color: "#16130f" }}
+          >
+            Requests
           </Link>
           <Link
             href="/dashboard/listings/new"

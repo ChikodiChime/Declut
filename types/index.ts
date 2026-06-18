@@ -5,6 +5,7 @@ export type SizeCategory = 'small' | 'medium' | 'large' | 'extra_large'
 export type ListingStatus = 'draft' | 'available' | 'sold' | 'claimed' | 'donated' | 'removed'
 export type OrderStatus = 'pending' | 'paid' | 'confirmed' | 'shipped' | 'delivered' | 'completed' | 'cancelled'
 export type DeliveryType = 'delivery' | 'pickup'
+export type RequestStatus = 'open' | 'closed'
 
 export interface User {
   id: string
@@ -52,6 +53,34 @@ export interface Listing {
   pickup_address: string | null
   images: string[]
   status: ListingStatus
+  request_id: string | null
+  created_at: string
+}
+
+export interface ItemRequest {
+  id: string
+  user_id: string
+  title: string
+  description: string | null
+  category: string | null
+  listing_type: ListingType | null
+  area: string | null
+  max_price: number | null
+  status: RequestStatus
+  created_at: string
+  follow_count?: number
+  is_following?: boolean
+  requester?: {
+    id: string
+    name: string | null
+    avatar_url: string | null
+  } | null
+}
+
+export interface RequestFollow {
+  id: string
+  user_id: string
+  request_id: string
   created_at: string
 }
 
@@ -102,6 +131,7 @@ export interface ListingFormData {
   size_category: SizeCategory
   pickup_address: string
   images: string[]       // Cloudinary public_ids
+  request_ids?: string[] // optional links to community requests
 }
 
 // Listing detail response includes joined seller info

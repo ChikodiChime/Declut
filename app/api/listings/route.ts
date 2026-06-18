@@ -2,6 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import { getAuthUser } from '@/lib/auth'
 import { validateListingBody, VALID_LISTING_TYPES, VALID_CONDITIONS, VALID_CATEGORIES } from './utils'
 import { ok, list, err } from '@/lib/api-response'
+import { createNotification } from '@/lib/notifications'
 import type { ListingType, Condition } from '@/types'
 
 export async function GET(req: Request) {
@@ -95,6 +96,11 @@ export async function POST(req: Request) {
     return err(validated.error, 'VALIDATION_ERROR', 400)
   }
 
+  const rawBody = body as Record<string, unknown>
+  const requestIds: string[] = Array.isArray(rawBody.request_ids)
+    ? (rawBody.request_ids as unknown[]).filter((id): id is string => typeof id === 'string' && !!id)
+    : []
+
   const { data: listing, error } = await supabaseAdmin
     .from('listings')
     .insert({
@@ -111,12 +117,39 @@ export async function POST(req: Request) {
   }
 
   if (validated.data.listing_type === 'donate') {
-    const charityId = (body as Record<string, unknown>).charity_id
+    const charityId = rawBody.charity_id
     await supabaseAdmin.from('donations').insert({
       listing_id: listing.id,
       seller_id: authUser.id,
       charity_id: typeof charityId === 'string' && charityId ? charityId : null,
     })
+  }
+
+  // Link to community requests and notify followers
+  if (requestIds.length > 0) {
+    await supabaseAdmin.from('listing_requests').insert(
+      requestIds.map((rid) => ({ listing_id: listing.id, request_id: rid }))
+    )
+
+    const { data: follows } = await supabaseAdmin
+      .from('request_follows')
+      .select('user_id')
+      .in('request_id', requestIds)
+
+    if (follows && follows.length > 0) {
+      const uniqueFollowers = [...new Set(follows.map((f) => f.user_id))]
+      await Promise.all(
+        uniqueFollowers.map((userId) =>
+          createNotification({
+            user_id: userId,
+            type: 'request_fulfilled',
+            title: 'Someone listed an item you requested',
+            body: `"${listing.title}" is now listed — check it out.`,
+            link: `/listings/${listing.id}`,
+          })
+        )
+      )
+    }
   }
 
   return ok(listing, 201)

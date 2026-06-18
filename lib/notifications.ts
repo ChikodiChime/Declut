@@ -1,6 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase'
 
-type NotificationType = 'order_update' | 'claim_request' | 'payout_update'
+type NotificationType = 'order_update' | 'claim_request' | 'payout_update' | 'request_fulfilled'
 
 interface NotificationInput {
   user_id: string

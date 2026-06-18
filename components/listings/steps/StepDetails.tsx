@@ -4,6 +4,7 @@ import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import { Input, Button, CustomDropdown, CategoryPicker } from "@/components/ui";
+import { RequestPicker } from "@/components/requests/RequestPicker";
 import type { Condition } from "@/types";
 
 interface StepDetailsData {
@@ -17,6 +18,8 @@ interface StepDetailsProps {
   defaultValues?: Partial<StepDetailsData>;
   onNext: (data: StepDetailsData) => void;
   onBack: () => void;
+  requestIds?: string[];
+  onRequestChange?: (ids: string[]) => void;
 }
 
 function ConditionDots({ level }: { level: number }) {
@@ -40,13 +43,16 @@ const CONDITION_OPTIONS: { value: Condition; label: string; icon: React.ReactNod
   { value: "poor",     label: "Poor — heavy wear",        icon: <ConditionDots level={1} /> },
 ];
 
-export function StepDetails({ defaultValues, onNext, onBack }: StepDetailsProps) {
+export function StepDetails({ defaultValues, onNext, onBack, requestIds, onRequestChange }: StepDetailsProps) {
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<StepDetailsData>({ defaultValues });
+
+  const watchedCategory = watch("category");
 
   return (
     <form onSubmit={handleSubmit(onNext)} className="space-y-4">
@@ -111,6 +117,14 @@ export function StepDetails({ defaultValues, onNext, onBack }: StepDetailsProps)
           />
         )}
       />
+
+      {onRequestChange !== undefined && (
+        <RequestPicker
+          value={requestIds ?? []}
+          onChange={onRequestChange}
+          category={watchedCategory}
+        />
+      )}
 
       <div className="flex gap-3">
         <Button type="button" variant="outline" className="flex-1" onClick={onBack}>

@@ -29,14 +29,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Public: browse community requests and view a single request
-  if (request.method === 'GET' && pathname === '/api/requests') {
-    return NextResponse.next()
-  }
-  if (request.method === 'GET' && new RegExp(`^/api/requests/${UUID}$`).test(pathname)) {
-    return NextResponse.next()
-  }
-
   // Public pages: /listings and /listings/<uuid>
   if (pathname === '/listings') {
     return NextResponse.next()
@@ -50,16 +42,21 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Cart, checkout, and anonymous order creation allow access without a token.
-  // BUT we still run the token path below so authenticated users get their
-  // x-user-id header set — the API handlers need it to distinguish auth state.
-  const isCartOrCheckout =
+  // These routes are public but benefit from knowing who the user is when
+  // authenticated (e.g. is_following on requests). Still run the token path
+  // below so authenticated users get x-user-id forwarded.
+  const isOptionalAuth =
     pathname.startsWith('/api/cart') ||
     pathname === '/api/orders' ||
     pathname === '/api/orders/settle' ||
     pathname === '/api/chat' ||
     pathname === '/cart' ||
-    pathname.startsWith('/checkout')
+    pathname.startsWith('/checkout') ||
+    (request.method === 'GET' && pathname === '/api/requests') ||
+    (request.method === 'GET' && new RegExp(`^/api/requests/${UUID}$`).test(pathname))
+
+  // NOTE: keep old name as alias so code below still compiles
+  const isCartOrCheckout = isOptionalAuth
 
   const token = request.cookies.get('token')?.value
 
@@ -207,6 +204,7 @@ export const config = {
     '/api/user/:path*',
     '/api/withdrawals/:path*',
     '/api/notifications/:path*',
+    '/api/requests',
     '/api/requests/:path*',
     '/api/cron/:path*',
     '/api/webhooks/:path*',

@@ -28,12 +28,13 @@ interface CategoryPickerProps {
   value?: string;
   onChange: (value: string) => void;
   error?: string;
+  hideLabel?: boolean;
 }
 
-export function CategoryPicker({ value, onChange, error }: CategoryPickerProps) {
+export function CategoryPicker({ value, onChange, error, hideLabel }: CategoryPickerProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-text">Category</label>
+      {!hideLabel && <label className="block text-sm font-medium text-text">Category</label>}
 
       <div className="grid grid-cols-3 gap-2">
         {CATEGORIES.map((cat) => {
