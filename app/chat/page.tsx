@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export default function ChatPage() {
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-4rem)]">
+    <div className="fixed inset-0 z-40 bg-background flex flex-col">
       <ChatWidget fullPage />
     </div>
   )
