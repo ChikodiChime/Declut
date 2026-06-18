@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 import { NavbarWrapper } from "@/components/layout/NavbarWrapper";
 import { FooterWrapper } from "@/components/layout/FooterWrapper";
 import { Toaster } from "sonner";
+import { ChatBubble } from "@/components/chat/ChatBubble";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
@@ -65,6 +66,7 @@ export default function RootLayout({
           <FooterWrapper />
         </Providers>
         <Toaster richColors position="top-right" />
+        <ChatBubble />
       </body>
     </html>
   );
