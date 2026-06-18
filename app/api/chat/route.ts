@@ -1,5 +1,5 @@
 // app/api/chat/route.ts
-import { streamText, stepCountIs } from 'ai'
+import { streamText, stepCountIs, convertToModelMessages } from 'ai'
 import { google } from '@ai-sdk/google'
 import { z } from 'zod'
 import { getAuthUser } from '@/lib/auth'
@@ -51,7 +51,7 @@ export async function POST(request: Request) {
   const result = streamText({
     model: google('gemini-2.0-flash'),
     system: buildSystemPrompt(authUser),
-    messages: cappedMessages,
+    messages: await convertToModelMessages(cappedMessages),
     stopWhen: stepCountIs(5),
     tools: {
       search_listings: {
