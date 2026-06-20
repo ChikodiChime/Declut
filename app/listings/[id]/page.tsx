@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { CldImage } from "next-cloudinary";
 import { ListingImage, AddressPickerModal } from "@/components/ui";
 import { useAddresses } from "@/lib/hooks/useAddresses";
 import { BrowseCard, ListingStructuredData } from "@/components/listings";
@@ -840,21 +841,23 @@ export default function ListingDetailPage() {
             {seller && (
               <div className="flex items-center gap-4">
                 <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+                  className="w-11 h-11 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
                   style={{ background: "#f0ece4" }}
                 >
-                  {seller.account_type === "business" ? (
-                    <Building2
-                      size={16}
-                      strokeWidth={1.75}
-                      className="text-[#78726c]"
+                  {seller.avatar_url ? (
+                    <CldImage
+                      src={seller.avatar_url}
+                      width={44}
+                      height={44}
+                      alt={seller.name ?? "Seller"}
+                      className="w-full h-full object-cover"
                     />
+                  ) : seller.account_type === "business" ? (
+                    <Building2 size={16} strokeWidth={1.75} className="text-[#78726c]" />
                   ) : (
-                    <User
-                      size={16}
-                      strokeWidth={1.75}
-                      className="text-[#78726c]"
-                    />
+                    <span className="text-sm font-semibold" style={{ color: "#78726c" }}>
+                      {(seller.name ?? "S")[0].toUpperCase()}
+                    </span>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

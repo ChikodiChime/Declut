@@ -45,6 +45,7 @@ export type BuyerOrderDetail = {
     id: string
     name: string | null
     email: string
+    avatar_url: string | null
   } | null
   order_items: OrderItem[]
 }

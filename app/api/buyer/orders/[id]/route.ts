@@ -22,7 +22,7 @@ export async function GET(
       id, status, delivery_type, item_price, delivery_fee, total_price,
       buyer_id, buyer_name, buyer_address, buyer_email,
       created_at, confirmed_at, shipped_at, delivered_at,
-      seller:users!orders_seller_id_fkey(id, name, email),
+      seller:users!orders_seller_id_fkey(id, name, email, avatar_url),
       order_items(id, item_price, listing:listings(id, title, images, price))
     `)
     .eq('id', id)

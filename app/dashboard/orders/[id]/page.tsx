@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { CldImage } from 'next-cloudinary'
 import { use, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ListingImage } from '@/components/ui'
@@ -581,10 +582,20 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
                 </p>
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white text-sm font-bold"
+                    className="w-10 h-10 rounded-full overflow-hidden shrink-0 flex items-center justify-center text-white text-sm font-bold"
                     style={{ background: 'linear-gradient(135deg, #3730a3, #6366f1)' }}
                   >
-                    {(order.seller.name ?? 'S')[0].toUpperCase()}
+                    {order.seller.avatar_url ? (
+                      <CldImage
+                        src={order.seller.avatar_url}
+                        width={40}
+                        height={40}
+                        alt={order.seller.name ?? 'Seller'}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      (order.seller.name ?? 'S')[0].toUpperCase()
+                    )}
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-text truncate">{order.seller.name ?? 'Declutter seller'}</p>
