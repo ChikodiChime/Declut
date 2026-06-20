@@ -29,6 +29,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Public: GET /api/stats (platform-wide counts, no auth needed)
+  if (request.method === 'GET' && pathname === '/api/stats') {
+    return NextResponse.next()
+  }
+
   // Public pages: /listings and /listings/<uuid>
   if (pathname === '/listings') {
     return NextResponse.next()
@@ -208,6 +213,8 @@ export const config = {
     '/api/requests/:path*',
     '/api/cron/:path*',
     '/api/webhooks/:path*',
+    '/api/reviews',
+    '/api/stats',
     '/api/chat',
     '/listings/:path*',
     '/requests/new',
