@@ -47,8 +47,15 @@ export async function GET(
 
   const showCode = !['delivered', 'completed', 'cancelled'].includes(order.status)
 
+  const { data: existingReview } = await supabaseAdmin
+    .from('reviews')
+    .select('id')
+    .eq('order_id', id)
+    .maybeSingle()
+
   return ok({
     ...order,
     delivery_code: showCode ? computeDeliveryCode(order.id) : null,
+    has_review: !!existingReview,
   })
 }

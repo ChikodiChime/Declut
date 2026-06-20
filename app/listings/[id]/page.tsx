@@ -22,6 +22,7 @@ import {
   Car,
   Truck,
   Share2,
+  Star,
 } from "lucide-react";
 import { DELIVERY_RATES, DEFAULT_SIZE_CATEGORY } from "@/lib/constants";
 import { useListing, usePublicListings } from "@/lib/hooks/useListings";
@@ -856,7 +857,7 @@ export default function ListingDetailPage() {
                     />
                   )}
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <p
                     className="text-[10px] font-semibold uppercase text-[#b0a89f]"
                     style={{ letterSpacing: "0.11em" }}
@@ -866,6 +867,30 @@ export default function ListingDetailPage() {
                   <p className="text-[14px] font-semibold text-[#16130f] mt-0.5">
                     {seller.name ?? "Seller"}
                   </p>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1.5">
+                    {seller.avg_rating != null && seller.review_count > 0 && (
+                      <span className="flex items-center gap-1 text-[12px] text-[#78726c]">
+                        <Star size={11} strokeWidth={0} fill="#f59e0b" />
+                        {seller.avg_rating.toFixed(1)}
+                        <span className="text-[#c4bdb6]">·</span>
+                        {seller.review_count} review{seller.review_count !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                    {seller.active_listings > 0 && (
+                      <span className="text-[12px] text-[#b0a89f]">
+                        {seller.active_listings} listing{seller.active_listings !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                    {seller.created_at && (
+                      <span className="text-[12px] text-[#b0a89f]">
+                        Since{" "}
+                        {new Date(seller.created_at).toLocaleDateString("en-NG", {
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

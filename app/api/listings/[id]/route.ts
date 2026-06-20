@@ -11,7 +11,7 @@ export async function GET(
 
   const { data: listing, error } = await supabaseAdmin
     .from('listings')
-    .select('*, seller:users(id, name, account_type, avatar_url)')
+    .select('*, seller:users(id, name, account_type, avatar_url, created_at)')
     .eq('id', id)
     .single()
 
@@ -19,7 +19,32 @@ export async function GET(
     return err('Listing not found', 'NOT_FOUND', 404)
   }
 
-  return ok(listing)
+  const [{ data: reviews }, { count: activeListings }] = await Promise.all([
+    supabaseAdmin
+      .from('reviews')
+      .select('rating')
+      .eq('seller_id', listing.seller_id),
+    supabaseAdmin
+      .from('listings')
+      .select('*', { count: 'exact', head: true })
+      .eq('seller_id', listing.seller_id)
+      .eq('status', 'available'),
+  ])
+
+  const review_count = reviews?.length ?? 0
+  const avg_rating = review_count > 0
+    ? Math.round((reviews!.reduce((s, r) => s + r.rating, 0) / review_count) * 10) / 10
+    : null
+
+  return ok({
+    ...listing,
+    seller: listing.seller ? {
+      ...listing.seller,
+      review_count,
+      avg_rating,
+      active_listings: activeListings ?? 0,
+    } : null,
+  })
 }
 
 export async function PATCH(

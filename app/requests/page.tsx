@@ -415,7 +415,7 @@ function MobileFilters({
       className="lg:hidden flex items-center gap-2 overflow-x-auto px-4 py-3 border-b scrollbar-none"
       style={{ borderColor: "#e8e4dc", background: "white" }}
     >
-      <SlidersHorizontal size={13} strokeWidth={2} style={{ color: "#a8a09a", shrink: 0 }} className="shrink-0" />
+      <SlidersHorizontal size={13} strokeWidth={2} style={{ color: "#a8a09a" }} className="shrink-0" />
       {TYPE_TABS.filter((t) => t.value !== "").map((tab) => {
         const sel = listing_type === tab.value;
         return (

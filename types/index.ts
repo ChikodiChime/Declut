@@ -141,6 +141,10 @@ export interface ListingWithSeller extends Listing {
     name: string | null
     account_type: AccountType
     avatar_url: string | null
+    created_at: string
+    review_count: number
+    avg_rating: number | null
+    active_listings: number
   } | null
 }
 

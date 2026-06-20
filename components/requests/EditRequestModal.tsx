@@ -100,21 +100,27 @@ export function EditRequestModal({
             More details{" "}
             <span className="font-normal" style={{ color: "#a8a09a" }}>(optional)</span>
           </label>
-          <textarea
-            rows={3}
-            placeholder="Size, colour, condition you prefer…"
-            className="w-full px-4 py-3 rounded-xl border text-[13px] leading-relaxed resize-none focus:outline-none"
-            style={{ borderColor: "#e0dbd3", color: "#16130f" }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = "#4f46e5";
-              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(79,70,229,0.10)";
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = "#e0dbd3";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-            {...register("description", { maxLength: { value: 500, message: "Max 500 characters" } })}
-          />
+          {(() => {
+            const { onBlur: rhfOnBlur, ...descRest } = register("description", { maxLength: { value: 500, message: "Max 500 characters" } });
+            return (
+              <textarea
+                rows={3}
+                placeholder="Size, colour, condition you prefer…"
+                className="w-full px-4 py-3 rounded-xl border text-[13px] leading-relaxed resize-none focus:outline-none"
+                style={{ borderColor: "#e0dbd3", color: "#16130f" }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#4f46e5";
+                  e.currentTarget.style.boxShadow = "0 0 0 3px rgba(79,70,229,0.10)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#e0dbd3";
+                  e.currentTarget.style.boxShadow = "none";
+                  rhfOnBlur(e);
+                }}
+                {...descRest}
+              />
+            );
+          })()}
         </div>
 
         {/* Category */}

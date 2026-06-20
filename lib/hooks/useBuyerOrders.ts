@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export type OrderItem = {
   id: string
@@ -40,6 +40,7 @@ export type BuyerOrderDetail = {
   shipped_at: string | null
   delivered_at: string | null
   delivery_code: string | null
+  has_review: boolean
   seller: {
     id: string
     name: string | null
@@ -67,5 +68,24 @@ export function useBuyerOrderDetail(id: string) {
     queryKey: ['buyer-orders', id],
     queryFn: () => fetchJson(`/api/buyer/orders/${id}`),
     enabled: !!id,
+  })
+}
+
+export function useSubmitReview() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ order_id, rating, comment }: { order_id: string; rating: number; comment?: string }) =>
+      fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id, rating, comment }),
+      }).then(async r => {
+        const json = await r.json()
+        if (!r.ok) throw new Error(json.error?.message ?? 'Failed to submit review')
+        return json.data
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['buyer-orders'] })
+    },
   })
 }

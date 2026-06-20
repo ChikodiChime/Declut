@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -58,6 +58,50 @@ const CONDITION_LABELS: Record<string, string> = {
   fair: "Fair",
   poor: "Poor",
 };
+
+// ─── Platform stats strip ─────────────────────────────────────────────────────
+
+type PlatformStatsData = { totalListings: number; totalSellers: number; totalOrders: number }
+
+function PlatformStats() {
+  const [stats, setStats] = useState<PlatformStatsData | null>(null)
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((json) => { if (json.data) setStats(json.data) })
+      .catch(() => {})
+  }, [])
+
+  if (!stats || stats.totalListings < 10) return null
+
+  function fmt(n: number) {
+    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+    if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}k`
+    return n.toString()
+  }
+
+  const items = [
+    { value: fmt(stats.totalListings), label: "items listed" },
+    stats.totalSellers > 0 ? { value: fmt(stats.totalSellers), label: "verified sellers" } : null,
+    stats.totalOrders > 0 ? { value: fmt(stats.totalOrders), label: "successful transactions" } : null,
+  ].filter(Boolean) as { value: string; label: string }[]
+
+  return (
+    <div
+      className="flex items-center justify-center flex-wrap gap-x-6 gap-y-1 py-3 px-4 text-[13px]"
+      style={{ borderBottom: "1px solid #f0ece6" }}
+    >
+      {items.map((item, i) => (
+        <span key={i} className="flex items-center gap-1.5">
+          {i > 0 && <span style={{ color: "#d1cdc7" }} aria-hidden>·</span>}
+          <span className="font-semibold" style={{ color: "#16130f" }}>{item.value}</span>
+          <span style={{ color: "#78726c" }}>{item.label}</span>
+        </span>
+      ))}
+    </div>
+  )
+}
 
 // ─── Free item horizontal card ────────────────────────────────────────────────
 
@@ -793,6 +837,9 @@ function HomeContent() {
           </div>
         </div>
       </div>
+
+      {/* ── Platform stats ── */}
+      <PlatformStats />
 
       {/* ── Browse by category ── */}
       <BrowseByCategorySection />
