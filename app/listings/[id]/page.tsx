@@ -876,9 +876,9 @@ export default function ListingDetailPage() {
                         {seller.review_count} review{seller.review_count !== 1 ? "s" : ""}
                       </span>
                     )}
-                    {seller.active_listings > 0 && (
+                    {seller.total_listings > 0 && (
                       <span className="text-[12px] text-[#b0a89f]">
-                        {seller.active_listings} listing{seller.active_listings !== 1 ? "s" : ""}
+                        {seller.total_listings} item{seller.total_listings !== 1 ? "s" : ""} listed
                       </span>
                     )}
                     {seller.created_at && (
@@ -891,6 +891,16 @@ export default function ListingDetailPage() {
                       </span>
                     )}
                   </div>
+                  <Link
+                    href={`/search?seller_id=${seller.id}`}
+                    className="mt-2 inline-flex items-center gap-1 text-[12px] font-medium transition-colors"
+                    style={{ color: "#4f46e5" }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#4338ca" }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#4f46e5" }}
+                  >
+                    More from {seller.name ?? "this seller"}
+                    <ArrowRight size={11} strokeWidth={2.2} />
+                  </Link>
                 </div>
               </div>
             )}

@@ -28,7 +28,8 @@ export async function GET(
       .from('listings')
       .select('*', { count: 'exact', head: true })
       .eq('seller_id', listing.seller_id)
-      .eq('status', 'available'),
+      .neq('status', 'draft')
+      .neq('status', 'removed'),
   ])
 
   const review_count = reviews?.length ?? 0
@@ -42,7 +43,7 @@ export async function GET(
       ...listing.seller,
       review_count,
       avg_rating,
-      active_listings: activeListings ?? 0,
+      total_listings: activeListings ?? 0,
     } : null,
   })
 }

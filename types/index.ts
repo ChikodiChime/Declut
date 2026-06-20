@@ -144,7 +144,7 @@ export interface ListingWithSeller extends Listing {
     created_at: string
     review_count: number
     avg_rating: number | null
-    active_listings: number
+    total_listings: number
   } | null
 }
 
