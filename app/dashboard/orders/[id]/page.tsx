@@ -240,43 +240,42 @@ function OrderProgressHero({
 
 // ─── ReviewForm ───────────────────────────────────────────────────────────────
 
-function ReviewForm({ orderId, sellerName }: { orderId: string; sellerName: string | null }) {
+function ReviewThankYou() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="rounded-2xl border border-border bg-card overflow-hidden"
+      style={{ boxShadow: 'var(--shadow-card)' }}
+    >
+      <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #059669, #34d399)' }} />
+      <div className="p-5 flex items-center gap-3">
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+          style={{ background: 'rgba(5,150,105,0.1)' }}
+        >
+          <Check size={16} strokeWidth={2.5} style={{ color: '#059669' }} />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-text">Thanks for the feedback!</p>
+          <p className="text-xs text-text-muted mt-0.5">Your review helps buyers trust great sellers.</p>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function ReviewForm({ orderId, sellerName, onReviewed }: { orderId: string; sellerName: string | null; onReviewed: () => void }) {
   const [hovered, setHovered] = useState(0)
   const [selected, setSelected] = useState(0)
   const [comment, setComment] = useState('')
-  const [done, setDone] = useState(false)
   const { mutate: submit, isPending } = useSubmitReview()
 
   function handleSubmit() {
     if (selected === 0) return
     submit(
       { order_id: orderId, rating: selected, comment: comment.trim() || undefined },
-      { onSuccess: () => setDone(true), onError: (e) => toast.error(e.message) }
-    )
-  }
-
-  if (done) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-border bg-card overflow-hidden"
-        style={{ boxShadow: 'var(--shadow-card)' }}
-      >
-        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #059669, #34d399)' }} />
-        <div className="p-5 flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: 'rgba(5,150,105,0.1)' }}
-          >
-            <Check size={16} strokeWidth={2.5} style={{ color: '#059669' }} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-text">Thanks for the feedback!</p>
-            <p className="text-xs text-text-muted mt-0.5">Your review helps buyers trust great sellers.</p>
-          </div>
-        </div>
-      </motion.div>
+      { onSuccess: onReviewed, onError: (e) => toast.error(e.message) }
     )
   }
 
@@ -430,6 +429,7 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
   const { id } = use(params)
   const { data: order, isLoading, error, refetch } = useBuyerOrderDetail(id)
   const [cancelling, setCancelling] = useState(false)
+  const [reviewSubmitted, setReviewSubmitted] = useState(false)
 
   async function handleCancel() {
     if (!window.confirm('Cancel this order? You will receive a full refund.')) return
@@ -512,8 +512,9 @@ export default function PurchaseOrderDetailPage({ params }: { params: Promise<{ 
             )}
 
             {/* Review form — appears once order is delivered and no review yet */}
-            {['delivered', 'completed'].includes(order.status) && !order.has_review && (
-              <ReviewForm orderId={order.id} sellerName={order.seller?.name ?? null} />
+            {reviewSubmitted && <ReviewThankYou />}
+            {!reviewSubmitted && ['delivered', 'completed'].includes(order.status) && !order.has_review && (
+              <ReviewForm orderId={order.id} sellerName={order.seller?.name ?? null} onReviewed={() => setReviewSubmitted(true)} />
             )}
 
             {/* Items + payment breakdown */}

@@ -18,6 +18,7 @@ import {
   ShoppingBag,
   Inbox,
   CheckCircle2,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -419,6 +420,11 @@ function SellerOrderRow({ order }: { order: BuyerOrder }) {
             </>
           )}
         </span>
+        {["delivered", "completed"].includes(order.status) && (
+          <span className="flex items-center gap-0.5 text-[10px] font-medium" style={{ color: "#f59e0b" }}>
+            <Star size={9} strokeWidth={0} fill="#f59e0b" /> Rate seller
+          </span>
+        )}
       </div>
       <ChevronRight
         size={14}

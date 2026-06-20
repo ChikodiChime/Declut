@@ -1,11 +1,11 @@
-// lib/payout.ts
 import { supabaseAdmin } from '@/lib/supabase'
 import { PLATFORM_FEE_PERCENT } from '@/lib/constants'
+import { createNotification } from '@/lib/notifications'
 
 export async function executePayout(orderId: string): Promise<void> {
   const { data: order } = await supabaseAdmin
     .from('orders')
-    .select('id, seller_id, item_price, paystack_transfer_id')
+    .select('id, seller_id, buyer_id, item_price, paystack_transfer_id, seller:users!orders_seller_id_fkey(name)')
     .eq('id', orderId)
     .single()
 
@@ -31,6 +31,17 @@ export async function executePayout(orderId: string): Promise<void> {
     .from('orders')
     .update({ status: 'delivered', delivered_at: new Date().toISOString() })
     .eq('id', orderId)
+
+  if (order.buyer_id) {
+    const sellerName = (order.seller as unknown as { name: string | null } | null)?.name
+    createNotification({
+      user_id: order.buyer_id,
+      type: 'order_update',
+      title: 'Your item has been delivered!',
+      body: `How was your experience with ${sellerName ?? 'the seller'}? Tap to leave a review.`,
+      link: `/dashboard/orders/${orderId}`,
+    }).catch(() => {})
+  }
 
   const { data: seller } = await supabaseAdmin
     .from('users')
