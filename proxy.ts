@@ -34,6 +34,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Public: GET /api/orders/by-reference (reference acts as the access token)
+  if (request.method === 'GET' && pathname === '/api/orders/by-reference') {
+    return NextResponse.next()
+  }
+
   // Public pages: /listings and /listings/<uuid>
   if (pathname === '/listings') {
     return NextResponse.next()
