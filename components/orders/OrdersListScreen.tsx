@@ -42,7 +42,7 @@ function OrderRow({ order }: { order: BuyerOrder | BuyerOrderDetail }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-text truncate">
-          {firstItem?.listing.title ?? 'Order'}
+          {firstItem?.listing?.title ?? 'Order'}
           {extraCount > 0 && <span className="text-text-subtle"> +{extraCount} more</span>}
         </p>
         <p className="text-xs text-primary mt-0.5 font-semibold">₦{order.total_price.toLocaleString()}</p>
