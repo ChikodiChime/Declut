@@ -43,7 +43,7 @@ function SuccessContent() {
     ]).finally(() => {
       window.dispatchEvent(new Event("cart-updated"));
 
-      // Fetch orders by reference and auto-open the drawer
+      // Must run after settle so orders exist in DB before we query them
       if (reference && !didFetch.current) {
         didFetch.current = true;
         fetch(`/api/orders/by-reference?ref=${encodeURIComponent(reference)}`)
@@ -58,15 +58,12 @@ function SuccessContent() {
           });
       }
     });
-  }, [searchParams, openByReference]);
+  }, [searchParams]); // openByReference is stable (useCallback with [] deps)
 
   const fallbackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL;
 
   function handleTrackClick() {
-    if (referenceOrders && referenceOrders.length > 0) {
-      openList();
-    }
-    // If no reference orders loaded, the link below handles navigation
+    openList()
   }
 
   const hasReferenceOrders = referenceOrders && referenceOrders.length > 0;
