@@ -6,7 +6,7 @@ import { Package, Truck, MapPin, Star, ChevronRight } from 'lucide-react'
 import { ListingImage } from '@/components/ui'
 import { useBuyerOrders, type BuyerOrder, type BuyerOrderDetail } from '@/lib/hooks/useBuyerOrders'
 import { useOrdersModal } from '@/lib/context/orders-modal-context'
-import { groupByCheckout, type CheckoutGroup } from '@/lib/utils/orders'
+import { groupByCheckout } from '@/lib/utils/orders'
 import { PURCHASE_STATUS_STYLE, PURCHASE_STATUS_LABEL } from '@/lib/constants/orderStatus'
 
 function OrderSkeleton() {
@@ -34,7 +34,7 @@ function OrderRow({ order }: { order: BuyerOrder | BuyerOrderDetail }) {
       className="w-full flex items-center gap-3 p-3 rounded-xl transition-colors hover:bg-surface text-left"
     >
       <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface border border-border">
-        {firstItem?.listing.images?.[0] ? (
+        {firstItem?.listing?.images?.[0] ? (
           <ListingImage src={firstItem.listing.images[0]} fill sizes="48px" className="object-cover" alt={firstItem.listing.title} />
         ) : (
           <Package size={16} strokeWidth={1.5} className="text-text-subtle" />

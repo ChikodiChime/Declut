@@ -6,6 +6,7 @@ import { Package, Mail } from 'lucide-react'
 import { CldImage } from 'next-cloudinary'
 import { toast } from 'sonner'
 import { ListingImage } from '@/components/ui'
+import { useQueryClient } from '@tanstack/react-query'
 import { useBuyerOrderDetail } from '@/lib/hooks/useBuyerOrders'
 import { useOrdersModal } from '@/lib/context/orders-modal-context'
 import { OrderProgressHero } from '@/components/orders/OrderProgressHero'
@@ -16,6 +17,7 @@ const CANCELLABLE = new Set(['paid', 'confirmed'])
 
 export function OrdersDetailScreen() {
   const { activeOrderId, referenceOrders } = useOrdersModal()
+  const queryClient = useQueryClient()
   const [cancelling, setCancelling] = useState(false)
   const [reviewSubmitted, setReviewSubmitted] = useState(false)
 
@@ -36,7 +38,10 @@ export function OrdersDetailScreen() {
       const json = await res.json()
       if (!res.ok) { toast.error(json.error?.message ?? 'Could not cancel order'); return }
       await refetch()
+      queryClient.invalidateQueries({ queryKey: ['buyer-orders'] })
       toast.success('Order cancelled. Your refund is on the way.')
+    } catch {
+      toast.error('Could not cancel order. Please try again.')
     } finally {
       setCancelling(false)
     }

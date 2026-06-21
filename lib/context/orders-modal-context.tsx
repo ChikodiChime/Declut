@@ -30,7 +30,7 @@ export function OrdersModalProvider({ children }: { children: React.ReactNode })
   })
 
   const openList = useCallback(() =>
-    setState(s => ({ ...s, isOpen: true, screen: 'list', activeOrderId: null })), [])
+    setState(s => ({ ...s, isOpen: true, screen: 'list', activeOrderId: null, referenceOrders: null })), [])
 
   const openDetail = useCallback((orderId: string) =>
     setState(s => ({ ...s, isOpen: true, screen: 'detail', activeOrderId: orderId })), [])

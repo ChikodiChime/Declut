@@ -63,7 +63,7 @@ function SuccessContent() {
   const fallbackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL;
 
   function handleTrackClick() {
-    openList()
+    if (referenceOrders) openByReference(referenceOrders)
   }
 
   const hasReferenceOrders = referenceOrders && referenceOrders.length > 0;
