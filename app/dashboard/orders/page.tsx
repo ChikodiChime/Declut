@@ -17,7 +17,6 @@ import {
   Gift,
   ShoppingBag,
   Inbox,
-  CheckCircle2,
   Star,
 } from "lucide-react";
 import Link from "next/link";
@@ -39,6 +38,7 @@ import {
   type MyClaim,
   type SellerClaim,
 } from "@/lib/hooks/useClaims";
+import { groupByCheckout, type CheckoutGroup } from "@/lib/utils/orders";
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
@@ -111,42 +111,25 @@ const CLAIM_STATUS_LABEL: Record<string, string> = {
 
 // ─── Sales tab ────────────────────────────────────────────────────────────────
 
-type SalesTab = {
-  label: string;
-  status: "paid" | "confirmed" | "shipped" | "delivered";
+const SALES_STATUS_LABEL: Record<string, string> = {
+  paid: "New",
+  confirmed: "Confirmed",
+  shipped: "Shipped",
+  delivered: "Delivered",
 };
 
-const SALES_TABS: SalesTab[] = [
-  { label: "New", status: "paid" },
-  { label: "Confirmed", status: "confirmed" },
-  { label: "Shipped", status: "shipped" },
-  { label: "Delivered", status: "delivered" },
-];
+const SALES_STATUS_STYLE: Record<string, React.CSSProperties> = {
+  paid:      { background: "rgba(217,119,6,0.1)",  color: "#d97706" },
+  confirmed: { background: "rgba(55,48,163,0.08)", color: "#3730a3" },
+  shipped:   { background: "rgba(124,58,237,0.08)",color: "#7c3aed" },
+  delivered: { background: "rgba(5,150,105,0.08)", color: "#059669" },
+};
 
-const SALES_EMPTY: Record<
-  string,
-  { icon: React.ElementType; heading: string; body: string }
-> = {
-  paid: {
-    icon: ShoppingBag,
-    heading: "No new orders yet",
-    body: "When a buyer completes payment, their order will land here for you to confirm.",
-  },
-  confirmed: {
-    icon: CheckCircle2,
-    heading: "Nothing confirmed yet",
-    body: "Orders you confirm will move here. Delivery orders await a dispatcher; pickup orders await the buyer.",
-  },
-  shipped: {
-    icon: Truck,
-    heading: "No deliveries in transit",
-    body: "Orders picked up by a dispatcher will appear here while in transit.",
-  },
-  delivered: {
-    icon: Package,
-    heading: "No deliveries yet",
-    body: "Orders confirmed as received will be recorded here.",
-  },
+const SALES_STATUS_COLOR: Record<string, string> = {
+  paid:      "#d97706",
+  confirmed: "#3730a3",
+  shipped:   "#7c3aed",
+  delivered: "#059669",
 };
 
 function PickupCodeEntry({ orderId }: { orderId: string }) {
@@ -181,144 +164,118 @@ function PickupCodeEntry({ orderId }: { orderId: string }) {
   );
 }
 
-function SellerOrderCard({
-  order,
-  tab,
-}: {
-  order: SellerOrder;
-  tab: SalesTab;
-}) {
+function SellerOrderCard({ order }: { order: SellerOrder }) {
   const { mutate: confirm, isPending: confirming } = useConfirmOrder();
-  const firstItem = order.order_items?.[0];
-  const extraItems = (order.order_items ?? []).slice(1);
+  const items = order.order_items ?? [];
+  const visibleItems = items.slice(0, 3);
+  const extraCount = items.length - visibleItems.length;
+  const accentColor = SALES_STATUS_COLOR[order.status] ?? "#6b7280";
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="rounded-2xl border border-border bg-card p-5 flex flex-col sm:flex-row gap-4"
+      className="rounded-2xl border border-border bg-card overflow-hidden"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
-      {/* Images */}
-      <div className="flex sm:flex-col gap-2 shrink-0">
-        {[firstItem, ...extraItems].map((item, i) =>
-          item ? (
-            <div
-              key={i}
-              className="relative w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center bg-surface border border-border"
-            >
-              {item.listing.images?.[0] ? (
-                <ListingImage
-                  src={item.listing.images[0]}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                  alt={item.listing.title}
-                />
-              ) : (
-                <Package
-                  size={20}
-                  strokeWidth={1.5}
-                  className="text-text-subtle"
-                />
-              )}
-            </div>
-          ) : null,
-        )}
-      </div>
+      {/* Status accent bar */}
+      <div className="h-[3px] w-full" style={{ background: accentColor }} />
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {/* Title + price + delivery badge */}
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
-          <div>
-            <div className="space-y-0.5 mb-1">
-              {(order.order_items ?? []).map((item) => (
-                <h3
-                  key={item.id}
-                  className="text-sm font-semibold text-text leading-snug"
-                >
-                  {item.listing.title}
-                </h3>
-              ))}
-            </div>
-            <p className="text-base font-bold text-primary mt-0.5">
-              ₦{order.total_price.toLocaleString()}
-            </p>
+      <div className="p-5">
+        {/* Top: images + item info */}
+        <div className="flex gap-3 mb-4">
+          {/* Thumbnail strip */}
+          <div className="flex gap-1.5 shrink-0">
+            {visibleItems.map((item, i) => (
+              <div
+                key={i}
+                className="relative w-14 h-14 rounded-xl overflow-hidden bg-surface border border-border flex items-center justify-center shrink-0"
+              >
+                {item.listing.images?.[0] ? (
+                  <ListingImage
+                    src={item.listing.images[0]}
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                    alt={item.listing.title}
+                  />
+                ) : (
+                  <Package size={18} strokeWidth={1.5} className="text-text-subtle" />
+                )}
+                {i === visibleItems.length - 1 && extraCount > 0 && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center rounded-xl"
+                    style={{ background: "rgba(0,0,0,0.48)" }}
+                  >
+                    <span className="text-white text-xs font-bold">+{extraCount}</span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          <span
-            className={[
-              "self-start inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium shrink-0",
-              order.delivery_type === "delivery"
-                ? "bg-primary/8 text-primary"
-                : "bg-success/8 text-success",
-            ].join(" ")}
-          >
-            {order.delivery_type === "delivery" ? (
-              <>
-                <Truck size={11} strokeWidth={2} /> Delivery
-              </>
-            ) : (
-              <>
-                <MapPin size={11} strokeWidth={2} /> Pickup
-              </>
-            )}
-          </span>
-        </div>
 
-        {/* Buyer info — 2-col grid */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-4">
-          <div className="flex items-center gap-1.5 text-xs text-text-muted">
-            <User
-              size={11}
-              strokeWidth={2}
-              className="shrink-0 text-text-subtle"
-            />
-            <span className="truncate">{order.buyer_name}</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-text-muted">
-            <Phone
-              size={11}
-              strokeWidth={2}
-              className="shrink-0 text-text-subtle"
-            />
-            <span className="truncate">{order.buyer_phone}</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-text-muted col-span-2">
-            <Mail
-              size={11}
-              strokeWidth={2}
-              className="shrink-0 text-text-subtle"
-            />
-            <span className="truncate">{order.buyer_email}</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-text-muted col-span-2">
-            <MapPin
-              size={11}
-              strokeWidth={2}
-              className="shrink-0 text-text-subtle"
-            />
-            <span className="line-clamp-1">{order.buyer_address}</span>
+          {/* Title + price */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="min-w-0">
+                {items.map((item) => (
+                  <p key={item.id} className="text-sm font-semibold text-text leading-snug truncate">
+                    {item.listing.title}
+                  </p>
+                ))}
+              </div>
+              <p className="text-base font-bold shrink-0" style={{ color: accentColor }}>
+                ₦{order.total_price.toLocaleString()}
+              </p>
+            </div>
+
+            {/* Buyer + delivery type */}
+            <div className="flex items-center gap-2">
+              <User size={10} strokeWidth={2} className="text-text-subtle shrink-0" />
+              <span className="text-xs text-text-muted truncate">{order.buyer_name}</span>
+              <span className="text-text-subtle text-[10px]">·</span>
+              <span className="text-xs text-text-muted">{order.buyer_phone}</span>
+              <span
+                className={[
+                  "ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium shrink-0",
+                  order.delivery_type === "delivery" ? "bg-primary/8 text-primary" : "bg-success/8 text-success",
+                ].join(" ")}
+              >
+                {order.delivery_type === "delivery"
+                  ? <><Truck size={9} strokeWidth={2} /> Delivery</>
+                  : <><MapPin size={9} strokeWidth={2} /> Pickup</>}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5 mt-1">
+              <MapPin size={10} strokeWidth={2} className="text-text-subtle shrink-0" />
+              <p className="text-xs text-text-subtle truncate">{order.buyer_address}</p>
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {tab.status === "paid" && (
+        {/* Action area */}
+        <div className="flex items-center gap-2 pt-4 border-t border-border">
+          {order.status === "paid" && (
             <button
               onClick={() => confirm(order.id)}
               disabled={confirming}
-              className="rounded-xl bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-primary-hover disabled:opacity-60 transition-colors"
+              className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60"
+              style={{ background: accentColor }}
             >
               {confirming ? "Confirming…" : "Confirm order"}
             </button>
           )}
-          {tab.status === "confirmed" && order.delivery_type === "pickup" && (
-            <PickupCodeEntry orderId={order.id} />
+          {order.status === "confirmed" && order.delivery_type === "pickup" && (
+            <div className="flex-1">
+              <PickupCodeEntry orderId={order.id} />
+            </div>
           )}
-          {tab.status === "confirmed" && order.delivery_type === "delivery" && (
-            <span className="text-xs rounded-full px-3 py-1.5 font-medium bg-primary/8 text-primary">
+          {order.status === "confirmed" && order.delivery_type === "delivery" && (
+            <span
+              className="flex-1 text-center text-xs rounded-xl px-3 py-2.5 font-medium"
+              style={{ background: "rgba(55,48,163,0.06)", color: "#3730a3" }}
+            >
               Awaiting dispatcher
             </span>
           )}
@@ -326,10 +283,10 @@ function SellerOrderCard({
             href={`mailto:${order.buyer_email}?subject=${encodeURIComponent("Your Declutter order")}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-4 py-2 text-xs font-semibold text-text-muted hover:bg-surface hover:text-text transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2.5 text-xs font-medium text-text-muted hover:bg-surface hover:text-text transition-colors shrink-0"
           >
             <Mail size={12} strokeWidth={2} />
-            Contact buyer
+            Contact
           </a>
         </div>
       </div>
@@ -337,8 +294,22 @@ function SellerOrderCard({
   );
 }
 
-function SalesTabContent({ tab }: { tab: SalesTab }) {
-  const { data: orders, isLoading } = useSellerOrders(tab.status);
+const STATUS_SORT_ORDER = ['paid', 'confirmed', 'shipped', 'delivered']
+
+type SalesFilter = 'all' | 'paid' | 'confirmed' | 'shipped' | 'delivered'
+
+const FILTER_CHIPS: { label: string; value: SalesFilter }[] = [
+  { label: 'All',       value: 'all' },
+  { label: 'New',       value: 'paid' },
+  { label: 'Confirmed', value: 'confirmed' },
+  { label: 'Shipped',   value: 'shipped' },
+  { label: 'Delivered', value: 'delivered' },
+]
+
+function SalesContent() {
+  const { data: orders, isLoading } = useSellerOrders()
+  const [filter, setFilter] = useState<SalesFilter>('all')
+
   if (isLoading)
     return (
       <div className="flex flex-col gap-4">
@@ -346,17 +317,68 @@ function SalesTabContent({ tab }: { tab: SalesTab }) {
           <OrderSkeleton key={i} index={i} />
         ))}
       </div>
-    );
-  const cfg = SALES_EMPTY[tab.status] ?? SALES_EMPTY.paid;
-  if (!orders || orders.length === 0)
-    return <EmptyState icon={cfg.icon} heading={cfg.heading} body={cfg.body} />;
+    )
+
+  const sorted = [...(orders ?? [])].sort(
+    (a, b) => STATUS_SORT_ORDER.indexOf(a.status) - STATUS_SORT_ORDER.indexOf(b.status)
+  )
+  const visible = filter === 'all' ? sorted : sorted.filter((o) => o.status === filter)
+
   return (
-    <div className="flex flex-col gap-4">
-      {orders.map((o) => (
-        <SellerOrderCard key={o.id} order={o} tab={tab} />
-      ))}
+    <div className="space-y-4">
+      {/* Filter chips */}
+      <div className="flex flex-wrap gap-2">
+        {FILTER_CHIPS.map(({ label, value }) => {
+          const count = value === 'all'
+            ? (orders ?? []).length
+            : (orders ?? []).filter((o) => o.status === value).length
+          const isActive = filter === value
+          return (
+            <button
+              key={value}
+              onClick={() => setFilter(value)}
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition-all duration-150"
+              style={
+                isActive
+                  ? (SALES_STATUS_STYLE[value] ?? { background: 'var(--color-text)', color: '#fff' })
+                  : { background: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }
+              }
+            >
+              {label}
+              {count > 0 && (
+                <span
+                  className="rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                  style={
+                    isActive
+                      ? { background: 'rgba(0,0,0,0.15)', color: 'inherit' }
+                      : { background: 'var(--color-border)', color: 'var(--color-text-subtle)' }
+                  }
+                >
+                  {count}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
+      {visible.length === 0 ? (
+        <EmptyState
+          icon={ShoppingBag}
+          heading={filter === 'all' ? 'No active orders' : `No ${FILTER_CHIPS.find(c => c.value === filter)?.label.toLowerCase()} orders`}
+          body={filter === 'all'
+            ? 'When a buyer completes payment, their order will appear here for you to manage.'
+            : 'Try a different filter or check back later.'}
+        />
+      ) : (
+        <div className="flex flex-col gap-4">
+          {visible.map((o) => (
+            <SellerOrderCard key={o.id} order={o} />
+          ))}
+        </div>
+      )}
     </div>
-  );
+  )
 }
 
 
@@ -435,25 +457,6 @@ function SellerOrderRow({ order }: { order: BuyerOrder }) {
   );
 }
 
-type CheckoutGroup = {
-  paystackReference: string | null;
-  orders: BuyerOrder[];
-  createdAt: string;
-};
-
-function groupByCheckout(orders: BuyerOrder[]): CheckoutGroup[] {
-  const map = new Map<string, BuyerOrder[]>();
-  for (const order of orders) {
-    const key = order.paystack_reference ?? order.id;
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(order);
-  }
-  return Array.from(map.entries()).map(([, group]) => ({
-    paystackReference: group[0].paystack_reference,
-    orders: group,
-    createdAt: group[0].created_at,
-  }));
-}
 
 function CheckoutGroupCard({ group }: { group: CheckoutGroup }) {
   const grandTotal = group.orders.reduce((s, o) => s + o.total_price, 0);
@@ -820,41 +823,9 @@ function IncomingClaimsPanel() {
   );
 }
 
-// ─── Sales panel (restored) ───────────────────────────────────────────────────
+// ─── Sales panel ─────────────────────────────────────────────────────────────
 
-function SalesPanel() {
-  const [activeTab, setActiveTab] = useState<SalesTab>(SALES_TABS[0]);
-  return (
-    <div className="space-y-5">
-      {/* Sub-tab row — underline style */}
-      <div className="flex gap-0 border-b border-border">
-        {SALES_TABS.map((tab) => {
-          const isActive = activeTab.status === tab.status;
-          return (
-            <button
-              key={tab.status}
-              onClick={() => setActiveTab(tab)}
-              className={[
-                "relative px-4 py-2.5 text-sm font-medium transition-colors duration-150",
-                isActive ? "text-primary" : "text-text-muted hover:text-text",
-              ].join(" ")}
-            >
-              {tab.label}
-              {isActive && (
-                <motion.span
-                  layoutId="sales-underline"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                />
-              )}
-            </button>
-          );
-        })}
-      </div>
-      <SalesTabContent tab={activeTab} />
-    </div>
-  );
-}
+function SalesPanel() { return <SalesContent /> }
 
 // ─── Claims panel (restored) ──────────────────────────────────────────────────
 
