@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ShoppingBag, Clock, Truck, Check, CircleAlert, MapPin } from 'lucide-react'
+import { ShoppingBag, Clock, Truck, Check, CircleAlert, MapPin, Package } from 'lucide-react'
 import type { BuyerOrderDetail } from '@/lib/hooks/useBuyerOrders'
 
 const DELIVERY_STEPS = ['paid', 'confirmed', 'shipped', 'delivered'] as const
@@ -122,7 +122,7 @@ export function OrderProgressHero({
               {steps.map((step, i) => {
                 const done   = currentIndex >= i
                 const active = currentIndex === i
-                const Icon   = STEP_ICON[step]
+                const Icon   = STEP_ICON[step] ?? Package
                 return (
                   <motion.div key={step}
                     className="relative flex items-center justify-center rounded-full shrink-0"
