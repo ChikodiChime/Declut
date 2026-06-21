@@ -15,6 +15,7 @@ import {
   Menu,
 } from "lucide-react";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
+import { useOrdersModal } from "@/lib/context/orders-modal-context";
 import { useCart } from "@/lib/hooks/useCart";
 import { NavbarSearch } from "@/components/layout/NavbarSearch";
 import { CartDrawer } from "@/components/layout/CartDrawer";
@@ -51,6 +52,7 @@ function ProfileMenu({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { mutate: signOut } = useSignOut();
+  const { openList } = useOrdersModal();
 
   useEffect(() => {
     function onOutsideClick(e: MouseEvent) {
@@ -153,13 +155,16 @@ function ProfileMenu({
             >
               Dashboard
             </MenuLink>
-            <MenuLink
-              href="/dashboard/orders?tab=purchases"
-              icon={ShoppingBag}
-              onClick={() => setOpen(false)}
+            <button
+              onClick={() => { setOpen(false); openList(); }}
+              className="flex items-center gap-3 px-4 py-2 text-[13px] font-medium transition-colors w-full text-left"
+              style={{ color: '#16130f' }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#f8f5f0')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
             >
+              <ShoppingBag size={14} strokeWidth={1.8} style={{ color: '#a8a09a' }} />
               My purchases
-            </MenuLink>
+            </button>
           </div>
           <div style={{ borderTop: "1px solid #f0ece5" }} className="py-1">
             <button
@@ -284,6 +289,7 @@ function NavbarContent({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const { openList } = useOrdersModal();
 
   useEffect(() => {
     document.body.style.overflow = (mobileOpen || cartDrawerOpen) ? "hidden" : "";
@@ -743,11 +749,10 @@ function NavbarContent({
                 />
                 Dashboard
               </Link>
-              <Link
-                href="/dashboard/orders?tab=purchases"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
-                style={{ color: "#16130f" }}
+              <button
+                onClick={() => { setMobileOpen(false); openList(); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors w-full text-left"
+                style={{ color: '#16130f' }}
               >
                 <ShoppingBag
                   size={15}
@@ -755,7 +760,7 @@ function NavbarContent({
                   style={{ color: "#a8a09a" }}
                 />
                 My purchases
-              </Link>
+              </button>
             </>
           )}
         </nav>
