@@ -91,8 +91,12 @@ export function VoiceMicButton({ onTranscript, disabled }: VoiceMicButtonProps) 
       // Chrome in an unrecoverable state (e.g. after not-allowed/audio-capture).
       const r = createRecognition()
       recognitionRef.current = r
-      r.start()
-      setIsListening(true)
+      try {
+        r.start()
+        setIsListening(true)
+      } catch {
+        isStarting.current = false
+      }
     }
   }
 
