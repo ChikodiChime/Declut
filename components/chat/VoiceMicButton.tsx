@@ -11,8 +11,7 @@ interface VoiceMicButtonProps {
 export function VoiceMicButton({ onTranscript, disabled }: VoiceMicButtonProps) {
   const [supported, setSupported] = useState(false)
   const [isListening, setIsListening] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null)
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
   const onTranscriptRef = useRef(onTranscript)
 
   useEffect(() => {
@@ -21,19 +20,19 @@ export function VoiceMicButton({ onTranscript, disabled }: VoiceMicButtonProps) 
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition
+    const SR: typeof SpeechRecognition | undefined =
+      window.SpeechRecognition ?? (window as any).webkitSpeechRecognition
     if (!SR) return
     setSupported(true)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const recognition: any = new SR()
+    const recognition = new SR()
     recognition.continuous = false
     recognition.interimResults = false
     recognition.lang = 'en-NG'
 
-    recognition.onresult = (e: any) => {
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
       const transcript = Array.from(e.results)
-        .map((r: any) => r[0].transcript)
+        .map((r) => r[0].transcript)
         .join('')
       onTranscriptRef.current(transcript)
     }
