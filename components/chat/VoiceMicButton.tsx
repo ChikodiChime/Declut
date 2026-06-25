@@ -13,6 +13,8 @@ export function VoiceMicButton({ onTranscript, disabled }: VoiceMicButtonProps) 
   const [isListening, setIsListening] = useState(false)
   const recognitionRef = useRef<SpeechRecognition | null>(null)
   const onTranscriptRef = useRef(onTranscript)
+  // Guards against InvalidStateError on rapid double-tap
+  const isStarting = useRef(false)
 
   useEffect(() => {
     onTranscriptRef.current = onTranscript
@@ -24,34 +26,71 @@ export function VoiceMicButton({ onTranscript, disabled }: VoiceMicButtonProps) 
       window.SpeechRecognition ?? (window as any).webkitSpeechRecognition
     if (!SR) return
     setSupported(true)
-
-    const recognition = new SR()
-    recognition.continuous = false
-    recognition.interimResults = false
-    recognition.lang = 'en-NG'
-
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
-      const transcript = Array.from(e.results)
-        .map((r) => r[0].transcript)
-        .join('')
-      onTranscriptRef.current(transcript)
+    return () => {
+      recognitionRef.current?.abort()
     }
-    recognition.onend = () => setIsListening(false)
-    recognition.onerror = () => setIsListening(false)
-
-    recognitionRef.current = recognition
-    return () => recognition.abort()
   }, [])
+
+  // Stop recognition when AI starts responding mid-session
+  useEffect(() => {
+    if (disabled && isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+    }
+  }, [disabled, isListening])
 
   if (!supported) return null
 
+  function createRecognition(): SpeechRecognition {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR: typeof SpeechRecognition =
+      window.SpeechRecognition ?? (window as any).webkitSpeechRecognition
+    let mounted = true
+
+    const r = new SR()
+    r.continuous = false
+    r.interimResults = false
+    r.lang = 'en-NG'
+
+    r.onresult = (e: SpeechRecognitionEvent) => {
+      if (!mounted) return
+      const transcript = Array.from(e.results)
+        .map((result) => result[0].transcript)
+        .join('')
+      onTranscriptRef.current(transcript)
+    }
+
+    r.onend = () => {
+      // NOTE: Some Safari versions fire onend before onresult. If transcripts
+      // go missing on Safari, buffer the result in onresult and flush it here.
+      mounted = false
+      isStarting.current = false
+      setIsListening(false)
+    }
+
+    r.onerror = (e: SpeechRecognitionErrorEvent) => {
+      if (process.env.NODE_ENV === 'development') console.warn('[VoiceMicButton] speech error:', e.error)
+      mounted = false
+      isStarting.current = false
+      setIsListening(false)
+    }
+
+    return r
+  }
+
   function toggle() {
     if (disabled) return
-    const r = recognitionRef.current
-    if (!r) return
     if (isListening) {
-      r.stop()
+      recognitionRef.current?.stop()
     } else {
+      // Guard against InvalidStateError on rapid double-tap
+      if (isStarting.current) return
+      isStarting.current = true
+
+      // Re-instantiate on each start — reusing a post-error instance can leave
+      // Chrome in an unrecoverable state (e.g. after not-allowed/audio-capture).
+      const r = createRecognition()
+      recognitionRef.current = r
       r.start()
       setIsListening(true)
     }
@@ -65,7 +104,7 @@ export function VoiceMicButton({ onTranscript, disabled }: VoiceMicButtonProps) 
       aria-label={isListening ? 'Stop recording' : 'Start voice input'}
       className={`relative p-2.5 rounded-xl transition-all shrink-0 disabled:opacity-40 ${
         isListening
-          ? 'text-red-500'
+          ? 'text-red-500 bg-red-500/10'
           : 'bg-background border border-border text-text-muted hover:text-text hover:border-border-strong'
       }`}
     >

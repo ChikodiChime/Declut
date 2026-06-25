@@ -195,6 +195,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
           <form onSubmit={handleFormSubmit} className="flex items-end gap-2">
             <textarea
               ref={textareaRef}
+              rows={1}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

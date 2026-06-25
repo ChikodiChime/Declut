@@ -3,7 +3,21 @@ interface SpeechRecognitionEventInit extends EventInit {
 }
 
 interface SpeechRecognitionEvent extends Event {
+  resultIndex: number
   results: SpeechRecognitionResultList
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error:
+    | 'not-allowed'
+    | 'audio-capture'
+    | 'network'
+    | 'no-speech'
+    | 'aborted'
+    | 'bad-grammar'
+    | 'language-not-supported'
+    | 'service-not-allowed'
+  message: string
 }
 
 interface SpeechRecognitionResultList {
@@ -28,17 +42,16 @@ interface SpeechRecognition extends EventTarget {
   lang: string
   onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => unknown) | null
   onend: ((this: SpeechRecognition, ev: Event) => unknown) | null
-  onerror: ((this: SpeechRecognition, ev: Event) => unknown) | null
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => unknown) | null
   start(): void
   stop(): void
   abort(): void
 }
 
-interface SpeechRecognitionConstructor {
+declare var SpeechRecognition: {
+  prototype: SpeechRecognition
   new (): SpeechRecognition
 }
-
-declare var SpeechRecognition: SpeechRecognitionConstructor
 
 interface Window {
   SpeechRecognition?: typeof SpeechRecognition
