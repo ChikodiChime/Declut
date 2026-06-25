@@ -1,12 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { MessageCircle, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChatWidget } from './ChatWidget'
 
 export function ChatBubble() {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+
+  if (pathname.startsWith('/dispatch')) return null
 
   return (
     <>
