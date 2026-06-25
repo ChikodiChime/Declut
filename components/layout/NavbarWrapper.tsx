@@ -156,13 +156,24 @@ function ProfileMenu({
               Dashboard
             </MenuLink>
             <button
-              onClick={() => { setOpen(false); openList(); }}
+              onClick={() => {
+                setOpen(false);
+                openList();
+              }}
               className="flex items-center gap-3 px-4 py-2 text-[13px] font-medium transition-colors w-full text-left"
-              style={{ color: '#16130f' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#f8f5f0')}
-              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+              style={{ color: "#16130f" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#f8f5f0")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
             >
-              <ShoppingBag size={14} strokeWidth={1.8} style={{ color: '#a8a09a' }} />
+              <ShoppingBag
+                size={14}
+                strokeWidth={1.8}
+                style={{ color: "#a8a09a" }}
+              />
               My purchases
             </button>
           </div>
@@ -289,10 +300,13 @@ function NavbarContent({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const searchToggleRef = useRef<HTMLButtonElement>(null);
   const { openList } = useOrdersModal();
 
+  const closeSearch = () => setSearchOpen(false);
+
   useEffect(() => {
-    document.body.style.overflow = (mobileOpen || cartDrawerOpen) ? "hidden" : "";
+    document.body.style.overflow = mobileOpen || cartDrawerOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -303,7 +317,8 @@ function NavbarContent({
       setCartDrawerOpen(true);
     }
     window.addEventListener("cart-drawer-open", handleOpenCartDrawer);
-    return () => window.removeEventListener("cart-drawer-open", handleOpenCartDrawer);
+    return () =>
+      window.removeEventListener("cart-drawer-open", handleOpenCartDrawer);
   }, []);
 
   return (
@@ -328,7 +343,7 @@ function NavbarContent({
           />
         )}
 
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 h-[76px] flex items-center justify-between gap-3">
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-6 md:px-10 h-[76px] flex items-center justify-between gap-3">
           {/* Logo */}
           <Link
             href="/"
@@ -422,58 +437,9 @@ function NavbarContent({
 
           {/* Right actions */}
           <div className="flex items-center gap-1.5 shrink-0">
-            {/* List an item */}
-            <Link
-              href="/dashboard/listings/new"
-              className="hidden md:inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-[14px] font-semibold transition-all duration-200"
-              style={
-                transparent
-                  ? {
-                      color: "rgba(255,255,255,0.88)",
-                      border: "1px solid rgba(255,255,255,0.30)",
-                      background: "rgba(255,255,255,0.08)",
-                    }
-                  : {
-                      color: "#4f46e5",
-                      border: "1px solid rgba(79,70,229,0.30)",
-                      background: "rgba(79,70,229,0.05)",
-                    }
-              }
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                if (transparent) {
-                  el.style.background = "rgba(255,255,255,0.16)";
-                  el.style.borderColor = "rgba(255,255,255,0.55)";
-                } else {
-                  el.style.background = "rgba(79,70,229,0.10)";
-                  el.style.borderColor = "rgba(79,70,229,0.50)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                if (transparent) {
-                  el.style.background = "rgba(255,255,255,0.08)";
-                  el.style.borderColor = "rgba(255,255,255,0.30)";
-                } else {
-                  el.style.background = "rgba(79,70,229,0.05)";
-                  el.style.borderColor = "rgba(79,70,229,0.30)";
-                }
-              }}
-            >
-              <Plus size={13} strokeWidth={2.5} />
-              List an item
-            </Link>
-
-            {/* Divider */}
-            <div
-              className="hidden md:block w-px h-5 mx-1 shrink-0"
-              style={{
-                background: transparent ? "rgba(255,255,255,0.18)" : "#e8e4dc",
-              }}
-            />
-
             {/* Search icon — mobile only */}
             <button
+              ref={searchToggleRef}
               className="md:hidden flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200"
               style={{
                 background: searchOpen
@@ -484,10 +450,11 @@ function NavbarContent({
                 color: transparent ? "rgba(255,255,255,0.92)" : "#16130f",
               }}
               onClick={() => {
-                setSearchOpen((v) => !v);
+                setSearchOpen((open) => !open);
                 setMobileOpen(false);
               }}
-              aria-label="Search"
+              aria-label={searchOpen ? "Close search" : "Search"}
+              aria-expanded={searchOpen}
             >
               {searchOpen ? (
                 <X size={17} strokeWidth={2} />
@@ -496,10 +463,54 @@ function NavbarContent({
               )}
             </button>
 
-            <CartButton
+            <TransactionPill
               transparent={transparent}
-              onOpen={() => setCartDrawerOpen(true)}
+              onCartOpen={() => setCartDrawerOpen(true)}
             />
+
+            {/* Sell CTA — guests only */}
+            {!isLoading && !me && (
+              <Link
+                href="/auth/signup"
+                className="hidden md:inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-[14px] font-semibold transition-all duration-200"
+                style={
+                  transparent
+                    ? {
+                        color: "rgba(255,255,255,0.88)",
+                        border: "1px solid rgba(255,255,255,0.30)",
+                        background: "rgba(255,255,255,0.08)",
+                      }
+                    : {
+                        color: "#4f46e5",
+                        border: "1px solid rgba(79,70,229,0.30)",
+                        background: "rgba(79,70,229,0.05)",
+                      }
+                }
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  if (transparent) {
+                    el.style.background = "rgba(255,255,255,0.16)";
+                    el.style.borderColor = "rgba(255,255,255,0.55)";
+                  } else {
+                    el.style.background = "rgba(79,70,229,0.10)";
+                    el.style.borderColor = "rgba(79,70,229,0.50)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  if (transparent) {
+                    el.style.background = "rgba(255,255,255,0.08)";
+                    el.style.borderColor = "rgba(255,255,255,0.30)";
+                  } else {
+                    el.style.background = "rgba(79,70,229,0.05)";
+                    el.style.borderColor = "rgba(79,70,229,0.30)";
+                  }
+                }}
+              >
+                <Plus size={13} strokeWidth={2.5} />
+                Sell
+              </Link>
+            )}
 
             {/* Hamburger — mobile only */}
             <button
@@ -512,7 +523,10 @@ function NavbarContent({
                   : "transparent",
                 color: transparent ? "rgba(255,255,255,0.92)" : "#16130f",
               }}
-              onClick={() => setMobileOpen((v) => !v)}
+              onClick={() => {
+                setMobileOpen((v) => !v);
+                setSearchOpen(false);
+              }}
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
             >
@@ -533,88 +547,65 @@ function NavbarContent({
                   />
                 </div>
               ) : (
-                <div className="flex items-center gap-1">
-                  <Link
-                    href="/auth/login"
-                    className="hidden md:inline-flex items-center px-4 h-10 text-[15px] font-medium rounded-full transition-all duration-200"
-                    style={{ color: linkColor }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = linkHover;
+                <Link
+                  href="/auth/signup"
+                  className="hidden md:inline-flex items-center justify-center h-10 px-5 rounded-full text-[15px] font-semibold transition-all duration-200"
+                  style={
+                    transparent
+                      ? {
+                          background: "#ffffff",
+                          color: "#3730a3",
+                          boxShadow:
+                            "0 1px 2px rgba(0,0,0,0.10), 0 4px 12px -4px rgba(0,0,0,0.22)",
+                        }
+                      : {
+                          background: "#4f46e5",
+                          color: "#ffffff",
+                          boxShadow:
+                            "0 1px 2px rgba(79,70,229,0.20), 0 4px 12px -4px rgba(79,70,229,0.45)",
+                        }
+                  }
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.transform =
+                      "translateY(-1px)";
+                    if (!transparent)
                       (e.currentTarget as HTMLElement).style.background =
-                        transparent
-                          ? "rgba(255,255,255,0.10)"
-                          : "rgba(22,19,15,0.05)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = linkColor;
+                        "#4338ca";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.transform =
+                      "translateY(0)";
+                    if (!transparent)
                       (e.currentTarget as HTMLElement).style.background =
-                        "transparent";
-                    }}
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/auth/signup"
-                    className="hidden md:inline-flex items-center justify-center h-10 px-5 rounded-full text-[15px] font-semibold transition-all duration-200"
-                    style={
-                      transparent
-                        ? {
-                            background: "#ffffff",
-                            color: "#3730a3",
-                            boxShadow:
-                              "0 1px 2px rgba(0,0,0,0.10), 0 4px 12px -4px rgba(0,0,0,0.22)",
-                          }
-                        : {
-                            background: "#4f46e5",
-                            color: "#ffffff",
-                            boxShadow:
-                              "0 1px 2px rgba(79,70,229,0.20), 0 4px 12px -4px rgba(79,70,229,0.45)",
-                          }
-                    }
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.transform =
-                        "translateY(-1px)";
-                      if (!transparent)
-                        (e.currentTarget as HTMLElement).style.background =
-                          "#4338ca";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.transform =
-                        "translateY(0)";
-                      if (!transparent)
-                        (e.currentTarget as HTMLElement).style.background =
-                          "#4f46e5";
-                    }}
-                  >
-                    Sign up
-                  </Link>
-                </div>
+                        "#4f46e5";
+                  }}
+                >
+                  Sign up
+                </Link>
               ))}
           </div>
         </div>
-      </header>
 
-      {/* Mobile search panel */}
-      <div
-        className="md:hidden sticky top-[76px] z-40 w-full"
-        style={{
-          background: "#ffffff",
-          maxHeight: searchOpen ? "72px" : "0px",
-          transition:
-            "max-height 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms ease",
-          borderBottom: searchOpen ? "1px solid #e8e4dc" : "none",
-          boxShadow: searchOpen
-            ? "0 4px 12px -4px rgba(22,19,15,0.08)"
-            : "none",
-        }}
-      >
-        <div className="px-4 py-3">
-          <NavbarSearch
-            onSearch={() => setSearchOpen(false)}
-            autoFocus={searchOpen}
-          />
+        {/* Mobile search — overlays page content, does not push layout */}
+        <div
+          className="md:hidden absolute left-0 right-0 top-full grid transition-[grid-template-rows] duration-300 ease-out"
+          style={{
+            gridTemplateRows: searchOpen ? "1fr" : "0fr",
+            pointerEvents: searchOpen ? "auto" : "none",
+          }}
+        >
+          <div className="overflow-hidden min-h-0">
+            <div className="px-4 py-3">
+              <NavbarSearch
+                onSearch={closeSearch}
+                onDismiss={searchOpen ? closeSearch : undefined}
+                dismissExceptRefs={[searchToggleRef]}
+                autoFocus={searchOpen}
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      </header>
 
       {/* Mobile overlay */}
       <div
@@ -629,14 +620,15 @@ function NavbarContent({
         onClick={() => setMobileOpen(false)}
       />
 
-      {/* Mobile menu panel */}
+      {/* Mobile menu — top sheet */}
       <div
-        className="fixed top-0 right-0 bottom-0 z-50 w-72 md:hidden flex flex-col"
+        className="fixed inset-x-0 top-0 z-50 md:hidden flex flex-col max-h-[88dvh] rounded-b-2xl overflow-hidden"
         style={{
           background: "#ffffff",
-          transform: mobileOpen ? "translateX(0)" : "translateX(100%)",
+          transform: mobileOpen ? "translateY(0)" : "translateY(-100%)",
           transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-          boxShadow: "-4px 0 24px rgba(22,19,15,0.12)",
+          boxShadow: "0 4px 24px rgba(22,19,15,0.12)",
+          paddingTop: "env(safe-area-inset-top)",
         }}
       >
         {/* Panel header */}
@@ -750,9 +742,12 @@ function NavbarContent({
                 Dashboard
               </Link>
               <button
-                onClick={() => { setMobileOpen(false); openList(); }}
+                onClick={() => {
+                  setMobileOpen(false);
+                  openList();
+                }}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors w-full text-left"
-                style={{ color: '#16130f' }}
+                style={{ color: "#16130f" }}
               >
                 <ShoppingBag
                   size={15}
@@ -814,52 +809,70 @@ function NavbarContent({
   );
 }
 
-function CartButton({
+function TransactionPill({
   transparent,
-  onOpen,
+  onCartOpen,
 }: {
   transparent: boolean;
-  onOpen: () => void;
+  onCartOpen: () => void;
 }) {
-  const { count, loading } = useCart();
-  const [hover, setHover] = useState(false);
+  const { openList } = useOrdersModal();
+  const { count, loading: cartLoading } = useCart();
 
-  if (loading) return null;
-
-  const baseBg = transparent
-    ? "rgba(255,255,255,0.10)"
-    : "rgba(22,19,15,0.045)";
-  const hoverBg = transparent
-    ? "rgba(255,255,255,0.18)"
-    : "rgba(22,19,15,0.08)";
   const iconColor = transparent ? "rgba(255,255,255,0.92)" : "#16130f";
+  const dividerColor = transparent
+    ? "rgba(255,255,255,0.20)"
+    : "rgba(22,19,15,0.10)";
+  const hoverBg = transparent
+    ? "rgba(255,255,255,0.12)"
+    : "rgba(22,19,15,0.06)";
 
   return (
-    <button
-      onClick={onOpen}
-      aria-label={`Cart (${count} items)`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className="relative inline-flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200"
+    <div
+      className="flex items-center h-10 rounded-full"
       style={{
-        background: hover ? hoverBg : baseBg,
-        boxShadow: transparent
-          ? "inset 0 0 0 1px rgba(255,255,255,0.14)"
-          : "inset 0 0 0 1px rgba(22,19,15,0.06)",
+        border: transparent
+          ? "1px solid rgba(255,255,255,0.22)"
+          : "1px solid rgba(22,19,15,0.10)",
+        background: transparent
+          ? "rgba(255,255,255,0.08)"
+          : "rgba(22,19,15,0.03)",
       }}
     >
-      <ShoppingCart size={16} strokeWidth={2} style={{ color: iconColor }} />
-      {count > 0 && (
-        <span
-          className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold text-white"
-          style={{
-            background: "#4f46e5",
-            boxShadow: "0 0 0 2px var(--cart-ring)",
-          }}
-        >
-          {count > 99 ? "99+" : count}
-        </span>
-      )}
-    </button>
+      <button
+        onClick={openList}
+        aria-label="My orders"
+        className="flex items-center justify-center h-full px-4 rounded-l-full transition-colors duration-150"
+        style={{ color: iconColor }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = hoverBg)}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+      >
+        <ShoppingBag size={16} strokeWidth={2} />
+      </button>
+
+      <div className="w-px h-4 shrink-0" style={{ background: dividerColor }} />
+
+      <button
+        onClick={onCartOpen}
+        aria-label={`Cart${count > 0 ? ` (${count} items)` : ""}`}
+        className="relative flex items-center justify-center h-full px-4 rounded-r-full transition-colors duration-150"
+        style={{ color: iconColor }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = hoverBg)}
+        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+      >
+        <ShoppingCart size={16} strokeWidth={2} />
+        {!cartLoading && count > 0 && (
+          <span
+            className="absolute top-1 right-2 flex items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold text-white"
+            style={{
+              background: "#4f46e5",
+              boxShadow: "0 0 0 1.5px var(--cart-ring)",
+            }}
+          >
+            {count > 99 ? "99+" : count}
+          </span>
+        )}
+      </button>
+    </div>
   );
 }

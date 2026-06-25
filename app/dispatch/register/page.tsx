@@ -15,7 +15,7 @@ export default function DispatcherRegisterPage() {
           </div>
         </div>
 
-        <div className="bg-card rounded-2xl shadow-card px-8 py-10 text-center">
+        <div className="bg-card rounded-2xl shadow-card px-5 py-8 sm:px-8 sm:py-10 text-center">
           <div className="mx-auto mb-5 w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
             <ShieldCheck size={28} className="text-primary" strokeWidth={1.75} />
           </div>

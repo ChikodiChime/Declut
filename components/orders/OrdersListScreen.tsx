@@ -1,11 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Package, Truck, MapPin, Star, ChevronRight } from 'lucide-react'
+import { Package, Truck, MapPin, Star, ChevronRight, LogIn } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { ListingImage } from '@/components/ui'
 import { useBuyerOrders, type BuyerOrder, type BuyerOrderDetail } from '@/lib/hooks/useBuyerOrders'
 import { useOrdersModal } from '@/lib/context/orders-modal-context'
+import { useMe } from '@/lib/hooks/useAuth'
+import { readGuestRefs, removeGuestRef } from '@/lib/guest-orders'
 import { groupByCheckout } from '@/lib/utils/orders'
 import { PURCHASE_STATUS_STYLE, PURCHASE_STATUS_LABEL } from '@/lib/constants/orderStatus'
 
@@ -160,12 +164,98 @@ function LoggedInOrdersList() {
   )
 }
 
-export function OrdersListScreen() {
-  const { referenceOrders } = useOrdersModal()
+function GuestOrdersList() {
+  const [refs] = useState(() => readGuestRefs())
 
-  if (referenceOrders) {
-    return <ReferenceOrdersList orders={referenceOrders} />
+  const { data: orders = [], isLoading } = useQuery<BuyerOrderDetail[]>({
+    queryKey: ['guest-orders', refs],
+    queryFn: async () => {
+      if (refs.length === 0) return []
+      const results = await Promise.all(
+        refs.map((ref) =>
+          fetch(`/api/orders/by-reference?ref=${encodeURIComponent(ref)}`)
+            .then((r) => r.json())
+            .then((json: { data?: BuyerOrderDetail[] }) => ({
+              ref,
+              orders: json.data ?? [],
+            }))
+            .catch(() => ({ ref, orders: [] as BuyerOrderDetail[] }))
+        )
+      )
+      results.forEach(({ ref, orders: o }) => {
+        if (o.length === 0) removeGuestRef(ref)
+      })
+      return results
+        .flatMap((r) => r.orders)
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    },
+    enabled: refs.length > 0,
+    staleTime: 60_000,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3">
+        {[0, 1].map((i) => <OrderSkeleton key={i} />)}
+      </div>
+    )
   }
 
-  return <LoggedInOrdersList />
+  return (
+    <div className="flex flex-col gap-4">
+      {orders.length > 0 && (
+        <div className="flex flex-col gap-3">
+          {orders.map((order) => (
+            <motion.div
+              key={order.id}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="rounded-2xl border border-border bg-card overflow-hidden"
+              style={{ boxShadow: 'var(--shadow-card)' }}
+            >
+              <OrderRow order={order} />
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {orders.length === 0 && (
+        <div className="flex flex-col items-center py-10 text-center">
+          <p className="text-sm font-semibold text-text mb-1">No recent orders</p>
+          <p className="text-xs text-text-muted max-w-xs">
+            Orders placed as a guest are tracked by your browser. They may have expired or been cleared.
+          </p>
+        </div>
+      )}
+
+      <div className="rounded-xl border border-border bg-surface p-4 flex items-start gap-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 mt-0.5">
+          <LogIn size={14} strokeWidth={2} className="text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-text mb-0.5">Sign in to track anytime</p>
+          <p className="text-xs text-text-muted mb-3">
+            Create an account to access your order history from any device.
+          </p>
+          <Link
+            href="/auth/login"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-hover transition-colors"
+          >
+            Sign in
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function OrdersListScreen() {
+  const { referenceOrders } = useOrdersModal()
+  const { data: me, isLoading: meLoading } = useMe()
+
+  if (referenceOrders) return <ReferenceOrdersList orders={referenceOrders} />
+  if (meLoading) return <div className="flex flex-col gap-3">{[0, 1, 2].map((i) => <OrderSkeleton key={i} />)}</div>
+  if (me) return <LoggedInOrdersList />
+  return <GuestOrdersList />
 }

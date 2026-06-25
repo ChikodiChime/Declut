@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { X, ShoppingCart } from "lucide-react";
 import { ListingImage } from "@/components/ui";
+import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
 import { getSessionCart, removeFromSessionCart } from "@/lib/session-cart";
 import { useMe } from "@/lib/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -103,34 +104,14 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   }
 
   return (
-    <>
-      {/* Overlay */}
-      <div
-        aria-hidden
-        className="fixed inset-0 z-50"
-        style={{
-          background: "rgba(22,19,15,0.6)",
-          backdropFilter: "blur(3px)",
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? "auto" : "none",
-          transition: "opacity 280ms ease",
-        }}
-        onClick={onClose}
-      />
-
-      {/* Panel */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Cart"
-        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col w-full max-w-[380px]"
-        style={{
-          background: "#faf9f7",
-          transform: open ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 320ms cubic-bezier(0.32, 0.72, 0, 1)",
-          boxShadow: "-8px 0 48px rgba(22,19,15,0.18), -1px 0 0 rgba(22,19,15,0.06)",
-        }}
-      >
+    <ResponsiveDrawer
+      open={open}
+      onClose={onClose}
+      label="Cart"
+      maxWidth={380}
+      lockScroll={false}
+      panelStyle={{ background: "#faf9f7" }}
+    >
         {/* Header — dark for contrast */}
         <div
           className="flex items-center justify-between px-6 py-5 shrink-0"
@@ -339,7 +320,6 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             </button>
           </div>
         )}
-      </div>
-    </>
+    </ResponsiveDrawer>
   );
 }

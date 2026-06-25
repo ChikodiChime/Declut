@@ -14,6 +14,8 @@ import {
   Banknote,
   BellOff,
   ChevronDown,
+  ClipboardList,
+  CheckCircle2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
@@ -34,7 +36,7 @@ const DROPDOWN_ANIM = {
 // Radius shared by all three trigger buttons
 const TRIGGER_RADIUS = 10;
 
-type NotifType = "order_update" | "claim_request" | "payout_update";
+type NotifType = "order_update" | "claim_request" | "payout_update" | "request_fulfilled";
 
 const NOTIF_META: Record<
   NotifType,
@@ -54,6 +56,11 @@ const NOTIF_META: Record<
     Icon: Banknote,
     bg: "rgba(16,185,129,0.12)",
     iconColor: "#059669",
+  },
+  request_fulfilled: {
+    Icon: ClipboardList,
+    bg: "rgba(139,92,246,0.10)",
+    iconColor: "#7c3aed",
   },
 };
 
@@ -85,6 +92,67 @@ function NotificationSkeleton() {
           <div className="skeleton-shimmer" />
         </div>
       </div>
+    </div>
+  );
+}
+
+// ─── CloseRequestButton ───────────────────────────────────────────────────────
+
+function CloseRequestButton({ requestIds, onClose }: { requestIds: string[]; onClose: () => void }) {
+  const [closing, setClosing] = useState(false);
+  const [closed, setClosed] = useState(false);
+
+  async function handleClose(e: React.MouseEvent) {
+    e.stopPropagation();
+    setClosing(true);
+    try {
+      await Promise.all(
+        requestIds.map((id) =>
+          fetch(`/api/requests/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "closed" }),
+          })
+        )
+      );
+      setClosed(true);
+      onClose();
+    } finally {
+      setClosing(false);
+    }
+  }
+
+  if (closed) {
+    return (
+      <div
+        className="flex items-center gap-1.5 mx-4 mb-3"
+        style={{ fontSize: 11, color: "#059669" }}
+      >
+        <CheckCircle2 size={12} strokeWidth={2} />
+        Request closed
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 pb-3">
+      <button
+        onClick={handleClose}
+        disabled={closing}
+        className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 transition-colors disabled:opacity-50"
+        style={{ fontSize: 11, fontWeight: 600, borderColor: "#e0dbd3", color: "#56524d" }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.borderColor = "#7c3aed";
+          (e.currentTarget as HTMLElement).style.color = "#7c3aed";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.borderColor = "#e0dbd3";
+          (e.currentTarget as HTMLElement).style.color = "#56524d";
+        }}
+      >
+        <CheckCircle2 size={11} strokeWidth={2} />
+        {closing ? "Closing…" : "Close request"}
+      </button>
     </div>
   );
 }
@@ -278,6 +346,8 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
                   const meta =
                     NOTIF_META[n.type as NotifType] ?? NOTIF_META.order_update;
                   const { Icon } = meta;
+                  const requestIds = (n.metadata as { request_ids?: string[] } | null)?.request_ids;
+                  const canCloseRequest = n.type === "request_fulfilled" && requestIds && requestIds.length > 0;
                   return (
                     <div key={n.id}>
                       <button
@@ -358,6 +428,12 @@ export function NotificationBell({ triggerClassName }: { triggerClassName?: stri
                           </p>
                         </div>
                       </button>
+                      {canCloseRequest && (
+                        <CloseRequestButton
+                          requestIds={requestIds}
+                          onClose={() => markRead(n.id)}
+                        />
+                      )}
                       {i < notifications.length - 1 && (
                         <div
                           style={{

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft, Sparkles } from 'lucide-react'
+import { ArrowLeft, Bot } from 'lucide-react'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 
 export const metadata: Metadata = {
@@ -20,12 +20,12 @@ export default function ChatPage() {
           <span>Back</span>
         </Link>
 
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center shadow-sm">
-            <Sparkles size={14} className="text-white" />
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-7 h-7 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+            <Bot size={14} className="text-white" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-success border-2 border-card" />
           </div>
           <span className="font-semibold text-sm text-text tracking-tight">Declutter AI</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-success" />
         </div>
       </header>
 

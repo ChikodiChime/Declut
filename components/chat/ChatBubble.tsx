@@ -17,7 +17,7 @@ export function ChatBubble() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="fixed bottom-20 right-4 z-50 w-[360px] h-[500px] rounded-2xl border border-border bg-card shadow-elevated flex flex-col overflow-hidden"
+            className="fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-elevated bottom-20 left-2 right-2 h-[calc(100dvh-90px)] max-h-[480px] sm:left-auto sm:right-4 sm:w-[380px] sm:h-[520px] sm:max-h-[520px]"
           >
             <ChatWidget onClose={() => setIsOpen(false)} />
           </motion.div>
@@ -26,10 +26,32 @@ export function ChatBubble() {
 
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-primary text-white shadow-elevated flex items-center justify-center hover:bg-primary-hover transition-colors"
+        className="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-primary text-white shadow-elevated flex items-center justify-center hover:bg-primary-hover active:scale-95 transition-all"
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
       >
-        {isOpen ? <X size={20} /> : <MessageCircle size={20} />}
+        <AnimatePresence mode="wait" initial={false}>
+          {isOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <X size={20} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="open"
+              initial={{ rotate: 90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: -90, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <MessageCircle size={20} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </button>
     </>
   )

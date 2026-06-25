@@ -1,0 +1,184 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "declut home" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "declut" [ref=e5]
+        - img [ref=e6]
+      - generic [ref=e7]:
+        - link "Browse" [ref=e8] [cursor=pointer]:
+          - /url: /search
+        - link "Requests" [ref=e9] [cursor=pointer]:
+          - /url: /requests
+      - generic [ref=e10]:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - img
+                - textbox "Search listings…"
+              - button:
+                - img
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - button "My orders" [ref=e13] [cursor=pointer]:
+            - img [ref=e14]
+          - button "Cart" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+        - link "Sell" [ref=e133] [cursor=pointer]:
+          - /url: /auth/signup
+          - img [ref=e134]
+          - text: Sell
+        - link "Sign up" [ref=e135] [cursor=pointer]:
+          - /url: /auth/signup
+  - dialog "Cart" [ref=e23]:
+    - generic [ref=e24]:
+      - generic [ref=e26]: Your Cart
+      - button "Close cart" [ref=e27] [cursor=pointer]:
+        - img [ref=e28]
+    - generic [ref=e32]:
+      - img [ref=e34]
+      - paragraph [ref=e38]: Nothing here yet
+      - paragraph [ref=e39]: Browse listings and add items to get started
+      - button "Browse listings" [ref=e40] [cursor=pointer]
+  - generic [ref=e41]:
+    - banner [ref=e42]:
+      - link "Back" [ref=e43] [cursor=pointer]:
+        - /url: /
+        - img [ref=e44]
+        - generic [ref=e46]: Back
+      - generic [ref=e47]:
+        - img [ref=e49]
+        - generic [ref=e52]: Declutter AI
+    - generic [ref=e55]:
+      - generic [ref=e136]:
+        - generic [ref=e138]: Show me available listings
+        - generic [ref=e139]:
+          - generic [ref=e140]: "Here are some available listings: * kjkj - ₦90,000 (Lagos) * hhj - ₦700,000 (Lagos) * jkjk - ₦90,000 (Lagos) * jkjkj - ₦12,000 (Lagos) * jjh - ₦130,000,000 (Lagos, Lagos) * faehfbeahjvfeajaev - ₦1,000,000 (Lagos, Lagos) Would you like more details on any of these, or are you looking for something else?"
+          - generic [ref=e141]:
+            - link "kjkj For Sale ₦90,000 kjkj New · Lagos Add to Cart" [ref=e142] [cursor=pointer]:
+              - /url: /listings/874b80fd-9e2b-4f5f-a812-8188d6d7978a
+              - generic [ref=e143]:
+                - img "kjkj" [ref=e144]
+                - generic [ref=e145]: For Sale
+              - generic [ref=e146]:
+                - paragraph [ref=e147]: ₦90,000
+                - paragraph [ref=e148]: kjkj
+                - generic [ref=e149]:
+                  - generic [ref=e150]: New
+                  - generic [ref=e151]: ·
+                  - generic [ref=e152]:
+                    - img [ref=e153]
+                    - generic [ref=e156]: Lagos
+                - button "Add to Cart" [ref=e157]:
+                  - img [ref=e158]
+                  - text: Add to Cart
+            - link "hhj For Sale ₦700,000 hhj Like New · Lagos Add to Cart" [ref=e162] [cursor=pointer]:
+              - /url: /listings/d9c6f999-936e-46ea-924c-d32070fae8eb
+              - generic [ref=e163]:
+                - img "hhj" [ref=e164]
+                - generic [ref=e165]: For Sale
+              - generic [ref=e166]:
+                - paragraph [ref=e167]: ₦700,000
+                - paragraph [ref=e168]: hhj
+                - generic [ref=e169]:
+                  - generic [ref=e170]: Like New
+                  - generic [ref=e171]: ·
+                  - generic [ref=e172]:
+                    - img [ref=e173]
+                    - generic [ref=e176]: Lagos
+                - button "Add to Cart" [ref=e177]:
+                  - img [ref=e178]
+                  - text: Add to Cart
+            - link "jkjk For Sale ₦90,000 jkjk New · Lagos Add to Cart" [ref=e182] [cursor=pointer]:
+              - /url: /listings/6ddf80f6-a582-4032-945a-0e4181b5bf0d
+              - generic [ref=e183]:
+                - img "jkjk" [ref=e184]
+                - generic [ref=e185]: For Sale
+              - generic [ref=e186]:
+                - paragraph [ref=e187]: ₦90,000
+                - paragraph [ref=e188]: jkjk
+                - generic [ref=e189]:
+                  - generic [ref=e190]: New
+                  - generic [ref=e191]: ·
+                  - generic [ref=e192]:
+                    - img [ref=e193]
+                    - generic [ref=e196]: Lagos
+                - button "Add to Cart" [ref=e197]:
+                  - img [ref=e198]
+                  - text: Add to Cart
+            - link "jkjkj For Sale ₦12,000 jkjkj Good · Lagos Add to Cart" [ref=e202] [cursor=pointer]:
+              - /url: /listings/95a2be3e-684d-4bd8-b1fd-6779031b4ed3
+              - generic [ref=e203]:
+                - img "jkjkj" [ref=e204]
+                - generic [ref=e205]: For Sale
+              - generic [ref=e206]:
+                - paragraph [ref=e207]: ₦12,000
+                - paragraph [ref=e208]: jkjkj
+                - generic [ref=e209]:
+                  - generic [ref=e210]: Good
+                  - generic [ref=e211]: ·
+                  - generic [ref=e212]:
+                    - img [ref=e213]
+                    - generic [ref=e216]: Lagos
+                - button "Add to Cart" [ref=e217]:
+                  - img [ref=e218]
+                  - text: Add to Cart
+            - link "jjh For Sale ₦130,000,000 jjh Good · Lagos, Lagos Add to Cart" [ref=e222] [cursor=pointer]:
+              - /url: /listings/00bbd93a-43a1-486c-875e-5e4996b51ae6
+              - generic [ref=e223]:
+                - img "jjh" [ref=e224]
+                - generic [ref=e225]: For Sale
+              - generic [ref=e226]:
+                - paragraph [ref=e227]: ₦130,000,000
+                - paragraph [ref=e228]: jjh
+                - generic [ref=e229]:
+                  - generic [ref=e230]: Good
+                  - generic [ref=e231]: ·
+                  - generic [ref=e232]:
+                    - img [ref=e233]
+                    - generic [ref=e236]: Lagos, Lagos
+                - button "Add to Cart" [ref=e237]:
+                  - img [ref=e238]
+                  - text: Add to Cart
+            - link "faehfbeahjvfeajaev For Sale ₦1,000,000 faehfbeahjvfeajaev Good · Lagos, Lagos Add to Cart" [ref=e242] [cursor=pointer]:
+              - /url: /listings/57f9b99f-dc2b-48e7-ab4d-54ff10972420
+              - generic [ref=e243]:
+                - img "faehfbeahjvfeajaev" [ref=e244]
+                - generic [ref=e245]: For Sale
+              - generic [ref=e246]:
+                - paragraph [ref=e247]: ₦1,000,000
+                - paragraph [ref=e248]: faehfbeahjvfeajaev
+                - generic [ref=e249]:
+                  - generic [ref=e250]: Good
+                  - generic [ref=e251]: ·
+                  - generic [ref=e252]:
+                    - img [ref=e253]
+                    - generic [ref=e256]: Lagos, Lagos
+                - button "Add to Cart" [ref=e257]:
+                  - img [ref=e258]
+                  - text: Add to Cart
+      - generic [ref=e104]:
+        - textbox "Ask about listings, free items, your orders…" [active] [ref=e105]
+        - button [disabled] [ref=e106] [cursor=pointer]:
+          - img [ref=e107]
+  - contentinfo [ref=e110]:
+    - generic [ref=e111]:
+      - generic [ref=e112]:
+        - img "declut" [ref=e113]
+        - navigation [ref=e114]:
+          - link "About" [ref=e115] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy" [ref=e116] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=e117] [cursor=pointer]:
+            - /url: /terms
+      - generic [ref=e118]:
+        - paragraph [ref=e119]: © 2026 Declut
+        - generic [ref=e120]: Beta
+  - button "Open chat" [ref=e121] [cursor=pointer]:
+    - img [ref=e122]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e129] [cursor=pointer]:
+    - img [ref=e130]
+  - alert [ref=e262]

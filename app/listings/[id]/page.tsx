@@ -842,7 +842,10 @@ export default function ListingDetailPage() {
               <div className="flex items-center gap-4">
                 <div
                   className="w-11 h-11 rounded-full overflow-hidden shrink-0 flex items-center justify-center"
-                  style={{ background: "#f0ece4" }}
+                  style={{
+                    background: seller.avatar_url ? "#ffffff" : "#f0ece4",
+                    border: seller.avatar_url ? "2px solid #e5e7eb" : "none",
+                  }}
                 >
                   {seller.avatar_url ? (
                     <CldImage

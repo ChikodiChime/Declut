@@ -37,8 +37,8 @@ ${identity}
 
 ## Formatting
 - Use markdown for responses
-- After showing items from a search, briefly name each one (title + price or "Free" + area)
-- Then ask if they want more details or to take action`
+- After a search returns results, write ONE brief intro sentence (e.g. "Found 4 listings for you:" or "Here's what I found:") — item cards render automatically in the UI, so do NOT list or enumerate the items in text
+- After showing results, ask a short follow-up question (e.g. "Want more details on any of these?")`
 }
 
 export async function POST(request: Request) {
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const origin = new URL(request.url).origin
 
   const result = streamText({
-    model: google('gemini-2.0-flash'),
+    model: google('gemini-2.5-flash'),
     system: buildSystemPrompt(authUser),
     messages: await convertToModelMessages(cappedMessages),
     stopWhen: stepCountIs(5),

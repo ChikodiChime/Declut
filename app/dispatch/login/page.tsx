@@ -143,7 +143,7 @@ export default function DispatcherLoginPage() {
             </div>
           </div>
 
-          <div className="bg-card rounded-2xl shadow-card px-8 py-10">
+          <div className="bg-card rounded-2xl shadow-card px-5 py-8 sm:px-8 sm:py-10">
             <motion.div
               className="space-y-6"
               initial={{ opacity: 0, y: 12 }}

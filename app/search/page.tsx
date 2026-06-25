@@ -1374,16 +1374,20 @@ function SearchContent() {
               onClick={() => setDrawerOpen(false)}
             />
             <motion.div
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
               transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              className="fixed left-0 top-0 bottom-0 z-50 w-72 overflow-y-auto lg:hidden"
+              className="fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-2xl lg:hidden flex flex-col"
               style={{
                 background: "white",
-                boxShadow: "4px 0 24px rgba(0,0,0,0.12)",
+                boxShadow: "0 -4px 24px rgba(0,0,0,0.12)",
+                paddingBottom: "env(safe-area-inset-bottom)",
               }}
             >
+              <div className="flex justify-center pt-3 pb-1 shrink-0">
+                <div className="w-10 h-1 rounded-full" style={{ background: "#e8e4dc" }} />
+              </div>
               <div
                 className="flex items-center justify-between px-5 py-4 border-b"
                 style={{ borderColor: "#e8e4dc" }}

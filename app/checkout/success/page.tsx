@@ -1,22 +1,23 @@
 "use client";
 
 import { useEffect, useRef, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle, Package } from "lucide-react";
 import { clearSessionCart } from "@/lib/session-cart";
+import { saveGuestRef } from "@/lib/guest-orders";
 import { useMe } from "@/lib/hooks/useAuth";
 import { useOrdersModal } from "@/lib/context/orders-modal-context";
 import type { BuyerOrderDetail } from "@/lib/hooks/useBuyerOrders";
 
-const ORDERS_URL = "/dashboard/orders?tab=purchases";
-const LOGIN_THEN_ORDERS_URL =
-  "/auth/login?next=/dashboard/orders%3Ftab%3Dpurchases";
+const BROWSE_URL = "/";
+const LOGIN_THEN_BROWSE_URL = "/auth/login?next=/";
 
 function SuccessContent() {
   const { data: me, isLoading } = useMe();
   const searchParams = useSearchParams();
-  const { openByReference, openList, referenceOrders } = useOrdersModal();
+  const router = useRouter();
+  const { openByReference, referenceOrders } = useOrdersModal();
   const didFetch = useRef(false);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ function SuccessContent() {
           .then((json: { data?: BuyerOrderDetail[] }) => {
             if (json.data && json.data.length > 0) {
               openByReference(json.data);
+              saveGuestRef(reference);
             }
           })
           .catch(() => {
@@ -58,12 +60,13 @@ function SuccessContent() {
           });
       }
     });
-  }, [searchParams]); // openByReference is stable (useCallback with [] deps)
+  }, [searchParams, openByReference]);
 
-  const fallbackHref = isLoading || me ? ORDERS_URL : LOGIN_THEN_ORDERS_URL;
+  const fallbackHref = isLoading || me ? BROWSE_URL : LOGIN_THEN_BROWSE_URL;
 
   function handleTrackClick() {
-    if (referenceOrders) openByReference(referenceOrders)
+    if (referenceOrders) openByReference(referenceOrders);
+    router.push(BROWSE_URL);
   }
 
   const hasReferenceOrders = referenceOrders && referenceOrders.length > 0;

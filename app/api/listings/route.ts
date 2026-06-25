@@ -131,23 +131,42 @@ export async function POST(req: Request) {
       requestIds.map((rid) => ({ listing_id: listing.id, request_id: rid }))
     )
 
-    const { data: follows } = await supabaseAdmin
-      .from('request_follows')
-      .select('user_id')
-      .in('request_id', requestIds)
+    const [{ data: follows }, { data: requests }] = await Promise.all([
+      supabaseAdmin.from('request_follows').select('user_id').in('request_id', requestIds),
+      supabaseAdmin.from('item_requests').select('user_id').in('id', requestIds),
+    ])
 
     if (follows && follows.length > 0) {
+      // Build a map of requester user_id → their request_ids (a user can own multiple linked requests)
+      const requesterRequestMap = new Map<string, string[]>()
+      for (const req of (requests ?? [])) {
+        const existing = requesterRequestMap.get(req.user_id) ?? []
+        existing.push(...requestIds.filter((rid) => rid === requestIds.find((r) => r === rid)))
+        requesterRequestMap.set(req.user_id, requestIds)
+      }
+
       const uniqueFollowers = [...new Set(follows.map((f) => f.user_id))]
+
       await Promise.all(
-        uniqueFollowers.map((userId) =>
-          createNotification({
-            user_id: userId,
-            type: 'request_fulfilled',
-            title: 'Someone listed an item you requested',
-            body: `"${listing.title}" is now listed — check it out.`,
-            link: `/listings/${listing.id}`,
-          })
-        )
+        uniqueFollowers.map((userId) => {
+          const ownedRequestIds = requesterRequestMap.get(userId)
+          return ownedRequestIds
+            ? createNotification({
+                user_id: userId,
+                type: 'request_fulfilled',
+                title: 'Someone listed an item you requested',
+                body: `"${listing.title}" was just listed. Does this help?`,
+                link: `/listings/${listing.id}`,
+                metadata: { request_ids: ownedRequestIds },
+              })
+            : createNotification({
+                user_id: userId,
+                type: 'request_fulfilled',
+                title: 'An item you\'re following was just listed',
+                body: `"${listing.title}" is now available — check it out.`,
+                link: `/listings/${listing.id}`,
+              })
+        })
       )
     }
   }

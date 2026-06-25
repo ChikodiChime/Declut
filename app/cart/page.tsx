@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X, ChevronLeft, MapPin, ShoppingBag } from "lucide-react";
-import { ListingImage } from "@/components/ui";
+import { ListingImage, AddressPickerModal } from "@/components/ui";
 import DeliveryTypeSelector from "@/components/checkout/DeliveryTypeSelector";
 import PlacesAddressInput from "@/components/checkout/PlacesAddressInput";
 import { groupBySeller, calculateGrandTotal } from "@/app/api/orders/utils";
@@ -123,7 +122,6 @@ function SummaryPanel({
 }
 
 export default function CartPage() {
-  const router = useRouter();
   const { data: user, isLoading: userLoading } = useMe();
   const [items, setItems] = useState<CartItemWithListing[]>([]);
   const [deliveryType, setDeliveryType] = useState<"delivery" | "pickup">(
@@ -143,9 +141,7 @@ export default function CartPage() {
   const [showDeliveryStep, setShowDeliveryStep] = useState(false);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [deliveryState, setDeliveryState] = useState<string | null>(null);
-  const [useNewAddress, setUseNewAddress] = useState(false);
-
-  const hasSavedAddress = Boolean(user?.address);
+  const [addressPickerOpen, setAddressPickerOpen] = useState(false);
 
   useEffect(() => {
     async function fetchCart() {
@@ -206,7 +202,6 @@ export default function CartPage() {
     }
     if (deliveryType === "delivery") {
       setError("");
-      setUseNewAddress(false);
       setDeliveryAddress(user?.address ?? "");
       setDeliveryState(user?.address_state ?? null);
       setShowDeliveryStep(true);
@@ -243,15 +238,12 @@ export default function CartPage() {
   }
 
   async function handleDeliveryAddressConfirm() {
-    const addr =
-      hasSavedAddress && !useNewAddress ? user?.address ?? "" : deliveryAddress.trim();
+    const addr = deliveryAddress.trim();
     if (!addr) {
-      setError("Please enter a delivery address");
+      setError("Please select a delivery address");
       return;
     }
-    const state =
-      hasSavedAddress && !useNewAddress ? user?.address_state ?? null : deliveryState;
-    await submitOrder(addr, state);
+    await submitOrder(addr, deliveryState);
   }
 
   const groups = groupBySeller(items, deliveryType);
@@ -431,15 +423,8 @@ export default function CartPage() {
   // ── Delivery address step (logged-in users, delivery only) ───────────────
 
   if (showDeliveryStep && user) {
-    const showTextarea = !hasSavedAddress || useNewAddress;
-    const feeKnown = (hasSavedAddress && !useNewAddress) || deliveryState !== null;
-    const deliveryGroups = groupBySeller(
-      items,
-      "delivery",
-      hasSavedAddress && !useNewAddress
-        ? (user?.address_state ?? null)
-        : (deliveryState ?? null)
-    );
+    const feeKnown = deliveryState !== null;
+    const deliveryGroups = groupBySeller(items, "delivery", deliveryState ?? null);
     const deliveryGrandTotal = calculateGrandTotal(deliveryGroups);
     const deliveryDisplayTotal = feeKnown
       ? deliveryGrandTotal
@@ -456,7 +441,6 @@ export default function CartPage() {
               <button
                 onClick={() => {
                   setShowDeliveryStep(false);
-                  setUseNewAddress(false);
                   setError("");
                 }}
                 className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors mb-6"
@@ -469,44 +453,41 @@ export default function CartPage() {
                 Where should we deliver?
               </h2>
 
-              {hasSavedAddress && !useNewAddress && (
-                <div className="rounded-2xl border border-border bg-card p-5 mb-4">
-                  <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-2">
-                    Saved address
-                  </p>
-                  <p className="text-sm text-text whitespace-pre-line">
-                    {user.address}
-                  </p>
-                </div>
-              )}
-
-              {showTextarea && (
-                <PlacesAddressInput
-                  label="Delivery address"
-                  placeholder="Search for your delivery address"
-                  onSelect={(result) => {
-                    setDeliveryAddress(result.formatted_address);
-                    setDeliveryState(result.state);
-                  }}
-                  onClear={() => {
-                    setDeliveryAddress("");
-                    setDeliveryState(null);
-                  }}
-                />
-              )}
-
-              {hasSavedAddress && !useNewAddress && (
-                <button
-                  onClick={() => {
-                    setUseNewAddress(true);
-                    setDeliveryAddress("");
-                    setDeliveryState(null);
-                  }}
-                  className="text-sm text-text-muted hover:text-text underline underline-offset-2 transition-colors"
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-text">
+                  Delivery address <span className="text-error">*</span>
+                </label>
+                <div
+                  className={[
+                    "flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-colors",
+                    deliveryAddress ? "border-border bg-card" : "border-border bg-surface",
+                  ].join(" ")}
                 >
-                  Use a different address
-                </button>
-              )}
+                  <MapPin size={15} className="shrink-0 text-text-muted" strokeWidth={2} />
+                  <span className={`flex-1 text-sm truncate ${deliveryAddress ? "text-text" : "text-text-subtle"}`}>
+                    {deliveryAddress || "No address selected"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAddressPickerOpen(true)}
+                    className="shrink-0 text-xs font-semibold text-primary hover:text-primary-hover transition-colors"
+                  >
+                    {deliveryAddress ? "Change" : "Choose"}
+                  </button>
+                </div>
+              </div>
+
+              <AddressPickerModal
+                open={addressPickerOpen}
+                onClose={() => setAddressPickerOpen(false)}
+                title="Delivery address"
+                currentAddress={deliveryAddress || null}
+                onConfirm={(address, state) => {
+                  setDeliveryAddress(address);
+                  setDeliveryState(state);
+                  setError("");
+                }}
+              />
             </div>
 
             <div className="rounded-2xl border border-border bg-card p-6 sticky top-20 self-start shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -568,11 +549,7 @@ export default function CartPage() {
                 disabled={checkingOut}
                 className="w-full rounded-xl bg-gradient-to-r from-foreground to-foreground/90 text-white py-4 text-sm font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
               >
-                {checkingOut
-                  ? "Preparing…"
-                  : hasSavedAddress && !useNewAddress
-                    ? "Deliver here"
-                    : "Continue to payment"}
+                {checkingOut ? "Preparing…" : "Continue to payment"}
               </button>
               {error && (
                 <p className="mt-3 text-sm text-error text-center">{error}</p>

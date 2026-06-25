@@ -1,8 +1,7 @@
-// components/ui/AddressPickerModal.tsx
 'use client'
 
 import { useState } from 'react'
-import { Check, Plus, X, Loader2 } from 'lucide-react'
+import { Check, MapPin, Plus, X, Loader2 } from 'lucide-react'
 import { Modal } from './Modal'
 import PlacesAddressInput, { type PlaceResult } from '@/components/checkout/PlacesAddressInput'
 import { useAddresses, useCreateAddress } from '@/lib/hooks/useAddresses'
@@ -35,14 +34,21 @@ function AddressCard({
       type="button"
       onClick={onSelect}
       className={[
-        'w-full text-left rounded-xl border-2 px-4 py-3.5 transition-all duration-150 active:scale-[0.99]',
+        'w-full text-left rounded-xl border px-4 py-3.5 transition-all duration-150 active:scale-[0.99]',
         selected
-          ? 'border-primary bg-gradient-to-br from-primary/[0.08] to-primary/[0.02] shadow-sm'
-          : 'border-border bg-card hover:border-border-strong hover:shadow-sm',
+          ? 'border-primary/40 bg-primary/[0.06] shadow-sm ring-1 ring-primary/20'
+          : 'border-border bg-card hover:border-border-strong hover:bg-surface',
       ].join(' ')}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
+      <div className="flex items-start gap-3">
+        <div className={[
+          'shrink-0 mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-150',
+          selected ? 'bg-primary/10' : 'bg-surface border border-border',
+        ].join(' ')}>
+          <MapPin size={14} strokeWidth={2} className={selected ? 'text-primary' : 'text-text-muted'} />
+        </div>
+
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
             <span className={`text-sm font-semibold ${selected ? 'text-primary' : 'text-text'}`}>
               {addr.label}
@@ -58,12 +64,11 @@ function AddressCard({
             <p className="text-[11px] text-text-subtle mt-0.5">{addr.address_state}</p>
           )}
         </div>
-        <div
-          className={[
-            'shrink-0 mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-150',
-            selected ? 'border-primary bg-primary' : 'border-border',
-          ].join(' ')}
-        >
+
+        <div className={[
+          'shrink-0 mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all duration-150',
+          selected ? 'border-primary bg-primary' : 'border-border',
+        ].join(' ')}>
           {selected && <Check size={10} strokeWidth={3.5} className="text-white" />}
         </div>
       </div>
@@ -99,7 +104,7 @@ function NewAddressForm({
   return (
     <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
       {showCancel && (
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between">
           <p className="text-xs font-semibold text-text-muted uppercase tracking-wide">New address</p>
           <button
             type="button"
@@ -192,16 +197,34 @@ export function AddressPickerModal({ open, onClose, title, currentAddress, onCon
 
   const canConfirm = Boolean(selectedId) || Boolean(newResult)
 
+  const footer = (
+    <button
+      type="button"
+      onClick={handleConfirm}
+      disabled={!canConfirm || saving}
+      className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 inline-flex items-center justify-center gap-2 hover:shadow-md active:scale-[0.98]"
+    >
+      {saving && <Loader2 size={13} strokeWidth={2.5} className="animate-spin" />}
+      {saving ? 'Saving…' : 'Confirm address'}
+    </button>
+  )
+
   return (
-    <Modal open={open} onClose={onClose} title={title}>
-      <div className="space-y-4">
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={title}
+      subtitle="Choose from saved addresses or enter a new one"
+      icon={<MapPin size={15} strokeWidth={2} className="text-primary" />}
+      footer={footer}
+    >
+      <div className="space-y-3">
         {isLoading ? (
-          <div className="flex items-center justify-center py-10">
+          <div className="flex items-center justify-center py-12">
             <Loader2 size={20} className="animate-spin text-text-subtle" />
           </div>
         ) : (
           <>
-            {/* New address — always visible, expands on click */}
             {showNew ? (
               <NewAddressForm
                 onResult={(r) => { setNewResult(r); setSelectedId(null) }}
@@ -220,19 +243,18 @@ export function AddressPickerModal({ open, onClose, title, currentAddress, onCon
               <button
                 type="button"
                 onClick={() => { setShowNew(true); setSelectedId(null) }}
-                className="w-full flex items-center gap-3 rounded-xl border border-dashed border-border px-4 py-3.5 text-sm text-text-muted hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-all duration-150"
+                className="w-full flex items-center gap-3 rounded-xl border border-dashed border-border px-4 py-3.5 text-sm text-text-muted hover:border-primary/40 hover:text-primary hover:bg-primary/[0.04] transition-all duration-150"
               >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-surface border border-border">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-card border border-border">
                   <Plus size={14} strokeWidth={2.5} />
                 </span>
                 <span className="font-medium">Use a different address</span>
               </button>
             )}
 
-            {/* Saved addresses */}
             {addresses.length > 0 && (
               <div className="space-y-2">
-                <p className="text-[11px] font-semibold text-text-subtle uppercase tracking-wider px-0.5">
+                <p className="text-[11px] font-semibold text-text-subtle uppercase tracking-wider pt-1">
                   Saved addresses
                 </p>
                 {addresses.map((addr) => (
@@ -245,17 +267,6 @@ export function AddressPickerModal({ open, onClose, title, currentAddress, onCon
                 ))}
               </div>
             )}
-
-            {/* Confirm */}
-            <button
-              type="button"
-              onClick={handleConfirm}
-              disabled={!canConfirm || saving}
-              className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center justify-center gap-2"
-            >
-              {saving && <Loader2 size={13} strokeWidth={2.5} className="animate-spin" />}
-              {saving ? 'Saving…' : 'Confirm address'}
-            </button>
           </>
         )}
       </div>

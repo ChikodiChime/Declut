@@ -130,13 +130,13 @@ function WithdrawDrawer({
         exit={{ y: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="fixed bottom-0 left-0 right-0 z-[56] bg-card rounded-t-2xl max-w-xl mx-auto"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)', boxShadow: 'var(--shadow-elevated)' }}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)', boxShadow: 'var(--shadow-elevated)', maxHeight: '85dvh', display: 'flex', flexDirection: 'column' }}
       >
-        <div className="flex justify-center pt-3 pb-1">
+        <div className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 rounded-full bg-border-strong" />
         </div>
 
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
           <h2 className="text-base font-bold text-text">Request withdrawal</h2>
           <button
             type="button"
@@ -147,7 +147,7 @@ function WithdrawDrawer({
           </button>
         </div>
 
-        <div className="px-5 py-5 space-y-5">
+        <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5">
           <div className="rounded-xl border border-border bg-surface px-4 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-widest text-text-subtle mb-0.5">Available balance</p>
             <p className="text-xl font-bold text-text">₦{balance.toLocaleString()}</p>
@@ -242,7 +242,7 @@ function WalletCard() {
             <Wallet size={14} strokeWidth={2} className="text-white/60" />
             <p className="text-xs font-semibold uppercase tracking-widest text-white/60">Wallet balance</p>
           </div>
-          <p className="text-4xl font-bold text-white mb-5">₦{wallet.wallet_balance.toLocaleString()}</p>
+          <p className="text-3xl sm:text-4xl font-bold text-white mb-5">₦{wallet.wallet_balance.toLocaleString()}</p>
 
           {hasBank ? (
             <button
@@ -439,7 +439,7 @@ function MiniStat({
       <div className={`w-9 h-9 rounded-xl ${bgColor} flex items-center justify-center mb-3`}>
         <Icon size={16} className={color} strokeWidth={1.75} />
       </div>
-      <p className="text-2xl font-bold text-text leading-none">{value}</p>
+      <p className="text-xl sm:text-2xl font-bold text-text leading-none">{value}</p>
       {sub && <p className="text-[11px] text-text-subtle mt-0.5">{sub}</p>}
       <p className="text-xs font-medium text-text-muted mt-1">{label}</p>
     </div>

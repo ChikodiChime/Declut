@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { X, Banknote, ImagePlus, GripVertical, MapPin } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 import { Input, Button, CustomDropdown, CategoryPicker, AddressPickerModal } from "@/components/ui";
+import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
 import { useAddresses } from "@/lib/hooks/useAddresses";
 import { ImageCropper } from "./ImageCropper";
 import { useUpdateListing, useUploadImage } from "@/lib/hooks/useListings";
@@ -207,34 +208,13 @@ export function EditListingDrawer({ listing, onClose }: EditListingDrawerProps) 
 
   return (
     <>
-      {/* Overlay */}
-      <div
-        aria-hidden
-        className="fixed inset-0 z-50"
-        style={{
-          background: "rgba(22,19,15,0.6)",
-          backdropFilter: "blur(3px)",
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? "auto" : "none",
-          transition: "opacity 280ms ease",
-          height: "100vh",
-          width: "100vw",
-        }}
-        onClick={onClose}
-      />
-
-      {/* Panel */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Edit listing"
-        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col w-full max-w-lg"
-        style={{
-          background: "var(--color-background)",
-          transform: open ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 320ms cubic-bezier(0.32, 0.72, 0, 1)",
-          boxShadow: "-8px 0 48px rgba(22,19,15,0.18), -1px 0 0 rgba(22,19,15,0.06)",
-        }}
+      <ResponsiveDrawer
+        open={open}
+        onClose={onClose}
+        label="Edit listing"
+        maxWidth={512}
+        lockScroll={false}
+        panelStyle={{ background: "var(--color-background)" }}
       >
         {/* Header */}
         <div
@@ -466,7 +446,7 @@ export function EditListingDrawer({ listing, onClose }: EditListingDrawerProps) 
             </Button>
           </div>
         </form>
-      </div>
+      </ResponsiveDrawer>
     </>
   );
 }

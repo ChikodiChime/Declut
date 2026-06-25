@@ -38,11 +38,12 @@ async function apiRequest(method: string, path: string, body?: unknown) {
   return json
 }
 
-export function useSellerOrders(status: 'paid' | 'confirmed' | 'shipped' | 'delivered') {
+export function useSellerOrders(status?: 'paid' | 'confirmed' | 'shipped' | 'delivered') {
   return useQuery<SellerOrder[]>({
-    queryKey: ['orders', 'mine', status],
+    queryKey: ['orders', 'mine', status ?? 'all'],
     queryFn: async () => {
-      const json = await apiRequest('GET', `/api/orders/mine?status=${status}`)
+      const url = status ? `/api/orders/mine?status=${status}` : '/api/orders/mine'
+      const json = await apiRequest('GET', url)
       return json.data
     },
   })
@@ -54,8 +55,7 @@ export function useConfirmOrder() {
     mutationFn: (id: string) =>
       apiRequest('PATCH', `/api/orders/${id}`, { status: 'confirmed' }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders', 'mine', 'paid'] })
-      queryClient.invalidateQueries({ queryKey: ['orders', 'mine', 'confirmed'] })
+      queryClient.invalidateQueries({ queryKey: ['orders', 'mine'] })
       toast.success('Order confirmed')
     },
     onError: (err: Error) => toast.error(err.message),
@@ -68,8 +68,7 @@ export function useVerifyPickup() {
     mutationFn: ({ id, code }: { id: string; code: string }) =>
       apiRequest('POST', `/api/orders/${id}/verify`, { code }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders', 'mine', 'confirmed'] })
-      queryClient.invalidateQueries({ queryKey: ['orders', 'mine', 'delivered'] })
+      queryClient.invalidateQueries({ queryKey: ['orders', 'mine'] })
       toast.success('Pickup confirmed — payout initiated')
     },
     onError: (err: Error) => toast.error(err.message),

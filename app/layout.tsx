@@ -6,6 +6,7 @@ import { FooterWrapper } from "@/components/layout/FooterWrapper";
 import { Toaster } from "sonner";
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { OrdersDrawer } from "@/components/orders/OrdersDrawer";
+import NextTopLoader from "nextjs-toploader";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
@@ -61,6 +62,7 @@ export default function RootLayout({
       className={`${raleway.variable} ${geistMono.variable} ${dmSerifDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <NextTopLoader color="#3730a3" showSpinner={false} />
         <Providers>
           <NavbarWrapper />
           {children}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, type RefObject } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, Clock, ArrowUpLeft } from "lucide-react";
 import { ListingImage } from "@/components/ui";
@@ -16,17 +16,29 @@ const TYPE_LABEL: Record<string, { text: string; color: string }> = {
 
 export function NavbarSearch({
   onSearch,
+  onDismiss,
   autoFocus,
+  dismissExceptRefs,
 }: {
   onSearch?: () => void;
+  onDismiss?: () => void;
   autoFocus?: boolean;
+  dismissExceptRefs?: Array<RefObject<HTMLElement | null>>;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const skipFocusOpenRef = useRef(false);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
+  const [dropdownPos, setDropdownPos] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
+
+  const mobileOverlay = Boolean(onDismiss);
 
   const { recents, add: addRecent, remove: removeRecent, clear: clearRecents } = useRecentSearches();
   const { suggestions } = useSearchSuggestions(value, open);
@@ -43,22 +55,68 @@ export function NavbarSearch({
       : [];
 
   useEffect(() => {
-    if (autoFocus) inputRef.current?.focus();
+    if (!autoFocus) return;
+    skipFocusOpenRef.current = true;
+    const t = window.setTimeout(() => {
+      inputRef.current?.focus({ preventScroll: true });
+      skipFocusOpenRef.current = false;
+    }, 220);
+    return () => window.clearTimeout(t);
   }, [autoFocus]);
+
+  useEffect(() => {
+    if (!autoFocus) {
+      inputRef.current?.blur();
+      setValue("");
+      setOpen(false);
+      setActiveIdx(-1);
+    }
+  }, [autoFocus]);
+
+  useEffect(() => {
+    if (!mobileOverlay || !hasDropdown) {
+      setDropdownPos(null);
+      return;
+    }
+    function updatePos() {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setDropdownPos({
+        top: rect.bottom,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+    updatePos();
+    window.addEventListener("scroll", updatePos, true);
+    window.addEventListener("resize", updatePos);
+    return () => {
+      window.removeEventListener("scroll", updatePos, true);
+      window.removeEventListener("resize", updatePos);
+    };
+  }, [mobileOverlay, hasDropdown, value, open]);
 
   useEffect(() => {
     setActiveIdx(-1);
   }, [value, open]);
 
   useEffect(() => {
-    function onMouseDown(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+    function onPointerDown(e: PointerEvent) {
+      const target = e.target as Node;
+      if (dismissExceptRefs?.some((ref) => ref.current?.contains(target))) {
+        return;
+      }
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target)
+      ) {
         setOpen(false);
+        onDismiss?.();
       }
     }
-    document.addEventListener("mousedown", onMouseDown);
-    return () => document.removeEventListener("mousedown", onMouseDown);
-  }, []);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [onDismiss, dismissExceptRefs]);
 
   function navigate(q: string) {
     addRecent(q);
@@ -89,11 +147,15 @@ export function NavbarSearch({
         e.preventDefault();
         setActiveIdx((i) => Math.max(i - 1, -1));
       } else if (e.key === "Escape") {
-        setOpen(false);
-        setActiveIdx(-1);
+        if (open && hasDropdown) {
+          setOpen(false);
+          setActiveIdx(-1);
+        } else {
+          onDismiss?.();
+        }
       }
     },
-    [hasDropdown, allItems.length]
+    [hasDropdown, allItems.length, open, onDismiss]
   );
 
   return (
@@ -123,7 +185,9 @@ export function NavbarSearch({
             type="text"
             value={value}
             onChange={(e) => { setValue(e.target.value); setOpen(true); }}
-            onFocus={() => setOpen(true)}
+            onFocus={() => {
+              if (!skipFocusOpenRef.current) setOpen(true);
+            }}
             onKeyDown={handleKeyDown}
             placeholder="Search listings…"
             autoComplete="off"
@@ -152,16 +216,31 @@ export function NavbarSearch({
         </button>
       </form>
 
-      {hasDropdown && (
+      {hasDropdown && (!mobileOverlay || dropdownPos) && (
         <div
-          className="absolute left-0 right-0 z-50"
-          style={{
-            background: "#ffffff",
-            border: "1.5px solid #4f46e5",
-            borderTop: "none",
-            borderRadius: "0 0 10px 10px",
-            boxShadow: "0 8px 24px -4px rgba(79,70,229,0.15), 0 2px 8px rgba(0,0,0,0.06)",
-          }}
+          className={mobileOverlay ? "fixed z-60" : "absolute left-0 right-0 z-50"}
+          style={
+            mobileOverlay && dropdownPos
+              ? {
+                  top: dropdownPos.top,
+                  left: dropdownPos.left,
+                  width: dropdownPos.width,
+                  background: "#ffffff",
+                  border: "1.5px solid #4f46e5",
+                  borderTop: "none",
+                  borderRadius: "0 0 10px 10px",
+                  boxShadow:
+                    "0 8px 24px -4px rgba(79,70,229,0.15), 0 2px 8px rgba(0,0,0,0.06)",
+                }
+              : {
+                  background: "#ffffff",
+                  border: "1.5px solid #4f46e5",
+                  borderTop: "none",
+                  borderRadius: "0 0 10px 10px",
+                  boxShadow:
+                    "0 8px 24px -4px rgba(79,70,229,0.15), 0 2px 8px rgba(0,0,0,0.06)",
+                }
+          }
         >
           {showRecents && (
             <>

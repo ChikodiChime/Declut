@@ -8,6 +8,7 @@ interface NotificationInput {
   title: string
   body: string
   link: string
+  metadata?: Record<string, unknown>
 }
 
 export async function createNotification(input: NotificationInput): Promise<void> {

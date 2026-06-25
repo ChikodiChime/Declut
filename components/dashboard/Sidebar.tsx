@@ -16,6 +16,7 @@ import {
   User,
   BookMarked,
   MessageCircle,
+  ClipboardList,
 } from "lucide-react";
 
 function PanelIcon({ size = 20 }: { size?: number }) {
@@ -50,6 +51,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/listings", label: "My Listings", icon: Package },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/dashboard/requests", label: "My Requests", icon: ClipboardList },
   { href: "/dashboard/billing", label: "Payouts", icon: CreditCard },
   { href: "/dashboard/address-book", label: "Address Book", icon: BookMarked },
   { href: "/chat", label: "Chat with AI", icon: MessageCircle },
