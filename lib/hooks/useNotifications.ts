@@ -4,12 +4,13 @@ import { toast } from 'sonner'
 
 interface Notification {
   id: string
-  type: 'order_update' | 'claim_request' | 'payout_update'
+  type: 'order_update' | 'claim_request' | 'payout_update' | 'request_fulfilled'
   title: string
   body: string
   link: string
   read: boolean
   created_at: string
+  metadata?: Record<string, unknown> | null
 }
 
 interface NotificationsResponse {
