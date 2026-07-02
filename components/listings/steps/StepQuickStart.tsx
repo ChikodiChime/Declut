@@ -96,7 +96,7 @@ export function StepQuickStart({ onNext, onSkip }: StepQuickStartProps) {
         "condition",
         "listing_type",
       ];
-      if (draft.suggested_price != null) aiFields.push("price");
+      if (draft.listing_type === "for_sale") aiFields.push("price");
 
       onNext(
         {

@@ -139,7 +139,7 @@ export function StepPricing({
           message={
             priceHint.price_range
               ? `AI suggested this price based on ${priceHint.comp_count} similar listings (₦${priceHint.price_range.min.toLocaleString("en-NG")}–₦${priceHint.price_range.max.toLocaleString("en-NG")}) — feel free to adjust.`
-              : "AI suggested this price — feel free to adjust."
+              : "Not enough similar listings yet — set your own price."
           }
         />
       )}
