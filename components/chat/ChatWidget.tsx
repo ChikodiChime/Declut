@@ -6,6 +6,8 @@ import { Send, X, Maximize2, AlertCircle, Search, Gift, Package, Tag, Bot } from
 import Link from 'next/link'
 import { ListingCard, type ChatListing } from './ListingCard'
 import { VoiceMicButton } from './VoiceMicButton'
+import { ImageAttachButton } from './ImageAttachButton'
+import { compressImageToDataUrl } from '@/lib/image-compress'
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>
 
@@ -56,6 +58,8 @@ interface ChatWidgetProps {
 export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
   const { messages, sendMessage, status, error } = useChat()
   const [input, setInput] = useState('')
+  const [attachedImage, setAttachedImage] = useState<{ dataUrl: string; mediaType: string } | null>(null)
+  const [imageError, setImageError] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -72,11 +76,30 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
     el.style.height = `${Math.min(el.scrollHeight, 128)}px`
   }, [input])
 
+  async function handleImageSelect(file: File) {
+    setImageError(null)
+    try {
+      const { dataUrl, mediaType } = await compressImageToDataUrl(file)
+      setAttachedImage({ dataUrl, mediaType })
+    } catch {
+      setImageError('Could not attach that photo — try a different one.')
+    }
+  }
+
+  function removeAttachedImage() {
+    setAttachedImage(null)
+  }
+
   function submitMessage() {
     const text = input.trim()
-    if (!text || isLoading) return
+    if ((!text && !attachedImage) || isLoading) return
     setInput('')
-    sendMessage({ text })
+    const image = attachedImage
+    setAttachedImage(null)
+    sendMessage({
+      text,
+      files: image ? [{ type: 'file', mediaType: image.mediaType, url: image.dataUrl }] : undefined,
+    })
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -140,10 +163,22 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
               {messages.map((message) => {
                 if (message.role === 'user') {
                   const textContent = getTextFromParts(message.parts)
+                  const imageUrl = getImageFromParts(message.parts)
                   return (
                     <div key={message.id} className="flex justify-end">
-                      <div className="bg-primary text-white text-xs rounded-2xl rounded-tr-sm px-3 py-2 max-w-[80%] whitespace-pre-wrap leading-relaxed">
-                        {textContent}
+                      <div className="flex flex-col items-end gap-1.5 max-w-[80%]">
+                        {imageUrl && (
+                          <img
+                            src={imageUrl}
+                            alt="Searched photo"
+                            className="w-32 h-32 object-cover rounded-2xl rounded-tr-sm border border-border"
+                          />
+                        )}
+                        {textContent && (
+                          <div className="bg-primary text-white text-xs rounded-2xl rounded-tr-sm px-3 py-2 whitespace-pre-wrap leading-relaxed">
+                            {textContent}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )
@@ -192,6 +227,27 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
       {/* Input */}
       <div className="shrink-0 border-t border-border bg-card">
         <div className={fullPage ? 'max-w-2xl mx-auto px-4 py-3' : 'px-4 py-3'}>
+          {attachedImage && (
+            <div className="flex items-center gap-2 mb-2">
+              <div className="relative">
+                <img
+                  src={attachedImage.dataUrl}
+                  alt="Attached preview"
+                  className="w-14 h-14 object-cover rounded-lg border border-border"
+                />
+                <button
+                  type="button"
+                  onClick={removeAttachedImage}
+                  aria-label="Remove photo"
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-text text-white flex items-center justify-center hover:bg-error transition-colors"
+                >
+                  <X size={11} strokeWidth={2.5} />
+                </button>
+              </div>
+              <span className="text-xs text-text-muted">Photo attached — add a note or just send</span>
+            </div>
+          )}
+          {imageError && <p className="text-xs text-error mb-2">{imageError}</p>}
           <form onSubmit={handleFormSubmit} className="flex items-end gap-2">
             <textarea
               ref={textareaRef}
@@ -203,13 +259,14 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
               style={{ minHeight: '2.5rem' }}
               className="flex-1 resize-none rounded-xl border border-border bg-background text-text placeholder:text-text-subtle px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 max-h-32 overflow-y-auto transition-colors leading-relaxed"
             />
+            <ImageAttachButton onSelect={handleImageSelect} disabled={isLoading} />
             <VoiceMicButton
               onTranscript={(t) => setInput((prev) => (prev ? prev + ' ' + t : t))}
               disabled={isLoading}
             />
             <button
               type="submit"
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || (!input.trim() && !attachedImage)}
               className="p-2.5 rounded-xl bg-primary text-white disabled:opacity-40 hover:bg-primary-hover active:scale-95 transition-all shrink-0"
             >
               <Send size={15} />
@@ -335,6 +392,11 @@ function getTextFromParts(parts: Array<{ type: string; text?: string }>): string
     .filter((p) => p.type === 'text' && typeof p.text === 'string')
     .map((p) => p.text as string)
     .join('')
+}
+
+function getImageFromParts(parts: Array<{ type: string; url?: string }>): string | null {
+  const filePart = parts.find((p) => p.type === 'file' && typeof p.url === 'string')
+  return filePart ? (filePart.url as string) : null
 }
 
 function extractListingsFromParts(
