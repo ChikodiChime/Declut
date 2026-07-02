@@ -220,6 +220,7 @@ export function ListingForm({
                   <StepType
                     defaultValues={{ listing_type: state.data.listing_type }}
                     onNext={(data) => next(data)}
+                    onBack={back}
                     aiSuggested={aiFields.has("listing_type")}
                   />
                 )}

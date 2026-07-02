@@ -2,9 +2,10 @@
 
 import { useRef, useState } from "react";
 import { CldImage } from "next-cloudinary";
-import { ArrowRight, ImagePlus, Sparkles, X } from "lucide-react";
+import { ArrowRight, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui";
+import { AiDraftBanner } from "../AiDraftBanner";
 import { ImageCropper } from "../ImageCropper";
 import { useUploadImage } from "@/lib/hooks/useListings";
 import type { Condition, ListingFormData, ListingType } from "@/types";
@@ -121,55 +122,72 @@ export function StepQuickStart({ onNext, onSkip }: StepQuickStartProps) {
   return (
     <div className="space-y-5">
       <div>
-        <div className="flex items-center gap-2">
-          <Sparkles size={18} className="text-primary" strokeWidth={1.75} />
-          <h2 className="text-xl font-bold text-text">Quick start with AI</h2>
-        </div>
+        <h2 className="text-xl font-bold text-text">Quick start with AI</h2>
         <p className="mt-1 text-sm text-text-muted">
-          Upload photos and we&apos;ll draft the title, description, category, condition,
-          and price for you — everything stays editable before you publish.
+          Skip the typing — upload a few photos and let AI draft the rest.
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
-        {images.map((id, i) => (
-          <div key={id} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-border">
-            <CldImage
-              src={id}
-              fill
-              sizes="(max-width: 640px) 33vw, 20vw"
-              className="object-cover"
-              alt={`Photo ${i + 1}`}
-            />
+      <AiDraftBanner message="Upload photos and we'll draft the title, description, category, condition, and price for you." />
+
+      {images.length === 0 ? (
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
+          className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/25 bg-primary/4 px-6 py-12 text-center transition-colors hover:border-primary hover:bg-primary/6 disabled:opacity-50"
+        >
+          {isUploading ? (
+            <span className="text-sm text-text-muted">Uploading…</span>
+          ) : (
+            <>
+              <ImagePlus size={28} className="text-primary" strokeWidth={1.5} />
+              <span className="text-sm font-semibold text-text">Drag photos here or click to upload</span>
+              <span className="text-xs text-text-muted">Up to {MAX_PHOTOS} photos</span>
+            </>
+          )}
+        </button>
+      ) : (
+        <div className="grid grid-cols-3 gap-3">
+          {images.map((id, i) => (
+            <div key={id} className="relative aspect-[4/3] overflow-hidden rounded-lg bg-border">
+              <CldImage
+                src={id}
+                fill
+                sizes="(max-width: 640px) 33vw, 20vw"
+                className="object-cover"
+                alt={`Photo ${i + 1}`}
+              />
+              <button
+                type="button"
+                onClick={() => handleRemove(i)}
+                className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+                aria-label="Remove photo"
+              >
+                <X size={12} strokeWidth={2.5} />
+              </button>
+            </div>
+          ))}
+
+          {canAddMore && (
             <button
               type="button"
-              onClick={() => handleRemove(i)}
-              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
-              aria-label="Remove photo"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-border text-text-muted transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
             >
-              <X size={12} strokeWidth={2.5} />
+              {isUploading ? (
+                <span className="text-xs">Uploading…</span>
+              ) : (
+                <>
+                  <ImagePlus size={22} strokeWidth={1.5} />
+                  <span className="text-xs font-medium">Add photos</span>
+                </>
+              )}
             </button>
-          </div>
-        ))}
-
-        {canAddMore && (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
-            className="flex aspect-[4/3] flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-border text-text-muted transition-colors hover:border-primary hover:text-primary disabled:opacity-50"
-          >
-            {isUploading ? (
-              <span className="text-xs">Uploading…</span>
-            ) : (
-              <>
-                <ImagePlus size={22} strokeWidth={1.5} />
-                <span className="text-xs font-medium">Add photos</span>
-              </>
-            )}
-          </button>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <input
         ref={fileInputRef}

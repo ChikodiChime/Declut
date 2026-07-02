@@ -11,6 +11,7 @@ interface StepTypeData { listing_type: ListingType }
 interface StepTypeProps {
   defaultValues?: Partial<StepTypeData>;
   onNext: (data: StepTypeData) => void;
+  onBack: () => void;
   aiSuggested?: boolean;
 }
 
@@ -47,7 +48,7 @@ const OPTIONS = [
   },
 ];
 
-export function StepType({ defaultValues, onNext, aiSuggested }: StepTypeProps) {
+export function StepType({ defaultValues, onNext, onBack, aiSuggested }: StepTypeProps) {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<StepTypeData>({ defaultValues });
   const selected = watch("listing_type");
 
@@ -103,9 +104,14 @@ export function StepType({ defaultValues, onNext, aiSuggested }: StepTypeProps) 
         <p className="text-sm text-error">{errors.listing_type.message}</p>
       )}
 
-      <Button type="submit" className="w-full gap-2">
-        Next <ArrowRight size={16} strokeWidth={2} />
-      </Button>
+      <div className="flex gap-3">
+        <Button type="button" variant="outline" className="flex-1" onClick={onBack}>
+          Back
+        </Button>
+        <Button type="submit" className="flex-1 gap-2">
+          Next <ArrowRight size={16} strokeWidth={2} />
+        </Button>
+      </div>
     </form>
   );
 }
