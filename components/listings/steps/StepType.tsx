@@ -1,18 +1,22 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { motion } from "framer-motion";
+import { useForm, type UseFormReturn } from "react-hook-form";
 import { ShoppingBag, Gift, Heart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import { AiDraftBanner } from "../AiDraftBanner";
+import type { ReviewFormData } from "./reviewTypes";
 import type { ListingType } from "@/types";
 
 interface StepTypeData { listing_type: ListingType }
 interface StepTypeProps {
   defaultValues?: Partial<StepTypeData>;
-  onNext: (data: StepTypeData) => void;
-  onBack: () => void;
+  onNext?: (data: StepTypeData) => void;
+  onBack?: () => void;
   aiSuggested?: boolean;
+  /** Shares a parent form instance instead of managing its own — used when embedded in StepReview. */
+  formMethods?: UseFormReturn<ReviewFormData>;
+  /** Renders just the fields, no heading/banner/buttons — the parent (StepReview) owns those. */
+  hideChrome?: boolean;
 }
 
 const OPTIONS = [
@@ -48,18 +52,16 @@ const OPTIONS = [
   },
 ];
 
-export function StepType({ defaultValues, onNext, onBack, aiSuggested }: StepTypeProps) {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<StepTypeData>({ defaultValues });
+export function StepType({ defaultValues, onNext, onBack, aiSuggested, formMethods, hideChrome }: StepTypeProps) {
+  const localForm = useForm<ReviewFormData>({ defaultValues });
+  const { register, handleSubmit, watch, formState: { errors } } = formMethods ?? localForm;
   const selected = watch("listing_type");
 
-  return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-text">What kind of listing?</h2>
-        <p className="text-sm text-text-muted mt-1">You can&apos;t change this after publishing.</p>
-      </div>
-
-      {aiSuggested && <AiDraftBanner message="AI suggested this listing type — feel free to change it." />}
+  const fields = (
+    <>
+      {!hideChrome && aiSuggested && (
+        <AiDraftBanner message="AI suggested this listing type — feel free to change it." />
+      )}
 
       <div className="space-y-2">
         {OPTIONS.map((opt) => {
@@ -103,6 +105,19 @@ export function StepType({ defaultValues, onNext, onBack, aiSuggested }: StepTyp
       {errors.listing_type && (
         <p className="text-sm text-error">{errors.listing_type.message}</p>
       )}
+    </>
+  );
+
+  if (hideChrome) return fields;
+
+  return (
+    <form onSubmit={handleSubmit(onNext!)} className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-text">What kind of listing?</h2>
+        <p className="text-sm text-text-muted mt-1">You can&apos;t change this after publishing.</p>
+      </div>
+
+      {fields}
 
       <div className="flex gap-3">
         <Button type="button" variant="outline" className="flex-1" onClick={onBack}>

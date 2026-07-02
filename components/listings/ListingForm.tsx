@@ -8,6 +8,7 @@ import { StepQuickStart } from "./steps/StepQuickStart";
 import { StepType } from "./steps/StepType";
 import { StepDetails } from "./steps/StepDetails";
 import { StepPricing } from "./steps/StepPricing";
+import { StepReview } from "./steps/StepReview";
 import { StepPhotos } from "./steps/StepPhotos";
 import type { ListingFormData, ListingType } from "@/types";
 
@@ -20,17 +21,21 @@ export interface ListingFormProps {
   onRequestChange?: (ids: string[]) => void;
 }
 
+type StepId = "quickstart" | "type" | "details" | "pricing" | "review" | "photos";
+
 interface FormState {
-  step: 1 | 2 | 3 | 4 | 5;
+  step: StepId;
+  history: StepId[];
   direction: 1 | -1;
   data: Partial<ListingFormData>;
 }
 
 type FormAction =
-  | { type: "NEXT"; payload: Partial<ListingFormData> }
+  | { type: "NEXT"; to: StepId; payload: Partial<ListingFormData> }
   | { type: "BACK" };
 
 interface StepMeta {
+  id: StepId;
   label: string;
   hint: string;
   icon: React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
@@ -42,25 +47,38 @@ function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case "NEXT":
       return {
-        step: Math.min(state.step + 1, 5) as FormState["step"],
+        step: action.to,
+        history: [...state.history, state.step],
         direction: 1,
         data: { ...state.data, ...action.payload },
       };
-    case "BACK":
+    case "BACK": {
+      const prevStep = state.history[state.history.length - 1] ?? state.step;
       return {
         ...state,
-        step: Math.max(state.step - 1, 1) as FormState["step"],
+        step: prevStep,
+        history: state.history.slice(0, -1),
         direction: -1,
       };
+    }
   }
 }
 
-const STEPS: StepMeta[] = [
-  { label: "Quick Start", hint: "Let AI draft it (optional)", icon: Sparkles, color: "text-primary",    bgColor: "bg-primary/10"    },
-  { label: "Type",        hint: "Choose listing intent",      icon: ShoppingBag, color: "text-primary",    bgColor: "bg-primary/10"    },
-  { label: "Details",     hint: "Describe your item",         icon: FileText,    color: "text-amber-600",  bgColor: "bg-amber-500/10"  },
-  { label: "Pricing",     hint: "Set amount and area",        icon: Tag,         color: "text-green-600",  bgColor: "bg-green-500/10"  },
-  { label: "Photos",      hint: "Upload final images",        icon: Camera,      color: "text-purple-600", bgColor: "bg-purple-500/10" },
+const QUICKSTART_STEP: StepMeta = { id: "quickstart", label: "Quick Start", hint: "Let AI draft it (optional)", icon: Sparkles, color: "text-primary", bgColor: "bg-primary/10" };
+const PHOTOS_STEP: StepMeta = { id: "photos", label: "Photos", hint: "Upload final images", icon: Camera, color: "text-purple-600", bgColor: "bg-purple-500/10" };
+
+const MANUAL_STEPS: StepMeta[] = [
+  QUICKSTART_STEP,
+  { id: "type",    label: "Type",    hint: "Choose listing intent", icon: ShoppingBag, color: "text-primary",   bgColor: "bg-primary/10"   },
+  { id: "details", label: "Details", hint: "Describe your item",    icon: FileText,    color: "text-amber-600", bgColor: "bg-amber-500/10" },
+  { id: "pricing", label: "Pricing", hint: "Set amount and area",   icon: Tag,         color: "text-green-600", bgColor: "bg-green-500/10" },
+  PHOTOS_STEP,
+];
+
+const AI_STEPS: StepMeta[] = [
+  QUICKSTART_STEP,
+  { id: "review", label: "Review", hint: "Check the AI draft", icon: Check, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+  PHOTOS_STEP,
 ];
 
 export function ListingForm({
@@ -72,19 +90,21 @@ export function ListingForm({
   onRequestChange,
 }: ListingFormProps) {
   const [state, dispatch] = useReducer(formReducer, {
-    step: 1,
+    step: "quickstart",
+    history: [],
     direction: 1,
     data: initialValues ?? {},
   });
 
+  const [tookAiPath, setTookAiPath] = useState(false);
   const [aiFields, setAiFields] = useState<Set<keyof ListingFormData>>(new Set());
   const [priceComp, setPriceComp] = useState<{
     price_range: { min: number; max: number } | null;
     comp_count: number;
   } | null>(null);
 
-  function next(payload: Partial<ListingFormData>) {
-    dispatch({ type: "NEXT", payload });
+  function next(to: StepId, payload: Partial<ListingFormData>) {
+    dispatch({ type: "NEXT", to, payload });
   }
 
   function back() {
@@ -96,13 +116,15 @@ export function ListingForm({
     fields: (keyof ListingFormData)[],
     comp: { price_range: { min: number; max: number } | null; comp_count: number },
   ) {
+    setTookAiPath(true);
     setAiFields(new Set(fields));
     setPriceComp(comp);
-    next(draft);
+    next("review", draft);
   }
 
   function handleQuickStartSkip() {
-    next({});
+    setTookAiPath(false);
+    next("type", {});
   }
 
   async function handleFinalSubmit(images: string[]) {
@@ -116,7 +138,9 @@ export function ListingForm({
     exit: (dir: number) => ({ x: dir * -40, opacity: 0 }),
   };
 
-  const progress = (state.step / STEPS.length) * 100;
+  const activeSteps = tookAiPath ? AI_STEPS : MANUAL_STEPS;
+  const currentIndex = activeSteps.findIndex((s) => s.id === state.step);
+  const progress = ((currentIndex + 1) / activeSteps.length) * 100;
 
   return (
     <motion.div
@@ -132,7 +156,7 @@ export function ListingForm({
             <p className="text-xs font-semibold uppercase tracking-widest text-text-subtle">
               Steps
             </p>
-            <span className="text-xs text-text-muted">{state.step} of {STEPS.length}</span>
+            <span className="text-xs text-text-muted">{currentIndex + 1} of {activeSteps.length}</span>
           </div>
 
           <div className="h-1 bg-border rounded-full overflow-hidden mb-5">
@@ -144,15 +168,14 @@ export function ListingForm({
           </div>
 
           <div className="space-y-2">
-            {STEPS.map((step, i) => {
-              const stepNum = (i + 1) as FormState["step"];
-              const isActive = stepNum === state.step;
-              const isDone = stepNum < state.step;
+            {activeSteps.map((step, i) => {
+              const isActive = i === currentIndex;
+              const isDone = i < currentIndex;
               const Icon = step.icon;
 
               return (
                 <div
-                  key={step.label}
+                  key={step.id}
                   className={[
                     "flex items-center gap-3 rounded-xl p-3 transition-all duration-150",
                     isActive
@@ -210,21 +233,20 @@ export function ListingForm({
                 exit="exit"
                 transition={{ duration: 0.22, ease: "easeInOut" }}
               >
-                {state.step === 1 && (
+                {state.step === "quickstart" && (
                   <StepQuickStart
                     onNext={handleQuickStartNext}
                     onSkip={handleQuickStartSkip}
                   />
                 )}
-                {state.step === 2 && (
+                {state.step === "type" && (
                   <StepType
                     defaultValues={{ listing_type: state.data.listing_type }}
-                    onNext={(data) => next(data)}
+                    onNext={(data) => next("details", data)}
                     onBack={back}
-                    aiSuggested={aiFields.has("listing_type")}
                   />
                 )}
-                {state.step === 3 && (
+                {state.step === "details" && (
                   <StepDetails
                     defaultValues={{
                       title: state.data.title,
@@ -232,14 +254,13 @@ export function ListingForm({
                       category: state.data.category,
                       condition: state.data.condition,
                     }}
-                    onNext={(data) => next(data)}
+                    onNext={(data) => next("pricing", data)}
                     onBack={back}
                     requestIds={requestIds}
                     onRequestChange={onRequestChange}
-                    aiSuggested={aiFields.has("title") || aiFields.has("category") || aiFields.has("condition")}
                   />
                 )}
-                {state.step === 4 && (
+                {state.step === "pricing" && (
                   <StepPricing
                     listingType={state.data.listing_type as ListingType}
                     defaultValues={{
@@ -248,12 +269,31 @@ export function ListingForm({
                       size_category: state.data.size_category,
                       pickup_address: state.data.pickup_address,
                     }}
-                    onNext={(data) => next(data)}
+                    onNext={(data) => next("photos", data)}
                     onBack={back}
+                  />
+                )}
+                {state.step === "review" && (
+                  <StepReview
+                    defaultValues={{
+                      listing_type: state.data.listing_type,
+                      title: state.data.title,
+                      description: state.data.description,
+                      category: state.data.category,
+                      condition: state.data.condition,
+                      price: state.data.price,
+                      area: state.data.area,
+                      size_category: state.data.size_category,
+                      pickup_address: state.data.pickup_address,
+                    }}
+                    onNext={(data) => next("photos", data)}
+                    onBack={back}
+                    requestIds={requestIds}
+                    onRequestChange={onRequestChange}
                     priceHint={aiFields.has("price") ? priceComp : null}
                   />
                 )}
-                {state.step === 5 && (
+                {state.step === "photos" && (
                   <StepPhotos
                     defaultImages={state.data.images}
                     onNext={handleFinalSubmit}

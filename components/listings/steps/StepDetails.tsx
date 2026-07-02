@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type UseFormReturn } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import { Input, Button, CustomDropdown, CategoryPicker } from "@/components/ui";
 import { RequestPicker } from "@/components/requests/RequestPicker";
 import { AiDraftBanner } from "../AiDraftBanner";
+import type { ReviewFormData } from "./reviewTypes";
 import type { Condition } from "@/types";
 
 interface StepDetailsData {
@@ -17,11 +18,13 @@ interface StepDetailsData {
 
 interface StepDetailsProps {
   defaultValues?: Partial<StepDetailsData>;
-  onNext: (data: StepDetailsData) => void;
-  onBack: () => void;
+  onNext?: (data: StepDetailsData) => void;
+  onBack?: () => void;
   requestIds?: string[];
   onRequestChange?: (ids: string[]) => void;
   aiSuggested?: boolean;
+  formMethods?: UseFormReturn<ReviewFormData>;
+  hideChrome?: boolean;
 }
 
 function ConditionDots({ level }: { level: number }) {
@@ -45,25 +48,23 @@ const CONDITION_OPTIONS: { value: Condition; label: string; icon: React.ReactNod
   { value: "poor",     label: "Poor — heavy wear",        icon: <ConditionDots level={1} /> },
 ];
 
-export function StepDetails({ defaultValues, onNext, onBack, requestIds, onRequestChange, aiSuggested }: StepDetailsProps) {
+export function StepDetails({ defaultValues, onNext, onBack, requestIds, onRequestChange, aiSuggested, formMethods, hideChrome }: StepDetailsProps) {
+  const localForm = useForm<ReviewFormData>({ defaultValues });
   const {
     register,
     handleSubmit,
     control,
     watch,
     formState: { errors },
-  } = useForm<StepDetailsData>({ defaultValues });
+  } = formMethods ?? localForm;
 
   const watchedCategory = watch("category");
 
-  return (
-    <form onSubmit={handleSubmit(onNext)} className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold text-text">Item details</h2>
-        <p className="text-sm text-text-muted mt-1">Tell buyers about what you&apos;re listing.</p>
-      </div>
-
-      {aiSuggested && <AiDraftBanner message="AI drafted the title, category, and condition — review and edit as needed." />}
+  const fields = (
+    <>
+      {!hideChrome && aiSuggested && (
+        <AiDraftBanner message="AI drafted the title, category, and condition — review and edit as needed." />
+      )}
 
       <Input
         label="Title"
@@ -129,6 +130,19 @@ export function StepDetails({ defaultValues, onNext, onBack, requestIds, onReque
           category={watchedCategory}
         />
       )}
+    </>
+  );
+
+  if (hideChrome) return fields;
+
+  return (
+    <form onSubmit={handleSubmit(onNext!)} className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-text">Item details</h2>
+        <p className="text-sm text-text-muted mt-1">Tell buyers about what you&apos;re listing.</p>
+      </div>
+
+      {fields}
 
       <div className="flex gap-3">
         <Button type="button" variant="outline" className="flex-1" onClick={onBack}>

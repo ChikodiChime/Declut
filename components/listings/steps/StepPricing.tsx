@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, type UseFormReturn } from "react-hook-form";
 import {
   ArrowRight,
   Banknote,
@@ -14,6 +14,7 @@ import {
 import { Input, Button, AddressPickerModal } from "@/components/ui";
 import { useAddresses } from "@/lib/hooks/useAddresses";
 import { AiDraftBanner } from "../AiDraftBanner";
+import type { ReviewFormData } from "./reviewTypes";
 import type { ListingType, SizeCategory } from "@/types";
 
 interface StepPricingData {
@@ -67,9 +68,11 @@ const SIZE_OPTIONS: {
 interface StepPricingProps {
   listingType: ListingType;
   defaultValues?: Partial<StepPricingData>;
-  onNext: (data: StepPricingData) => void;
-  onBack: () => void;
+  onNext?: (data: StepPricingData) => void;
+  onBack?: () => void;
   priceHint?: { price_range: { min: number; max: number } | null; comp_count: number } | null;
+  formMethods?: UseFormReturn<ReviewFormData>;
+  hideChrome?: boolean;
 }
 
 export function StepPricing({
@@ -78,35 +81,38 @@ export function StepPricing({
   onNext,
   onBack,
   priceHint,
+  formMethods,
+  hideChrome,
 }: StepPricingProps) {
+  const localForm = useForm<ReviewFormData>({ defaultValues });
+  const form = formMethods ?? localForm;
   const {
     register,
     handleSubmit,
     setValue,
     watch,
     control,
+    getValues,
     formState: { errors },
-  } = useForm<StepPricingData>({ defaultValues });
+  } = form;
 
-  const [pickupError, setPickupError] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const watchedPickupAddress = watch('pickup_address');
   const { data: addresses = [] } = useAddresses();
 
   useEffect(() => {
-    if (defaultValues?.pickup_address) return;
+    if (getValues('pickup_address')) return;
     const defaultAddr = addresses.find((a) => a.is_default) ?? addresses[0] ?? null;
     if (!defaultAddr) return;
     setValue('pickup_address', defaultAddr.address, { shouldValidate: false });
     setValue('area', defaultAddr.address_state ?? '');
   }, [addresses]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [priceDisplay, setPriceDisplay] = useState(
-    defaultValues?.price != null
-      ? defaultValues.price.toLocaleString("en-NG")
-      : "",
-  );
+  const [priceDisplay, setPriceDisplay] = useState(() => {
+    const initialPrice = getValues('price');
+    return initialPrice != null ? initialPrice.toLocaleString("en-NG") : "";
+  });
 
   function handlePriceChange(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value.replace(/[^\d]/g, "");
@@ -115,25 +121,8 @@ export function StepPricing({
     setPriceDisplay(raw === "" ? "" : parseInt(raw, 10).toLocaleString("en-NG"));
   }
 
-  function onSubmit(data: StepPricingData) {
-    if (!data.pickup_address) {
-      setPickupError("Please search for and select a pickup address");
-      return;
-    }
-    onNext(data);
-  }
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div>
-        <h2 className="text-xl font-bold text-text">Pricing &amp; location</h2>
-        <p className="text-sm text-text-muted mt-1">
-          {listingType === "for_sale"
-            ? "Set your price and where pickup is."
-            : "Let buyers know where to collect."}
-        </p>
-      </div>
-
+  const fields = (
+    <>
       {priceHint && listingType === "for_sale" && (
         <AiDraftBanner
           message={
@@ -227,7 +216,10 @@ export function StepPricing({
       </div>
 
       {/* Hidden fields — set programmatically */}
-      <input type="hidden" {...register("pickup_address")} />
+      <input
+        type="hidden"
+        {...register("pickup_address", { required: "Please search for and select a pickup address" })}
+      />
       <input type="hidden" {...register("area")} />
 
       {/* Pickup address */}
@@ -253,7 +245,9 @@ export function StepPricing({
             {watchedPickupAddress ? 'Change' : 'Choose'}
           </button>
         </div>
-        {pickupError && <p className="text-sm text-error">{pickupError}</p>}
+        {errors.pickup_address && (
+          <p className="text-sm text-error">{errors.pickup_address.message}</p>
+        )}
       </div>
 
       <AddressPickerModal
@@ -264,9 +258,25 @@ export function StepPricing({
         onConfirm={(address, state) => {
           setValue('pickup_address', address, { shouldValidate: true });
           setValue('area', state ?? '');
-          setPickupError('');
         }}
       />
+    </>
+  );
+
+  if (hideChrome) return fields;
+
+  return (
+    <form onSubmit={handleSubmit(onNext!)} className="space-y-5">
+      <div>
+        <h2 className="text-xl font-bold text-text">Pricing &amp; location</h2>
+        <p className="text-sm text-text-muted mt-1">
+          {listingType === "for_sale"
+            ? "Set your price and where pickup is."
+            : "Let buyers know where to collect."}
+        </p>
+      </div>
+
+      {fields}
 
       <div className="flex gap-3 pt-2">
         <Button
