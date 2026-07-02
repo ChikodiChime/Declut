@@ -1,9 +1,10 @@
 "use client";
 
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ShoppingBag, FileText, Tag, Camera, Check } from "lucide-react";
+import { X, ShoppingBag, FileText, Tag, Camera, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui";
+import { StepQuickStart } from "./steps/StepQuickStart";
 import { StepType } from "./steps/StepType";
 import { StepDetails } from "./steps/StepDetails";
 import { StepPricing } from "./steps/StepPricing";
@@ -20,7 +21,7 @@ export interface ListingFormProps {
 }
 
 interface FormState {
-  step: 1 | 2 | 3 | 4;
+  step: 1 | 2 | 3 | 4 | 5;
   direction: 1 | -1;
   data: Partial<ListingFormData>;
 }
@@ -41,7 +42,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
   switch (action.type) {
     case "NEXT":
       return {
-        step: Math.min(state.step + 1, 4) as FormState["step"],
+        step: Math.min(state.step + 1, 5) as FormState["step"],
         direction: 1,
         data: { ...state.data, ...action.payload },
       };
@@ -55,10 +56,11 @@ function formReducer(state: FormState, action: FormAction): FormState {
 }
 
 const STEPS: StepMeta[] = [
-  { label: "Type",    hint: "Choose listing intent",  icon: ShoppingBag, color: "text-primary",    bgColor: "bg-primary/10"    },
-  { label: "Details", hint: "Describe your item",     icon: FileText,    color: "text-amber-600",  bgColor: "bg-amber-500/10"  },
-  { label: "Pricing", hint: "Set amount and area",    icon: Tag,         color: "text-green-600",  bgColor: "bg-green-500/10"  },
-  { label: "Photos",  hint: "Upload final images",    icon: Camera,      color: "text-purple-600", bgColor: "bg-purple-500/10" },
+  { label: "Quick Start", hint: "Let AI draft it (optional)", icon: Sparkles, color: "text-primary",    bgColor: "bg-primary/10"    },
+  { label: "Type",        hint: "Choose listing intent",      icon: ShoppingBag, color: "text-primary",    bgColor: "bg-primary/10"    },
+  { label: "Details",     hint: "Describe your item",         icon: FileText,    color: "text-amber-600",  bgColor: "bg-amber-500/10"  },
+  { label: "Pricing",     hint: "Set amount and area",        icon: Tag,         color: "text-green-600",  bgColor: "bg-green-500/10"  },
+  { label: "Photos",      hint: "Upload final images",        icon: Camera,      color: "text-purple-600", bgColor: "bg-purple-500/10" },
 ];
 
 export function ListingForm({
@@ -75,12 +77,32 @@ export function ListingForm({
     data: initialValues ?? {},
   });
 
+  const [aiFields, setAiFields] = useState<Set<keyof ListingFormData>>(new Set());
+  const [priceComp, setPriceComp] = useState<{
+    price_range: { min: number; max: number } | null;
+    comp_count: number;
+  } | null>(null);
+
   function next(payload: Partial<ListingFormData>) {
     dispatch({ type: "NEXT", payload });
   }
 
   function back() {
     dispatch({ type: "BACK" });
+  }
+
+  function handleQuickStartNext(
+    draft: Partial<ListingFormData>,
+    fields: (keyof ListingFormData)[],
+    comp: { price_range: { min: number; max: number } | null; comp_count: number },
+  ) {
+    setAiFields(new Set(fields));
+    setPriceComp(comp);
+    next(draft);
+  }
+
+  function handleQuickStartSkip() {
+    next({});
   }
 
   async function handleFinalSubmit(images: string[]) {
@@ -189,12 +211,19 @@ export function ListingForm({
                 transition={{ duration: 0.22, ease: "easeInOut" }}
               >
                 {state.step === 1 && (
-                  <StepType
-                    defaultValues={{ listing_type: state.data.listing_type }}
-                    onNext={(data) => next(data)}
+                  <StepQuickStart
+                    onNext={handleQuickStartNext}
+                    onSkip={handleQuickStartSkip}
                   />
                 )}
                 {state.step === 2 && (
+                  <StepType
+                    defaultValues={{ listing_type: state.data.listing_type }}
+                    onNext={(data) => next(data)}
+                    aiSuggested={aiFields.has("listing_type")}
+                  />
+                )}
+                {state.step === 3 && (
                   <StepDetails
                     defaultValues={{
                       title: state.data.title,
@@ -206,9 +235,10 @@ export function ListingForm({
                     onBack={back}
                     requestIds={requestIds}
                     onRequestChange={onRequestChange}
+                    aiSuggested={aiFields.has("title") || aiFields.has("category") || aiFields.has("condition")}
                   />
                 )}
-                {state.step === 3 && (
+                {state.step === 4 && (
                   <StepPricing
                     listingType={state.data.listing_type as ListingType}
                     defaultValues={{
@@ -219,9 +249,10 @@ export function ListingForm({
                     }}
                     onNext={(data) => next(data)}
                     onBack={back}
+                    priceHint={aiFields.has("price") ? priceComp : null}
                   />
                 )}
-                {state.step === 4 && (
+                {state.step === 5 && (
                   <StepPhotos
                     defaultImages={state.data.images}
                     onNext={handleFinalSubmit}

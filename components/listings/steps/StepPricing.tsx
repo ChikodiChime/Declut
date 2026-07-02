@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Input, Button, AddressPickerModal } from "@/components/ui";
 import { useAddresses } from "@/lib/hooks/useAddresses";
+import { AiDraftBanner } from "../AiDraftBanner";
 import type { ListingType, SizeCategory } from "@/types";
 
 interface StepPricingData {
@@ -68,6 +69,7 @@ interface StepPricingProps {
   defaultValues?: Partial<StepPricingData>;
   onNext: (data: StepPricingData) => void;
   onBack: () => void;
+  priceHint?: { price_range: { min: number; max: number } | null; comp_count: number } | null;
 }
 
 export function StepPricing({
@@ -75,6 +77,7 @@ export function StepPricing({
   defaultValues,
   onNext,
   onBack,
+  priceHint,
 }: StepPricingProps) {
   const {
     register,
@@ -130,6 +133,16 @@ export function StepPricing({
             : "Let buyers know where to collect."}
         </p>
       </div>
+
+      {priceHint && listingType === "for_sale" && (
+        <AiDraftBanner
+          message={
+            priceHint.price_range
+              ? `AI suggested this price based on ${priceHint.comp_count} similar listings (₦${priceHint.price_range.min.toLocaleString("en-NG")}–₦${priceHint.price_range.max.toLocaleString("en-NG")}) — feel free to adjust.`
+              : "AI suggested this price — feel free to adjust."
+          }
+        />
+      )}
 
       {listingType === "for_sale" && (
         <>

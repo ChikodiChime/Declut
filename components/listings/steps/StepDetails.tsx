@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import { Input, Button, CustomDropdown, CategoryPicker } from "@/components/ui";
 import { RequestPicker } from "@/components/requests/RequestPicker";
+import { AiDraftBanner } from "../AiDraftBanner";
 import type { Condition } from "@/types";
 
 interface StepDetailsData {
@@ -20,6 +21,7 @@ interface StepDetailsProps {
   onBack: () => void;
   requestIds?: string[];
   onRequestChange?: (ids: string[]) => void;
+  aiSuggested?: boolean;
 }
 
 function ConditionDots({ level }: { level: number }) {
@@ -43,7 +45,7 @@ const CONDITION_OPTIONS: { value: Condition; label: string; icon: React.ReactNod
   { value: "poor",     label: "Poor — heavy wear",        icon: <ConditionDots level={1} /> },
 ];
 
-export function StepDetails({ defaultValues, onNext, onBack, requestIds, onRequestChange }: StepDetailsProps) {
+export function StepDetails({ defaultValues, onNext, onBack, requestIds, onRequestChange, aiSuggested }: StepDetailsProps) {
   const {
     register,
     handleSubmit,
@@ -60,6 +62,8 @@ export function StepDetails({ defaultValues, onNext, onBack, requestIds, onReque
         <h2 className="text-xl font-bold text-text">Item details</h2>
         <p className="text-sm text-text-muted mt-1">Tell buyers about what you&apos;re listing.</p>
       </div>
+
+      {aiSuggested && <AiDraftBanner message="AI drafted the title, category, and condition — review and edit as needed." />}
 
       <Input
         label="Title"

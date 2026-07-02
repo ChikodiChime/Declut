@@ -4,12 +4,14 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { ShoppingBag, Gift, Heart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
+import { AiDraftBanner } from "../AiDraftBanner";
 import type { ListingType } from "@/types";
 
 interface StepTypeData { listing_type: ListingType }
 interface StepTypeProps {
   defaultValues?: Partial<StepTypeData>;
   onNext: (data: StepTypeData) => void;
+  aiSuggested?: boolean;
 }
 
 const OPTIONS = [
@@ -45,7 +47,7 @@ const OPTIONS = [
   },
 ];
 
-export function StepType({ defaultValues, onNext }: StepTypeProps) {
+export function StepType({ defaultValues, onNext, aiSuggested }: StepTypeProps) {
   const { register, handleSubmit, watch, formState: { errors } } = useForm<StepTypeData>({ defaultValues });
   const selected = watch("listing_type");
 
@@ -55,6 +57,8 @@ export function StepType({ defaultValues, onNext }: StepTypeProps) {
         <h2 className="text-xl font-bold text-text">What kind of listing?</h2>
         <p className="text-sm text-text-muted mt-1">You can&apos;t change this after publishing.</p>
       </div>
+
+      {aiSuggested && <AiDraftBanner message="AI suggested this listing type — feel free to change it." />}
 
       <div className="space-y-2">
         {OPTIONS.map((opt) => {
