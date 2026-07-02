@@ -15,8 +15,7 @@ export async function GET() {
     { count: totalListings },
     { count: activeOrders },
     { count: completedOrders },
-    { data: completedOrderData },
-    { data: platformRevenueData },
+    { data: completedOrderRows },
     { count: newUsersThisWeek },
     { count: listingsThisWeek },
     { count: ordersThisWeek },
@@ -26,8 +25,7 @@ export async function GET() {
     supabaseAdmin.from('orders').select('*', { count: 'exact', head: true })
       .in('status', ['pending', 'paid', 'confirmed', 'shipped', 'delivered']),
     supabaseAdmin.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
-    supabaseAdmin.from('orders').select('total_price.sum()').eq('status', 'completed').single(),
-    supabaseAdmin.from('orders').select('platform_fee.sum()').eq('status', 'completed').single(),
+    supabaseAdmin.from('orders').select('total_price, item_price').eq('status', 'completed'),
     supabaseAdmin.from('users').select('*', { count: 'exact', head: true }).gte('created_at', weekAgo),
     supabaseAdmin.from('listings').select('*', { count: 'exact', head: true })
       .gte('created_at', weekAgo).neq('status', 'removed'),
@@ -35,8 +33,9 @@ export async function GET() {
       .eq('status', 'completed').gte('created_at', weekAgo),
   ])
 
-  const gmv = (completedOrderData as { total_price: number | null } | null)?.total_price ?? 0
-  const platformRevenue = (platformRevenueData as { platform_fee: number | null } | null)?.platform_fee ?? 0
+  const rows = (completedOrderRows ?? []) as { total_price: number; item_price: number }[]
+  const gmv = rows.reduce((sum, r) => sum + (r.total_price ?? 0), 0)
+  const platformRevenue = rows.reduce((sum, r) => sum + Math.round((r.item_price ?? 0) * 0.1), 0)
 
   return ok({
     totalUsers: totalUsers ?? 0,
