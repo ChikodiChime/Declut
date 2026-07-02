@@ -11,18 +11,37 @@ import {
   Car,
   Package,
 } from "lucide-react";
+import { VALID_CATEGORIES } from "@/app/api/listings/utils";
 
-const CATEGORIES = [
-  { value: "Electronics",              label: "Electronics",       icon: Smartphone },
-  { value: "Furniture & Home",         label: "Furniture",         icon: Armchair   },
-  { value: "Clothing & Accessories",   label: "Clothing",          icon: Shirt      },
-  { value: "Appliances",               label: "Appliances",        icon: Plug       },
-  { value: "Books & Stationery",       label: "Books",             icon: BookOpen   },
-  { value: "Kids & Baby",              label: "Kids & Baby",       icon: Baby       },
-  { value: "Sports & Outdoors",        label: "Sports",            icon: Dumbbell   },
-  { value: "Vehicles & Parts",         label: "Vehicles",          icon: Car        },
-  { value: "Other",                    label: "Other",             icon: Package    },
-];
+const CATEGORY_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string; strokeWidth?: number }>> = {
+  "Electronics": Smartphone,
+  "Furniture & Home": Armchair,
+  "Clothing & Accessories": Shirt,
+  "Appliances": Plug,
+  "Books & Stationery": BookOpen,
+  "Kids & Baby": Baby,
+  "Sports & Outdoors": Dumbbell,
+  "Vehicles & Parts": Car,
+  "Other": Package,
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  "Electronics": "Electronics",
+  "Furniture & Home": "Furniture",
+  "Clothing & Accessories": "Clothing",
+  "Appliances": "Appliances",
+  "Books & Stationery": "Books",
+  "Kids & Baby": "Kids & Baby",
+  "Sports & Outdoors": "Sports",
+  "Vehicles & Parts": "Vehicles",
+  "Other": "Other",
+};
+
+const CATEGORIES = VALID_CATEGORIES.map((value) => ({
+  value,
+  label: CATEGORY_LABELS[value] ?? value,
+  icon: CATEGORY_ICONS[value] ?? Package,
+}));
 
 interface CategoryPickerProps {
   value?: string;
