@@ -4,6 +4,7 @@ import { google } from '@ai-sdk/google'
 import { z } from 'zod'
 import { getAuthUser } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
+import { stripStaleImageParts } from '@/app/api/chat/utils'
 
 type AuthUser = { id: string; email: string } | null
 
@@ -50,13 +51,14 @@ export async function POST(request: Request) {
   const authUser = await getAuthUser()
   const { messages } = await request.json()
   const cappedMessages = Array.isArray(messages) ? messages.slice(-20) : []
+  const prunedMessages = stripStaleImageParts(cappedMessages)
   const cookieHeader = request.headers.get('cookie') ?? ''
   const origin = new URL(request.url).origin
 
   const result = streamText({
     model: google('gemini-2.5-flash'),
     system: buildSystemPrompt(authUser),
-    messages: await convertToModelMessages(cappedMessages),
+    messages: await convertToModelMessages(prunedMessages),
     stopWhen: stepCountIs(5),
     tools: {
       search_listings: {
