@@ -2,13 +2,14 @@
 
 import { useReducer, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ShoppingBag, FileText, Tag, Camera, Check, Sparkles } from "lucide-react";
+import { X, ShoppingBag, FileText, Tag, Camera, Check, Sparkles, Link2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { StepQuickStart } from "./steps/StepQuickStart";
 import { StepType } from "./steps/StepType";
 import { StepDetails } from "./steps/StepDetails";
 import { StepPricing } from "./steps/StepPricing";
 import { StepReview } from "./steps/StepReview";
+import { StepRequests } from "./steps/StepRequests";
 import { StepPhotos } from "./steps/StepPhotos";
 import type { ListingFormData, ListingType } from "@/types";
 
@@ -21,7 +22,7 @@ export interface ListingFormProps {
   onRequestChange?: (ids: string[]) => void;
 }
 
-type StepId = "quickstart" | "type" | "details" | "pricing" | "review" | "photos";
+type StepId = "quickstart" | "type" | "details" | "requests" | "pricing" | "review" | "photos";
 
 interface FormState {
   step: StepId;
@@ -65,6 +66,7 @@ function formReducer(state: FormState, action: FormAction): FormState {
 }
 
 const QUICKSTART_STEP: StepMeta = { id: "quickstart", label: "Quick Start", hint: "Let AI draft it (optional)", icon: Sparkles, color: "text-primary", bgColor: "bg-primary/10" };
+const REQUESTS_STEP: StepMeta = { id: "requests", label: "Requests", hint: "Link a request (optional)", icon: Link2, color: "text-blue-600", bgColor: "bg-blue-500/10" };
 const PHOTOS_STEP: StepMeta = { id: "photos", label: "Photos", hint: "Upload final images", icon: Camera, color: "text-purple-600", bgColor: "bg-purple-500/10" };
 
 const MANUAL_STEPS: StepMeta[] = [
@@ -72,12 +74,14 @@ const MANUAL_STEPS: StepMeta[] = [
   { id: "type",    label: "Type",    hint: "Choose listing intent", icon: ShoppingBag, color: "text-primary",   bgColor: "bg-primary/10"   },
   { id: "details", label: "Details", hint: "Describe your item",    icon: FileText,    color: "text-amber-600", bgColor: "bg-amber-500/10" },
   { id: "pricing", label: "Pricing", hint: "Set amount and area",   icon: Tag,         color: "text-green-600", bgColor: "bg-green-500/10" },
+  REQUESTS_STEP,
   PHOTOS_STEP,
 ];
 
 const AI_STEPS: StepMeta[] = [
   QUICKSTART_STEP,
   { id: "review", label: "Review", hint: "Check the AI draft", icon: Check, color: "text-amber-600", bgColor: "bg-amber-500/10" },
+  REQUESTS_STEP,
   PHOTOS_STEP,
 ];
 
@@ -256,8 +260,15 @@ export function ListingForm({
                     }}
                     onNext={(data) => next("pricing", data)}
                     onBack={back}
-                    requestIds={requestIds}
-                    onRequestChange={onRequestChange}
+                  />
+                )}
+                {state.step === "requests" && (
+                  <StepRequests
+                    category={state.data.category}
+                    value={requestIds ?? []}
+                    onChange={onRequestChange ?? (() => {})}
+                    onNext={() => next("photos", {})}
+                    onBack={back}
                   />
                 )}
                 {state.step === "pricing" && (
@@ -269,7 +280,7 @@ export function ListingForm({
                       size_category: state.data.size_category,
                       pickup_address: state.data.pickup_address,
                     }}
-                    onNext={(data) => next("photos", data)}
+                    onNext={(data) => next("requests", data)}
                     onBack={back}
                   />
                 )}
@@ -286,10 +297,8 @@ export function ListingForm({
                       size_category: state.data.size_category,
                       pickup_address: state.data.pickup_address,
                     }}
-                    onNext={(data) => next("photos", data)}
+                    onNext={(data) => next("requests", data)}
                     onBack={back}
-                    requestIds={requestIds}
-                    onRequestChange={onRequestChange}
                     priceHint={aiFields.has("price") ? priceComp : null}
                   />
                 )}

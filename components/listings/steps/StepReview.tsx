@@ -13,8 +13,6 @@ interface StepReviewProps {
   defaultValues?: Partial<ReviewFormData>;
   onNext: (data: ReviewFormData) => void;
   onBack: () => void;
-  requestIds?: string[];
-  onRequestChange?: (ids: string[]) => void;
   priceHint?: { price_range: { min: number; max: number } | null; comp_count: number } | null;
 }
 
@@ -22,8 +20,6 @@ export function StepReview({
   defaultValues,
   onNext,
   onBack,
-  requestIds,
-  onRequestChange,
   priceHint,
 }: StepReviewProps) {
   const formMethods = useForm<ReviewFormData>({ defaultValues });
@@ -48,12 +44,7 @@ export function StepReview({
 
       <div className="space-y-4 border-t border-border pt-6">
         <p className="text-xs font-semibold uppercase tracking-widest text-text-subtle">Item details</p>
-        <StepDetails
-          formMethods={formMethods}
-          hideChrome
-          requestIds={requestIds}
-          onRequestChange={onRequestChange}
-        />
+        <StepDetails formMethods={formMethods} hideChrome />
       </div>
 
       <div className="space-y-4 border-t border-border pt-6">

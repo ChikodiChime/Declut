@@ -4,7 +4,6 @@ import React from "react";
 import { useForm, Controller, type UseFormReturn } from "react-hook-form";
 import { ArrowRight } from "lucide-react";
 import { Input, Button, CustomDropdown, CategoryPicker } from "@/components/ui";
-import { RequestPicker } from "@/components/requests/RequestPicker";
 import { AiDraftBanner } from "../AiDraftBanner";
 import type { ReviewFormData } from "./reviewTypes";
 import type { Condition } from "@/types";
@@ -20,8 +19,6 @@ interface StepDetailsProps {
   defaultValues?: Partial<StepDetailsData>;
   onNext?: (data: StepDetailsData) => void;
   onBack?: () => void;
-  requestIds?: string[];
-  onRequestChange?: (ids: string[]) => void;
   aiSuggested?: boolean;
   formMethods?: UseFormReturn<ReviewFormData>;
   hideChrome?: boolean;
@@ -48,17 +45,14 @@ const CONDITION_OPTIONS: { value: Condition; label: string; icon: React.ReactNod
   { value: "poor",     label: "Poor — heavy wear",        icon: <ConditionDots level={1} /> },
 ];
 
-export function StepDetails({ defaultValues, onNext, onBack, requestIds, onRequestChange, aiSuggested, formMethods, hideChrome }: StepDetailsProps) {
+export function StepDetails({ defaultValues, onNext, onBack, aiSuggested, formMethods, hideChrome }: StepDetailsProps) {
   const localForm = useForm<ReviewFormData>({ defaultValues });
   const {
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = formMethods ?? localForm;
-
-  const watchedCategory = watch("category");
 
   const fields = (
     <>
@@ -122,14 +116,6 @@ export function StepDetails({ defaultValues, onNext, onBack, requestIds, onReque
           />
         )}
       />
-
-      {onRequestChange !== undefined && (
-        <RequestPicker
-          value={requestIds ?? []}
-          onChange={onRequestChange}
-          category={watchedCategory}
-        />
-      )}
     </>
   );
 
