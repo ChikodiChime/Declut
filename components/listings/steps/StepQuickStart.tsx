@@ -215,7 +215,8 @@ export function StepQuickStart({ onNext, onSkip }: StepQuickStartProps) {
           onClick={onSkip}
           disabled={isGenerating}
         >
-          Skip, I&apos;ll fill this in myself
+          <span className="sm:hidden">Fill manually</span>
+          <span className="hidden sm:inline">Skip, I&apos;ll fill this in myself</span>
         </Button>
         <Button
           className="flex-1 gap-2"
@@ -223,7 +224,15 @@ export function StepQuickStart({ onNext, onSkip }: StepQuickStartProps) {
           loading={isGenerating}
           disabled={isGenerating || isUploading || cropQueue.length > 0 || images.length === 0}
         >
-          {isGenerating ? "Generating…" : "Generate draft"} <ArrowRight size={16} strokeWidth={2} />
+          {isGenerating ? (
+            "Generating…"
+          ) : (
+            <>
+              <span className="sm:hidden">Generate</span>
+              <span className="hidden sm:inline">Generate draft</span>
+              <ArrowRight size={16} strokeWidth={2} className="hidden sm:block" />
+            </>
+          )}
         </Button>
       </div>
     </div>

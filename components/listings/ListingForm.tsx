@@ -144,6 +144,8 @@ export function ListingForm({
 
   const activeSteps = tookAiPath ? AI_STEPS : MANUAL_STEPS;
   const currentIndex = activeSteps.findIndex((s) => s.id === state.step);
+  const currentStep = activeSteps[currentIndex] ?? activeSteps[0];
+  const CurrentIcon = currentStep.icon;
   const progress = ((currentIndex + 1) / activeSteps.length) * 100;
 
   return (
@@ -155,7 +157,7 @@ export function ListingForm({
     >
 
       <div className="grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)] xl:grid-cols-[270px_minmax(0,1fr)]">
-        <aside className="bg-card rounded-2xl border border-border shadow-card p-4 sm:p-5 h-fit">
+        <aside className="hidden lg:block bg-card rounded-2xl border border-border shadow-card p-4 sm:p-5 h-fit">
           <div className="flex items-center justify-between mb-1">
             <p className="text-xs font-semibold uppercase tracking-widest text-text-subtle">
               Steps
@@ -223,7 +225,42 @@ export function ListingForm({
           )}
         </aside>
 
-        <section className="bg-card rounded-2xl border border-border shadow-card px-5 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+        <section className="bg-card rounded-2xl border border-border shadow-card px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-7 min-w-0">
+
+          {/* Mobile: compact sticky progress — replaces the full step sidebar */}
+          <div className="lg:hidden sticky top-0 z-10 -mx-4 px-4 sm:-mx-6 sm:px-6 pt-0 pb-4 mb-4 bg-card/95 backdrop-blur-sm border-b border-border/70">
+            <div className="flex items-center gap-3">
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${currentStep.bgColor}`}>
+                <CurrentIcon size={16} className={currentStep.color} strokeWidth={1.75} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-sm font-semibold text-text truncate">{currentStep.label}</p>
+                  <span className="text-xs text-text-muted shrink-0 tabular-nums">
+                    {currentIndex + 1} / {activeSteps.length}
+                  </span>
+                </div>
+                <p className="text-xs text-text-muted truncate mt-0.5">{currentStep.hint}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1 mt-3">
+              {activeSteps.map((step, i) => (
+                <div
+                  key={step.id}
+                  className={[
+                    "h-1 flex-1 rounded-full transition-colors duration-200",
+                    i < currentIndex
+                      ? "bg-success/70"
+                      : i === currentIndex
+                        ? "bg-primary"
+                        : "bg-border",
+                  ].join(" ")}
+                  aria-hidden
+                />
+              ))}
+            </div>
+          </div>
 
           {/* Animated step content */}
           <div className="overflow-x-hidden overflow-y-visible px-1 -mx-1">
