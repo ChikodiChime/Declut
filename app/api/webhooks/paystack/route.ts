@@ -51,7 +51,7 @@ async function handleChargeSuccess(data: Record<string, unknown>) {
     .in('order_id', orderIds)
 
   const listingIds = (orderItems ?? []).map((i) => i.listing_id)
-  const autoCancelAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
+  const autoCancelAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
   await Promise.all([
     supabaseAdmin
@@ -83,7 +83,7 @@ async function handleChargeSuccess(data: Record<string, unknown>) {
       user_id: order.seller_id,
       type: 'order_update',
       title: 'New order received',
-      body: `You have a new paid order. Accept within 12 hours to avoid auto-cancellation.`,
+      body: `You have a new paid order. Accept within 24 hours to avoid auto-cancellation.`,
       link: `/dashboard/orders`,
     })
   }

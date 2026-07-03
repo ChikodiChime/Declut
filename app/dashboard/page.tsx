@@ -40,6 +40,10 @@ function timeAgo(dateStr: string) {
   return `${mins}m ago`;
 }
 
+function isOrderUrgent(createdAt: string): boolean {
+  return Date.now() - new Date(createdAt).getTime() > 6 * 3600000;
+}
+
 function OnboardingChecklist({
   me,
   listings,
@@ -185,15 +189,14 @@ function PendingOrdersCard() {
       </div>
 
       <p className="text-xs text-text-subtle mb-4">
-        Orders auto-cancel after 12 hours if not confirmed.
+        Orders auto-cancel after 24 hours if not confirmed.
       </p>
 
       <div className="flex flex-col gap-2">
         {orders.slice(0, 3).map((order) => {
           const firstItem = order.order_items?.[0];
           const extraCount = (order.order_items?.length ?? 1) - 1;
-          const isUrgent =
-            Date.now() - new Date(order.created_at).getTime() > 6 * 3600000;
+          const isUrgent = isOrderUrgent(order.created_at);
 
           return (
             <div

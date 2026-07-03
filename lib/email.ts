@@ -322,8 +322,8 @@ function buildOrderConfirmationHtml(params: OrderEmailContent): string {
   const itemsHtml = buildItemRowsHtml(groups, deliveryType)
   const deliveryNote =
     deliveryType === 'delivery'
-      ? 'The seller will be in touch within 12 hours to arrange delivery.'
-      : 'The seller will be in touch within 12 hours to arrange pickup.'
+      ? 'The seller will be in touch within 24 hours to arrange delivery.'
+      : 'The seller will be in touch within 24 hours to arrange pickup.'
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -401,8 +401,8 @@ function buildOrderConfirmationText(params: OrderEmailContent): string {
   lines.push('')
   lines.push(
     deliveryType === 'delivery'
-      ? 'The seller will be in touch within 12 hours to arrange delivery.'
-      : 'The seller will be in touch within 12 hours to arrange pickup.'
+      ? 'The seller will be in touch within 24 hours to arrange delivery.'
+      : 'The seller will be in touch within 24 hours to arrange pickup.'
   )
   lines.push('')
   lines.push(`Track your order: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/dashboard/orders?tab=purchases`)
