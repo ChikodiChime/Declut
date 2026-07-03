@@ -73,6 +73,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
+    el.style.overflowY = el.scrollHeight > 128 ? 'auto' : 'hidden'
     el.style.height = `${Math.min(el.scrollHeight, 128)}px`
   }, [input])
 
@@ -134,6 +135,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
           <div className="flex items-center gap-1">
             <Link
               href="/chat"
+              onClick={onClose}
               className="p-1.5 rounded-lg hover:bg-background text-text-muted hover:text-text transition-colors"
               title="Open full page"
             >
@@ -256,8 +258,8 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={fullPage ? 'Ask about listings, free items, your orders…' : 'Ask about listings, orders…'}
-              style={{ minHeight: '2.5rem' }}
-              className="flex-1 resize-none rounded-xl border border-border bg-background text-text placeholder:text-text-subtle px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 max-h-32 overflow-y-auto transition-colors leading-relaxed"
+              style={{ minHeight: '2.5rem', overflowY: 'hidden' }}
+              className="flex-1 resize-none rounded-xl border border-border bg-background text-text placeholder:text-text-subtle px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 max-h-32 transition-colors leading-relaxed"
             />
             <ImageAttachButton onSelect={handleImageSelect} disabled={isLoading} />
             <VoiceMicButton
