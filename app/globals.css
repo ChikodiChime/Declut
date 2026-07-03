@@ -23,6 +23,8 @@
   --color-surface: var(--background);
   --color-card: #ffffff;
   --color-sidebar: #ffffff;
+  --color-drawer-bg: #faf9f7;
+  --color-drawer-header: #16130f;
 
   /* Text */
   --color-text: #16130f;

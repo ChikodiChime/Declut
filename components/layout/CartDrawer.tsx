@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { X, ShoppingCart } from "lucide-react";
 import { ListingImage } from "@/components/ui";
-import { ResponsiveDrawer } from "@/components/ui/ResponsiveDrawer";
+import { ResponsiveDrawer, DrawerHeader } from "@/components/ui";
 import { getSessionCart, removeFromSessionCart } from "@/lib/session-cart";
 import { useMe } from "@/lib/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
@@ -63,15 +63,6 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   }, [open, user?.id]);
 
   useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  useEffect(() => {
     if (open) closeButtonRef.current?.focus();
   }, [open]);
 
@@ -108,46 +99,25 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       open={open}
       onClose={onClose}
       label="Cart"
-      maxWidth={380}
-      lockScroll={false}
-      panelStyle={{ background: "#faf9f7" }}
+      maxWidth={420}
+      portal
+      panelStyle={{ background: "var(--color-drawer-bg)" }}
     >
-        {/* Header — dark for contrast */}
-        <div
-          className="flex items-center justify-between px-6 py-5 shrink-0"
-          style={{ background: "#16130f" }}
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="font-display text-[19px] font-bold" style={{ color: "#ffffff" }}>
-              Your Cart
-            </span>
-            {items.length > 0 && (
+        <DrawerHeader
+          title="Your Cart"
+          onClose={onClose}
+          closeButtonRef={closeButtonRef}
+          badge={
+            items.length > 0 ? (
               <span
-                className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-bold"
+                className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-full text-[11px] font-bold shrink-0"
                 style={{ background: "#3730a3", color: "#c7d2fe" }}
               >
                 {items.length}
               </span>
-            )}
-          </div>
-          <button
-            ref={closeButtonRef}
-            onClick={onClose}
-            aria-label="Close cart"
-            className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-200"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)";
-              (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.9)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background = "transparent";
-              (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.45)";
-            }}
-          >
-            <X size={16} strokeWidth={2} />
-          </button>
-        </div>
+            ) : undefined
+          }
+        />
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-4 py-5">

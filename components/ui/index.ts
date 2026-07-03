@@ -5,6 +5,7 @@ export { Button } from './Button';
 export { CategoryPicker } from './CategoryPicker';
 export { Modal } from './Modal';
 export { ResponsiveDrawer } from './ResponsiveDrawer';
+export { DrawerHeader } from './DrawerHeader';
 export { AddressPickerModal } from './AddressPickerModal';
 
 export type { InputProps } from './Input';
