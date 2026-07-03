@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, useInfiniteQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { ItemRequest, ListingType } from '@/types'
 
@@ -41,6 +41,36 @@ export function usePublicRequests(params: RequestBrowseParams = {}) {
         limit: json.meta.limit,
         offset: json.meta.offset,
       }
+    },
+  })
+}
+
+const REQUEST_PAGE_SIZE = 20
+
+export function usePublicRequestsInfinite(params: Omit<RequestBrowseParams, 'limit' | 'offset'> = {}) {
+  return useInfiniteQuery<{ requests: ItemRequest[]; total: number; limit: number; offset: number }>({
+    queryKey: ['requests', 'browse', 'infinite', params],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }) => {
+      const query = new URLSearchParams()
+      if (params.q) query.set('q', params.q)
+      if (params.category) query.set('category', params.category)
+      if (params.listing_type) query.set('listing_type', params.listing_type)
+      if (params.area) query.set('area', params.area)
+      query.set('limit', String(REQUEST_PAGE_SIZE))
+      query.set('offset', String(pageParam))
+
+      const json = await apiRequest('GET', `/api/requests?${query.toString()}`)
+      return {
+        requests: json.data,
+        total: json.meta.total,
+        limit: json.meta.limit,
+        offset: json.meta.offset,
+      }
+    },
+    getNextPageParam: (lastPage) => {
+      const loaded = lastPage.offset + lastPage.requests.length
+      return loaded < lastPage.total ? loaded : undefined
     },
   })
 }
