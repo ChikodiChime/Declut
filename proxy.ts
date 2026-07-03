@@ -5,8 +5,14 @@ import { supabaseAdmin } from '@/lib/supabase'
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Auth endpoints and Paystack webhook are public — no token required
-  if (pathname.startsWith('/api/auth/') || pathname === '/api/webhooks/paystack') {
+  // Auth endpoints, the Paystack webhook, and cron routes are public here —
+  // they carry their own auth (Paystack signature / CRON_SECRET bearer token)
+  // rather than the session cookie this proxy checks for below.
+  if (
+    pathname.startsWith('/api/auth/') ||
+    pathname === '/api/webhooks/paystack' ||
+    pathname.startsWith('/api/cron/')
+  ) {
     return NextResponse.next()
   }
 
