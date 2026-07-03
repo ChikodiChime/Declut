@@ -27,6 +27,7 @@ const HIDDEN_PREFIXES = [
   "/dispatch",
   "/verify-email",
   "/admin",
+  "/chat",
 ];
 
 const SCROLL_THRESHOLD = 16;
