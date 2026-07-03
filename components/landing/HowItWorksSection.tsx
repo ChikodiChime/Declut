@@ -13,8 +13,10 @@ const STEPS = [
     accentBg: "rgba(79,70,229,0.07)",
     rotation: -3.2,
     offsetX: -12,
-    shadow: "10px 22px 44px rgba(79,70,229,0.14), 2px 6px 16px rgba(22,19,15,0.08)",
-    hoverShadow: "14px 30px 56px rgba(79,70,229,0.2), 2px 6px 16px rgba(22,19,15,0.08)",
+    shadow:
+      "10px 22px 44px rgba(79,70,229,0.14), 2px 6px 16px rgba(22,19,15,0.08)",
+    hoverShadow:
+      "14px 30px 56px rgba(79,70,229,0.2), 2px 6px 16px rgba(22,19,15,0.08)",
   },
   {
     number: "02",
@@ -25,8 +27,10 @@ const STEPS = [
     accentBg: "rgba(16,185,129,0.07)",
     rotation: 2.1,
     offsetX: 16,
-    shadow: "-8px 22px 44px rgba(16,185,129,0.14), -2px 6px 16px rgba(22,19,15,0.08)",
-    hoverShadow: "-12px 30px 56px rgba(16,185,129,0.2), -2px 6px 16px rgba(22,19,15,0.08)",
+    shadow:
+      "-8px 22px 44px rgba(16,185,129,0.14), -2px 6px 16px rgba(22,19,15,0.08)",
+    hoverShadow:
+      "-12px 30px 56px rgba(16,185,129,0.2), -2px 6px 16px rgba(22,19,15,0.08)",
   },
   {
     number: "03",
@@ -37,8 +41,10 @@ const STEPS = [
     accentBg: "rgba(245,158,11,0.07)",
     rotation: -1.4,
     offsetX: -6,
-    shadow: "6px 22px 44px rgba(245,158,11,0.14), 1px 6px 16px rgba(22,19,15,0.08)",
-    hoverShadow: "10px 30px 56px rgba(245,158,11,0.2), 1px 6px 16px rgba(22,19,15,0.08)",
+    shadow:
+      "6px 22px 44px rgba(245,158,11,0.14), 1px 6px 16px rgba(22,19,15,0.08)",
+    hoverShadow:
+      "10px 30px 56px rgba(245,158,11,0.2), 1px 6px 16px rgba(22,19,15,0.08)",
   },
 ];
 
@@ -61,7 +67,6 @@ export function HowItWorksSection() {
 
       <div className="max-w-6xl mx-auto">
         <div className="relative max-w-4xl mx-auto overflow-hidden rounded-[28px] border border-[#ece7df] bg-[linear-gradient(180deg,#fffcf8_0%,#ffffff_40%,#fbf8f3_100%)] px-5 py-10 sm:px-8 md:px-10 md:py-14 shadow-[0_18px_50px_rgba(22,19,15,0.06)]">
-
           {/* Inner decorative layer */}
           <div aria-hidden className="pointer-events-none absolute inset-0">
             {/* Dot grid */}
@@ -93,8 +98,14 @@ export function HowItWorksSection() {
             <div className="absolute right-14 top-1/2 h-12 w-12 -translate-y-1/2 rounded-full border border-[#d4cbbc] opacity-40" />
 
             {/* Cross marks */}
-            <CrossMark className="absolute left-8 top-16 opacity-20" color="#4f46e5" />
-            <CrossMark className="absolute bottom-14 right-8 opacity-20" color="#f59e0b" />
+            <CrossMark
+              className="absolute left-8 top-16 opacity-20"
+              color="#4f46e5"
+            />
+            <CrossMark
+              className="absolute bottom-14 right-8 opacity-20"
+              color="#f59e0b"
+            />
           </div>
 
           {/* Header */}
@@ -166,10 +177,12 @@ export function HowItWorksSection() {
                     className="relative overflow-hidden rounded-2xl border border-[#ebe5dc] bg-white px-6 py-5 transition-shadow duration-300"
                     style={{ boxShadow: step.shadow }}
                     onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow = step.hoverShadow;
+                      (e.currentTarget as HTMLElement).style.boxShadow =
+                        step.hoverShadow;
                     }}
                     onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow = step.shadow;
+                      (e.currentTarget as HTMLElement).style.boxShadow =
+                        step.shadow;
                     }}
                   >
                     {/* Large watermark number */}
@@ -185,7 +198,10 @@ export function HowItWorksSection() {
                     <div className="mb-4">
                       <span
                         className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.15em] uppercase"
-                        style={{ background: step.accentBg, color: step.accent }}
+                        style={{
+                          background: step.accentBg,
+                          color: step.accent,
+                        }}
                       >
                         <span
                           className="h-1.5 w-1.5 rounded-full"
@@ -204,14 +220,20 @@ export function HowItWorksSection() {
                           boxShadow: `0 0 0 1px ${step.accent}22`,
                         }}
                       >
-                        <Icon size={20} strokeWidth={1.8} style={{ color: step.accent }} />
+                        <Icon
+                          size={20}
+                          strokeWidth={1.8}
+                          style={{ color: step.accent }}
+                        />
                       </div>
 
                       <div>
                         <h3 className="mb-1.5 text-[15px] font-semibold leading-snug text-[#16130f]">
                           {step.title}
                         </h3>
-                        <p className="text-sm leading-relaxed text-[#78726c]">{step.body}</p>
+                        <p className="text-sm leading-relaxed text-[#78726c]">
+                          {step.body}
+                        </p>
                       </div>
                     </div>
 
@@ -251,7 +273,13 @@ function DotCluster({ className }: { className?: string }) {
   );
 }
 
-function CrossMark({ className, color }: { className?: string; color: string }) {
+function CrossMark({
+  className,
+  color,
+}: {
+  className?: string;
+  color: string;
+}) {
   return (
     <svg
       width="14"

@@ -163,17 +163,35 @@ function FreeItemCardSkeleton({ index = 0 }: { index?: number }) {
       className="relative overflow-hidden flex items-center gap-4 rounded-2xl bg-white px-5 py-4"
       style={{ border: "1px solid #e8f5ee" }}
     >
-      <div className="skeleton-shimmer" style={{ animationDelay: `${(index % 4) * 0.12}s` }} />
-      <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#d1fae5" }} />
+      <div
+        className="skeleton-shimmer"
+        style={{ animationDelay: `${(index % 4) * 0.12}s` }}
+      />
+      <div
+        className="h-20 w-20 shrink-0 rounded-xl"
+        style={{ background: "#d1fae5" }}
+      />
       <div className="flex flex-1 flex-col gap-2">
-        <div className="h-3.5 w-4/5 rounded" style={{ background: "#d1fae5" }} />
+        <div
+          className="h-3.5 w-4/5 rounded"
+          style={{ background: "#d1fae5" }}
+        />
         <div className="h-3 w-3/5 rounded" style={{ background: "#d1fae5" }} />
         <div className="flex items-center gap-1.5 mt-0.5">
-          <div className="h-4 w-14 rounded-full" style={{ background: "#d1fae5" }} />
-          <div className="h-1 w-1 rounded-full" style={{ background: "#a7f3d0" }} />
+          <div
+            className="h-4 w-14 rounded-full"
+            style={{ background: "#d1fae5" }}
+          />
+          <div
+            className="h-1 w-1 rounded-full"
+            style={{ background: "#a7f3d0" }}
+          />
           <div className="h-3 w-16 rounded" style={{ background: "#d1fae5" }} />
         </div>
-        <div className="mt-1 h-7 w-28 rounded-full" style={{ background: "#a7f3d0" }} />
+        <div
+          className="mt-1 h-7 w-28 rounded-full"
+          style={{ background: "#a7f3d0" }}
+        />
       </div>
     </div>
   );
@@ -185,17 +203,35 @@ function DonationItemCardSkeleton({ index = 0 }: { index?: number }) {
       className="relative overflow-hidden flex items-center gap-4 rounded-2xl bg-white px-5 py-4"
       style={{ border: "1px solid #fde8a0" }}
     >
-      <div className="skeleton-shimmer" style={{ animationDelay: `${(index % 4) * 0.12}s` }} />
-      <div className="h-20 w-20 shrink-0 rounded-xl" style={{ background: "#fde68a" }} />
+      <div
+        className="skeleton-shimmer"
+        style={{ animationDelay: `${(index % 4) * 0.12}s` }}
+      />
+      <div
+        className="h-20 w-20 shrink-0 rounded-xl"
+        style={{ background: "#fde68a" }}
+      />
       <div className="flex flex-1 flex-col gap-2">
-        <div className="h-3.5 w-4/5 rounded" style={{ background: "#fde68a" }} />
+        <div
+          className="h-3.5 w-4/5 rounded"
+          style={{ background: "#fde68a" }}
+        />
         <div className="h-3 w-3/5 rounded" style={{ background: "#fde68a" }} />
         <div className="flex items-center gap-1.5 mt-0.5">
-          <div className="h-4 w-14 rounded-full" style={{ background: "#fde68a" }} />
-          <div className="h-1 w-1 rounded-full" style={{ background: "#fbbf24" }} />
+          <div
+            className="h-4 w-14 rounded-full"
+            style={{ background: "#fde68a" }}
+          />
+          <div
+            className="h-1 w-1 rounded-full"
+            style={{ background: "#fbbf24" }}
+          />
           <div className="h-3 w-16 rounded" style={{ background: "#fde68a" }} />
         </div>
-        <div className="mt-1 h-5 w-28 rounded-full" style={{ background: "#fde68a" }} />
+        <div
+          className="mt-1 h-5 w-28 rounded-full"
+          style={{ background: "#fde68a" }}
+        />
       </div>
     </div>
   );
@@ -223,7 +259,10 @@ function FreeItemsSection() {
             <div className="flex items-center gap-3 mb-1.5">
               <div
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white"
-                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)" }}
+                style={{
+                  boxShadow:
+                    "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)",
+                }}
               >
                 <Gift size={17} strokeWidth={2} style={{ color: "#059669" }} />
               </div>
@@ -389,7 +428,10 @@ function DonationPileSection() {
             <div className="flex items-center gap-3 mb-1.5">
               <div
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white"
-                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)" }}
+                style={{
+                  boxShadow:
+                    "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)",
+                }}
               >
                 <Heart size={17} strokeWidth={2} style={{ color: "#b45309" }} />
               </div>
@@ -571,7 +613,10 @@ function CategorySection({ category }: { category: string }) {
             return (
               <div
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white"
-                style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)" }}
+                style={{
+                  boxShadow:
+                    "0 1px 4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05)",
+                }}
               >
                 <Icon size={15} strokeWidth={2} style={{ color: "#44403c" }} />
               </div>
