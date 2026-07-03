@@ -155,7 +155,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto bg-background" data-lenis-prevent>
-        <div className={fullPage ? 'max-w-2xl mx-auto w-full px-4 py-6' : 'px-4 py-4'}>
+        <div className={fullPage ? 'max-w-4xl mx-auto w-full px-4 py-6' : 'px-4 py-4'}>
           {messages.length === 0 && fullPage ? (
             <FullPageEmptyState onSelect={selectSuggestedPrompt} />
           ) : messages.length === 0 ? (
@@ -228,7 +228,7 @@ export function ChatWidget({ fullPage = false, onClose }: ChatWidgetProps) {
 
       {/* Input */}
       <div className="shrink-0 border-t border-border bg-card">
-        <div className={fullPage ? 'max-w-2xl mx-auto px-4 py-3' : 'px-4 py-3'}>
+        <div className={fullPage ? 'max-w-4xl mx-auto px-4 py-3' : 'px-4 py-3'}>
           {attachedImage && (
             <div className="flex items-center gap-2 mb-2">
               <div className="relative">
@@ -354,18 +354,18 @@ function FullPageEmptyState({ onSelect }: { onSelect: (prompt: string) => void }
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] gap-10 py-8 px-2">
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-elevated">
-          <Bot size={28} className="text-white" />
+        <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center shadow-elevated">
+          <Bot size={32} className="text-white" />
         </div>
-        <div className="max-w-xs">
-          <h2 className="text-xl font-semibold text-text tracking-tight">What are you looking for?</h2>
+        <div className="max-w-sm">
+          <h2 className="text-2xl font-semibold text-text tracking-tight">What are you looking for?</h2>
           <p className="text-sm text-text-muted mt-2 leading-relaxed">
             I can search listings, help you claim free items, or pull up your orders and active listings.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 w-full">
         {SUGGESTION_CARDS.map((card) => {
           const Icon = card.icon
           return (
