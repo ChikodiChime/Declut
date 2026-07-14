@@ -4,7 +4,7 @@ import { ArrowLeft, Bot } from 'lucide-react'
 import { ChatWidget } from '@/components/chat/ChatWidget'
 
 export const metadata: Metadata = {
-  title: 'AI Assistant — Declutter',
+  title: 'AI Assistant — Unstash',
   description: 'Browse listings, claim free items, and manage your account through chat.',
 }
 
@@ -25,7 +25,7 @@ export default function ChatPage() {
             <Bot size={14} className="text-white" />
             <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-success border-2 border-card" />
           </div>
-          <span className="font-semibold text-sm text-text tracking-tight">Declutter AI</span>
+          <span className="font-semibold text-sm text-text tracking-tight">Unstash AI</span>
         </div>
       </header>
 

@@ -121,7 +121,7 @@ function LoggedInOrdersList() {
       <div className="flex flex-col items-center py-12 text-center">
         <p className="text-sm font-semibold text-text mb-2">No purchases yet</p>
         <p className="text-sm text-text-muted max-w-xs mb-6">
-          When you buy something on Declutter, your orders will appear here.
+          When you buy something on Unstash, your orders will appear here.
         </p>
         <Link
           href="/"

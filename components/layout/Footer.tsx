@@ -14,7 +14,7 @@ export function Footer() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.svg"
-            alt="declut"
+            alt="Unstash"
             className="h-6 w-auto"
             style={{ maxWidth: 90 }}
           />
@@ -33,7 +33,7 @@ export function Footer() {
 
         <div className="flex items-center gap-3">
           <p className="text-[12px] text-gray-300">
-            © {new Date().getFullYear()} Declut
+            © {new Date().getFullYear()} Unstash
           </p>
           <span className="text-[11px] px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-400">
             Beta

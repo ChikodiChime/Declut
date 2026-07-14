@@ -1,4 +1,4 @@
-const KEY = 'declutter_guest_refs'
+const KEY = 'unstash_guest_refs'
 const MAX_REFS = 5
 
 export function saveGuestRef(ref: string): void {

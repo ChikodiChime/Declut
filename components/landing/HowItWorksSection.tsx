@@ -130,7 +130,7 @@ export function HowItWorksSection() {
             </h2>
             <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-[#8c857f]">
               Whether you&apos;re buying, selling, or giving away items,
-              Declutter makes the handoff simple.
+              Unstash makes the handoff simple.
             </p>
           </div>
 

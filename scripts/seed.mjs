@@ -6,12 +6,12 @@
  * Run:    node scripts/seed.mjs
  *
  * Accounts created:
- *   seed-seller1@declut.dev  / password123  — Amara Okafor (Individual, Lagos)
- *   seed-seller2@declut.dev  / password123  — Emeka Nwosu  (Business, Abuja)
- *   seed-seller3@declut.dev  / password123  — Zainab Ibrahim (Individual, Kano)
- *   seed-seller4@declut.dev  / password123  — Temi Adeyemi (Individual, Lagos)
- *   seed-buyer1@declut.dev   / password123  — Chidi Eze
- *   seed-buyer2@declut.dev   / password123  — Fatima Bello
+ *   seed-seller1@unstash.dev  / password123  — Amara Okafor (Individual, Lagos)
+ *   seed-seller2@unstash.dev  / password123  — Emeka Nwosu  (Business, Abuja)
+ *   seed-seller3@unstash.dev  / password123  — Zainab Ibrahim (Individual, Kano)
+ *   seed-seller4@unstash.dev  / password123  — Temi Adeyemi (Individual, Lagos)
+ *   seed-buyer1@unstash.dev   / password123  — Chidi Eze
+ *   seed-buyer2@unstash.dev   / password123  — Fatima Bello
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -60,12 +60,12 @@ const AREAS = [
 ]
 
 const SEED_EMAILS = [
-  'seed-seller1@declut.dev',
-  'seed-seller2@declut.dev',
-  'seed-seller3@declut.dev',
-  'seed-seller4@declut.dev',
-  'seed-buyer1@declut.dev',
-  'seed-buyer2@declut.dev',
+  'seed-seller1@unstash.dev',
+  'seed-seller2@unstash.dev',
+  'seed-seller3@unstash.dev',
+  'seed-seller4@unstash.dev',
+  'seed-buyer1@unstash.dev',
+  'seed-buyer2@unstash.dev',
 ]
 
 function pick(arr, i) { return arr[i % arr.length] }
@@ -209,7 +209,7 @@ const HARDCODED_PRICES = {
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('🌱 Seeding Declutter — 100 intentional listings...\n')
+  console.log('🌱 Seeding Unstash — 100 intentional listings...\n')
 
   const passwordHash = await bcrypt.hash('password123', 10)
 
@@ -243,10 +243,10 @@ async function main() {
   console.log('\n👤 Creating sellers & buyers...')
 
   const sellerProfiles = [
-    { email: 'seed-seller1@declut.dev', name: 'Amara Okafor',   account_type: 'individual', area: 'Lekki Phase 1, Lagos' },
-    { email: 'seed-seller2@declut.dev', name: 'Emeka Nwosu',    account_type: 'business',   area: 'Wuse 2, Abuja' },
-    { email: 'seed-seller3@declut.dev', name: 'Zainab Ibrahim', account_type: 'individual', area: 'Sabon Gari, Kano' },
-    { email: 'seed-seller4@declut.dev', name: 'Temi Adeyemi',   account_type: 'individual', area: 'Surulere, Lagos' },
+    { email: 'seed-seller1@unstash.dev', name: 'Amara Okafor',   account_type: 'individual', area: 'Lekki Phase 1, Lagos' },
+    { email: 'seed-seller2@unstash.dev', name: 'Emeka Nwosu',    account_type: 'business',   area: 'Wuse 2, Abuja' },
+    { email: 'seed-seller3@unstash.dev', name: 'Zainab Ibrahim', account_type: 'individual', area: 'Sabon Gari, Kano' },
+    { email: 'seed-seller4@unstash.dev', name: 'Temi Adeyemi',   account_type: 'individual', area: 'Surulere, Lagos' },
   ]
 
   const sellers = []
@@ -271,8 +271,8 @@ async function main() {
   }
 
   const buyerProfiles = [
-    { email: 'seed-buyer1@declut.dev', name: 'Chidi Eze' },
-    { email: 'seed-buyer2@declut.dev', name: 'Fatima Bello' },
+    { email: 'seed-buyer1@unstash.dev', name: 'Chidi Eze' },
+    { email: 'seed-buyer2@unstash.dev', name: 'Fatima Bello' },
   ]
 
   const buyers = []
@@ -452,14 +452,14 @@ async function main() {
   ${Object.keys(typeCounts).map(t => `${typeCounts[t]} ${t}`).join(' · ')}
 
   Sellers
-    seed-seller1@declut.dev  / password123  — Amara Okafor (Individual, Lagos)
-    seed-seller2@declut.dev  / password123  — Emeka Nwosu  (Business, Abuja)
-    seed-seller3@declut.dev  / password123  — Zainab Ibrahim (Individual, Kano)
-    seed-seller4@declut.dev  / password123  — Temi Adeyemi (Individual, Lagos)
+    seed-seller1@unstash.dev  / password123  — Amara Okafor (Individual, Lagos)
+    seed-seller2@unstash.dev  / password123  — Emeka Nwosu  (Business, Abuja)
+    seed-seller3@unstash.dev  / password123  — Zainab Ibrahim (Individual, Kano)
+    seed-seller4@unstash.dev  / password123  — Temi Adeyemi (Individual, Lagos)
 
   Buyers
-    seed-buyer1@declut.dev   / password123  — Chidi Eze
-    seed-buyer2@declut.dev   / password123  — Fatima Bello
+    seed-buyer1@unstash.dev   / password123  — Chidi Eze
+    seed-buyer2@unstash.dev   / password123  — Fatima Bello
 `)
 }
 

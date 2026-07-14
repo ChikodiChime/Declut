@@ -118,7 +118,7 @@ const STATS = [
   },
   {
     value: "₦0",
-    label: "cost to pass something on via declut",
+    label: "cost to pass something on via Unstash",
     aside: "It doesn't have to.",
     color: "#d97706",
     cardBg: "rgba(217,119,6,0.05)",
@@ -177,7 +177,7 @@ export default function AboutPage() {
               className="text-[11px] font-bold uppercase tracking-[0.22em] mb-7"
               style={{ color: "rgba(255,255,255,0.3)" }}
             >
-              About declut
+              About Unstash
             </motion.p>
 
             <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
@@ -301,7 +301,7 @@ export default function AboutPage() {
                 className="text-[15px] leading-[1.8]"
                 style={{ color: "#56524d" }}
               >
-                We built declut because giving things away, selling them, or
+                We built Unstash because giving things away, selling them, or
                 donating them shouldn&apos;t be harder than keeping them. Three
                 listing types — For Sale, Free, and Donate — because not every
                 transfer is the same, and the platform should respect that.

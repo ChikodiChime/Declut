@@ -61,7 +61,7 @@ export function HeroSection({ listings }: { listings: Listing[] }) {
           className="font-display text-white leading-none tracking-tight mb-5 lg:whitespace-nowrap"
           style={{ fontSize: "clamp(42px, 9.5vw, 120px)" }}
         >
-          Declutter <span style={{ color: "#a5b4fc" }}>&</span> Discover
+          Unstash <span style={{ color: "#a5b4fc" }}>&</span> Discover
         </h1>
 
         <p

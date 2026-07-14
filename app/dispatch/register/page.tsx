@@ -8,7 +8,7 @@ export default function DispatcherRegisterPage() {
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center gap-3 mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="declut" className="h-9" />
+          <img src="/logo.svg" alt="Unstash" className="h-9" />
           <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1">
             <Truck size={13} className="text-primary" strokeWidth={2} />
             <span className="text-primary text-xs font-semibold tracking-wide uppercase">Dispatcher Portal</span>
@@ -31,7 +31,7 @@ export default function DispatcherRegisterPage() {
         </div>
 
         <p className="mt-6 text-center text-xs text-text-subtle">
-          © {new Date().getFullYear()} Declut · Dispatcher Portal
+          © {new Date().getFullYear()} Unstash · Dispatcher Portal
         </p>
       </div>
     </div>

@@ -30,13 +30,13 @@ export function ListingStructuredData({ listing }: ListingStructuredDataProps) {
       }`,
       seller: {
         "@type": "Person",
-        name: listing.seller?.name || "Declutter User",
+        name: listing.seller?.name || "Unstash User",
       },
     },
     category: listing.category,
     brand: {
       "@type": "Brand",
-      name: "Declutter Marketplace",
+      name: "Unstash Marketplace",
     },
     ...(listing.area && {
       areaServed: {

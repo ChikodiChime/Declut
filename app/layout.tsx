@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { ChatBubble } from "@/components/chat/ChatBubble";
 import { OrdersDrawer } from "@/components/orders/OrdersDrawer";
 import NextTopLoader from "nextjs-toploader";
+import Script from "next/script";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 
@@ -29,8 +30,8 @@ const dmSerifDisplay = DM_Serif_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "Declutter Marketplace",
-    template: "%s | Declutter",
+    default: "Unstash Marketplace",
+    template: "%s | Unstash",
   },
   description: "Buy, sell, and donate secondhand items in Nigeria.",
   icons: {
@@ -38,15 +39,15 @@ export const metadata: Metadata = {
     shortcut: "/favicon.svg",
   },
   openGraph: {
-    title: "Declutter Marketplace",
+    title: "Unstash Marketplace",
     description: "Buy, sell, and donate secondhand items in Nigeria.",
-    siteName: "Declutter Marketplace",
+    siteName: "Unstash Marketplace",
     locale: "en_NG",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Declutter Marketplace",
+    title: "Unstash Marketplace",
     description: "Buy, sell, and donate secondhand items in Nigeria.",
   },
 };
@@ -62,6 +63,15 @@ export default function RootLayout({
       className={`${raleway.variable} ${geistMono.variable} ${dmSerifDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        {/* Lenis (smooth-scroll) initializes its own scroll state on mount,
+            which fights the browser's native scroll-position restoration on
+            refresh — that mismatch is what caused the navbar to visibly
+            flash between its transparent and solid states. Disabling native
+            restoration this early (before hydration) means every reload
+            starts clean at the top, so there's nothing for Lenis to fight. */}
+        <Script id="disable-scroll-restoration" strategy="beforeInteractive">
+          {`try { if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; } } catch (e) {}`}
+        </Script>
         <NextTopLoader color="#3730a3" showSpinner={false} />
         <Providers>
           <NavbarWrapper />

@@ -13,7 +13,7 @@ function buildSystemPrompt(user: AuthUser): string {
     ? `The user is logged in (ID: ${user.id}).`
     : `The user is browsing as a guest (not logged in).`
 
-  return `You are "Declutter Assistant", a helpful AI for the Declutter marketplace — a Nigeria-focused platform for buying, selling, giving away, and donating secondhand items.
+  return `You are "Unstash Assistant", a helpful AI for the Unstash marketplace — a Nigeria-focused platform for buying, selling, giving away, and donating secondhand items.
 
 ${identity}
 
@@ -33,7 +33,7 @@ ${identity}
 - If an action requires login and the user is a guest, say: "You'll need to log in first. [Sign in →](/auth/login)"
 - For free items, use initiate_claim — do not add them to cart.
 - Donate items go to charities only — they cannot be purchased or claimed by users.
-- Stay focused on the marketplace. If asked something unrelated, say: "I'm here to help you find items on Declutter — what are you looking for?"
+- Stay focused on the marketplace. If asked something unrelated, say: "I'm here to help you find items on Unstash — what are you looking for?"
 - Listing types: "for_sale" = paid item, "free" = claimable at no cost, "donate" = donated to charity
 
 ## Image search
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     tools: {
       search_listings: {
         description:
-          'Search available listings on Declutter. Use when the user asks to find, browse, or search for items.',
+          'Search available listings on Unstash. Use when the user asks to find, browse, or search for items.',
         inputSchema: z.object({
           q: z.string().optional().describe('Keyword to search in title or description'),
           category: z.string().optional().describe('Category filter'),

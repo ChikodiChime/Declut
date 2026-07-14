@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { CldImage } from "next-cloudinary";
@@ -32,6 +32,13 @@ const HIDDEN_PREFIXES = [
 
 const SCROLL_THRESHOLD = 16;
 const SEARCH_THRESHOLD = 350;
+
+// Resolves the real scroll position before first paint so a refresh on an
+// already-scrolled page doesn't flash the top-of-page (transparent) navbar
+// before correcting — useLayoutEffect is a no-op during SSR, so fall back
+// to useEffect there.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 function getInitials(name: string | null | undefined): string {
   if (!name) return "?";
@@ -236,7 +243,7 @@ export function NavbarWrapper() {
   const { data: me, isLoading } = useMe();
   const { mutate: signOut } = useSignOut();
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > SCROLL_THRESHOLD);
       setShowSearch(window.scrollY > SEARCH_THRESHOLD);
@@ -350,12 +357,12 @@ function NavbarContent({
             href="/"
             className="relative h-11 shrink-0 block"
             style={{ minWidth: 110 }}
-            aria-label="declut home"
+            aria-label="Unstash home"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/logo.svg"
-              alt="declut"
+              alt="Unstash"
               className="absolute inset-0 h-full w-auto transition-opacity duration-300"
               style={{ opacity: transparent ? 0 : 1 }}
             />
@@ -685,7 +692,7 @@ function NavbarContent({
           >
             <Link href="/" onClick={() => setMobileOpen(false)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.svg" alt="declut" className="h-10 w-auto" />
+              <img src="/logo.svg" alt="Unstash" className="h-10 w-auto" />
             </Link>
             <button
               onClick={() => setMobileOpen(false)}

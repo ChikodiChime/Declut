@@ -9,9 +9,9 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
   const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL!,
     to,
-    subject: 'Your Declutter verification code',
+    subject: 'Your Unstash verification code',
     html: buildOtpHtml(code),
-    text: `Your Declutter verification code is: ${code}\n\nThis code expires in 15 minutes.\n\nIf you didn't create a Declutter account, you can safely ignore this email.`,
+    text: `Your Unstash verification code is: ${code}\n\nThis code expires in 15 minutes.\n\nIf you didn't create an Unstash account, you can safely ignore this email.`,
   })
   if (error) throw new Error(`Resend error: ${error.message}`)
 }
@@ -27,7 +27,7 @@ function buildOtpHtml(code: string): string {
         <table width="100%" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);" cellpadding="0" cellspacing="0" role="presentation">
           <tr>
             <td style="background:#4F46E5;padding:32px 40px;text-align:center;">
-              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">decl<span style="color:#A5B4FC">ut</span></span>
+              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">unst<span style="color:#A5B4FC">ash</span></span>
             </td>
           </tr>
           <tr>
@@ -46,13 +46,13 @@ function buildOtpHtml(code: string): string {
                 </tr>
               </table>
               <p style="margin:0;font-size:13px;color:#9CA3AF;line-height:1.6;border-top:1px solid #F3F4F6;padding-top:24px;">
-                If you didn't create a Declutter account, you can safely ignore this email.
+                If you didn't create an Unstash account, you can safely ignore this email.
               </p>
             </td>
           </tr>
           <tr>
             <td style="background:#F9FAFB;padding:20px 40px;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 declut. All rights reserved.</p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 Unstash. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -79,13 +79,13 @@ export async function sendClaimRequestEmail(params: ClaimRequestParams): Promise
     to,
     subject: `${claimerName} wants your "${listingTitle}"`,
     html: buildClaimRequestHtml({ sellerName, claimerName, listingTitle }),
-    text: `Hi ${sellerName},\n\n${claimerName} has requested your free item "${listingTitle}".\n\nLog in to accept or decline their claim.\n\n— The declut team`,
+    text: `Hi ${sellerName},\n\n${claimerName} has requested your free item "${listingTitle}".\n\nLog in to accept or decline their claim.\n\n— The Unstash team`,
   })
   if (error) throw new Error(`Resend error: ${error.message}`)
 }
 
 function buildClaimRequestHtml({ sellerName, claimerName, listingTitle }: Omit<ClaimRequestParams, 'to'>): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://unstash.com'
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -96,7 +96,7 @@ function buildClaimRequestHtml({ sellerName, claimerName, listingTitle }: Omit<C
         <table width="100%" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);" cellpadding="0" cellspacing="0" role="presentation">
           <tr>
             <td style="background:#4F46E5;padding:32px 40px;text-align:center;">
-              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">decl<span style="color:#A5B4FC">ut</span></span>
+              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">unst<span style="color:#A5B4FC">ash</span></span>
             </td>
           </tr>
           <tr>
@@ -118,7 +118,7 @@ function buildClaimRequestHtml({ sellerName, claimerName, listingTitle }: Omit<C
           </tr>
           <tr>
             <td style="background:#F9FAFB;padding:20px 40px;text-align:center;border-top:1px solid #F3F4F6;">
-              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 declut. All rights reserved.</p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 Unstash. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -145,7 +145,7 @@ export async function sendClaimAcceptedEmail(params: ClaimAcceptedParams): Promi
     to,
     subject: `Your claim for "${listingTitle}" has been accepted`,
     html: buildClaimAcceptedHtml({ buyerName, listingTitle, pickupAddress }),
-    text: `Hi ${buyerName},\n\nGreat news! Your claim for "${listingTitle}" has been accepted.\n\nPickup address:\n${pickupAddress}\n\nPlease arrange pickup with the seller at a convenient time.\n\n— The declut team`,
+    text: `Hi ${buyerName},\n\nGreat news! Your claim for "${listingTitle}" has been accepted.\n\nPickup address:\n${pickupAddress}\n\nPlease arrange pickup with the seller at a convenient time.\n\n— The Unstash team`,
   })
   if (error) throw new Error(`Resend error: ${error.message}`)
 }
@@ -163,13 +163,13 @@ export async function sendClaimDeclinedEmail(params: ClaimDeclinedParams): Promi
     to,
     subject: `Your claim for "${listingTitle}" was not accepted`,
     html: buildClaimDeclinedHtml({ buyerName, listingTitle }),
-    text: `Hi ${buyerName},\n\nUnfortunately, your claim for "${listingTitle}" was not accepted by the seller.\n\nYou can browse other free items on declut.\n\n— The declut team`,
+    text: `Hi ${buyerName},\n\nUnfortunately, your claim for "${listingTitle}" was not accepted by the seller.\n\nYou can browse other free items on Unstash.\n\n— The Unstash team`,
   })
   if (error) throw new Error(`Resend error: ${error.message}`)
 }
 
 function buildClaimAcceptedHtml({ buyerName, listingTitle, pickupAddress }: Omit<ClaimAcceptedParams, 'to'>): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://unstash.com'
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -180,7 +180,7 @@ function buildClaimAcceptedHtml({ buyerName, listingTitle, pickupAddress }: Omit
         <table width="100%" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);" cellpadding="0" cellspacing="0" role="presentation">
           <tr>
             <td style="background:#10B981;padding:32px 40px;text-align:center;">
-              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">decl<span style="color:#A7F3D0">ut</span></span>
+              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">unst<span style="color:#A7F3D0">ash</span></span>
             </td>
           </tr>
           <tr>
@@ -206,7 +206,7 @@ function buildClaimAcceptedHtml({ buyerName, listingTitle, pickupAddress }: Omit
           </tr>
           <tr>
             <td style="background:#F9FAFB;padding:20px 40px;text-align:center;border-top:1px solid #F3F4F6;">
-              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 declut. All rights reserved.</p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 Unstash. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -218,7 +218,7 @@ function buildClaimAcceptedHtml({ buyerName, listingTitle, pickupAddress }: Omit
 }
 
 function buildClaimDeclinedHtml({ buyerName, listingTitle }: Omit<ClaimDeclinedParams, 'to'>): string {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://unstash.com'
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -229,7 +229,7 @@ function buildClaimDeclinedHtml({ buyerName, listingTitle }: Omit<ClaimDeclinedP
         <table width="100%" style="max-width:480px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);" cellpadding="0" cellspacing="0" role="presentation">
           <tr>
             <td style="background:#4F46E5;padding:32px 40px;text-align:center;">
-              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">decl<span style="color:#A5B4FC">ut</span></span>
+              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">unst<span style="color:#A5B4FC">ash</span></span>
             </td>
           </tr>
           <tr>
@@ -251,7 +251,7 @@ function buildClaimDeclinedHtml({ buyerName, listingTitle }: Omit<ClaimDeclinedP
           </tr>
           <tr>
             <td style="background:#F9FAFB;padding:20px 40px;text-align:center;border-top:1px solid #F3F4F6;">
-              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 declut. All rights reserved.</p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 Unstash. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -278,7 +278,7 @@ export async function sendOrderConfirmationEmail(params: OrderConfirmationParams
   const { error } = await resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL!,
     to,
-    subject: 'Your Declutter order is confirmed',
+    subject: 'Your Unstash order is confirmed',
     html: buildOrderConfirmationHtml({ buyerName, orderIds, groups, grandTotal, deliveryType }),
     text: buildOrderConfirmationText({ buyerName, orderIds, groups, grandTotal, deliveryType }),
   })
@@ -335,7 +335,7 @@ function buildOrderConfirmationHtml(params: OrderEmailContent): string {
         <table width="100%" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);" cellpadding="0" cellspacing="0" role="presentation">
           <tr>
             <td style="background:#4F46E5;padding:32px 40px;text-align:center;">
-              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">decl<span style="color:#A5B4FC">ut</span></span>
+              <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">unst<span style="color:#A5B4FC">ash</span></span>
             </td>
           </tr>
           <tr>
@@ -356,7 +356,7 @@ function buildOrderConfirmationHtml(params: OrderEmailContent): string {
                 ${deliveryNote}
               </p>
               <p style="margin:20px 0 0;text-align:center;">
-                <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/dashboard/orders?tab=purchases" style="display:inline-block;background:#4F46E5;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 24px;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://unstash.com'}/dashboard/orders?tab=purchases" style="display:inline-block;background:#4F46E5;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;padding:12px 24px;">
                   Track your order
                 </a>
               </p>
@@ -364,7 +364,7 @@ function buildOrderConfirmationHtml(params: OrderEmailContent): string {
           </tr>
           <tr>
             <td style="background:#F9FAFB;padding:20px 40px;text-align:center;border-top:1px solid #F3F4F6;">
-              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 declut. All rights reserved.</p>
+              <p style="margin:0;font-size:12px;color:#9CA3AF;">&copy; 2026 Unstash. All rights reserved.</p>
             </td>
           </tr>
         </table>
@@ -380,7 +380,7 @@ function buildOrderConfirmationText(params: OrderEmailContent): string {
   const lines: string[] = [
     `Hi ${buyerName},`,
     '',
-    'Your Declutter order has been confirmed.',
+    'Your Unstash order has been confirmed.',
     `Order ID: ${orderIds.join(', ')}`,
     '',
     'What you ordered:',
@@ -405,9 +405,9 @@ function buildOrderConfirmationText(params: OrderEmailContent): string {
       : 'The seller will be in touch within 24 hours to arrange pickup.'
   )
   lines.push('')
-  lines.push(`Track your order: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://declut.com'}/dashboard/orders?tab=purchases`)
+  lines.push(`Track your order: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://unstash.com'}/dashboard/orders?tab=purchases`)
   lines.push('')
-  lines.push('— The declut team')
+  lines.push('— The Unstash team')
 
   return lines.join('\n')
 }

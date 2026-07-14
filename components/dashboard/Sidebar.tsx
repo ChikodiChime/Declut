@@ -295,7 +295,7 @@ export function Sidebar({
         <div className="relative z-10 px-6 py-5 shrink-0">
           <Link href={logoHref}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-light.svg" alt="declut" className="h-7" />
+            <img src="/logo-light.svg" alt="Unstash" className="h-7" />
           </Link>
         </div>
         {sectionLabel && (
@@ -312,7 +312,7 @@ export function Sidebar({
       <header className="lg:hidden flex items-center gap-1 px-4 py-3 bg-primary shrink-0">
         <Link href={logoHref} className="mr-auto">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-light.svg" alt="declut" className="h-7" />
+          <img src="/logo-light.svg" alt="Unstash" className="h-7" />
         </Link>
         <div className="flex items-center gap-1">
           <button
@@ -355,7 +355,7 @@ export function Sidebar({
               {/* Drawer header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-white/15">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo-light.svg" alt="declut" className="h-7" />
+                <img src="/logo-light.svg" alt="Unstash" className="h-7" />
                 <button
                   onClick={() => setMobileOpen(false)}
                   aria-label="Close menu"

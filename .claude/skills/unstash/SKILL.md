@@ -1,10 +1,10 @@
 ---
-name: declutter
-description: Use when working on the declutter marketplace project — Nigeria-focused secondhand platform with For Sale, Free, and Donate listing types. Covers PRD decisions, APIs, stack, and feature patterns.
+name: unstash
+description: Use when working on the Unstash marketplace project — Nigeria-focused secondhand platform with For Sale, Free, and Donate listing types. Covers PRD decisions, APIs, stack, and feature patterns.
 user_invocable: true
 ---
 
-# Declutter Marketplace — Project Reference
+# Unstash Marketplace — Project Reference
 
 A **Nigeria-focused Next.js marketplace** where individuals and businesses can list, sell, give away, or donate second-hand items. This is a **learning project** — keep it simple, avoid over-engineering.
 
@@ -16,7 +16,7 @@ A **Nigeria-focused Next.js marketplace** where individuals and businesses can l
 | **Free** | None | Buyer claims → seller accepts → pickup address revealed |
 | **Donate** | None | Seller marks item as donated to a charity |
 
-This is what makes it a *declutter* app vs a plain resale app. Always preserve all 3 types.
+This is what makes it a *declutter* app vs a plain resale app (the marketplace itself is branded Unstash). Always preserve all 3 types.
 
 ---
 

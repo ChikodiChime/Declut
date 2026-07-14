@@ -9,7 +9,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="declut" className="h-14 w-36" />
+          <img src="/logo.svg" alt="Unstash" className="h-14 w-36" />
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">

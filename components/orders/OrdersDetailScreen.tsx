@@ -197,7 +197,7 @@ export function OrdersDetailScreen() {
               )}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-text truncate">{order.seller.name ?? 'Declutter seller'}</p>
+              <p className="text-sm font-semibold text-text truncate">{order.seller.name ?? 'Unstash seller'}</p>
               <p className="text-xs text-text-muted truncate">{order.seller.email}</p>
             </div>
           </div>

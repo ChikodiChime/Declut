@@ -37,7 +37,7 @@ export function AuthPanel() {
       {/* Logo */}
       <div className="relative z-10 shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-light.svg" alt="declut" className="h-8 xl:h-9" />
+        <img src="/logo-light.svg" alt="Unstash" className="h-8 xl:h-9" />
       </div>
 
       {/* Main content */}
@@ -49,7 +49,7 @@ export function AuthPanel() {
           className="text-[11px] font-bold uppercase tracking-[0.22em] mb-5"
           style={{ color: "rgba(255,255,255,0.4)" }}
         >
-          Nigeria&apos;s declutter marketplace
+          Nigeria&apos;s secondhand marketplace
         </motion.p>
 
         <motion.h2
@@ -96,7 +96,7 @@ export function AuthPanel() {
       {/* Footer */}
       <div className="relative z-10 shrink-0">
         <p className="text-[11px] xl:text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-          © {new Date().getFullYear()} Declut · Nigeria&apos;s secondhand marketplace
+          © {new Date().getFullYear()} Unstash · Nigeria&apos;s secondhand marketplace
         </p>
       </div>
     </div>

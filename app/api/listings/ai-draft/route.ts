@@ -30,7 +30,7 @@ const draftSchema = z.object({
     ),
 })
 
-const DRAFT_PROMPT = `You are helping a seller on Declutter, a Nigeria-focused secondhand marketplace, draft a listing from photos of their item.
+const DRAFT_PROMPT = `You are helping a seller on Unstash, a Nigeria-focused secondhand marketplace, draft a listing from photos of their item.
 
 Look at the photos and produce:
 - A clear, specific title (not generic — include brand/model/color if visible)

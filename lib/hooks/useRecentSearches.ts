@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react'
 
-const KEY = 'declut:recent-searches'
+const KEY = 'unstash:recent-searches'
 const MAX = 5
 
 function load(): string[] {

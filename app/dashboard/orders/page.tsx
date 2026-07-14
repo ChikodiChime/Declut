@@ -280,7 +280,7 @@ function SellerOrderCard({ order }: { order: SellerOrder }) {
             </span>
           )}
           <a
-            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent("Your Declutter order")}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
+            href={`mailto:${order.buyer_email}?subject=${encodeURIComponent("Your Unstash order")}&body=${encodeURIComponent(`Hi ${order.buyer_name},\n\nThank you for your order.\n\n`)}`}
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-2.5 text-xs font-medium text-text-muted hover:bg-surface hover:text-text transition-colors shrink-0"
@@ -511,7 +511,7 @@ function PurchasesPanel() {
       <EmptyState
         icon={ShoppingBag}
         heading="No purchases yet"
-        body="When you buy something on Declutter, your orders will appear here."
+        body="When you buy something on Unstash, your orders will appear here."
         action={
           <Link
             href="/"
@@ -877,7 +877,7 @@ const TOP_TAB_LABELS: Record<TopTab, string> = {
 
 const TOP_TAB_SUBTITLES: Record<TopTab, string> = {
   sales: "Manage orders from your buyers.",
-  purchases: "Track everything you've bought on Declutter.",
+  purchases: "Track everything you've bought on Unstash.",
   claims: "Manage free item claims — yours and incoming.",
 };
 

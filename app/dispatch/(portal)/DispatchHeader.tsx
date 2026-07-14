@@ -15,7 +15,7 @@ export function DispatchHeader() {
     <header className="sticky top-0 z-50 border-b border-border bg-surface/90 backdrop-blur-md">
       <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo.svg" alt="declut" className="h-7" />
+        <img src="/logo.svg" alt="Unstash" className="h-7" />
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-text hidden sm:inline">{greeting}, {firstName}</span>
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">

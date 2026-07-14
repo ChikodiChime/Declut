@@ -1,4 +1,4 @@
-const CART_KEY = 'declutter_cart_session';
+const CART_KEY = 'unstash_cart_session';
 
 export interface SessionCartItem {
   listing_id: string;

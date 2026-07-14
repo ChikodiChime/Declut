@@ -41,7 +41,7 @@ function DispatchPanel() {
 
       <div className="relative z-10 shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-light.svg" alt="declut" className="h-8 xl:h-9" />
+        <img src="/logo-light.svg" alt="Unstash" className="h-8 xl:h-9" />
       </div>
 
       <div className="relative z-10 flex-1 flex flex-col justify-center py-10">
@@ -91,7 +91,7 @@ function DispatchPanel() {
       </div>
 
       <div className="relative z-10 shrink-0">
-        <p className="text-[11px] xl:text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>© {new Date().getFullYear()} Declut · Nigeria&apos;s secondhand marketplace</p>
+        <p className="text-[11px] xl:text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>© {new Date().getFullYear()} Unstash · Nigeria&apos;s secondhand marketplace</p>
       </div>
     </div>
   )
@@ -136,7 +136,7 @@ export default function DispatcherLoginPage() {
           {/* Mobile logo + badge */}
           <div className="flex flex-col items-center gap-3 mb-8 lg:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.svg" alt="declut" className="h-9" />
+            <img src="/logo.svg" alt="Unstash" className="h-9" />
             <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1">
               <Truck size={13} className="text-primary" strokeWidth={2} />
               <span className="text-primary text-xs font-semibold tracking-wide uppercase">Dispatcher Portal</span>

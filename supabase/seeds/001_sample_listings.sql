@@ -6,8 +6,8 @@
 INSERT INTO public.users (id, email, name, password_hash, account_type)
 VALUES (
   '00000000-0000-0000-0000-000000000001',
-  'seed@declut.test',
-  'Declut Seed Seller',
+  'seed@unstash.test',
+  'Unstash Seed Seller',
   '$2b$10$placeholder_not_a_real_hash_do_not_use',
   'individual'
 )

@@ -112,7 +112,7 @@ export async function POST(req: Request) {
 
   await supabaseAdmin.from('order_items').insert(orderItemInserts)
 
-  const reference = `declut-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const reference = `unstash-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
   const origin = new URL(req.url).origin
 
   let paystackData: { authorization_url: string; reference: string }

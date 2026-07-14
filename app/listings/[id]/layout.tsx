@@ -19,7 +19,7 @@ export async function generateMetadata({
       console.error("Failed to fetch listing metadata:", error);
       return {
         title: "Listing Not Found",
-        description: "This listing could not be found on Declutter Marketplace.",
+        description: "This listing could not be found on Unstash Marketplace.",
       };
     }
 
@@ -37,12 +37,12 @@ export async function generateMetadata({
         ? " - Free"
         : "";
 
-    const title = `${listing.title}${priceText} | Declutter`;
+    const title = `${listing.title}${priceText} | Unstash`;
     const description =
       listing.description ||
-      `${typeLabel} listing in ${listing.area}. ${listing.condition} condition. Browse more on Declutter Marketplace.`;
+      `${typeLabel} listing in ${listing.area}. ${listing.condition} condition. Browse more on Unstash Marketplace.`;
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://declut-beta.netlify.app";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://unstash-beta.netlify.app";
     const url = `${siteUrl}/listings/${id}`;
 
     return {
@@ -52,7 +52,7 @@ export async function generateMetadata({
         title,
         description,
         url,
-        siteName: "Declutter Marketplace",
+        siteName: "Unstash Marketplace",
         images: [
           {
             url: `${siteUrl}/listings/${id}/opengraph-image.png?v=2`,
@@ -69,7 +69,7 @@ export async function generateMetadata({
         title,
         description,
         images: [`${siteUrl}/listings/${id}/opengraph-image.png?v=2`],
-        creator: "@declutter_ng",
+        creator: "@unstash_ng",
       },
       alternates: {
         canonical: url,
@@ -85,13 +85,13 @@ export async function generateMetadata({
         listing.condition,
         "Nigeria marketplace",
         "secondhand",
-        "declutter",
+        "unstash",
       ],
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
     return {
-      title: "Declutter Marketplace",
+      title: "Unstash Marketplace",
       description: "Buy, sell, and donate secondhand items in Nigeria.",
     };
   }

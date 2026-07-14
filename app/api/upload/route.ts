@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     result = await new Promise<{ public_id: string }>((resolve, reject) => {
       cloudinary.uploader
         .upload_stream(
-          { folder: 'declut/listings', resource_type: 'image' },
+          { folder: 'unstash/listings', resource_type: 'image' },
           (uploadError, res) => {
             if (uploadError || !res) return reject(uploadError ?? new Error('Upload failed'))
             resolve({ public_id: res.public_id })

@@ -30,7 +30,7 @@ export default function VerifyEmailPage() {
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-8 lg:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.svg" alt="declut" className="h-9" />
+            <img src="/logo.svg" alt="Unstash" className="h-9" />
           </div>
 
           <div className="bg-card rounded-2xl shadow-card px-8 py-10">

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { supabase } from "@/lib/supabase";
 
-export const alt = "Listing on Declutter";
+export const alt = "Listing on Unstash";
 export const size = {
   width: 1200,
   height: 630,
@@ -134,7 +134,7 @@ export default async function Image({ params }: { params: { id: string } }) {
               color: "#a8a29e",
             }}
           >
-            declutter.ng
+            unstash.ng
           </div>
         </div>
       ),
@@ -164,7 +164,7 @@ export default async function Image({ params }: { params: { id: string } }) {
               color: "#1c1917",
             }}
           >
-            Declutter Marketplace
+            Unstash Marketplace
           </h1>
         </div>
       ),
