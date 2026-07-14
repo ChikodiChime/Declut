@@ -58,17 +58,17 @@ async function handleConfirm() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed h-screen w-screen z-50 flex items-center justify-center p-4 bg-black/60"
+      className="fixed inset-0 h-[100dvh] w-screen z-50 flex items-center justify-center p-4 bg-black/60"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: 8 }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="w-full max-w-2xl max-h-[90vh] bg-[#1a1a1a] rounded-2xl overflow-hidden flex flex-col shadow-2xl"
+        className="w-full max-w-2xl max-h-[90dvh] bg-[#1a1a1a] rounded-2xl overflow-hidden flex flex-col shadow-2xl"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-white/10">
           <div>
             <p className="text-white font-semibold text-sm">Crop photo</p>
             {queueRemaining > 0 && (
@@ -85,7 +85,7 @@ async function handleConfirm() {
         </div>
 
         {/* Cropper */}
-        <div className="relative w-full" style={{ height: 460 }}>
+        <div className="relative w-full flex-1 min-h-[200px]">
           <Cropper
             image={imageSrc}
             crop={crop}
@@ -98,7 +98,7 @@ async function handleConfirm() {
         </div>
 
         {/* Controls */}
-        <div className="px-5 py-4 border-t border-white/10 space-y-4">
+        <div className="shrink-0 px-5 py-4 border-t border-white/10 space-y-4">
           {/* Zoom slider */}
           <div className="flex items-center gap-3">
             <button

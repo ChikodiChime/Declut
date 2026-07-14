@@ -1,0 +1,184 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e614] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=f13e615]:
+      - img [ref=f13e616]
+    - generic [ref=f13e619]:
+      - button "Open issues overlay" [ref=f13e620]:
+        - generic [ref=f13e621]:
+          - generic [ref=f13e622]: "0"
+          - generic [ref=f13e623]: "1"
+        - generic [ref=f13e624]: Issue
+      - button "Collapse issues badge" [ref=f13e625]:
+        - img [ref=f13e626]
+  - banner [ref=f13e2266]:
+    - generic [ref=f13e2267]:
+      - link "declut home" [ref=f13e2268] [cursor=pointer]:
+        - /url: /
+        - img "declut" [ref=f13e2269]
+        - img [ref=f13e2270]
+      - generic [ref=f13e2271]:
+        - link "Browse" [ref=f13e2272] [cursor=pointer]:
+          - /url: /search
+        - link "Requests" [ref=f13e2273] [cursor=pointer]:
+          - /url: /requests
+      - generic [ref=f13e2274]:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - img
+                - textbox "Search listings…"
+              - button:
+                - img
+      - generic [ref=f13e2275]:
+        - generic [ref=f13e2276]:
+          - button "My orders" [ref=f13e2277] [cursor=pointer]:
+            - img [ref=f13e2278]
+          - button "Cart" [ref=f13e2282] [cursor=pointer]:
+            - img [ref=f13e2283]
+        - button "Account menu" [ref=f13e2289] [cursor=pointer]:
+          - generic [ref=f13e2290]: CE
+  - generic [ref=f13e2291]:
+    - banner [ref=f13e2292]:
+      - link "Back" [ref=f13e2293] [cursor=pointer]:
+        - /url: /
+        - img [ref=f13e2294]
+        - generic [ref=f13e2296]: Back
+      - generic [ref=f13e2297]:
+        - img [ref=f13e2299]
+        - generic [ref=f13e2303]: Declutter AI
+    - generic [ref=f13e2305]:
+      - generic [ref=f13e2308]:
+        - generic [ref=f13e2309]:
+          - img [ref=f13e2311]
+          - generic [ref=f13e2314]:
+            - heading "What are you looking for?" [level=2] [ref=f13e2315]
+            - paragraph [ref=f13e2316]: I can search listings, help you claim free items, or pull up your orders and active listings.
+        - generic [ref=f13e2317]:
+          - button "Browse listings Search by keyword, price, or area" [ref=f13e2318] [cursor=pointer]:
+            - img [ref=f13e2320]
+            - generic [ref=f13e2323]:
+              - paragraph [ref=f13e2324]: Browse listings
+              - paragraph [ref=f13e2325]: Search by keyword, price, or area
+          - button "Free items Claim something at no cost" [ref=f13e2326] [cursor=pointer]:
+            - img [ref=f13e2328]
+            - generic [ref=f13e2332]:
+              - paragraph [ref=f13e2333]: Free items
+              - paragraph [ref=f13e2334]: Claim something at no cost
+          - button "My orders Track your purchases" [ref=f13e2335] [cursor=pointer]:
+            - img [ref=f13e2337]
+            - generic [ref=f13e2341]:
+              - paragraph [ref=f13e2342]: My orders
+              - paragraph [ref=f13e2343]: Track your purchases
+          - button "My listings See what you have active" [ref=f13e2344] [cursor=pointer]:
+            - img [ref=f13e2346]
+            - generic [ref=f13e2349]:
+              - paragraph [ref=f13e2350]: My listings
+              - paragraph [ref=f13e2351]: See what you have active
+      - generic [ref=f13e2353]:
+        - generic [ref=f13e2354]:
+          - textbox "Ask about listings, free items, your orders…" [ref=f13e2355]
+          - button "Attach a photo" [ref=f13e2356] [cursor=pointer]:
+            - img [ref=f13e2357]
+          - button "Start voice input" [ref=f13e2361] [cursor=pointer]:
+            - img [ref=f13e2362]
+          - button [disabled] [ref=f13e2365] [cursor=pointer]:
+            - img [ref=f13e2366]
+        - paragraph [ref=f13e2369]: Enter to send · Shift+Enter for new line
+  - contentinfo [ref=f13e2370]:
+    - generic [ref=f13e2371]:
+      - generic [ref=f13e2372]:
+        - img "declut" [ref=f13e2373]
+        - navigation [ref=f13e2374]:
+          - link "About" [ref=f13e2375] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy" [ref=f13e2376] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=f13e2377] [cursor=pointer]:
+            - /url: /terms
+      - generic [ref=f13e2378]:
+        - paragraph [ref=f13e2379]: © 2026 Declut
+        - generic [ref=f13e2380]: Beta
+  - button "Open chat" [ref=f13e2381] [cursor=pointer]:
+    - img [ref=f13e2383]
+  - region "Notifications alt+T"
+  - alert [ref=f13e2265]: AI Assistant — Declutter | Declutter
+  - dialog "Cart" [ref=f13e2385]:
+    - generic [ref=f13e2386]:
+      - generic [ref=f13e2388]: Your Cart
+      - button "Close" [ref=f13e2389] [cursor=pointer]:
+        - img [ref=f13e2390]
+    - generic [ref=f13e2394]:
+      - img [ref=f13e2396]
+      - paragraph [ref=f13e2400]: Nothing here yet
+      - paragraph [ref=f13e2401]: Browse listings and add items to get started
+      - button "Browse listings" [ref=f13e2402] [cursor=pointer]
+  - dialog "My orders" [ref=f13e2403]:
+    - generic [ref=f13e2404]:
+      - generic [ref=f13e2406]: My orders
+      - button "Close" [ref=f13e2407] [cursor=pointer]:
+        - img [ref=f13e2408]
+    - generic [ref=f13e2413]:
+      - button "iPhone 5s iPhone 5s ₦180,000 from Amara Okafor Confirmed Pickup" [ref=f13e2416] [cursor=pointer]:
+        - img "iPhone 5s" [ref=f13e2418]
+        - generic [ref=f13e2419]:
+          - paragraph [ref=f13e2420]: iPhone 5s
+          - paragraph [ref=f13e2421]: ₦180,000
+          - paragraph [ref=f13e2422]: from Amara Okafor
+        - generic [ref=f13e2423]:
+          - generic [ref=f13e2424]: Confirmed
+          - generic [ref=f13e2425]:
+            - img [ref=f13e2426]
+            - text: Pickup
+        - img [ref=f13e2429]
+      - button "iPhone 13 Pro iPhone 13 Pro ₦993,500 from Zainab Ibrahim Shipped Delivery" [ref=f13e2433] [cursor=pointer]:
+        - img "iPhone 13 Pro" [ref=f13e2435]
+        - generic [ref=f13e2436]:
+          - paragraph [ref=f13e2437]: iPhone 13 Pro
+          - paragraph [ref=f13e2438]: ₦993,500
+          - paragraph [ref=f13e2439]: from Zainab Ibrahim
+        - generic [ref=f13e2440]:
+          - generic [ref=f13e2441]: Shipped
+          - generic [ref=f13e2442]:
+            - img [ref=f13e2443]
+            - text: Delivery
+        - img [ref=f13e2448]
+      - button "Oppo A57 Oppo A57 ₦225,000 from Amara Okafor Completed Pickup Rate seller" [ref=f13e2452] [cursor=pointer]:
+        - img "Oppo A57" [ref=f13e2454]
+        - generic [ref=f13e2455]:
+          - paragraph [ref=f13e2456]: Oppo A57
+          - paragraph [ref=f13e2457]: ₦225,000
+          - paragraph [ref=f13e2458]: from Amara Okafor
+        - generic [ref=f13e2459]:
+          - generic [ref=f13e2460]: Completed
+          - generic [ref=f13e2461]:
+            - img [ref=f13e2462]
+            - text: Pickup
+          - generic [ref=f13e2465]:
+            - img [ref=f13e2466]
+            - text: Rate seller
+        - img [ref=f13e2468]
+      - button "Apple MacBook Pro 14 Inch Space Grey Apple MacBook Pro 14 Inch Space Grey ₦1,403,500 from Zainab Ibrahim Confirmed Delivery" [ref=f13e2472] [cursor=pointer]:
+        - img "Apple MacBook Pro 14 Inch Space Grey" [ref=f13e2474]
+        - generic [ref=f13e2475]:
+          - paragraph [ref=f13e2476]: Apple MacBook Pro 14 Inch Space Grey
+          - paragraph [ref=f13e2477]: ₦1,403,500
+          - paragraph [ref=f13e2478]: from Zainab Ibrahim
+        - generic [ref=f13e2479]:
+          - generic [ref=f13e2480]: Confirmed
+          - generic [ref=f13e2481]:
+            - img [ref=f13e2482]
+            - text: Delivery
+        - img [ref=f13e2487]
+      - button "Huawei Matebook X Pro Huawei Matebook X Pro ₦980,000 from Amara Okafor Shipped Pickup" [ref=f13e2491] [cursor=pointer]:
+        - img "Huawei Matebook X Pro" [ref=f13e2493]
+        - generic [ref=f13e2494]:
+          - paragraph [ref=f13e2495]: Huawei Matebook X Pro
+          - paragraph [ref=f13e2496]: ₦980,000
+          - paragraph [ref=f13e2497]: from Amara Okafor
+        - generic [ref=f13e2498]:
+          - generic [ref=f13e2499]: Shipped
+          - generic [ref=f13e2500]:
+            - img [ref=f13e2501]
+            - text: Pickup
+        - img [ref=f13e2504]

@@ -718,6 +718,7 @@ function NavbarContent({
           </Link>
           <Link
             href="/dashboard/listings/new"
+            prefetch={false}
             onClick={() => setMobileOpen(false)}
             className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
             style={{ color: "#4f46e5" }}

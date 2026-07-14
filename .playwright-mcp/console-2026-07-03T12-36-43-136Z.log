@@ -1,0 +1,98 @@
+[     132ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    1441ms] [LOG] [Fast Refresh] done in 1422ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    1600ms] [LOG] %c Console Ninja extension is connected to Next.js browser, background: rgb(30,30,30); color: rgb(255,213,92) see https://tinyurl.com/2vt8jxzw for more info. @ :0
+[    1619ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    1693ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    2060ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <link>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <script>
+    <RootLayout>
+      <html lang="en" className="raleway_ea...">
+        <body className="min-h-full...">
+          <NextTopLoader>
+          <Providers>
+            <APIProvider apiKey="AIzaSyA9tV...">
+              <QueryClientProvider client={{}}>
+                <CartSyncProvider>
+                  <OrdersModalProvider>
+                    <LenisProvider>
+                      <NavbarWrapper>
+                      <OuterLayoutRouter>
+                      <FooterWrapper>
+                      <ChatBubble>
+                      <OrdersDrawer>
+                        <ResponsiveDrawer open={false} onClose={function OrdersModalProvider.useCallback[close]} ...>
++                         <div
++                           aria-hidden={true}
++                           onClick={function OrdersModalProvider.useCallback[close]}
++                           className={"fixed inset-0 "}
++                           style={{zIndex:50,background:"rgba(15,13...",backdropFilter:"blur(4px)",opacity:0,pointerEvents:"none", ...}}
++                         >
+-                         <section
+-                           aria-label="Notifications alt+T"
+-                           tabindex="-1"
+-                           aria-live="polite"
+-                           aria-relevant="additions text"
+-                           aria-atomic="false"
+-                         >
+                          ...
+          ...
+
+    at throwOnHydrationMismatch (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:3318:56)
+    at beginWork (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:6758:918)
+    at runWithFiberInDEV (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:965:74)
+    at performUnitOfWork (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9555:97)
+    at workLoopConcurrentByScheduler (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9551:58)
+    at renderRootConcurrent (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9534:71)
+    at performWorkOnRoot (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:9061:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_react-dom_058-ah~._.js:10255:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3000/_next/static/chunks/node_modules_next_dist_compiled_0rpq4pf._.js:2647:64)
+[    2093ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    2395ms] [LOG] [Fast Refresh] done in 459ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    4602ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[    4604ms] [LOG] [Fast Refresh] done in 111ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[   14668ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_128/f_auto/q_auto/v1/https://images.unsplash.com/photo-1497633762265-9d179a990aa6%3Fw%3D600&q%3D80:0
+[   14769ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_128/f_auto/q_auto/v1/https://images.unsplash.com/photo-1584568694244-14fbdf83bd30%3Fw%3D600&q%3D80:0
+[   14776ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_128/f_auto/q_auto/v1/https://images.unsplash.com/photo-1585771724684-38269d6639fd%3Fw%3D600&q%3D80:0
+[   14789ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_128/f_auto/q_auto/v1/https://images.unsplash.com/photo-1570222094114-d054a817e56b%3Fw%3D600&q%3D80:0
+[   14858ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_128/f_auto/q_auto/v1/https://images.unsplash.com/photo-1558618666-fcd25c85cd64%3Fw%3D600&q%3D80:0
+[   14991ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[   15257ms] [LOG] [Fast Refresh] done in 381ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[   15647ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_3840/f_auto/q_auto/v1/https://images.unsplash.com/photo-1558618666-fcd25c85cd64%3Fw%3D600&q%3D80:0
+[   15651ms] [ERROR] [CldImage] Failed to load image https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80: public_id (https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80) is invalid @ :0
+[   15718ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_3840/f_auto/q_auto/v1/https://images.unsplash.com/photo-1497633762265-9d179a990aa6%3Fw%3D600&q%3D80:0
+[   15719ms] [ERROR] [CldImage] Failed to load image https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&q=80: public_id (https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=600&q=80) is invalid @ :0
+[   15761ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_3840/f_auto/q_auto/v1/https://images.unsplash.com/photo-1585771724684-38269d6639fd%3Fw%3D600&q%3D80:0
+[   15762ms] [ERROR] [CldImage] Failed to load image https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80: public_id (https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80) is invalid @ :0
+[   15774ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[   15858ms] [LOG] [Fast Refresh] done in 186ms @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_115brz8._.js:2441
+[   15871ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_3840/f_auto/q_auto/v1/https://images.unsplash.com/photo-1570222094114-d054a817e56b%3Fw%3D600&q%3D80:0
+[   15871ms] [ERROR] [CldImage] Failed to load image https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&q=80: public_id (https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&q=80) is invalid @ :0
+[   16157ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_3840/f_auto/q_auto/v1/https://images.unsplash.com/photo-1585771724684-38269d6639fd%3Fw%3D600&q%3D80:0
+[   16159ms] [ERROR] [CldImage] Failed to load image https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80: public_id (https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=600&q=80) is invalid @ :0
+[   18066ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://res.cloudinary.com/dhurarxnw/image/upload/c_limit,w_3840/f_auto/q_auto/v1/https://images.unsplash.com/photo-1584568694244-14fbdf83bd30%3Fw%3D600&q%3D80:0
+[   18067ms] [ERROR] [CldImage] Failed to load image https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=80: public_id (https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=600&q=80) is invalid @ :0

@@ -460,6 +460,7 @@ function DonationPileSection() {
               Got something gathering dust?{" "}
               <Link
                 href="/dashboard/listings/new"
+                prefetch={false}
                 className="font-semibold underline underline-offset-2 hover:no-underline"
                 style={{ color: "#16130f" }}
               >

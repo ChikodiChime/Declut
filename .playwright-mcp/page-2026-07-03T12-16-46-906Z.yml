@@ -1,0 +1,90 @@
+- generic [active] [ref=f14e1]:
+  - banner [ref=f14e2]:
+    - generic [ref=f14e3]:
+      - link "declut home" [ref=f14e4] [cursor=pointer]:
+        - /url: /
+        - img "declut" [ref=f14e5]
+        - img [ref=f14e6]
+      - generic [ref=f14e7]:
+        - link "Browse" [ref=f14e8] [cursor=pointer]:
+          - /url: /search
+        - link "Requests" [ref=f14e9] [cursor=pointer]:
+          - /url: /requests
+      - generic [ref=f14e10]:
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - img
+                - textbox "Search listings…"
+              - button:
+                - img
+      - generic [ref=f14e12]:
+        - button "My orders" [ref=f14e13] [cursor=pointer]:
+          - img [ref=f14e14]
+        - button "Cart" [ref=f14e18] [cursor=pointer]:
+          - img [ref=f14e19]
+  - generic [ref=f14e23]:
+    - banner [ref=f14e24]:
+      - link "Back" [ref=f14e25] [cursor=pointer]:
+        - /url: /
+        - img [ref=f14e26]
+        - generic [ref=f14e28]: Back
+      - generic [ref=f14e29]:
+        - img [ref=f14e31]
+        - generic [ref=f14e35]: Declutter AI
+    - generic [ref=f14e37]:
+      - generic [ref=f14e40]:
+        - generic [ref=f14e41]:
+          - img [ref=f14e43]
+          - generic [ref=f14e46]:
+            - heading "What are you looking for?" [level=2] [ref=f14e47]
+            - paragraph [ref=f14e48]: I can search listings, help you claim free items, or pull up your orders and active listings.
+        - generic [ref=f14e49]:
+          - button "Browse listings Search by keyword, price, or area" [ref=f14e50] [cursor=pointer]:
+            - img [ref=f14e52]
+            - generic [ref=f14e55]:
+              - paragraph [ref=f14e56]: Browse listings
+              - paragraph [ref=f14e57]: Search by keyword, price, or area
+          - button "Free items Claim something at no cost" [ref=f14e58] [cursor=pointer]:
+            - img [ref=f14e60]
+            - generic [ref=f14e64]:
+              - paragraph [ref=f14e65]: Free items
+              - paragraph [ref=f14e66]: Claim something at no cost
+          - button "My orders Track your purchases" [ref=f14e67] [cursor=pointer]:
+            - img [ref=f14e69]
+            - generic [ref=f14e73]:
+              - paragraph [ref=f14e74]: My orders
+              - paragraph [ref=f14e75]: Track your purchases
+          - button "My listings See what you have active" [ref=f14e76] [cursor=pointer]:
+            - img [ref=f14e78]
+            - generic [ref=f14e81]:
+              - paragraph [ref=f14e82]: My listings
+              - paragraph [ref=f14e83]: See what you have active
+      - generic [ref=f14e85]:
+        - generic [ref=f14e86]:
+          - textbox "Ask about listings, free items, your orders…" [ref=f14e87]
+          - button "Attach a photo" [ref=f14e88] [cursor=pointer]:
+            - img [ref=f14e89]
+          - button [disabled] [ref=f14e93] [cursor=pointer]:
+            - img [ref=f14e94]
+        - paragraph [ref=f14e97]: Enter to send · Shift+Enter for new line
+  - contentinfo [ref=f14e98]:
+    - generic [ref=f14e99]:
+      - generic [ref=f14e100]:
+        - img "declut" [ref=f14e101]
+        - navigation [ref=f14e102]:
+          - link "About" [ref=f14e103] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy" [ref=f14e104] [cursor=pointer]:
+            - /url: /privacy
+          - link "Terms" [ref=f14e105] [cursor=pointer]:
+            - /url: /terms
+      - generic [ref=f14e106]:
+        - paragraph [ref=f14e107]: © 2026 Declut
+        - generic [ref=f14e108]: Beta
+  - button "Open chat" [ref=f14e109] [cursor=pointer]:
+    - img [ref=f14e111]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=f14e118] [cursor=pointer]:
+    - img [ref=f14e119]

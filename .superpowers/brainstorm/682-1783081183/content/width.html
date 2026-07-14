@@ -1,0 +1,74 @@
+<style>
+  .frame { font-family: 'Raleway', system-ui, sans-serif; background: #f4f4f5; border: 1px solid #e8e4dc; border-radius: 12px; overflow: hidden; margin-bottom: 24px; }
+  .frame-header { background: #ffffff; border-bottom: 1px solid #e8e4dc; padding: 8px 16px; font-size: 11px; color: #78726c; }
+  .viewport { padding: 24px 16px; display:flex; justify-content:center; }
+  .col { display:flex; flex-direction:column; align-items:center; }
+  .hero-icon { width: 44px; height:44px; border-radius:13px; background:#3730a3; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; margin-bottom:12px; }
+  .hero-title { font-size: 18px; font-weight: 700; color:#16130f; }
+  .cards-grid-wide { display:grid; grid-template-columns: repeat(4,1fr); gap:10px; margin-top:18px; width:100%; }
+  .s-card { border:1px solid #e8e4dc; background:#fff; border-radius:10px; padding:10px; }
+  .s-card .ic { width:26px; height:26px; border-radius:7px; background:rgba(55,48,163,0.08); color:#3730a3; display:flex; align-items:center; justify-content:center; font-size:12px; margin-bottom:6px; }
+  .s-card b { font-size: 11px; color:#16130f; display:block; }
+  .s-card span { font-size:9px; color:#78726c; }
+  .input-bar { margin-top:18px; width:100%; display:flex; }
+  .input-bar input { flex:1; border:1px solid #e8e4dc; border-radius:10px; padding:9px 12px; font-size:11px; color:#a8a09a; background:#f4f4f5; }
+</style>
+
+<h2>How wide should the column be?</h2>
+<p class="subtitle">Same "Option C" content, three container widths. Grey area is the full page background.</p>
+
+<div class="options" data-choice-group>
+  <div class="option" data-choice="narrow-672" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">max-w-2xl &middot; 672px &middot; today's current width</div>
+      <div class="viewport"><div class="col" style="width:340px;">
+        <div class="hero-icon">&#129302;</div>
+        <div class="hero-title">What are you looking for?</div>
+        <div class="cards-grid-wide" style="grid-template-columns:repeat(2,1fr);">
+          <div class="s-card"><div class="ic">&#128269;</div><b>Browse</b><span>Search</span></div>
+          <div class="s-card"><div class="ic">&#127873;</div><b>Free</b><span>Claim</span></div>
+          <div class="s-card"><div class="ic">&#128230;</div><b>Orders</b><span>Track</span></div>
+          <div class="s-card"><div class="ic">&#127991;&#65039;</div><b>Listings</b><span>Active</span></div>
+        </div>
+        <div class="input-bar"><input placeholder="Ask&hellip;" disabled></div>
+      </div></div>
+    </div>
+    <div class="content"><h3>672px (current)</h3><p>4-card row would be cramped at this width &mdash; cards squeeze to ~150px each.</p></div>
+  </div>
+
+  <div class="option" data-choice="mid-896" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">max-w-4xl &middot; 896px</div>
+      <div class="viewport"><div class="col" style="width:480px;">
+        <div class="hero-icon">&#129302;</div>
+        <div class="hero-title">What are you looking for?</div>
+        <div class="cards-grid-wide">
+          <div class="s-card"><div class="ic">&#128269;</div><b>Browse</b><span>Search</span></div>
+          <div class="s-card"><div class="ic">&#127873;</div><b>Free</b><span>Claim</span></div>
+          <div class="s-card"><div class="ic">&#128230;</div><b>Orders</b><span>Track</span></div>
+          <div class="s-card"><div class="ic">&#127991;&#65039;</div><b>Listings</b><span>Active</span></div>
+        </div>
+        <div class="input-bar"><input placeholder="Ask&hellip;" disabled></div>
+      </div></div>
+    </div>
+    <div class="content"><h3>896px (recommended)</h3><p>Comfortable 4-card row, still reads as a focused conversation column rather than a full dashboard.</p></div>
+  </div>
+
+  <div class="option" data-choice="wide-1152" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">max-w-6xl &middot; 1152px</div>
+      <div class="viewport"><div class="col" style="width:620px;">
+        <div class="hero-icon">&#129302;</div>
+        <div class="hero-title">What are you looking for?</div>
+        <div class="cards-grid-wide">
+          <div class="s-card"><div class="ic">&#128269;</div><b>Browse</b><span>Search</span></div>
+          <div class="s-card"><div class="ic">&#127873;</div><b>Free</b><span>Claim</span></div>
+          <div class="s-card"><div class="ic">&#128230;</div><b>Orders</b><span>Track</span></div>
+          <div class="s-card"><div class="ic">&#127991;&#65039;</div><b>Listings</b><span>Active</span></div>
+        </div>
+        <div class="input-bar"><input placeholder="Ask&hellip;" disabled></div>
+      </div></div>
+    </div>
+    <div class="content"><h3>1152px</h3><p>Very wide &mdash; on large monitors, message bubbles at this width can feel like they're stretching too far for comfortable reading (chat text doesn't scale with container width).</p></div>
+  </div>
+</div>

@@ -1,0 +1,95 @@
+<style>
+  .qs-mock { font-family: 'Raleway', Arial, sans-serif; background: #ffffff; border: 1px solid #e8e4dc; border-radius: 14px; padding: 20px; color: #16130f; }
+  .qs-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .qs-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+  .qs-btn-primary { background: #3730a3; color: #fff; }
+  .qs-btn-outline { background: #fff; color: #16130f; border: 1px solid #e8e4dc; }
+  .qs-chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 4px 8px; border-radius: 999px; background: #f4f4f5; color: #78726c; border: 1px solid #e8e4dc; }
+</style>
+
+<h2>Quick Start screen — 3 style directions</h2>
+<p class="subtitle">Same functionality (upload photos, Generate draft / Skip) — different visual treatment. Pick the one that feels right, or call out what to mix.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="hero-dropzone" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:14px; background:#f4f4f5;">
+      <div class="qs-mock">
+        <div style="text-align:center; padding: 22px 10px 18px;">
+          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#3730a3,#f59e0b); margin:0 auto 10px; display:flex;align-items:center;justify-content:center; color:#fff; font-size:20px;">✦</div>
+          <div style="font-weight:800; font-size:16px;">Let AI draft your listing</div>
+          <div style="font-size:12px; color:#78726c; margin-top:4px;">Drop photos below — title, price &amp; details in seconds</div>
+        </div>
+        <div style="border:2px dashed #c7c2ff; border-radius:12px; background:#3730a30d; padding:22px; text-align:center; margin-bottom:12px;">
+          <div style="font-size:22px;">🖼️</div>
+          <div style="font-size:12px; font-weight:600; margin-top:6px;">Drag photos here or click to upload</div>
+          <div style="font-size:11px; color:#78726c; margin-top:2px;">Up to 5 photos</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <div class="qs-btn qs-btn-outline" style="flex:1;">Skip</div>
+          <div class="qs-btn qs-btn-primary" style="flex:1;">Generate draft ✦</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Hero Dropzone</h3>
+      <p>One big centered focal point. Gradient icon badge + large dashed dropzone reads as "the" way to start. Bold, a little playful.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="split-panel" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:14px; background:#f4f4f5;">
+      <div class="qs-mock" style="display:flex; gap:14px; padding:16px;">
+        <div style="flex:1; border-right:1px solid #e8e4dc; padding-right:14px;">
+          <div class="qs-badge" style="color:#3730a3;">✦ AI Quick Start</div>
+          <div style="font-weight:800; font-size:15px; margin-top:6px;">We'll fill this in for you</div>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
+            <div class="qs-chip">✓ Title &amp; description</div>
+            <div class="qs-chip">✓ Category &amp; condition</div>
+            <div class="qs-chip">✓ Suggested price</div>
+          </div>
+          <div style="font-size:11px; color:#78726c; margin-top:10px;">Everything stays editable before you publish.</div>
+        </div>
+        <div style="flex:1;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
+            <div style="aspect-ratio:4/3; border:2px dashed #d4cfc6; border-radius:8px; display:flex;align-items:center;justify-content:center; font-size:16px; color:#a8a09a;">+</div>
+            <div style="aspect-ratio:4/3; background:#e8e4dc; border-radius:8px;"></div>
+          </div>
+          <div class="qs-btn qs-btn-primary" style="width:100%;">Generate draft ✦</div>
+          <div style="text-align:center; font-size:11px; color:#78726c; margin-top:8px; text-decoration:underline;">Skip, I'll fill this in myself</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Split Panel</h3>
+      <p>Left side explains value with a checklist of what gets filled in (builds trust before asking for photos); right side is the compact upload area. Feels premium/editorial.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="minimal-banner" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:14px; background:#f4f4f5;">
+      <div class="qs-mock">
+        <div style="display:flex; align-items:center; gap:8px; background:#3730a30d; border:1px solid #3730a326; border-radius:10px; padding:10px 12px; margin-bottom:12px;">
+          <span style="font-size:15px;">✦</span>
+          <div style="font-size:12px; font-weight:600;">Upload photos and we'll draft the rest — title, price, category &amp; more.</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:12px;">
+          <div style="aspect-ratio:4/3; background:#e8e4dc; border-radius:8px;"></div>
+          <div style="aspect-ratio:4/3; background:#e8e4dc; border-radius:8px;"></div>
+          <div style="aspect-ratio:4/3; border:2px dashed #d4cfc6; border-radius:8px; display:flex;align-items:center;justify-content:center; font-size:14px; color:#a8a09a;">+</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <div class="qs-btn qs-btn-outline" style="flex:1;">Skip</div>
+          <div class="qs-btn qs-btn-primary" style="flex:1;">Generate draft ✦</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Minimal Banner (closest to current)</h3>
+      <p>Keeps today's compact layout, but replaces the plain heading with a colored banner strip that carries the AI branding — smallest visual change, still an upgrade.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Click a card to select it. You can also tell me in the terminal if you want a mix of elements from different options.</p>

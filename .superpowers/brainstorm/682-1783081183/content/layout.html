@@ -1,0 +1,97 @@
+<style>
+  .frame { font-family: 'Raleway', system-ui, sans-serif; background: #f4f4f5; border: 1px solid #e8e4dc; border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
+  .frame-header { background: #ffffff; border-bottom: 1px solid #e8e4dc; padding: 10px 16px; font-size: 12px; color: #78726c; display:flex; align-items:center; gap:8px; }
+  .frame-body { padding: 40px 24px 32px; min-height: 380px; display:flex; flex-direction:column; align-items:center; }
+  .hero-icon { width: 56px; height:56px; border-radius:16px; background:#3730a3; display:flex; align-items:center; justify-content:center; color:white; font-size:22px; margin-bottom:16px; box-shadow: 0 8px 20px rgba(55,48,163,0.25); }
+  .hero-title { font-size: 22px; font-weight: 700; color:#16130f; letter-spacing:-0.01em; }
+  .hero-sub { font-size: 13px; color:#78726c; margin-top:8px; text-align:center; max-width: 360px; line-height:1.5; }
+  .cards-grid-narrow { display:grid; grid-template-columns: repeat(2,1fr); gap:10px; margin-top:28px; max-width:360px; width:100%; }
+  .cards-grid-wide { display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-top:32px; max-width: 720px; width:100%; }
+  .cards-list-wide { display:flex; flex-direction:column; gap:8px; margin-top:28px; max-width: 520px; width:100%; }
+  .s-card { border:1px solid #e8e4dc; background:#fff; border-radius:12px; padding:14px; }
+  .s-card .ic { width:32px; height:32px; border-radius:8px; background:rgba(55,48,163,0.08); color:#3730a3; display:flex; align-items:center; justify-content:center; font-size:14px; margin-bottom:8px; }
+  .s-card b { font-size: 13px; color:#16130f; display:block; }
+  .s-card span { font-size:11px; color:#78726c; }
+  .row-card { border:1px solid #e8e4dc; background:#fff; border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:12px; }
+  .row-card .ic { width:34px; height:34px; border-radius:9px; background:rgba(55,48,163,0.08); color:#3730a3; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .row-card b { font-size: 13px; color:#16130f; display:block; }
+  .row-card span { font-size:11px; color:#78726c; }
+  .input-bar { margin-top:auto; padding-top:32px; width:100%; max-width:520px; display:flex; }
+  .input-bar input { flex:1; border:1px solid #e8e4dc; border-radius:12px; padding:12px 14px; font-size:13px; color:#a8a09a; background:#f4f4f5; }
+  .badge { position:absolute; top:10px; right:14px; font-size:10px; background:#3730a3; color:#fff; padding:3px 8px; border-radius:20px; font-weight:600; }
+</style>
+
+<h2>Which empty-state layout feels right for the full page?</h2>
+<p class="subtitle">All three keep the same header fix and single-column approach — they differ in width and how the suggestion cards are arranged.</p>
+
+<div class="options" data-choice-group>
+  <div class="option" data-choice="a-compact-grid" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div style="position:relative">
+      <div class="frame">
+        <div class="frame-header">declut/chat &mdash; Option A</div>
+        <div class="frame-body">
+          <div class="hero-icon">&#129302;</div>
+          <div class="hero-title">What are you looking for?</div>
+          <div class="hero-sub">I can search listings, help you claim free items, or pull up your orders and active listings.</div>
+          <div class="cards-grid-narrow">
+            <div class="s-card"><div class="ic">&#128269;</div><b>Browse listings</b><span>Search by keyword, price, or area</span></div>
+            <div class="s-card"><div class="ic">&#127873;</div><b>Free items</b><span>Claim at no cost</span></div>
+            <div class="s-card"><div class="ic">&#128230;</div><b>My orders</b><span>Track purchases</span></div>
+            <div class="s-card"><div class="ic">&#127991;&#65039;</div><b>My listings</b><span>What you have active</span></div>
+          </div>
+          <div class="input-bar"><input placeholder="Ask about listings, free items, your orders&hellip;" disabled></div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <h3>A &mdash; Same layout, tighter and centered</h3>
+      <p>Keeps the current 2x2 card grid, just tightened up with a bigger hero icon and title. Minimal change from today, still narrow.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b-wide-row" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">declut/chat &mdash; Option B</div>
+      <div class="frame-body">
+        <div class="hero-icon">&#129302;</div>
+        <div class="hero-title">What are you looking for?</div>
+        <div class="hero-sub">I can search listings, help you claim free items, or pull up your orders and active listings.</div>
+        <div class="cards-list-wide">
+          <div class="row-card"><div class="ic">&#128269;</div><div><b>Browse listings</b><span>Search by keyword, price, or area</span></div></div>
+          <div class="row-card"><div class="ic">&#127873;</div><div><b>Free items</b><span>Claim something at no cost</span></div></div>
+          <div class="row-card"><div class="ic">&#128230;</div><div><b>My orders</b><span>Track your purchases</span></div></div>
+          <div class="row-card"><div class="ic">&#127991;&#65039;</div><div><b>My listings</b><span>See what you have active</span></div></div>
+        </div>
+        <div class="input-bar"><input placeholder="Ask about listings, free items, your orders&hellip;" disabled></div>
+      </div>
+    </div>
+    <div class="content">
+      <h3>B &mdash; Wider column, stacked rows</h3>
+      <p>Widens the column and switches suggestion cards to full-width rows &mdash; reads like a clean list of entry points, easier to scan, room for longer descriptions.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c-wide-grid" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">declut/chat &mdash; Option C</div>
+      <div class="frame-body">
+        <div class="hero-icon">&#129302;</div>
+        <div class="hero-title">What are you looking for?</div>
+        <div class="hero-sub">I can search listings, help you claim free items, or pull up your orders and active listings.</div>
+        <div class="cards-grid-wide">
+          <div class="s-card"><div class="ic">&#128269;</div><b>Browse listings</b><span>By keyword, price, area</span></div>
+          <div class="s-card"><div class="ic">&#127873;</div><b>Free items</b><span>Claim at no cost</span></div>
+          <div class="s-card"><div class="ic">&#128230;</div><b>My orders</b><span>Track purchases</span></div>
+          <div class="s-card"><div class="ic">&#127991;&#65039;</div><b>My listings</b><span>What's active</span></div>
+        </div>
+        <div class="input-bar" style="max-width:720px;"><input placeholder="Ask about listings, free items, your orders&hellip;" disabled></div>
+      </div>
+    </div>
+    <div class="content">
+      <h3>C &mdash; Full-width, single row of 4 cards</h3>
+      <p>Uses the most horizontal space &mdash; all 4 suggestion cards in one row. Feels the most "full page," but cards are smaller/terser.</p>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Click the option you like, or tell me in the terminal if you'd rather mix elements from more than one.</p>

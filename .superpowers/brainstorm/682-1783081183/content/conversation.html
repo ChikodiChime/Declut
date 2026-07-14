@@ -1,0 +1,99 @@
+<style>
+  .frame { font-family: 'Raleway', system-ui, sans-serif; background: #f4f4f5; border: 1px solid #e8e4dc; border-radius: 12px; overflow: hidden; margin-bottom: 28px; }
+  .frame-header { background: #ffffff; border-bottom: 1px solid #e8e4dc; padding: 10px 16px; font-size: 12px; color: #78726c; }
+  .frame-body { padding: 24px; min-height: 420px; }
+  .msg-row { display:flex; gap:10px; margin-bottom:16px; }
+  .msg-row.user { justify-content:flex-end; }
+  .avatar { width:28px; height:28px; border-radius:8px; background:rgba(55,48,163,0.1); color:#3730a3; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+  .bubble-assistant { background:#fff; border:1px solid #e8e4dc; border-radius:16px 16px 16px 4px; padding:10px 14px; font-size:14px; color:#16130f; line-height:1.6; box-shadow: 0 1px 2px rgba(0,0,0,0.03); max-width: 640px; }
+  .bubble-user { background:#3730a3; color:#fff; border-radius:16px 16px 4px 16px; padding:10px 14px; font-size:14px; line-height:1.6; max-width: 60%; }
+  .bubble-assistant-small { background:#fff; border:1px solid #e8e4dc; border-radius:16px 16px 16px 4px; padding:8px 12px; font-size:11px; color:#16130f; line-height:1.5; max-width: 600px; }
+  .bubble-user-small { background:#3730a3; color:#fff; border-radius:16px 16px 4px 16px; padding:8px 12px; font-size:11px; line-height:1.5; max-width: 60%; }
+
+  .listing-scroll { display:flex; gap:10px; overflow-x:auto; margin-top:10px; padding-bottom:4px; }
+  .listing-scroll .card { flex-shrink:0; width:200px; }
+  .listing-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:12px; margin-top:12px; max-width:640px; }
+  .card { border:1px solid #e8e4dc; background:#fff; border-radius:12px; overflow:hidden; }
+  .card .img { height:110px; background:linear-gradient(135deg,#e8e4dc,#d4cfc6); display:flex; align-items:center; justify-content:center; color:#a8a09a; font-size:22px; }
+  .card .info { padding:10px; }
+  .card .info b { font-size:12px; color:#16130f; display:block; }
+  .card .info span { font-size:11px; color:#3730a3; font-weight:700; }
+  .content h3 { margin-top: 14px; }
+</style>
+
+<h2>How should the active conversation look?</h2>
+<p class="subtitle">Same message content, two variables: bubble size/weight, and how listing results lay out now that the page is wider.</p>
+
+<div class="options" data-choice-group>
+  <div class="option" data-choice="a-small-scroll" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">Current style, for reference</div>
+      <div class="frame-body">
+        <div class="msg-row user"><div class="bubble-user-small">Show me laptops under &#8358;400,000</div></div>
+        <div class="msg-row">
+          <div class="avatar">&#129302;</div>
+          <div>
+            <div class="bubble-assistant-small">Found 4 listings for you:</div>
+            <div class="listing-scroll">
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>MacBook Pro 14"</b><span>&#8358;350,000</span></div></div>
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>Dell XPS 13</b><span>&#8358;280,000</span></div></div>
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>HP Envy</b><span>&#8358;220,000</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <h3>A &mdash; Keep as-is (reference only)</h3>
+      <p>Today's small text-xs bubbles + horizontal scroll slider. Included so you can compare against the other two.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b-bigger-scroll" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">Bigger bubbles, keep horizontal scroll</div>
+      <div class="frame-body">
+        <div class="msg-row user"><div class="bubble-user">Show me laptops under &#8358;400,000</div></div>
+        <div class="msg-row">
+          <div class="avatar">&#129302;</div>
+          <div>
+            <div class="bubble-assistant">Found 4 listings for you:</div>
+            <div class="listing-scroll">
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>MacBook Pro 14"</b><span>&#8358;350,000</span></div></div>
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>Dell XPS 13</b><span>&#8358;280,000</span></div></div>
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>HP Envy</b><span>&#8358;220,000</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <h3>B &mdash; Bigger bubbles (text-sm), scroll stays</h3>
+      <p>Bubbles gain real size/weight and breathing room. Listing results still scroll horizontally &mdash; familiar, works the same at any width, no wasted empty space beside cards.</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c-bigger-grid" onclick="toggleSelect(this)" style="display:block; padding:0;">
+    <div class="frame">
+      <div class="frame-header">Bigger bubbles, wrapping grid</div>
+      <div class="frame-body">
+        <div class="msg-row user"><div class="bubble-user">Show me laptops under &#8358;400,000</div></div>
+        <div class="msg-row">
+          <div class="avatar">&#129302;</div>
+          <div>
+            <div class="bubble-assistant">Found 4 listings for you:</div>
+            <div class="listing-grid">
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>MacBook Pro 14"</b><span>&#8358;350,000</span></div></div>
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>Dell XPS 13</b><span>&#8358;280,000</span></div></div>
+              <div class="card"><div class="img">&#128187;</div><div class="info"><b>HP Envy</b><span>&#8358;220,000</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <h3>C &mdash; Bigger bubbles, results as a wrapping grid</h3>
+      <p>Same bigger bubbles, but listing results wrap into a 3-column grid instead of scrolling &mdash; uses the extra width directly, all results visible without scrolling sideways. Grid needs to collapse back to horizontal scroll on narrow/mobile widths.</p>
+    </div>
+  </div>
+</div>

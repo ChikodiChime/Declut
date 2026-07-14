@@ -597,6 +597,7 @@ export default function AboutPage() {
             <div className="relative flex items-center gap-3 shrink-0">
               <Link
                 href="/dashboard/listings/new"
+                prefetch={false}
                 className="inline-flex items-center gap-2 h-12 px-7 rounded-full font-semibold text-[14px] transition-all duration-200"
                 style={{ background: "#f59e0b", color: "#16130f" }}
                 onMouseEnter={(e) => {
