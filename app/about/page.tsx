@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -137,14 +138,15 @@ export default function AboutPage() {
         style={{ minHeight: "clamp(620px, 85svh, 900px)", marginTop: -76 }}
       >
         {/* Background photo */}
-        <div
+        <Image
+          src="/hero-bg-1.png"
+          alt=""
           aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage: "url('/hero-bg-1.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center 40%",
-          }}
+          fill
+          priority
+          sizes="100vw"
+          className="pointer-events-none object-cover"
+          style={{ objectPosition: "center 40%" }}
         />
         {/* Gradient — dark at bottom, breathing at top */}
         <div

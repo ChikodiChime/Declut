@@ -527,7 +527,7 @@ function RelatedItems({
 function ListingDetailSkeleton() {
   return (
     <main className="min-h-screen bg-[#f4f4f5] px-4 lg:px-8 py-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="h-3.5 w-12 bg-[#e8e4dc] rounded animate-pulse mb-10" />
         <div className="grid grid-cols-1 lg:grid-cols-[58%_1fr] gap-8 lg:gap-14">
           <div
@@ -665,66 +665,70 @@ export default function ListingDetailPage() {
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-4 lg:px-10 pt-7 pb-12">
+        <div className="relative max-w-7xl mx-auto px-4 lg:px-10 pt-7 pb-12">
           {/* Back + breadcrumb row */}
-          <div className="flex items-center justify-between mb-8">
-            <div
-              className="flex items-center gap-2 text-[12px]"
-              style={{ color: "rgba(255,255,255,0.45)" }}
+          <div className="flex items-center gap-2 text-[12px] mb-8" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <button
+              onClick={() => router.back()}
+              className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-white"
+              style={{ color: "inherit" }}
             >
-              <button
-                onClick={() => router.back()}
-                className="inline-flex items-center gap-1 transition-colors duration-150 hover:text-white"
-                style={{ color: "inherit" }}
-              >
-                <ArrowLeft size={12} strokeWidth={2} />
-                Back
-              </button>
-              <span>·</span>
-              <Link
-                href="/"
-                className="transition-colors hover:text-white"
-                style={{ color: "inherit" }}
-              >
-                Home
-              </Link>
-              <span>›</span>
-              <Link
-                href={`/search?category=${encodeURIComponent(listing.category)}&listing_type=${listing.listing_type}`}
-                className="transition-colors hover:text-white"
-                style={{ color: "inherit" }}
-              >
-                {listing.category}
-              </Link>
-            </div>
-            
+              <ArrowLeft size={12} strokeWidth={2} />
+              Back
+            </button>
+            <span>·</span>
+            <Link
+              href="/"
+              className="transition-colors hover:text-white"
+              style={{ color: "inherit" }}
+            >
+              Home
+            </Link>
+            <span>›</span>
+            <Link
+              href={`/search?category=${encodeURIComponent(listing.category)}&listing_type=${listing.listing_type}`}
+              className="transition-colors hover:text-white"
+              style={{ color: "inherit" }}
+            >
+              {listing.category}
+            </Link>
+          </div>
+
+          {/* Type badge + Share */}
+          <div className="flex items-center justify-between mb-4">
+            <span
+              className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest"
+              style={{ background: badgeStyle.bg, color: badgeStyle.color }}
+            >
+              {typeConfig.label}
+            </span>
+
             <button
               onClick={handleShare}
-              className="relative p-2 rounded-lg transition-all duration-200 hover:bg-white/10"
-              style={{ color: "rgba(255,255,255,0.8)" }}
+              className="relative inline-flex items-center gap-1.5 pl-3 pr-3.5 py-2 rounded-full text-[12.5px] font-semibold transition-all duration-200 active:scale-[0.97]"
+              style={{
+                color: "#ffffff",
+                background: "rgba(255,255,255,0.14)",
+                border: "1px solid rgba(255,255,255,0.3)",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.24)" }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.14)" }}
               title="Share listing"
             >
-              <Share2 size={16} strokeWidth={2} />
+              <Share2 size={14} strokeWidth={2.25} />
+              Share
               {shareSuccess && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-white text-[#16130f] text-xs font-medium whitespace-nowrap shadow-lg"
+                  className="absolute -bottom-9 right-0 px-2.5 py-1 rounded-lg bg-white text-[#16130f] text-xs font-medium whitespace-nowrap shadow-lg"
                 >
                   Link copied!
                 </motion.div>
               )}
             </button>
           </div>
-
-          {/* Type badge */}
-          <span
-            className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest mb-4"
-            style={{ background: badgeStyle.bg, color: badgeStyle.color }}
-          >
-            {typeConfig.label}
-          </span>
 
           {/* Title */}
           <h1
@@ -754,7 +758,7 @@ export default function ListingDetailPage() {
       </div>
 
       {/* Content + Related */}
-      <div className="px-4 lg:px-10 py-10 pb-16 max-w-6xl mx-auto">
+      <div className="px-4 lg:px-10 py-10 pb-16 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[58%_1fr] gap-8 lg:gap-16">
           {/* ── Left: Images ── */}
           <ImageGallery images={listing.images} title={listing.title} />

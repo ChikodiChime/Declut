@@ -1,8 +1,0 @@
-[   18420ms] Error: Minified React error #418; visit https://react.dev/errors/418?args[]=HTML&args[]= for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
-    at rK (https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:46763)
-    at io (https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:97484)
-    at sc (https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:137955)
-    at https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:132845
-    at u9 (https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:132946)
-    at sV (https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:159328)
-    at MessagePort.O (https://usearrivo.vercel.app/_next/static/chunks/d88017ef82fd1dcb.js?dpl=dpl_5DUiC2WKvcox9wWFTCo47H9CJah4:1:8294)

@@ -3,17 +3,28 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { ShoppingBag, ShoppingCart } from "lucide-react";
 import { CldImage } from "next-cloudinary";
 import {
-  LayoutDashboard,
-  ShoppingBag,
-  LogOut,
-  ShoppingCart,
-  Search,
-  X,
-  Plus,
-  Menu,
-} from "lucide-react";
+  type FluentIcon,
+  bundleIcon,
+  SearchSquareFilled,
+  SearchSquareRegular,
+  TagQuestionMarkFilled,
+  TagQuestionMarkRegular,
+  GroupFilled,
+  GroupRegular,
+  ShoppingBagFilled,
+  ShoppingBagRegular,
+  SignOutRegular,
+  CollectionsAddFilled,
+  CollectionsAddRegular,
+  ChevronRightRegular,
+  DismissRegular,
+  SearchRegular,
+  AddRegular,
+  LineHorizontal3Regular,
+} from "@fluentui/react-icons";
 import { useMe, useSignOut } from "@/lib/hooks/useAuth";
 import { useOrdersModal } from "@/lib/context/orders-modal-context";
 import { useCart } from "@/lib/hooks/useCart";
@@ -29,6 +40,14 @@ const HIDDEN_PREFIXES = [
   "/admin",
   "/chat",
 ];
+
+// Regular (outline) for the default state, Filled for the active route —
+// bundleIcon swaps between them via the `filled` prop.
+const BrowseIcon = bundleIcon(SearchSquareFilled, SearchSquareRegular);
+const RequestsIcon = bundleIcon(TagQuestionMarkFilled, TagQuestionMarkRegular);
+const ListItemIcon = bundleIcon(CollectionsAddFilled, CollectionsAddRegular);
+const DashboardMenuIcon = bundleIcon(GroupFilled, GroupRegular);
+const PurchasesIcon = bundleIcon(ShoppingBagFilled, ShoppingBagRegular);
 
 const SCROLL_THRESHOLD = 16;
 const SEARCH_THRESHOLD = 350;
@@ -158,7 +177,7 @@ function ProfileMenu({
           <div className="py-1">
             <MenuLink
               href="/dashboard"
-              icon={LayoutDashboard}
+              icon={GroupRegular}
               onClick={() => setOpen(false)}
             >
               Dashboard
@@ -177,11 +196,7 @@ function ProfileMenu({
                 (e.currentTarget.style.background = "transparent")
               }
             >
-              <ShoppingBag
-                size={14}
-                strokeWidth={1.8}
-                style={{ color: "#a8a09a" }}
-              />
+              <ShoppingBagRegular fontSize={15} style={{ color: "#a8a09a" }} />
               My purchases
             </button>
           </div>
@@ -200,7 +215,7 @@ function ProfileMenu({
                 (e.currentTarget.style.background = "transparent")
               }
             >
-              <LogOut size={14} strokeWidth={1.8} />
+              <SignOutRegular fontSize={15} />
               Sign out
             </button>
           </div>
@@ -217,7 +232,7 @@ function MenuLink({
   children,
 }: {
   href: string;
-  icon: React.ElementType;
+  icon: FluentIcon;
   onClick: () => void;
   children: React.ReactNode;
 }) {
@@ -230,9 +245,156 @@ function MenuLink({
       onMouseEnter={(e) => (e.currentTarget.style.background = "#f8f5f0")}
       onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
     >
-      <Icon size={14} strokeWidth={1.8} style={{ color: "#a8a09a" }} />
+      <Icon fontSize={15} style={{ color: "#a8a09a" }} />
       {children}
     </Link>
+  );
+}
+
+// Desktop top-bar link (Browse/Requests) — a short accent-colored underline
+// draws in on hover and stays drawn while the route is active.
+function NavTab({
+  href,
+  active,
+  transparent,
+  linkColor,
+  linkHover,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  transparent: boolean;
+  linkColor: string;
+  linkHover: string;
+  children: React.ReactNode;
+}) {
+  const accent = transparent ? "#a5b4fc" : "#4f46e5";
+
+  return (
+    <Link
+      href={href}
+      className="group relative text-[15px] font-medium px-3.5 py-2 transition-colors duration-200"
+      style={{ color: active ? linkHover : linkColor }}
+      onMouseEnter={(e) => {
+        if (!active) (e.currentTarget as HTMLElement).style.color = linkHover;
+      }}
+      onMouseLeave={(e) => {
+        if (!active) (e.currentTarget as HTMLElement).style.color = linkColor;
+      }}
+    >
+      {children}
+      <span
+        aria-hidden
+        className={`absolute left-1/2 bottom-0.5 h-[2px] w-5 -translate-x-1/2 rounded-full transition-transform duration-300 ease-out ${
+          active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+        }`}
+        style={{ background: accent }}
+      />
+    </Link>
+  );
+}
+
+// Mobile bottom-sheet nav row. Active state stacks three cues, not just the
+// icon fill: a tinted row background, a left accent bar, and bold indigo text.
+function MobileNavRow({
+  href,
+  icon: Icon,
+  active,
+  prefetch,
+  onClick,
+  children,
+}: {
+  href: string;
+  icon: FluentIcon;
+  active: boolean;
+  prefetch?: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      prefetch={prefetch}
+      onClick={onClick}
+      className={`relative flex items-center gap-3 pl-4 pr-3 py-2 rounded-xl text-[15px] transition-colors ${
+        active ? "font-semibold bg-[#f5f3ff]" : "font-medium hover:bg-[#f8f5f0]"
+      }`}
+      style={{ color: active ? "#4f46e5" : "#16130f" }}
+    >
+      {active && (
+        <span
+          aria-hidden
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-full"
+          style={{ background: "#4f46e5" }}
+        />
+      )}
+      <span
+        className="flex items-center justify-center w-10 h-10 rounded-full shrink-0 transition-colors duration-200"
+        style={{
+          background: active ? "#4f46e5" : "#f0eefc",
+          color: active ? "#ffffff" : "#4f46e5",
+          boxShadow: active ? "0 4px 10px -2px rgba(79,70,229,0.45)" : "none",
+        }}
+      >
+        <Icon filled={active} fontSize={20} />
+      </span>
+      {children}
+    </Link>
+  );
+}
+
+function MobileNavButton({
+  icon: Icon,
+  onClick,
+  children,
+}: {
+  icon: FluentIcon;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-3 pl-4 pr-3 py-2 rounded-xl text-[15px] font-medium text-left w-full transition-colors hover:bg-[#f8f5f0]"
+      style={{ color: "#16130f" }}
+    >
+      <span
+        className="flex items-center justify-center w-10 h-10 rounded-full shrink-0"
+        style={{ background: "#f0eefc", color: "#4f46e5" }}
+      >
+        <Icon fontSize={20} />
+      </span>
+      {children}
+    </button>
+  );
+}
+
+// Wraps an icon-only trigger with a small dark label that fades in on
+// hover/focus — for buttons whose meaning isn't spelled out in visible text.
+function Tooltip({
+  label,
+  align = "center",
+  children,
+}: {
+  label: string;
+  align?: "center" | "right";
+  children: React.ReactNode;
+}) {
+  return (
+    <span className="relative inline-flex h-full group/tip">
+      {children}
+      <span
+        role="tooltip"
+        className={`pointer-events-none absolute top-full mt-2 whitespace-nowrap rounded-md px-2 py-1 text-[11px] font-medium opacity-0 scale-95 transition-all duration-150 group-hover/tip:opacity-100 group-hover/tip:scale-100 group-focus-within/tip:opacity-100 group-focus-within/tip:scale-100 z-50 ${
+          align === "center"
+            ? "left-1/2 -translate-x-1/2"
+            : "right-0"
+        }`}
+        style={{ background: "#16130f", color: "#ffffff" }}
+      >
+        {label}
+      </span>
+    </span>
   );
 }
 
@@ -256,6 +418,8 @@ export function NavbarWrapper() {
   if (HIDDEN_PREFIXES.some((p) => pathname.startsWith(p))) return null;
 
   const isSearchPage = pathname === "/search";
+  const isRequestsPage =
+    pathname === "/requests" || pathname.startsWith("/requests/");
 
   const DARK_HERO_ROUTES = ["/", "/about"];
   const hasDarkHero = DARK_HERO_ROUTES.includes(pathname);
@@ -270,6 +434,7 @@ export function NavbarWrapper() {
       scrolled={scrolled}
       showSearch={showSearch}
       isSearchPage={isSearchPage}
+      isRequestsPage={isRequestsPage}
       transparent={transparent}
       linkColor={linkColor}
       linkHover={linkHover}
@@ -284,6 +449,7 @@ function NavbarContent({
   scrolled,
   showSearch,
   isSearchPage,
+  isRequestsPage,
   transparent,
   linkColor,
   linkHover,
@@ -294,6 +460,7 @@ function NavbarContent({
   scrolled: boolean;
   showSearch: boolean;
   isSearchPage: boolean;
+  isRequestsPage: boolean;
   transparent: boolean;
   linkColor: string;
   linkHover: string;
@@ -376,51 +543,26 @@ function NavbarContent({
             />
           </Link>
 
-          {/* Browse + Requests links — fade out when search appears */}
-          <div
-            className="hidden md:flex items-center gap-1 ml-2"
-            style={{
-              opacity: showSearch ? 0 : 1,
-              pointerEvents: showSearch ? "none" : "auto",
-              transition: "opacity 280ms ease",
-            }}
-          >
-            <Link
+          {/* Browse + Requests links */}
+          <div className="hidden md:flex items-center gap-1 ml-2">
+            <NavTab
               href="/search"
-              className="text-[15px] font-medium px-3.5 py-2 rounded-full transition-all duration-200"
-              style={{ color: linkColor }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = linkHover;
-                (e.currentTarget as HTMLElement).style.background = transparent
-                  ? "rgba(255,255,255,0.10)"
-                  : "rgba(22,19,15,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = linkColor;
-                (e.currentTarget as HTMLElement).style.background =
-                  "transparent";
-              }}
+              active={isSearchPage}
+              transparent={transparent}
+              linkColor={linkColor}
+              linkHover={linkHover}
             >
               Browse
-            </Link>
-            <Link
+            </NavTab>
+            <NavTab
               href="/requests"
-              className="text-[15px] font-medium px-3.5 py-2 rounded-full transition-all duration-200"
-              style={{ color: linkColor }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = linkHover;
-                (e.currentTarget as HTMLElement).style.background = transparent
-                  ? "rgba(255,255,255,0.10)"
-                  : "rgba(22,19,15,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = linkColor;
-                (e.currentTarget as HTMLElement).style.background =
-                  "transparent";
-              }}
+              active={isRequestsPage}
+              transparent={transparent}
+              linkColor={linkColor}
+              linkHover={linkHover}
             >
               Requests
-            </Link>
+            </NavTab>
           </div>
 
           {/* Center: search bar slides in on scroll */}
@@ -465,9 +607,9 @@ function NavbarContent({
               aria-expanded={searchOpen}
             >
               {searchOpen ? (
-                <X size={17} strokeWidth={2} />
+                <DismissRegular fontSize={18} />
               ) : (
-                <Search size={17} strokeWidth={2} />
+                <SearchRegular fontSize={18} />
               )}
             </button>
 
@@ -476,10 +618,11 @@ function NavbarContent({
               onCartOpen={() => setCartDrawerOpen(true)}
             />
 
-            {/* Sell CTA — guests only */}
-            {!isLoading && !me && (
+            {/* Sell CTA — guests go to sign up, signed-in users go straight to the listing form */}
+            {!isLoading && (
               <Link
-                href="/auth/signup"
+                href={me ? "/dashboard/listings/new" : "/auth/signup"}
+                prefetch={me ? false : undefined}
                 className="hidden md:inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-[14px] font-semibold transition-all duration-200"
                 style={
                   transparent
@@ -515,9 +658,23 @@ function NavbarContent({
                   }
                 }}
               >
-                <Plus size={13} strokeWidth={2.5} />
+                <AddRegular fontSize={15} />
                 Sell
               </Link>
+            )}
+
+            {/* Sell CTA skeleton — shown while auth state resolves */}
+            {isLoading && (
+              <div
+                className="hidden md:block relative h-10 w-[84px] rounded-full overflow-hidden"
+                style={{
+                  background: transparent
+                    ? "rgba(255,255,255,0.10)"
+                    : "rgba(22,19,15,0.06)",
+                }}
+              >
+                <div className="skeleton-shimmer" />
+              </div>
             )}
 
             {/* Hamburger — mobile only */}
@@ -539,9 +696,9 @@ function NavbarContent({
               aria-expanded={mobileOpen}
             >
               {mobileOpen ? (
-                <X size={18} strokeWidth={2} />
+                <DismissRegular fontSize={19} />
               ) : (
-                <Menu size={18} strokeWidth={2} />
+                <LineHorizontal3Regular fontSize={19} />
               )}
             </button>
 
@@ -591,6 +748,20 @@ function NavbarContent({
                   Sign up
                 </Link>
               ))}
+
+            {/* Avatar/sign-up skeleton — shown while auth state resolves */}
+            {isLoading && (
+              <div
+                className="hidden md:block relative w-9 h-9 rounded-full overflow-hidden"
+                style={{
+                  background: transparent
+                    ? "rgba(255,255,255,0.14)"
+                    : "rgba(22,19,15,0.08)",
+                }}
+              >
+                <div className="skeleton-shimmer" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -628,21 +799,60 @@ function NavbarContent({
         onClick={() => setMobileOpen(false)}
       />
 
-      {/* Mobile menu — top sheet */}
+      {/* Mobile menu — bottom sheet */}
       <div
-        className="fixed inset-x-0 top-0 z-50 md:hidden flex flex-col max-h-[88dvh] rounded-b-2xl overflow-hidden"
+        className="fixed inset-x-0 bottom-0 z-50 md:hidden flex flex-col max-h-[82dvh] rounded-t-3xl overflow-hidden"
         style={{
           background: "#ffffff",
-          transform: mobileOpen ? "translateY(0)" : "translateY(-100%)",
-          transition: "transform 300ms cubic-bezier(0.4, 0, 0.2, 1)",
-          boxShadow: "0 4px 24px rgba(22,19,15,0.12)",
-          paddingTop: "env(safe-area-inset-top)",
+          transform: mobileOpen ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 320ms cubic-bezier(0.32, 0.72, 0, 1)",
+          boxShadow: "0 -8px 30px rgba(22,19,15,0.18)",
+          paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        {/* Panel header */}
-        {me ? (
+        {/* Drag handle + close */}
+        <div className="relative flex justify-center pt-2.5 pb-1 shrink-0">
+          <div className="w-9 h-1 rounded-full" style={{ background: "#e8e4dc" }} />
+          <button
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+            className="absolute right-2.5 top-1 flex items-center justify-center w-8 h-8 rounded-full"
+            style={{ color: "#a8a09a" }}
+          >
+            <DismissRegular fontSize={16} />
+          </button>
+        </div>
+
+        {/* Profile row */}
+        {isLoading ? (
           <div
-            className="flex items-center gap-3 px-5 py-4 shrink-0"
+            className="flex items-center gap-3 px-5 py-3.5 shrink-0"
+            style={{ borderBottom: "1px solid #f0ece5" }}
+          >
+            <div
+              className="relative w-11 h-11 rounded-full overflow-hidden shrink-0"
+              style={{ background: "#ede9e2" }}
+            >
+              <div className="skeleton-shimmer" />
+            </div>
+            <div className="flex-1 min-w-0 flex flex-col gap-2">
+              <div
+                className="relative h-3.5 w-28 rounded-full overflow-hidden"
+                style={{ background: "#ede9e2" }}
+              >
+                <div className="skeleton-shimmer" />
+              </div>
+              <div
+                className="relative h-3 w-36 rounded-full overflow-hidden"
+                style={{ background: "#f5f2ee" }}
+              >
+                <div className="skeleton-shimmer" />
+              </div>
+            </div>
+          </div>
+        ) : me ? (
+          <div
+            className="flex items-center gap-3 px-5 py-3.5 shrink-0"
             style={{ borderBottom: "1px solid #f0ece5" }}
           >
             {me.avatar_url ? (
@@ -676,104 +886,107 @@ function NavbarContent({
                 {me.email}
               </p>
             </div>
-            <button
-              onClick={() => setMobileOpen(false)}
-              aria-label="Close menu"
-              className="flex items-center justify-center w-8 h-8 rounded-full shrink-0"
-              style={{ color: "#56524d" }}
-            >
-              <X size={17} strokeWidth={2} />
-            </button>
+            <ChevronRightRegular
+              fontSize={16}
+              style={{ color: "#a8a09a" }}
+            />
           </div>
         ) : (
           <div
-            className="flex items-center justify-between px-5 h-[76px] shrink-0"
+            className="flex items-center gap-3 px-5 py-3.5 shrink-0"
             style={{ borderBottom: "1px solid #f0ece5" }}
           >
-            <Link href="/" onClick={() => setMobileOpen(false)}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.svg" alt="Unstash" className="h-10 w-auto" />
-            </Link>
-            <button
-              onClick={() => setMobileOpen(false)}
-              aria-label="Close menu"
-              className="flex items-center justify-center w-9 h-9 rounded-full"
-              style={{ color: "#56524d" }}
-            >
-              <X size={18} strokeWidth={2} />
-            </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.svg" alt="Unstash" className="h-8 w-auto" />
           </div>
         )}
 
         {/* Nav links */}
-        <nav className="flex-1 flex flex-col gap-1 px-3 py-4 overflow-y-auto">
-          <Link
+        <nav className="flex-1 flex flex-col px-3 py-2 overflow-y-auto">
+          <p
+            className="px-3 pt-2.5 pb-1 text-[10.5px] font-bold uppercase"
+            style={{ color: "#a8a09a", letterSpacing: "0.06em" }}
+          >
+            Menu
+          </p>
+          <MobileNavRow
             href="/search"
+            icon={BrowseIcon}
+            active={isSearchPage}
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
-            style={{ color: "#16130f" }}
           >
             Browse
-          </Link>
-          <Link
+          </MobileNavRow>
+          <MobileNavRow
             href="/requests"
+            icon={RequestsIcon}
+            active={isRequestsPage}
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
-            style={{ color: "#16130f" }}
           >
             Requests
-          </Link>
-          <Link
+          </MobileNavRow>
+          <MobileNavRow
             href="/dashboard/listings/new"
+            icon={ListItemIcon}
+            active={false}
             prefetch={false}
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-2.5 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
-            style={{ color: "#4f46e5" }}
           >
-            <Plus size={15} strokeWidth={2.5} />
             List an item
-          </Link>
+          </MobileNavRow>
 
           {me && (
             <>
-              <div className="my-2 h-px" style={{ background: "#f0ece5" }} />
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors"
-                style={{ color: "#16130f" }}
+              <p
+                className="px-3 pt-3.5 pb-1 text-[10.5px] font-bold uppercase"
+                style={{ color: "#a8a09a", letterSpacing: "0.06em" }}
               >
-                <LayoutDashboard
-                  size={15}
-                  strokeWidth={1.8}
-                  style={{ color: "#a8a09a" }}
-                />
+                Account
+              </p>
+              <MobileNavRow
+                href="/dashboard"
+                icon={DashboardMenuIcon}
+                active={false}
+                onClick={() => setMobileOpen(false)}
+              >
                 Dashboard
-              </Link>
-              <button
+              </MobileNavRow>
+              <MobileNavButton
+                icon={PurchasesIcon}
                 onClick={() => {
                   setMobileOpen(false);
                   openList();
                 }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-colors w-full text-left"
-                style={{ color: "#16130f" }}
               >
-                <ShoppingBag
-                  size={15}
-                  strokeWidth={1.8}
-                  style={{ color: "#a8a09a" }}
-                />
                 My purchases
-              </button>
+              </MobileNavButton>
             </>
           )}
         </nav>
 
         {/* Footer auth */}
-        {!isLoading && (
+        {isLoading ? (
           <div
-            className="px-4 pb-8 flex flex-col gap-2.5"
-            style={{ borderTop: "1px solid #f0ece5", paddingTop: "1rem" }}
+            className="px-4 pb-5 flex gap-2.5"
+            style={{ borderTop: "1px solid #f0ece5", paddingTop: "0.75rem" }}
+          >
+            <div
+              className="relative flex-1 h-11 rounded-full overflow-hidden"
+              style={{ background: "#ede9e2" }}
+            >
+              <div className="skeleton-shimmer" />
+            </div>
+            <div
+              className="relative flex-1 h-11 rounded-full overflow-hidden"
+              style={{ background: "#f5f2ee" }}
+            >
+              <div className="skeleton-shimmer" />
+            </div>
+          </div>
+        ) : (
+          <div
+            className="px-3 pb-3 flex flex-col"
+            style={{ borderTop: "1px solid #f0ece5", paddingTop: "0.5rem" }}
           >
             {me ? (
               <button
@@ -781,18 +994,23 @@ function NavbarContent({
                   setMobileOpen(false);
                   signOut();
                 }}
-                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium text-left w-full transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-medium text-left w-full transition-colors hover:bg-[#fef1f1]"
                 style={{ color: "#e53e3e" }}
               >
-                <LogOut size={15} strokeWidth={1.8} />
+                <span
+                  className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0"
+                  style={{ background: "#fef1f1", color: "#e53e3e" }}
+                >
+                  <SignOutRegular fontSize={17} />
+                </span>
                 Sign out
               </button>
             ) : (
-              <>
+              <div className="flex gap-2.5 px-1 pb-2">
                 <Link
                   href="/auth/login"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center h-11 rounded-full text-[15px] font-medium transition-colors"
+                  className="flex-1 flex items-center justify-center h-11 rounded-full text-[14.5px] font-medium transition-colors"
                   style={{ border: "1px solid #e8e4dc", color: "#16130f" }}
                 >
                   Sign in
@@ -800,12 +1018,12 @@ function NavbarContent({
                 <Link
                   href="/auth/signup"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center h-11 rounded-full text-[15px] font-semibold transition-all duration-200"
+                  className="flex-1 flex items-center justify-center h-11 rounded-full text-[14.5px] font-semibold transition-all duration-200"
                   style={{ background: "#4f46e5", color: "#ffffff" }}
                 >
                   Sign up
                 </Link>
-              </>
+              </div>
             )}
           </div>
         )}
@@ -848,40 +1066,44 @@ function TransactionPill({
           : "rgba(22,19,15,0.03)",
       }}
     >
-      <button
-        onClick={openList}
-        aria-label="My orders"
-        className="flex items-center justify-center h-full px-4 rounded-l-full transition-colors duration-150"
-        style={{ color: iconColor }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = hoverBg)}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      >
-        <ShoppingBag size={16} strokeWidth={2} />
-      </button>
+      <Tooltip label="My orders">
+        <button
+          onClick={openList}
+          aria-label="My orders"
+          className="flex items-center justify-center h-full px-4 rounded-l-full transition-colors duration-150"
+          style={{ color: iconColor }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = hoverBg)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        >
+          <ShoppingBag size={16} strokeWidth={2} />
+        </button>
+      </Tooltip>
 
       <div className="w-px h-4 shrink-0" style={{ background: dividerColor }} />
 
-      <button
-        onClick={onCartOpen}
-        aria-label={`Cart${count > 0 ? ` (${count} items)` : ""}`}
-        className="relative flex items-center justify-center h-full px-4 rounded-r-full transition-colors duration-150"
-        style={{ color: iconColor }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = hoverBg)}
-        onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      >
-        <ShoppingCart size={16} strokeWidth={2} />
-        {!cartLoading && count > 0 && (
-          <span
-            className="absolute top-1 right-2 flex items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold text-white"
-            style={{
-              background: "#4f46e5",
-              boxShadow: "0 0 0 1.5px var(--cart-ring)",
-            }}
-          >
-            {count > 99 ? "99+" : count}
-          </span>
-        )}
-      </button>
+      <Tooltip label="Cart" align="right">
+        <button
+          onClick={onCartOpen}
+          aria-label={`Cart${count > 0 ? ` (${count} items)` : ""}`}
+          className="relative flex items-center justify-center h-full px-4 rounded-r-full transition-colors duration-150"
+          style={{ color: iconColor }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = hoverBg)}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+        >
+          <ShoppingCart size={16} strokeWidth={2} />
+          {!cartLoading && count > 0 && (
+            <span
+              className="absolute top-1 right-2 flex items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold text-white"
+              style={{
+                background: "#4f46e5",
+                boxShadow: "0 0 0 1.5px var(--cart-ring)",
+              }}
+            >
+              {count > 99 ? "99+" : count}
+            </span>
+          )}
+        </button>
+      </Tooltip>
     </div>
   );
 }

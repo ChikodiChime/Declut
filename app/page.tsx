@@ -20,6 +20,7 @@ import {
   Package,
   type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { BrowseCard, BrowseCardSkeleton } from "@/components/listings";
 import { ListingImage } from "@/components/ui";
@@ -700,14 +701,15 @@ function HomeContent() {
         style={{ marginTop: "-76px" }}
       >
         {/* Background photo */}
-        <div
+        <Image
+          src="/hero-bg.png"
+          alt=""
           aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            backgroundImage: "url('/hero-bg.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center 35%",
-          }}
+          fill
+          priority
+          sizes="100vw"
+          className="pointer-events-none object-cover"
+          style={{ objectPosition: "center 35%" }}
         />
         {/* Left-heavy gradient — dark on left for legibility, photo visible on right */}
         <div

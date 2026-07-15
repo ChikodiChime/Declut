@@ -30,6 +30,11 @@ export default async function Image({ params }: { params: { id: string } }) {
 
     const typeColor = typeColors[listing.listing_type] || "#4f46e5";
 
+    const photoId: string | undefined = listing.images?.[0];
+    const photoUrl = photoId
+      ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/w_630,h_630,c_fill,g_auto/${photoId}`
+      : undefined;
+
     return new ImageResponse(
       (
         <div
@@ -37,105 +42,117 @@ export default async function Image({ params }: { params: { id: string } }) {
             height: "100%",
             width: "100%",
             display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
             backgroundColor: "#fafaf9",
-            padding: "60px 80px",
           }}
         >
           <div
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "20px",
+              justifyContent: "space-between",
+              width: photoUrl ? "570px" : "100%",
+              padding: "60px 56px",
             }}
           >
             <div
               style={{
                 display: "flex",
-                alignItems: "center",
-                gap: "12px",
+                flexDirection: "column",
+                gap: "20px",
               }}
             >
               <div
                 style={{
-                  backgroundColor: typeColor,
-                  color: "white",
-                  padding: "8px 20px",
-                  borderRadius: "999px",
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
                 }}
               >
-                {listing.listing_type === "for_sale"
-                  ? "For Sale"
-                  : listing.listing_type === "free"
-                  ? "Free"
-                  : "Donate"}
+                <div
+                  style={{
+                    backgroundColor: typeColor,
+                    color: "white",
+                    padding: "8px 20px",
+                    borderRadius: "999px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {listing.listing_type === "for_sale"
+                    ? "For Sale"
+                    : listing.listing_type === "free"
+                    ? "Free"
+                    : "Donate"}
+                </div>
               </div>
+
+              <h1
+                style={{
+                  fontSize: photoUrl ? "56px" : "72px",
+                  fontWeight: "bold",
+                  color: "#1c1917",
+                  lineHeight: 1.1,
+                  margin: 0,
+                  maxWidth: photoUrl ? "460px" : "900px",
+                }}
+              >
+                {listing.title}
+              </h1>
+
+              {listing.listing_type === "for_sale" && listing.price && (
+                <p
+                  style={{
+                    fontSize: "48px",
+                    fontWeight: "bold",
+                    color: typeColor,
+                    margin: 0,
+                  }}
+                >
+                  ₦{listing.price.toLocaleString()}
+                </p>
+              )}
             </div>
 
-            <h1
+            <div
               style={{
-                fontSize: "72px",
-                fontWeight: "bold",
-                color: "#1c1917",
-                lineHeight: 1.1,
-                margin: 0,
-                maxWidth: "900px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                fontSize: "22px",
+                color: "#78716c",
               }}
             >
-              {listing.title}
-            </h1>
-
-            {listing.listing_type === "for_sale" && listing.price && (
-              <p
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span>📍</span>
+                <span>{listing.area}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span>📦</span>
+                <span>{listing.category}</span>
+              </div>
+              <div
                 style={{
-                  fontSize: "56px",
+                  fontSize: "24px",
                   fontWeight: "bold",
-                  color: typeColor,
-                  margin: 0,
+                  color: "#a8a29e",
                 }}
               >
-                ₦{listing.price.toLocaleString()}
-              </p>
-            )}
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "40px",
-              fontSize: "24px",
-              color: "#78716c",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <span>📍</span>
-              <span>{listing.area}</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <span>📦</span>
-              <span>{listing.category}</span>
+                unstash.ng
+              </div>
             </div>
           </div>
 
-          <div
-            style={{
-              position: "absolute",
-              bottom: "60px",
-              right: "80px",
-              fontSize: "28px",
-              fontWeight: "bold",
-              color: "#a8a29e",
-            }}
-          >
-            unstash.ng
-          </div>
+          {photoUrl && (
+            <img
+              src={photoUrl}
+              width={630}
+              height={630}
+              style={{ objectFit: "cover" }}
+              alt=""
+            />
+          )}
         </div>
       ),
       {
