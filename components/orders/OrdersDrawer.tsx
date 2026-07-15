@@ -24,7 +24,7 @@ export function OrdersDrawer() {
         onBack={screen === 'detail' ? openList : undefined}
       />
 
-      <div className="flex-1 overflow-y-auto px-4 py-5">
+      <div className="flex-1 overflow-y-auto px-4 py-5" data-lenis-prevent>
         <AnimatePresence mode="wait">
           {screen === 'list' ? (
             <motion.div

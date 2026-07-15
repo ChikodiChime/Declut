@@ -66,6 +66,35 @@ const SEED_EMAILS = [
   'seed-seller4@unstash.dev',
   'seed-buyer1@unstash.dev',
   'seed-buyer2@unstash.dev',
+  'seed-dispatcher1@unstash.dev',
+]
+
+const STREET_NAMES = [
+  '14 Freedom Way', '8 Admiralty Road', '22 Bourdillon Road', '5 Kofo Abayomi Street',
+  '31 Aminu Kano Crescent', '19 Ahmadu Bello Way', '2 Adeola Odeku Street', '40 Herbert Macaulay Way',
+]
+
+// Two requests per VALID_CATEGORIES entry (app/api/listings/utils.ts) so the
+// /requests category filter has more than one result for every category.
+const REQUESTS = [
+  { title: 'Need an Android phone under ₦60k', description: 'Old phone just died. Anything decent and working, screen can have minor scratches.', category: 'Electronics', listing_type: 'for_sale', maxPrice: 60000 },
+  { title: 'Anyone giving away an old laptop that still boots?', description: 'Just need something basic for typing and browsing, not gaming.', category: 'Electronics', listing_type: 'free', maxPrice: null },
+  { title: 'Looking for office chairs, 2-3 units', description: 'Setting up a small home office for my team. Comfortable over looks.', category: 'Furniture & Home', listing_type: null, maxPrice: 25000 },
+  { title: 'Want a bookshelf, any size', description: 'Books are piling up on the floor, anything with 3+ shelves works.', category: 'Furniture & Home', listing_type: 'for_sale', maxPrice: 18000 },
+  { title: 'Looking for a smart-casual jacket, size L', description: 'Need something decent for interviews, don\'t mind if it\'s worn as long as it\'s presentable.', category: 'Clothing & Accessories', listing_type: 'for_sale', maxPrice: 15000 },
+  { title: 'Any donated shoes, size 42-43?', description: 'Lost my job recently and could really use a decent pair for interviews.', category: 'Clothing & Accessories', listing_type: 'donate', maxPrice: null },
+  { title: 'Want a standing fan before the heat kicks in', description: 'AC is out for repairs, need a stopgap fan.', category: 'Appliances', listing_type: 'for_sale', maxPrice: 15000 },
+  { title: 'Looking for a working electric kettle', description: 'Just need hot water quickly in the mornings, don\'t mind older models.', category: 'Appliances', listing_type: null, maxPrice: 8000 },
+  { title: 'Anyone donating books for a school library?', description: 'Volunteering at a community school in need of any secondary school textbooks or novels.', category: 'Books & Stationery', listing_type: 'donate', maxPrice: null },
+  { title: 'Need JAMB/UTME study materials', description: 'Preparing for next year\'s exam, would take used past-question books or guides.', category: 'Books & Stationery', listing_type: null, maxPrice: 5000 },
+  { title: 'Any free baby clothes 0-6 months?', description: 'Expecting soon and would gladly take any gently used baby clothes people are giving away.', category: 'Kids & Baby', listing_type: 'free', maxPrice: null },
+  { title: 'Looking for a used baby cot', description: 'Just needs to be sturdy and safe, cosmetic wear is fine.', category: 'Kids & Baby', listing_type: 'for_sale', maxPrice: 30000 },
+  { title: 'Looking for a men\'s bicycle, any condition', description: 'Want to start cycling to work, budget is tight so open to fixer-uppers.', category: 'Sports & Outdoors', listing_type: null, maxPrice: 30000 },
+  { title: 'Need a football, size 5', description: 'For weekend games with the neighbourhood kids, doesn\'t need to be new.', category: 'Sports & Outdoors', listing_type: 'for_sale', maxPrice: 5000 },
+  { title: 'Need a spare tyre for a Toyota Corolla', description: 'Size 195/65R15, doesn\'t have to be new — just decent tread left.', category: 'Vehicles & Parts', listing_type: 'for_sale', maxPrice: 20000 },
+  { title: 'Looking for a motorcycle helmet', description: 'Just started riding, need a helmet that actually fits — used is fine.', category: 'Vehicles & Parts', listing_type: null, maxPrice: 12000 },
+  { title: 'Looking for moving boxes, any quantity', description: 'Relocating soon and could use any sturdy cardboard boxes people are done with.', category: 'Other', listing_type: 'free', maxPrice: null },
+  { title: 'Want a decent suitcase for travel', description: 'Traveling next month, need a mid-size suitcase with working wheels and zips.', category: 'Other', listing_type: 'for_sale', maxPrice: 12000 },
 ]
 
 function pick(arr, i) { return arr[i % arr.length] }
@@ -223,16 +252,16 @@ async function main() {
 
   if (existingUsers?.length) {
     const ids = existingUsers.map(u => u.id)
+    const orderOwnerFilter = `buyer_id.in.(${ids.join(',')}),seller_id.in.(${ids.join(',')}),dispatcher_id.in.(${ids.join(',')})`
     await db.from('order_items').delete().in(
       'order_id',
-      (await db.from('orders').select('id').or(
-        `buyer_id.in.(${ids.join(',')}),seller_id.in.(${ids.join(',')})`
-      ).then(r => (r.data ?? []).map(o => o.id)))
+      (await db.from('orders').select('id').or(orderOwnerFilter)
+        .then(r => (r.data ?? []).map(o => o.id)))
     )
-    await db.from('orders').delete().or(
-      `buyer_id.in.(${ids.join(',')}),seller_id.in.(${ids.join(',')})`
-    )
+    await db.from('orders').delete().or(orderOwnerFilter)
     await db.from('listings').delete().in('seller_id', ids)
+    await db.from('request_follows').delete().in('user_id', ids)
+    await db.from('item_requests').delete().in('user_id', ids)
     await db.from('users').delete().in('id', ids)
     console.log(`  ✓ Removed ${ids.length} seed users and their data`)
   } else {
@@ -258,8 +287,8 @@ async function main() {
         name: profile.name,
         password_hash: passwordHash,
         account_type: profile.account_type,
-        stripe_account_id: `acct_seed_${profile.email.split('@')[0].replace('seed-', '')}`,
-        stripe_onboarding_complete: true,
+        paystack_recipient_code: `RCP_seed_${profile.email.split('@')[0].replace('seed-', '')}`,
+        paystack_onboarding_complete: true,
         email_verified: true,
       })
       .select('id, name, email')
@@ -293,6 +322,21 @@ async function main() {
     buyers.push(data)
     console.log(`  ✓ ${data.name} (${profile.email})`)
   }
+
+  const { data: dispatcher, error: dispatcherErr } = await db
+    .from('users')
+    .insert({
+      email: 'seed-dispatcher1@unstash.dev',
+      name: 'Yusuf Aliyu',
+      password_hash: passwordHash,
+      account_type: 'dispatcher',
+      email_verified: true,
+    })
+    .select('id, name')
+    .single()
+
+  if (dispatcherErr) throw new Error(`Dispatcher insert failed: ${dispatcherErr.message}`)
+  console.log(`  ✓ ${dispatcher.name} (seed-dispatcher1@unstash.dev)`)
 
   // ── 3. Fetch products from DummyJSON ───────────────────────────────────────
   console.log('\n⬇  Fetching products from DummyJSON (no food categories)...')
@@ -404,25 +448,45 @@ async function main() {
 
   // Only order for_sale listings (they have a price)
   const forSaleListings = insertedListings.filter((_, i) => listingRows[i].listing_type === 'for_sale')
-  const ORDER_STATUSES = ['paid', 'confirmed', 'shipped', 'delivered', 'completed', 'cancelled', 'paid', 'confirmed', 'shipped', 'delivered']
 
-  const orderRows = forSaleListings.slice(0, 10).map((l, i) => {
+  // Explicit per-order plan, not a status cycle — dispatch reads status='confirmed'
+  // + delivery_type='delivery' + dispatcher_id=null as its claimable pool
+  // (app/api/dispatch/orders/route.ts), and status='shipped' + dispatcher_id=<me>
+  // as "my deliveries" (app/api/dispatch/orders/mine/route.ts), so we need at
+  // least one of each on purpose rather than leaving it to chance.
+  const ORDER_PLAN = [
+    { status: 'confirmed', isPickup: false },                        // dispatch pool
+    { status: 'confirmed', isPickup: false },                        // dispatch pool
+    { status: 'confirmed', isPickup: true },                         // pickup — not in dispatch pool
+    { status: 'shipped', isPickup: false, assignDispatcher: true },  // dispatcher's "my deliveries"
+    { status: 'delivered', isPickup: false },
+    { status: 'completed', isPickup: true },
+    { status: 'cancelled', isPickup: false },
+    { status: 'paid', isPickup: false },
+    { status: 'pending', isPickup: false },
+    { status: 'confirmed', isPickup: false },                        // dispatch pool
+  ]
+
+  const orderRows = forSaleListings.slice(0, ORDER_PLAN.length).map((l, i) => {
     const row = listingRows[insertedListings.indexOf(l)]
-    const isPickup = i % 4 === 0
+    const plan = ORDER_PLAN[i]
     const isLagos = row.area.includes('Lagos')
-    const deliveryFee = isPickup ? 0 : (isLagos ? 1500 : 3500)
+    const deliveryFee = plan.isPickup ? 0 : (isLagos ? 1500 : 3500)
     const buyer = buyers[i % buyers.length]
+    const street = pick(STREET_NAMES, i)
 
     return {
       listing_id: null,
       buyer_id: buyer.id,
       seller_id: row.seller_id,
-      status: ORDER_STATUSES[i],
-      delivery_type: isPickup ? 'pickup' : 'delivery',
+      dispatcher_id: plan.assignDispatcher ? dispatcher.id : null,
+      status: plan.status,
+      delivery_type: plan.isPickup ? 'pickup' : 'delivery',
       item_price: row.price,
       delivery_fee: deliveryFee,
       total_price: row.price + deliveryFee,
-      pickup_address: isPickup ? '12 Adeola Odeku Street, Victoria Island, Lagos' : null,
+      pickup_address: plan.isPickup ? `${street}, ${row.area}` : null,
+      buyer_address: plan.isPickup ? null : `${street}, ${row.area}`,
     }
   })
 
@@ -442,7 +506,48 @@ async function main() {
   const { error: itemErr } = await db.from('order_items').insert(orderItemRows)
   if (itemErr) throw new Error(`Order items insert failed: ${itemErr.message}`)
 
+  const dispatchPoolCount = ORDER_PLAN.filter(p => p.status === 'confirmed' && !p.isPickup).length
   console.log(`  ✓ Inserted ${orders.length} orders with ${orderItemRows.length} order items`)
+  console.log(`  ✓ ${dispatchPoolCount} orders confirmed + unclaimed (visible in dispatch pool), 1 shipped to ${dispatcher.name} (dispatch "mine")`)
+
+  // ── 6. Seed community requests ─────────────────────────────────────────────
+  console.log('\n📝 Inserting sample requests...')
+
+  const requesters = [...buyers, sellers[2], sellers[3]]
+
+  const requestRows = REQUESTS.map((r, i) => ({
+    user_id: pick(requesters, i).id,
+    title: r.title,
+    description: r.description,
+    category: r.category,
+    listing_type: r.listing_type,
+    area: pick(AREAS, i + 5),
+    max_price: r.maxPrice,
+    status: 'open',
+  }))
+
+  const { data: insertedRequests, error: reqErr } = await db
+    .from('item_requests')
+    .insert(requestRows)
+    .select('id')
+
+  if (reqErr) throw new Error(`Requests insert failed: ${reqErr.message}`)
+  console.log(`  ✓ Inserted ${insertedRequests.length} requests`)
+
+  // Creator auto-follows their own request (mirrors app/api/requests/route.ts),
+  // plus everyone else follows the first request so it clears the "Hot" threshold (>=5).
+  const allUserIds = [...sellers.map(s => s.id), ...buyers.map(b => b.id)]
+  const followRows = insertedRequests.flatMap((req, i) => {
+    const creatorId = requestRows[i].user_id
+    const followerIds = i === 0
+      ? allUserIds
+      : [creatorId]
+    return followerIds.map(user_id => ({ user_id, request_id: req.id }))
+  })
+
+  const { error: followErr } = await db.from('request_follows').insert(followRows)
+  if (followErr) throw new Error(`Request follows insert failed: ${followErr.message}`)
+  console.log(`  ✓ Inserted ${followRows.length} follows (1 request is "Hot")`)
 
   // ── Done ───────────────────────────────────────────────────────────────────
   console.log(`
@@ -450,6 +555,8 @@ async function main() {
 
   ${insertedListings.length} listings across ${Object.keys(catCounts).length} categories
   ${Object.keys(typeCounts).map(t => `${typeCounts[t]} ${t}`).join(' · ')}
+  ${orders.length} orders (${dispatchPoolCount} claimable in dispatch pool, 1 assigned to dispatcher)
+  ${insertedRequests.length} requests (1 "Hot")
 
   Sellers
     seed-seller1@unstash.dev  / password123  — Amara Okafor (Individual, Lagos)
@@ -460,6 +567,9 @@ async function main() {
   Buyers
     seed-buyer1@unstash.dev   / password123  — Chidi Eze
     seed-buyer2@unstash.dev   / password123  — Fatima Bello
+
+  Dispatcher
+    seed-dispatcher1@unstash.dev / password123 — Yusuf Aliyu
 `)
 }
 

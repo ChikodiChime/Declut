@@ -62,7 +62,7 @@ function DispatchPanel() {
           <em style={{ color: '#f59e0b', fontStyle: 'italic' }}>confidence.</em>
         </motion.h2>
 
-        <div className="flex flex-col gap-3 max-w-xs">
+        <div className="flex flex-col gap-3 max-w-xl">
           {DISPATCH_FEATURES.map((f, i) => {
             const Icon = f.icon
             return (

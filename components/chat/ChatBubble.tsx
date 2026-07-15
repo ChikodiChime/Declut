@@ -10,7 +10,7 @@ export function ChatBubble() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
-  if (pathname.startsWith('/dispatch')) return null
+  if (pathname.startsWith('/dispatch') || pathname.startsWith('/chat')) return null
 
   return (
     <>

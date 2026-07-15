@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { MapPin } from "lucide-react";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 
@@ -40,7 +41,10 @@ export default function PlacesAddressInput({
   const placesLib = useMapsLibrary("places");
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const userTypingRef = useRef(false);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number; width: number } | null>(null);
 
   useEffect(() => {
     const query = inputValue.trim();
@@ -132,7 +136,12 @@ export default function PlacesAddressInput({
         if (e.key === "Escape") setPredictions([]);
         return;
       }
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        !dropdownRef.current?.contains(target)
+      ) {
         setPredictions([]);
       }
     }
@@ -145,6 +154,28 @@ export default function PlacesAddressInput({
     };
   }, [predictions.length]);
 
+  // Portals the dropdown to <body> and tracks the input's viewport position —
+  // it renders inside modals whose scrollable body would otherwise clip an
+  // absolutely-positioned dropdown.
+  useEffect(() => {
+    if (predictions.length === 0) {
+      setDropdownPos(null);
+      return;
+    }
+    function updatePos() {
+      const rect = anchorRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setDropdownPos({ top: rect.bottom, left: rect.left, width: rect.width });
+    }
+    updatePos();
+    window.addEventListener("scroll", updatePos, true);
+    window.addEventListener("resize", updatePos);
+    return () => {
+      window.removeEventListener("scroll", updatePos, true);
+      window.removeEventListener("resize", updatePos);
+    };
+  }, [predictions.length]);
+
   return (
     <div ref={containerRef} className="space-y-2">
       {label && (
@@ -154,7 +185,7 @@ export default function PlacesAddressInput({
         </label>
       )}
 
-      <div className="relative">
+      <div ref={anchorRef} className="relative">
         <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center">
           <MapPin size={16} className="text-text-muted" />
         </div>
@@ -176,21 +207,27 @@ export default function PlacesAddressInput({
           className="w-full rounded-xl border border-border bg-card py-2.5 pl-9 pr-4 text-sm text-text placeholder:text-text-subtle focus:border-primary focus:outline-none transition-colors"
         />
 
-        {predictions.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-1 z-20 rounded-xl border border-border bg-card shadow-card overflow-hidden">
-            {predictions.map((p) => (
-              <button
-                key={p.placeId}
-                type="button"
-                className="w-full px-4 py-2.5 text-left text-sm text-text hover:bg-surface transition-colors"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => handleSelect(p)}
-              >
-                {p.text.toString()}
-              </button>
-            ))}
-          </div>
-        )}
+        {predictions.length > 0 && dropdownPos && typeof document !== "undefined" &&
+          createPortal(
+            <div
+              ref={dropdownRef}
+              className="fixed z-[70] rounded-xl border border-border bg-card shadow-card overflow-hidden"
+              style={{ top: dropdownPos.top + 4, left: dropdownPos.left, width: dropdownPos.width }}
+            >
+              {predictions.map((p) => (
+                <button
+                  key={p.placeId}
+                  type="button"
+                  className="w-full px-4 py-2.5 text-left text-sm text-text hover:bg-surface transition-colors"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => handleSelect(p)}
+                >
+                  {p.text.toString()}
+                </button>
+              ))}
+            </div>,
+            document.body,
+          )}
       </div>
 
       {showStateFallback && (

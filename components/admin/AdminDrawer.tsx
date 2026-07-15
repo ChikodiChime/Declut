@@ -70,7 +70,7 @@ export function AdminDrawer({
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto">{children}</div>
+      <div className="flex-1 overflow-y-auto" data-lenis-prevent>{children}</div>
 
       {footer && (
         <div className="shrink-0 bg-card border-t border-border px-6 py-4">{footer}</div>

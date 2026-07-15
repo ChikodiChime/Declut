@@ -246,7 +246,7 @@ export function EditListingDrawer({ listing, onClose }: EditListingDrawerProps) 
         </div>
 
         {/* Scrollable form body */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto" data-lenis-prevent>
           <div className="px-6 py-6 space-y-5">
 
             {/* Photos */}
