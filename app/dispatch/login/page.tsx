@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Mail, Lock, Truck, MapPin, CheckCircle2, ClipboardList } from 'lucide-react'
 import { Input, Button } from '@/components/ui'
@@ -99,6 +100,7 @@ function DispatchPanel() {
 
 export default function DispatcherLoginPage() {
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -118,6 +120,11 @@ export default function DispatcherLoginPage() {
       if (json.data?.user?.account_type !== 'dispatcher') {
         throw new Error('This login is for dispatchers only. Use the main login page instead.')
       }
+      // Sign-in happens via a raw fetch (not useSignIn), so the cached ['me']
+      // query — possibly stale from a prior logged-out or different-user
+      // session — must be invalidated here or /dispatch/profile renders
+      // empty until a hard refresh mounts a fresh QueryClient.
+      await queryClient.invalidateQueries({ queryKey: ['me'] })
       router.push('/dispatch')
       router.refresh()
     } catch (err) {

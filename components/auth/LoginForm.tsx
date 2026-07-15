@@ -96,6 +96,13 @@ export default function LoginForm({ onSubmit, isPending, error }: LoginFormProps
         >
           Sign In
         </Button>
+
+        <p className="text-center text-sm text-text-muted">
+          Dispatcher?{" "}
+          <Link href="/dispatch/login" className="font-medium text-primary hover:text-primary-hover transition-colors">
+            Sign in here
+          </Link>
+        </p>
       </form>
     </motion.div>
   );

@@ -1656,7 +1656,7 @@ git commit -m "chore: verify admin proxy guards are in place"
   Then insert the admin user:
   ```sql
   INSERT INTO users (id, name, email, password_hash, account_type, email_verified, suspended)
-  VALUES (gen_random_uuid(), 'Admin', 'admin@declut.com', '<paste_hash_here>', 'admin', true, false);
+  VALUES (gen_random_uuid(), 'Admin', 'admin@unstash.com', '<paste_hash_here>', 'admin', true, false);
   ```
 
 - [ ] Sign in at `/auth/login` with the admin credentials → confirm redirect lands on `/admin/dashboard`

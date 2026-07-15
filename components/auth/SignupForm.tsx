@@ -156,6 +156,13 @@ export default function SignupForm({ onSubmit, isPending, error }: SignupFormPro
           <a href="#" className="text-primary hover:underline">Terms</a> and{" "}
           <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
         </p>
+
+        <p className="text-center text-sm text-text-muted">
+          Dispatcher?{" "}
+          <Link href="/dispatch/login" className="font-medium text-primary hover:text-primary-hover transition-colors">
+            Sign in here
+          </Link>
+        </p>
       </form>
     </motion.div>
   );
