@@ -42,7 +42,7 @@ export async function generateMetadata({
       listing.description ||
       `${typeLabel} listing in ${listing.area}. ${listing.condition} condition. Browse more on Unstash Marketplace.`;
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://unstash-beta.netlify.app";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://unstash.xyz";
     const url = `${siteUrl}/listings/${id}`;
 
     return {

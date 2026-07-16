@@ -28,7 +28,10 @@ const dmSerifDisplay = DM_Serif_Display({
   variable: "--font-serif-display",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://unstash.xyz";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Unstash Marketplace",
     template: "%s | Unstash",
