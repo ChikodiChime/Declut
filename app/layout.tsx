@@ -30,28 +30,32 @@ const dmSerifDisplay = DM_Serif_Display({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://unstash.xyz";
 
+const SITE_TITLE = "Unstash — The Marketplace for What's Next";
+const SITE_DESCRIPTION =
+  "Discover pre-loved treasures, sell what no longer serves you, and give generously — all in one place.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Unstash Marketplace",
+    default: SITE_TITLE,
     template: "%s | Unstash",
   },
-  description: "Buy, sell, and donate secondhand items in Nigeria.",
+  description: SITE_DESCRIPTION,
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
   openGraph: {
-    title: "Unstash Marketplace",
-    description: "Buy, sell, and donate secondhand items in Nigeria.",
-    siteName: "Unstash Marketplace",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: "Unstash",
     locale: "en_NG",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Unstash Marketplace",
-    description: "Buy, sell, and donate secondhand items in Nigeria.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
 };
 
